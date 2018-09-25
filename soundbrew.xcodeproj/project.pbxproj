@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
+		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986C215AEF8F00C21663 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268986B215AEF8F00C21663 /* ViewController.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
@@ -14,6 +16,7 @@
 		F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F2689872215AEF9000C21663 /* LaunchScreen.storyboard */; };
 		F268987F215AEF9000C21663 /* soundbrewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268987E215AEF9000C21663 /* soundbrewTests.swift */; };
 		F268988A215AEF9000C21663 /* soundbrewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689889215AEF9000C21663 /* soundbrewUITests.swift */; };
+		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +37,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2176CF4249BE5EFB52E4C66A /* Pods-soundbrewUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.release.xcconfig"; sourceTree = "<group>"; };
+		39D725360E8FD463AF5DD069 /* Pods-soundbrew.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrew.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrew/Pods-soundbrew.debug.xcconfig"; sourceTree = "<group>"; };
+		6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A4EF2DDF0A520CBB15481F8 /* Pods-soundbrew.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrew.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrew/Pods-soundbrew.release.xcconfig"; sourceTree = "<group>"; };
+		921914671D6205F63B619F10 /* Pods_soundbrew.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrew.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986B215AEF8F00C21663 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -47,6 +58,7 @@
 		F2689885215AEF9000C21663 /* soundbrewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = soundbrewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689889215AEF9000C21663 /* soundbrewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = soundbrewUITests.swift; sourceTree = "<group>"; };
 		F268988B215AEF9000C21663 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,12 +82,36 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		13D74CF9D00917ACAB72301C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				39D725360E8FD463AF5DD069 /* Pods-soundbrew.debug.xcconfig */,
+				7A4EF2DDF0A520CBB15481F8 /* Pods-soundbrew.release.xcconfig */,
+				D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */,
+				FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */,
+				AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */,
+				2176CF4249BE5EFB52E4C66A /* Pods-soundbrewUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		42B7F2BA59BF3DD0971C4C4A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				921914671D6205F63B619F10 /* Pods_soundbrew.framework */,
+				A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */,
+				6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F268985D215AEF8F00C21663 = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +119,8 @@
 				F268987D215AEF9000C21663 /* soundbrewTests */,
 				F2689888215AEF9000C21663 /* soundbrewUITests */,
 				F2689867215AEF8F00C21663 /* Products */,
+				13D74CF9D00917ACAB72301C /* Pods */,
+				42B7F2BA59BF3DD0971C4C4A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,9 +172,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F268988E215AEF9000C21663 /* Build configuration list for PBXNativeTarget "soundbrew" */;
 			buildPhases = (
+				71A1E71225FD0EAB53CFBE63 /* [CP] Check Pods Manifest.lock */,
 				F2689862215AEF8F00C21663 /* Sources */,
 				F2689863215AEF8F00C21663 /* Frameworks */,
 				F2689864215AEF8F00C21663 /* Resources */,
+				B082AF0E245F1D3F45DAB765 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -149,6 +191,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F2689891215AEF9000C21663 /* Build configuration list for PBXNativeTarget "soundbrewTests" */;
 			buildPhases = (
+				D68E7DB71B855F4D336B9065 /* [CP] Check Pods Manifest.lock */,
 				F2689876215AEF9000C21663 /* Sources */,
 				F2689877215AEF9000C21663 /* Frameworks */,
 				F2689878215AEF9000C21663 /* Resources */,
@@ -167,6 +210,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F2689894215AEF9000C21663 /* Build configuration list for PBXNativeTarget "soundbrewUITests" */;
 			buildPhases = (
+				BB2C50A2BA269A155F665FAD /* [CP] Check Pods Manifest.lock */,
 				F2689881215AEF9000C21663 /* Sources */,
 				F2689882215AEF9000C21663 /* Frameworks */,
 				F2689883215AEF9000C21663 /* Resources */,
@@ -250,6 +294,89 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		71A1E71225FD0EAB53CFBE63 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-soundbrew-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B082AF0E245F1D3F45DAB765 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-soundbrew/Pods-soundbrew-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
+				"${BUILT_PRODUCTS_DIR}/Parse/Parse.framework",
+				"${BUILT_PRODUCTS_DIR}/SidebarOverlay/SidebarOverlay.framework",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Parse.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SidebarOverlay.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-soundbrew/Pods-soundbrew-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BB2C50A2BA269A155F665FAD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-soundbrewUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D68E7DB71B855F4D336B9065 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-soundbrewTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F2689862215AEF8F00C21663 /* Sources */ = {
@@ -430,53 +557,48 @@
 		};
 		F268988F215AEF9000C21663 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 39D725360E8FD463AF5DD069 /* Pods-soundbrew.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrew/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrew;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		F2689890215AEF9000C21663 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7A4EF2DDF0A520CBB15481F8 /* Pods-soundbrew.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrew/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrew;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 		F2689892215AEF9000C21663 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -487,17 +609,14 @@
 		};
 		F2689893215AEF9000C21663 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -508,16 +627,13 @@
 		};
 		F2689895215AEF9000C21663 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -528,16 +644,13 @@
 		};
 		F2689896215AEF9000C21663 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2176CF4249BE5EFB52E4C66A /* Pods-soundbrewUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
