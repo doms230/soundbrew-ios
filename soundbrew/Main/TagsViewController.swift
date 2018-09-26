@@ -18,7 +18,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let tagReuse = "tagReuse"
     let uiElement = UIElement()
     let color = Color()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,6 +39,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) - CGFloat(uiElement.topOffset))
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+        }
+        
+        self.view.addSubview(self.chosenTagsScrollview)
+        chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(uiElement.buttonHeight)
+            make.top.equalTo(self.searchBar.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -97,6 +105,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: taglist
+    
+    lazy var chosenTagsScrollview: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
         if tagView.isSelected {
             tagView.isSelected = false
@@ -108,6 +122,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             tagView.tagBackgroundColor = color.red()
             tagView.textColor = color.black()
         }
+       
     }
 
     //MARK: SearchBar

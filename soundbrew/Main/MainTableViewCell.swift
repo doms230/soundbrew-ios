@@ -15,77 +15,6 @@ class MainTableViewCell: UITableViewCell {
     let color = Color()
     let uiElement = UIElement()
     
-    
-    //mark: Player
-    lazy var songArt: UIImageView = {
-        let image = UIImageView()
-        
-        return image
-    }()
-    
-    lazy var songtitle: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
-    
-    lazy var userDisplayName: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
-    
-    lazy var songTags: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
-    
-    lazy var songDescription: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
-    
-    lazy var playBackSlider: UISlider = {
-        let slider = UISlider()
-        slider.minimumValue = 0
-        slider.maximumValue = 100
-        slider.tintColor = .darkGray
-        return slider
-    }()
-    
-    lazy var playBackCurrentTime: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
-    
-    lazy var playBackTotalTime: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
-    
-    lazy var playBackButton: UIButton = {
-        let button = UIButton()
-        
-        
-        return button
-    }()
-    
-    lazy var skipButton: UIButton = {
-        let button = UIButton()
-        
-        return button
-    }()
-    
-    lazy var goBackButton: UIButton = {
-        let button = UIButton()
-        
-        return button
-    }()
-    
     //mark: Tags
     lazy var chosenTags: TagListView = {
         let tag = TagListView()
@@ -125,7 +54,6 @@ class MainTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
         case "tagReuse":
-            
             self.addSubview(self.tagLabel)
             tagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
