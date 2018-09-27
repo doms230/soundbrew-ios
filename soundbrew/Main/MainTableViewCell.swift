@@ -15,38 +15,30 @@ class MainTableViewCell: UITableViewCell {
     let color = Color()
     let uiElement = UIElement()
     
-    //mark: Tags
-    lazy var chosenTags: TagListView = {
-        let tag = TagListView()
-        tag.tagBackgroundColor = color.red()
-        tag.cornerRadius = 3
-        tag.textColor = color.black()
-        tag.marginX = CGFloat(uiElement.leftOffset)
-        tag.marginY = CGFloat(uiElement.topOffset)
-        tag.paddingX = CGFloat(uiElement.leftOffset)
-        tag.paddingY = CGFloat(uiElement.topOffset)
-        tag.textFont = UIFont(name: uiElement.mainFont, size: 17)!
-        return tag
+    //mark: Artist profile
+    lazy var itemImage: UIImageView = {
+        let image = UIImageView()
+        return image
     }()
     
-    lazy var titleLabel: UILabel = {
+    lazy var itemLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        label.textColor = .white
-        label.numberOfLines = 0
+        label.font = UIFont(name: UIElement().mainFont, size: 17)
+        label.textColor = color.black()
         return label
     }()
     
+    //mark: Tags
     lazy var tagLabel: TagListView = {
         let tag = TagListView()
         tag.tagBackgroundColor = .white
-        tag.cornerRadius = 3
+        tag.cornerRadius = 22
         tag.textColor = color.black()
         tag.marginX = CGFloat(uiElement.leftOffset)
         tag.marginY = CGFloat(uiElement.topOffset)
         tag.paddingX = CGFloat(uiElement.leftOffset)
         tag.paddingY = CGFloat(uiElement.topOffset)
-        tag.textFont = UIFont(name: uiElement.mainFont, size: 17)!
+        tag.textFont = UIFont(name: uiElement.mainFont, size: 15)!
         return tag
     }()
     
@@ -64,9 +56,23 @@ class MainTableViewCell: UITableViewCell {
             
             break
             
-        case "playerReuse":
-            break
+        case "artistProfileReuse":
+            self.addSubview(itemImage)
+            self.addSubview(itemLabel)
             
+            itemImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(25)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            itemLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self.itemImage.snp.right).offset(5)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
             
         default:
             break

@@ -4,7 +4,7 @@
 //
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//
+//search Mark: view, tableView, taglist, searchbar, data
 
 import UIKit
 import TagListView
@@ -12,17 +12,16 @@ import SnapKit
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, TagListViewDelegate {
     
-    var chosenTagsArray = [String]()
-    
-    var tableView: UITableView!
-    let tagReuse = "tagReuse"
+    //MARK: views
     let uiElement = UIElement()
     let color = Color()
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setUpViews()
+        setUpSearchBar()
+        setUpTagListView()
+        setUpTableView()
     }
     
     func setUpViews() {
@@ -31,26 +30,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: color.black()]
         
-        let nextButton = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(self.didPressNextButton(_:)))
-        
-       self.navigationItem.rightBarButtonItem = nextButton
-        
-        searchBar.delegate = self
-        self.view.addSubview(self.searchBar)
-        searchBar.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) - CGFloat(uiElement.topOffset))
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-        }
-        
-        self.view.addSubview(self.chosenTagsScrollview)
-        chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.searchBar.snp.bottom)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-        }
-        
+        let nextButton = UIBarButtonItem(title: "Brew My Playlist", style: .plain, target: self, action: #selector(self.didPressNextButton(_:)))
+        self.navigationItem.rightBarButtonItem = nextButton
+    }
+    
+    //MARK: Tableview
+    var tableView: UITableView!
+    let tagReuse = "tagReuse"
+    
+    func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
@@ -62,21 +50,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.searchBar.snp.bottom)
+            make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
     }
-    
-    /*func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return ""
-            
-        } else {
-            
-        }
-    }*/
     
      func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -93,7 +72,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.selectionStyle = .none
         
         cell.tagLabel.delegate = self
-        cell.tagLabel.addTags(["Hip-Hop/Rap", "R&B", "Alternative", "Dance", "Electronic", "Pop", "Rock","Soul/Funk", "Americana", "Blues", "Christian & Gospel", "Classical", "Country", "Experimental", "Hard Rock", "Indie", "Jazz", "K-Pop", "Latino", "Metal", "Música Mexicana", "Música Tropical", "Pop Latino", "Reggae", "Rock y Alternativo", "Singer / Songwriter", "Urbano Latino", "World"])
+        cell.tagLabel.addTags(["Hip-Hop/Rap", "Dallas", "Alternative", "Dance", "Electronic", "Trap", "Party","Happy", "Fashion Show", "Fall", "Henny", "Tumblr", "Chill", "Sex", "Seoul", "Underground", "Rich", "K-Pop", "Study", "LoFi", "Mexico", "Africa", "California", "New York", "Atlanta", "Moody", "Success", "Wealthy", "netflix & chill", "turnUp", "College", "Football", "Soccer", "Baseball"])
+        
+        //["Hip-Hop/Rap", "R&B", "Alternative", "Dance", "Electronic", "Pop", "Rock","Soul/Funk", "Americana", "Blues", "Christian & Gospel", "Classical", "Country", "Experimental", "Hard Rock", "Indie", "Jazz", "K-Pop", "Latino", "Metal", "Música Mexicana", "Música Tropical", "Pop Latino", "Reggae", "Rock y Alternativo", "Singer / Songwriter", "Urbano Latino", "World"]
 
         
         return cell
@@ -101,15 +82,46 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     //MARK: button actions
     @objc func didPressNextButton(_ sender: UIBarButtonItem) {
-        
+        self.performSegue(withIdentifier: "showPlayer", sender: self)
     }
     
-    //MARK: taglist
+    //MARK: tags
+    var chosenTagsArray = [String]()
+    var xPositionForChosenTags = UIElement().leftOffset
+    
+    lazy var chooseTagsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Choose Tags"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        return label
+    }()
     
     lazy var chosenTagsScrollview: UIScrollView = {
         let scrollView = UIScrollView()
         return scrollView
     }()
+    
+    func setUpTagListView() {
+        addChooseTagsLabel()
+        
+        self.view.addSubview(self.chosenTagsScrollview)
+        chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(uiElement.buttonHeight)
+            make.top.equalTo(self.searchBar.snp.bottom)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+        }
+    }
+    
+    func addChooseTagsLabel() {
+        self.chosenTagsScrollview.addSubview(chooseTagsLabel)
+        chooseTagsLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.chosenTagsScrollview).offset(uiElement.topOffset)
+            make.left.equalTo(self.chosenTagsScrollview).offset(uiElement.leftOffset)
+            make.bottom.equalTo(self.chosenTagsScrollview)
+        }
+    }
     
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
         if tagView.isSelected {
@@ -119,20 +131,69 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         } else {
             tagView.isSelected = true
-            tagView.tagBackgroundColor = color.red()
-            tagView.textColor = color.black()
+            //tagView.tagBackgroundColor = color.lime()
+            //tagView.textColor = color.black()
+            self.chosenTagsArray.append(title)
+            self.addChosenTagButton(title)
         }
-       
+    }
+    
+    func addChosenTagButton(_ buttonTitle: String) {
+        //not using snpakit to set button frame becuase not able to get button width.
+        
+        self.chooseTagsLabel.removeFromSuperview()
+        let buttonWidth = determineChosenTagButtonTitleWidth(buttonTitle)
+        
+        let chosenTagButton = UIButton()
+        chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonWidth , height: 45)
+        chosenTagButton.setTitle(" \(buttonTitle) ", for: .normal)
+        chosenTagButton.setTitleColor(color.black(), for: .normal)
+        chosenTagButton.backgroundColor = color.lime()
+        chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        chosenTagButton.setImage(UIImage(named: "exit"), for: .normal)
+        chosenTagButton.layer.cornerRadius = 22
+        chosenTagButton.clipsToBounds = true
+        self.chosenTagsScrollview.addSubview(chosenTagButton)
+        
+        xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
+        chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
+    }
+    
+    func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
+        let uiFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)!
+        let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
+        let buttonTitleWidth = Int(buttonTitleSize.width)
+        let buttonImageWidth = 50
+        let totalButtonWidth = buttonTitleWidth + buttonImageWidth
+        return totalButtonWidth
     }
 
     //MARK: SearchBar
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        //searchBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width - 100, height: 20)
-        searchBar.placeholder = "genres, mood, activities, anything"
-        searchBar.barStyle = .blackTranslucent
+        //searchBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width - 100, height: 15)
+        searchBar.placeholder = "genre, mood, activity, city, anything"
+        //searchBar.barStyle = .blackTranslucent
+        searchBar.backgroundColor = color.black()
+        searchBar.barTintColor = color.black()
         return searchBar
     }()
+    
+    func setUpSearchBar(){
+        //searchBar.delegate = self
+        //let searchBarNavItem = UIBarButtonItem(customView: searchBar)
+        //self.navigationItem.rightBarButtonItems = [nextButton, searchBarNavItem]
+        
+        //self.navigationItem.rightBarButtonItem = nextButton
+        
+        searchBar.delegate = self
+        self.view.addSubview(self.searchBar)
+        searchBar.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) - CGFloat(uiElement.topOffset))
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+        }
+    }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         /*let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", searchText)

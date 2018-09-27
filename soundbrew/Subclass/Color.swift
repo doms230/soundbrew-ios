@@ -14,7 +14,12 @@ class Color {
     }
     
     func black() -> UIColor {
-        return uicolorFromHex(0x393939)
+        //return uicolorFromHex(0x393939)
+        return uicolorFromHex(0x180d22)
+    }
+    
+    func lime() -> UIColor {
+        return uicolorFromHex(0x00ff99)
     }
     
     func uicolorFromHex(_ rgbValue:UInt32) -> UIColor {
