@@ -192,8 +192,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonWidth , height: 45)
         chosenTagButton.setTitle(" \(buttonTitle) ", for: .normal)
-        chosenTagButton.setTitleColor(color.black(), for: .normal)
-        chosenTagButton.backgroundColor = color.lime()
+        chosenTagButton.setTitleColor(.white, for: .normal)
+        chosenTagButton.backgroundColor = color.primary()
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         chosenTagButton.setImage(UIImage(named: "exit"), for: .normal)
         chosenTagButton.layer.cornerRadius = 22

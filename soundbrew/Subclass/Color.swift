@@ -18,8 +18,9 @@ class Color {
         return uicolorFromHex(0x180d22)
     }
     
-    func lime() -> UIColor {
-        return uicolorFromHex(0x00ff99)
+    func primary() -> UIColor {
+       // return uicolorFromHex(0x00ff99)
+        return uicolorFromHex(0x0066ff)
     }
     
     func uicolorFromHex(_ rgbValue:UInt32) -> UIColor {
