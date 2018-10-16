@@ -9,20 +9,33 @@
 import UIKit
 import TagListView
 import SnapKit
+import Parse
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, TagListViewDelegate {
     
     //MARK: views
     let uiElement = UIElement()
     let color = Color()
-        
+    
+    var tags = [Tag]()
+    var filteredTags = [Tag]()
+    
+    var tagView: TagListView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadTags()
         setUpViews()
-        setUpSearchBar()
-        setUpTagListView()
-        setUpTableView()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController: PlayerViewController = segue.destination as! PlayerViewController
+        viewController.tags = self.chosenTagsArray
+    }
+    
+    /*override func viewDidAppear(_ animated: Bool) {
+        
+    }*/
     
     func setUpViews() {
         self.view.backgroundColor = color.black()
@@ -72,7 +85,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.selectionStyle = .none
         
         cell.tagLabel.delegate = self
-        cell.tagLabel.addTags(["Hip-Hop/Rap", "Dallas", "Alternative", "Dance", "Electronic", "Trap", "Party","Happy", "Fashion Show", "Fall", "Henny", "Tumblr", "Chill", "Sex", "Seoul", "Underground", "Rich", "K-Pop", "Study", "LoFi", "Mexico", "Africa", "California", "New York", "Atlanta", "Moody", "Success", "Wealthy", "netflix & chill", "turnUp", "College", "Football", "Soccer", "Baseball"])
+        cell.tagLabel.removeAllTags()
+        cell.tagLabel.addTags(filteredTags.map({$0.name}))
+        self.tagView = cell.tagLabel
         
         //["Hip-Hop/Rap", "R&B", "Alternative", "Dance", "Electronic", "Pop", "Rock","Soul/Funk", "Americana", "Blues", "Christian & Gospel", "Classical", "Country", "Experimental", "Hard Rock", "Indie", "Jazz", "K-Pop", "Latino", "Metal", "Música Mexicana", "Música Tropical", "Pop Latino", "Reggae", "Rock y Alternativo", "Singer / Songwriter", "Urbano Latino", "World"]
 
@@ -83,6 +98,20 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: button actions
     @objc func didPressNextButton(_ sender: UIBarButtonItem) {
         self.performSegue(withIdentifier: "showPlayer", sender: self)
+    }
+    
+    @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
+        let title = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
+        for i in 0..<self.tags.count {
+            if self.tags[i].name! == title {
+                self.filteredTags.append(self.tags[i])
+            }
+        }
+        
+        removeTagButton(sender)
+        
+        self.filteredTags.sort(by: {$0.count > $1.count!})
+        self.tableView.reloadData()
     }
     
     //MARK: tags
@@ -124,10 +153,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        if tagView.isSelected {
-            tagView.isSelected = false
+        /*if tagView.isSelected {
+            /*tagView.isSelected = false
             tagView.tagBackgroundColor = .white
-            tagView.textColor = color.black()
+            tagView.textColor = color.black()*/
             
         } else {
             tagView.isSelected = true
@@ -135,6 +164,22 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             //tagView.textColor = color.black()
             self.chosenTagsArray.append(title)
             self.addChosenTagButton(title)
+        }*/
+        
+        if !tagView.isSelected {
+            sender.removeTag(title)
+            self.chosenTagsArray.append(title)
+            self.addChosenTagButton(title)
+            var positionToRemoveTag: Int?
+            for i in 0..<self.filteredTags.count {
+                if self.filteredTags[i].name == title {
+                    positionToRemoveTag = i
+                }
+            }
+            
+            if let p = positionToRemoveTag {
+                self.filteredTags.remove(at: p)
+            }
         }
     }
     
@@ -153,10 +198,37 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         chosenTagButton.setImage(UIImage(named: "exit"), for: .normal)
         chosenTagButton.layer.cornerRadius = 22
         chosenTagButton.clipsToBounds = true
+        chosenTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
         self.chosenTagsScrollview.addSubview(chosenTagButton)
         
         xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
+    }
+    
+    func removeTagButton(_ button: UIButton) {
+        let title = button.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
+        var position: Int?
+        for i in 0..<self.chosenTagsArray.count {
+            if self.chosenTagsArray[i] == title  {
+                print("remove chosen tag")
+                position = i
+            }
+        }
+        
+        if let p = position {
+            self.chosenTagsArray.remove(at: p)
+        }
+        
+        self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
+        xPositionForChosenTags = UIElement().leftOffset
+        
+        for title in chosenTagsArray {
+            self.addChosenTagButton(title)
+        }
+        
+        if self.chosenTagsArray.count == 0 {
+            addChooseTagsLabel()
+        }
     }
     
     func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
@@ -196,40 +268,55 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        /*let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", searchText)
+        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", searchText)
         if searchText.count == 0 {
-            self.filteredContactsOnMeArchive = self.contactsOnMeArchive
-            self.filteredContactsOnPhone = self.contactsOnPhone
+            self.filteredTags = self.tags
             
         } else {
             //filter users on MeArchive that are in current user's phone
-            var meArchiveFilteredContacts = [MEAContacts]()
-            meArchiveFilteredContacts = self.contactsOnMeArchive.filter {
-                wordPredicate.evaluate(with: $0.username) ||
-                    wordPredicate.evaluate(with: $0.displayName)
-            }
+            var filteredTags = [Tag]()
+            filteredTags = self.tags.filter {wordPredicate.evaluate(with: $0.name)}
             
-            meArchiveFilteredContacts.sort(by: {$0.displayName! < $1.displayName!})
-            self.filteredContactsOnMeArchive = meArchiveFilteredContacts
-            
-            
-            //filter non-MeArchive users that are in current user's phone
-            var phoneFilteredContacts = [MEAContacts]()
-            phoneFilteredContacts = self.contactsOnPhone.filter { wordPredicate.evaluate(with: $0.displayName) }
-            phoneFilteredContacts.sort(by: {$0.displayName! < $1.displayName!})
-            self.filteredContactsOnPhone = phoneFilteredContacts
-        }*/
+            filteredTags.sort(by: {$0.count > $1.count!})
+            self.filteredTags = filteredTags
+        }
         
-        //self.tableView.reloadData()
+        self.tableView.reloadData()
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+ 
+    //mark: Data
+    func loadTags() {
+        self.tags.removeAll()
+        let query = PFQuery(className: "Tag")
+        query.addDescendingOrder("count")
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let tagName = object["tag"] as! String
+                        let tagCount = object["count"] as! Int
+                        
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount)
+                        self.tags.append(newTag)
+                    }
+                }
+                
+                self.filteredTags = self.tags
+                
+                if self.tableView == nil {
+                    self.setUpSearchBar()
+                    self.setUpTagListView()
+                    self.setUpTableView()
+                    
+                } else {
+                    self.tableView.reloadData()
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
     }
-    */
 
 }

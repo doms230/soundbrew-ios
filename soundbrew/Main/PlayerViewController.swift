@@ -16,14 +16,27 @@ class PlayerViewController: UIViewController {
     let uiElement = UIElement()
     let color = Color()
     
+    var tags = [String]()
+    
+    var sounds = [Sound]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpView()
-        self.title = "Atlanta, LoFi, Trap, Henny"
+        var tagTitle = ""
+        for i in 0..<tags.count {
+            if i == 0 {
+                tagTitle = tags[i]
+                
+            } else {
+                tagTitle = "\(tagTitle), \(tags[i])"
+            }
+        }
+        
+        self.title = tagTitle
+        
+        loadSounds()
     }
-    
-    //MARK: Data
-    
     
     //mark: Player
     lazy var songArt: UIImageView = {
@@ -182,6 +195,45 @@ class PlayerViewController: UIViewController {
             make.top.equalTo(goBackButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset - 50)
         }        
+    }
+    
+    
+    //mark: data
+    func loadSounds() {
+        let query = PFQuery(className: "Post")
+        query.whereKey("tags", containedIn: tags)
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let title = object["title"] as! String
+                        let audioFile = object["audioFile"] as! PFFile
+                        let songArt = (object["songArt"] as! PFFile).url
+                        let userId = object["userId"] as! String
+                        let tags = object["tags"] as! Array<String>
+                        var playCount = 0
+                        if let plays = object["plays"] as? Int {
+                            playCount = plays
+                        }
+                        var relevancyScore = 0
+                        for tag in self.tags {
+                            if tags.contains(tag) {
+                                relevancyScore = relevancyScore + 1
+                            }
+                        }
+                        
+                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, relevancyScore: relevancyScore )
+                        self.sounds.append(newSound)
+                        
+                        print(newSound.relevancyScore)
+                    }
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
     }
     
     /*
