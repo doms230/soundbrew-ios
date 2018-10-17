@@ -29,6 +29,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         loadSounds()
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController: ArtistProfileViewController = segue.destination as! ArtistProfileViewController
+        viewController.userId = self.sounds[playlistPosition!].userId
+    }
+    
     //mark: Player
     var isAudioPlaying = false
     var playlistPosition: Int?
@@ -41,6 +46,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         do {
             try audioData.write(to: audioFileURL, options: .atomic)
+            let audioAsset = AVURLAsset.init(url: audioFileURL, options: nil)
+            let duration = audioAsset.duration
+            let durationInSeconds = CMTimeGetSeconds(duration)
+            self.playBackTotalTime.text = self.formatTime(durationInSeconds)
+            self.playBackSlider.maximumValue = Float(durationInSeconds)
             
         } catch {
             print(error)
@@ -66,7 +76,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         // Set up the player.
         do {
             self.soundPlayer = try AVAudioPlayer(contentsOf: audioFileURL)
-            
+            soundPlayer.delegate = self
+
         } catch let error {
             print("*** Unable to set up the audio player: \(error.localizedDescription) ***")
             self.isAudioPlaying = false
@@ -87,10 +98,20 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         // Play the audio file.
         if soundPlayable {
             self.soundPlayer.play()
+            timer.invalidate()
+            counter = 0
+            playBackSlider.value = 0
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+            self.isAudioPlaying = true
             
         } else {
             self.setUpNextSong()
         }
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        setUpNextSong()
     }
     
     func setUpNextSong() {
@@ -103,22 +124,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             self.prepareAndPlay(audioData)
             
         } else {
-            sound.audio.getDataInBackground {
-                (audioData: Data?, error: Error?) -> Void in
-                if let error = error?.localizedDescription {
-                    print(error)
-                    
-                } else if let audioData = audioData {
-                    self.prepareAndPlay(audioData)
-                }
-            }
+            fetchAudioData(playlistPosition!, prepareAndPlay: true)
         }
         
-        if sounds.indices.contains(playlistPosition! + 1) {
-            fetchNextSoundAudioData(playlistPosition! + 1)
+        if sounds.indices.contains(playlistPosition! + 1) && sounds[playlistPosition! + 1].audioData == nil {
+            fetchAudioData(playlistPosition! + 1, prepareAndPlay: false)
         }
-        
-        self.isAudioPlaying = true
     }
     
     func incrementPlaylistPositionAndReturnSound() -> Sound {
@@ -139,34 +150,46 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         return sound
     }
     
-    func fetchNextSoundAudioData(_ position: Int) {
+    func fetchAudioData(_ position: Int, prepareAndPlay: Bool) {
         self.sounds[position].audio.getDataInBackground {
             (audioData: Data?, error: Error?) -> Void in
             if let error = error?.localizedDescription {
                 print(error)
                 
             } else if let audioData = audioData {
+                if prepareAndPlay {
+                    self.prepareAndPlay(audioData)
+                }
                 self.sounds[position].audioData = audioData
             }
         }
     }
     
+    func formatTime(_ durationInSeconds: Double ) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .abbreviated
+        
+        let formattedString = formatter.string(from: durationInSeconds)!
+        
+        return formattedString
+    }
+    
     //mark: View
-    lazy var artistName: UILabel = {
-        let label = UILabel()
-        label.text = "Artist Name"
-        label.textColor = .white
-        //label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        return label
+    lazy var artistName: UIButton = {
+        let button = UIButton()
+        button.setTitle("Artist Name", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        return button
     }()
     
     lazy var songArt: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "musicNote")
         image.layer.cornerRadius = 3
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
+        image.backgroundColor = .black
         return image
     }()
     
@@ -174,14 +197,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         let label = UILabel()
         label.text = "Dallas Strong"
         label.textColor = .white
-        //label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+        label.textAlignment = .center
         return label
     }()
     
     lazy var songTags: UILabel = {
         let label = UILabel()
-        label.text = "Dallas, LoFi, Trap, Henny"
+        label.text = "Tags"
         label.textColor = color.primary()
         label.textAlignment = .center
         label.font = UIFont(name: uiElement.mainFont, size: 15)
@@ -191,17 +214,17 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     lazy var playBackSlider: UISlider = {
         let slider = UISlider()
         slider.minimumValue = 0
-        slider.maximumValue = 100
         slider.tintColor = .darkGray
-        slider.value = 33
-       //
-        //slider.isEnabled = false
+        slider.value = 0
+        slider.isEnabled = false
         return slider
     }()
     
+    var counter = 00.00
+    var timer = Timer()
     lazy var playBackCurrentTime: UILabel = {
         let label = UILabel()
-        label.text = "1.20"
+        label.text = "0 s"
         label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
@@ -209,7 +232,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     lazy var playBackTotalTime: UILabel = {
         let label = UILabel()
-        label.text = "3.58"
+        label.text = "0 s"
         label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
@@ -254,6 +277,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        artistName.addTarget(self, action: #selector(self.didPressArtistNameButton(_:)), for: .touchUpInside)
         self.view.addSubview(artistName)
         artistName.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songtitle.snp.bottom).offset(uiElement.elementOffset)
@@ -287,26 +311,27 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(goBackButton)
+        /*self.view.addSubview(goBackButton)
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(50)
             make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset + 50)
-        }
+        }*/
         
         self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(75)
-            make.top.equalTo(goBackButton).offset(-10)
-            make.left.equalTo(self.goBackButton.snp.right).offset(uiElement.leftOffset + 20)
+            make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.topOffset)
+            //make.left.equalTo(self.goBackButton.snp.right).offset(uiElement.leftOffset + 20)
+            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(45))
         }
         
         self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(50)
-            make.top.equalTo(goBackButton)
+            make.top.equalTo(playBackButton).offset(10)
             make.right.equalTo(self.view).offset(uiElement.rightOffset - 50)
         }        
     }
@@ -318,6 +343,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         loadUserInfoFromCloud(userId)
     }
     
+    @objc func didPressArtistNameButton(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "showArtistProfile", sender: self)
+    }
+    
     @objc func didPressBackButton(_ sender: UIButton) {
         
     }
@@ -325,11 +354,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     @objc func didPressPlayBackButton(_ sender: UIButton) {
         if isAudioPlaying {
             self.soundPlayer.pause()
+            timer.invalidate()
             self.isAudioPlaying = false
             self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
             
         } else {
             self.soundPlayer.play()
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
             self.isAudioPlaying = true
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         }
@@ -337,6 +368,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     @objc func didPressSkipButton(_ sender: UIButton) {
         self.setUpNextSong()
+    }
+    
+    @objc func UpdateTimer() {
+        counter = counter + 0.1
+        playBackCurrentTime.text = formatTime(counter)
+        playBackSlider.value = Float(counter)
     }
     
     //mark: data
@@ -391,55 +428,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                 print(error)
                 
             } else if let user = user {
-                self.artistName.text = user["artistName"] as? String
-                //self.artistCity.text = user["city"] as? String
-                /*if let userImageFile = user["userImage"] as? PFFile {
-                 
-                 }*/
-                
-                /*if let instagramHandle = user["instagramHandle"] as? String {
-                 if !instagramHandle.isEmpty {
-                 self.socialsAndStreams.append("https://www.instagram.com/\(instagramHandle)")
-                 self.socialsAndStreamImages.append("ig_logo")
-                 }
-                 }
-                 
-                 if let twitterHandle = user["twitterHandle"] as? String {
-                 if !twitterHandle.isEmpty {
-                 self.socialsAndStreams.append("https://www.twitter.com/\(twitterHandle)")
-                 self.socialsAndStreamImages.append("twitter_logo")
-                 }
-                 }
-                 
-                 if let soundCloudLink = user["soundCloudLink"] as? String {
-                 if !soundCloudLink.isEmpty {
-                 self.socialsAndStreams.append(soundCloudLink)
-                 self.socialsAndStreamImages.append("soundcloud_logo")
-                 }
-                 }
-                 
-                 if let appleMusicLink = user["appleMusicLink"] as? String {
-                 if !appleMusicLink.isEmpty {
-                 self.socialsAndStreams.append(appleMusicLink)
-                 self.socialsAndStreamImages.append("appleMusic_logo")
-                 }
-                 }
-                 
-                 if let spotifyLink = user["spotifyLink"] as? String {
-                 if !spotifyLink.isEmpty {
-                 self.socialsAndStreams.append(spotifyLink)
-                 self.socialsAndStreamImages.append("spotify_logo")
-                 }
-                 }
-                 
-                 if let otherLlink = user["otherLink"] as? String {
-                 if !otherLlink.isEmpty {
-                 self.socialsAndStreams.append(otherLlink)
-                 self.socialsAndStreamImages.append("link_logo")
-                 }
-                 }*/
-                
-                //self.tableView.reloadData()
+                let artistName = user["artistName"] as? String
+                self.artistName.setTitle(artistName, for: .normal)
             }
         }
     }

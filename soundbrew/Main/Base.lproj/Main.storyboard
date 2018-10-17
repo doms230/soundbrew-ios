@@ -22,27 +22,27 @@
                     </view>
                     <navigationItem key="navigationItem" id="mhU-gK-7wp"/>
                     <connections>
-                        <segue destination="86e-5e-S0X" kind="show" identifier="showProfile" id="WQ0-5U-lwA"/>
+                        <segue destination="paA-Yn-TeT" kind="show" identifier="showArtistProfile" id="tB5-jp-TdW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1968.8" y="0.44977511244377816"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="MqR-Ba-o8X">
+        <!--Artist Profile View Controller-->
+        <scene sceneID="Nqe-ZN-xSZ">
             <objects>
-                <viewController id="86e-5e-S0X" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="GLb-gM-Gh0">
+                <viewController id="paA-Yn-TeT" customClass="ArtistProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6PQ-iZ-F9N">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="cTq-oi-IB3"/>
+                        <viewLayoutGuide key="safeArea" id="dTU-nd-IPS"/>
                     </view>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="EEV-mP-9KW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zWT-k3-nWf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2844" y="2"/>
+            <point key="canvasLocation" x="2777" y="-2"/>
         </scene>
         <!--Tags View Controller-->
         <scene sceneID="Ndm-4Y-UVy">
@@ -119,6 +119,7 @@
                 <tabBarController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="Jhc-Mq-Cug" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="m1u-FX-bdW">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>

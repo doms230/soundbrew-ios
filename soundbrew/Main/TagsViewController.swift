@@ -10,6 +10,7 @@ import UIKit
 import TagListView
 import SnapKit
 import Parse
+import AVFoundation
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, TagListViewDelegate {
     
@@ -22,10 +23,22 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var tagView: TagListView!
     
+    var brewMyPlaylistButton: UIBarButtonItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+
         loadTags()
         setUpViews()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+            
+        } catch let error {
+            print("Unable to activate audio session:  \(error.localizedDescription)")
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -33,18 +46,16 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         viewController.tags = self.chosenTagsArray
     }
     
-    /*override func viewDidAppear(_ animated: Bool) {
-        
-    }*/
-    
     func setUpViews() {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: color.black()]
         
-        let nextButton = UIBarButtonItem(title: "Brew My Playlist", style: .plain, target: self, action: #selector(self.didPressNextButton(_:)))
-        self.navigationItem.rightBarButtonItem = nextButton
+        brewMyPlaylistButton = UIBarButtonItem(title: "Brew My Playlist", style: .plain, target: self, action: #selector(self.didPressNextButton(_:)))
+        brewMyPlaylistButton.isEnabled = false
+        
+        self.navigationItem.rightBarButtonItem = brewMyPlaylistButton
     }
     
     //MARK: Tableview
@@ -88,9 +99,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.tagLabel.removeAllTags()
         cell.tagLabel.addTags(filteredTags.map({$0.name}))
         self.tagView = cell.tagLabel
-        
-        //["Hip-Hop/Rap", "R&B", "Alternative", "Dance", "Electronic", "Pop", "Rock","Soul/Funk", "Americana", "Blues", "Christian & Gospel", "Classical", "Country", "Experimental", "Hard Rock", "Indie", "Jazz", "K-Pop", "Latino", "Metal", "Música Mexicana", "Música Tropical", "Pop Latino", "Reggae", "Rock y Alternativo", "Singer / Songwriter", "Urbano Latino", "World"]
-
         
         return cell
     }
@@ -203,6 +211,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
+        
+        brewMyPlaylistButton.isEnabled = true
     }
     
     func removeTagButton(_ button: UIButton) {
@@ -228,6 +238,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if self.chosenTagsArray.count == 0 {
             addChooseTagsLabel()
+            brewMyPlaylistButton.isEnabled = false
         }
     }
     
