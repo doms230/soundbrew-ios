@@ -20,8 +20,16 @@ class Sound {
     var plays: Int?
     var createdAt: Date!
     var relevancyScore: Int!
+    var artistName: String?
+    var artistCity: String?
+    var instagramHandle: String?
+    var twitterHandle: String?
+    var spotifyLink: String?
+    var soundcloudLink: String?
+    var appleMusicLink: String?
+    var otherLink: String?
     
-    init(objectId: String!, title: String!, art: String!, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFile!, relevancyScore: Int!, audioData: Data?) {
+    init(objectId: String!, title: String!, art: String!, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFile!, relevancyScore: Int!, audioData: Data?, artistName: String?, artistCity: String?, instagramHandle: String?, twitterHandle: String?, spotifyLink: String?, soundcloudLink: String?, appleMusicLink: String?, otherLink: String? ) {
         self.objectId = objectId
         self.userId = userId
         self.title = title
@@ -32,5 +40,13 @@ class Sound {
         self.plays = plays
         self.relevancyScore = relevancyScore
         self.audioData = audioData
+        self.artistName = artistName
+        self.artistCity = artistCity
+        self.instagramHandle = instagramHandle
+        self.twitterHandle = twitterHandle
+        self.spotifyLink = spotifyLink
+        self.soundcloudLink = soundcloudLink
+        self.appleMusicLink = appleMusicLink
+        self.otherLink = otherLink
     }
 }

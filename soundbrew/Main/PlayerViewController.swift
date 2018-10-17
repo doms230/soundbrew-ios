@@ -24,9 +24,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = convertArrayToString(tags)
-        setUpView()
-        loadSounds()
+        
+        if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
+            tags = tagArray
+            self.title = convertArrayToString(tags)
+            setUpView()
+            loadSounds()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -116,9 +120,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     func setUpNextSong() {
         let sound = incrementPlaylistPositionAndReturnSound()
-        let tagString = self.convertArrayToString(sound.tags)
-        
-        self.setCurrentSoundView(sound.title, soundArt: sound.art, soundTags: tagString, userId: sound.userId)
+
+        self.setCurrentSoundView(sound, i: playlistPosition!)
         
         if let audioData = sound.audioData {
             self.prepareAndPlay(audioData)
@@ -127,8 +130,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             fetchAudioData(playlistPosition!, prepareAndPlay: true)
         }
         
-        if sounds.indices.contains(playlistPosition! + 1) && sounds[playlistPosition! + 1].audioData == nil {
-            fetchAudioData(playlistPosition! + 1, prepareAndPlay: false)
+        let nextPlaylistPosition = playlistPosition! + 1
+        if sounds.indices.contains(nextPlaylistPosition) && sounds[nextPlaylistPosition].audioData == nil {
+            fetchAudioData(nextPlaylistPosition, prepareAndPlay: false)
         }
     }
     
@@ -176,10 +180,24 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     //mark: View
+    lazy var exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "exit_white"), for: .normal)
+        return button
+    }()
+    
+    lazy var chosenTags: UILabel = {
+        let label = UILabel()
+        label.text = "Tags"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        return label
+    }()
+    
     lazy var artistName: UIButton = {
         let button = UIButton()
         button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(color.primary(), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         return button
     }()
@@ -205,9 +223,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     lazy var songTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = color.primary()
+        label.textColor = .white
         label.textAlignment = .center
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         return label
     }()
     
@@ -262,10 +280,27 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
+        exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        self.view.addSubview(exitButton)
+        exitButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        chosenTags.text = convertArrayToString(tags)
+        self.view.addSubview(chosenTags)
+        chosenTags.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(exitButton).offset(2)
+            make.left.equalTo(self.exitButton.snp.right).offset(uiElement.elementOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
         self.view.addSubview(songArt)
         songArt.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(350)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.height.equalTo(self.view.frame.height / 2)
+            make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
+            //make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -294,7 +329,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         self.view.addSubview(playBackSlider)
         playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songTags.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.songTags.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -321,30 +356,41 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(75)
-            make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.topOffset)
+            make.height.width.equalTo(65)
+            make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.elementOffset)
             //make.left.equalTo(self.goBackButton.snp.right).offset(uiElement.leftOffset + 20)
-            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(45))
+            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(35))
         }
         
         self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
+            make.height.width.equalTo(40)
             make.top.equalTo(playBackButton).offset(10)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset - 50)
+            make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }        
     }
     
-    func setCurrentSoundView(_ title: String, soundArt: String, soundTags: String, userId: String ) {
-        self.songtitle.text = title
-        self.songArt.kf.setImage(with: URL(string: soundArt))
-        self.songTags.text = soundTags
-        loadUserInfoFromCloud(userId)
+    func setCurrentSoundView(_ sound: Sound, i: Int) {
+        self.songtitle.text = sound.title
+        self.songArt.kf.setImage(with: URL(string: sound.art))
+        self.songTags.text = convertArrayToString(sound.tags)
+        if let artistName = sound.artistName {
+            self.artistName.setTitle(artistName, for: .normal)
+            
+        } else {
+            loadUserInfoFromCloud(sound.userId, i: i)
+        }
     }
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "showArtistProfile", sender: self)
+        //self.performSegue(withIdentifier: "showArtistProfile", sender: self)
+        self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
+    }
+    
+    @objc func didPressExitButton(_ sender: UIButton) {
+        self.soundPlayer.pause()
+        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
     }
     
     @objc func didPressBackButton(_ sender: UIButton) {
@@ -402,7 +448,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                             }
                         }
                         
-                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, relevancyScore: relevancyScore, audioData: nil)
+                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil)
                         self.sounds.append(newSound)
                     }
                     
@@ -420,7 +466,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    func loadUserInfoFromCloud(_ userId: String) {
+    func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -430,6 +476,44 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             } else if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.setTitle(artistName, for: .normal)
+                self.sounds[i].artistName = artistName
+                self.sounds[i].artistCity = user["city"] as? String
+                
+                if let instagramHandle = user["instagramHandle"] as? String {
+                    if !instagramHandle.isEmpty {
+                        self.sounds[i].instagramHandle = "https://www.instagram.com/\(instagramHandle)"
+                    }
+                }
+                
+                if let twitterHandle = user["twitterHandle"] as? String {
+                    if !twitterHandle.isEmpty {
+                        self.sounds[i].twitterHandle = "https://www.twitter.com/\(twitterHandle)"
+                    }
+                }
+                
+                if let soundCloudLink = user["soundCloudLink"] as? String {
+                    if !soundCloudLink.isEmpty {
+                        self.sounds[i].soundcloudLink = soundCloudLink
+                    }
+                }
+                
+                if let appleMusicLink = user["appleMusicLink"] as? String {
+                    if !appleMusicLink.isEmpty {
+                        self.sounds[i].appleMusicLink = appleMusicLink
+                    }
+                }
+                
+                if let spotifyLink = user["spotifyLink"] as? String {
+                    if !spotifyLink.isEmpty {
+                        self.sounds[i].spotifyLink = spotifyLink
+                    }
+                }
+                
+                if let otherLlink = user["otherLink"] as? String {
+                    if !otherLlink.isEmpty {
+                        self.sounds[i].otherLink = otherLlink
+                    }
+                }
             }
         }
     }
@@ -447,6 +531,53 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
         
         return text
+    }
+    
+    func showArtistSocialsAndStreams(sound: Sound) {
+        let alertController = UIAlertController (title: sound.artistName , message: sound.artistCity, preferredStyle: .actionSheet)
+        
+        var socialsAndStreams = [String]()
+        if let igHandle = sound.instagramHandle {
+            socialsAndStreams.append(igHandle)
+        }
+        
+        if let twitterHandle = sound.twitterHandle {
+            socialsAndStreams.append(twitterHandle)
+        }
+        
+        if let soundcloudLink = sound.soundcloudLink {
+            socialsAndStreams.append(soundcloudLink)
+        }
+        
+        if let spotifyLink = sound.spotifyLink {
+            socialsAndStreams.append(spotifyLink)
+        }
+        
+        if let appleMusicLink = sound.appleMusicLink {
+            socialsAndStreams.append(appleMusicLink)
+        }
+        
+        if let otherLink = sound.otherLink {
+            socialsAndStreams.append(otherLink)
+        }
+        
+        for socialAndStream in socialsAndStreams {
+            let settingsAction = UIAlertAction(title: socialAndStream, style: .default) { (_) -> Void in
+                guard let socialAndStreamURL = URL(string: socialAndStream) else {
+                    return
+                }
+                
+                if UIApplication.shared.canOpenURL(socialAndStreamURL) {
+                    UIApplication.shared.open(socialAndStreamURL, completionHandler: nil)
+                }
+            }
+            alertController.addAction(settingsAction)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     /*

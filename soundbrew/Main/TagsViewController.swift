@@ -105,7 +105,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     //MARK: button actions
     @objc func didPressNextButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showPlayer", sender: self)
+        UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
+        let vc = PlayerViewController() //change this to your class name
+        self.present(vc, animated: true, completion: nil)
+        
+        //self.performSegue(withIdentifier: "showPlayer", sender: self)
     }
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
@@ -161,19 +165,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        /*if tagView.isSelected {
-            /*tagView.isSelected = false
-            tagView.tagBackgroundColor = .white
-            tagView.textColor = color.black()*/
-            
-        } else {
-            tagView.isSelected = true
-            //tagView.tagBackgroundColor = color.lime()
-            //tagView.textColor = color.black()
-            self.chosenTagsArray.append(title)
-            self.addChosenTagButton(title)
-        }*/
-        
         if !tagView.isSelected {
             sender.removeTag(title)
             self.chosenTagsArray.append(title)
@@ -200,7 +191,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonWidth , height: 45)
         chosenTagButton.setTitle(" \(buttonTitle) ", for: .normal)
-        chosenTagButton.setTitleColor(.white, for: .normal)
+        chosenTagButton.setTitleColor(color.black(), for: .normal)
         chosenTagButton.backgroundColor = color.primary()
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         chosenTagButton.setImage(UIImage(named: "exit"), for: .normal)
