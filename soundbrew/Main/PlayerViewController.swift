@@ -11,6 +11,7 @@ import SnapKit
 import Parse
 import Kingfisher
 import AVFoundation
+import MediaPlayer
 
 class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
 
@@ -18,9 +19,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     let color = Color()
     
     var tags = [String]()
-    
-    var sounds = [Sound]()
-    var soundPlayer: AVAudioPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,32 +31,27 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: ArtistProfileViewController = segue.destination as! ArtistProfileViewController
-        viewController.userId = self.sounds[playlistPosition!].userId
-    }
-    
     //mark: Player
-    var isAudioPlaying = false
+    var soundPlayer: AVAudioPlayer!
+    
     var playlistPosition: Int?
     
     func prepareAndPlay(_ audioData: Data) {
         var soundPlayable = true
+        var audioAsset: AVURLAsset!
         
         //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
         let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("audio.mp3")
         
         do {
             try audioData.write(to: audioFileURL, options: .atomic)
-            let audioAsset = AVURLAsset.init(url: audioFileURL, options: nil)
-            let duration = audioAsset.duration
-            let durationInSeconds = CMTimeGetSeconds(duration)
-            self.playBackTotalTime.text = self.formatTime(durationInSeconds)
-            self.playBackSlider.maximumValue = Float(durationInSeconds)
+            audioAsset = AVURLAsset.init(url: audioFileURL, options: nil)
+            let duration = audioAsset.duration.seconds
+            self.playBackTotalTime.text = self.formatTime(duration)
+            self.playBackSlider.maximumValue = Float(duration)
             
         } catch {
             print(error)
-            self.isAudioPlaying = false
             soundPlayable = false
         }
         
@@ -72,7 +65,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                                     options: [])
             
         } catch let error {
-            self.isAudioPlaying = false
             soundPlayable = false
             fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
@@ -84,7 +76,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
 
         } catch let error {
             print("*** Unable to set up the audio player: \(error.localizedDescription) ***")
-            self.isAudioPlaying = false
             soundPlayable = false
             //return
         }
@@ -95,7 +86,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             
         } catch let error {
             print("Unable to activate audio session:  \(error.localizedDescription)")
-            self.isAudioPlaying = false
             soundPlayable = false
         }
             
@@ -107,7 +97,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             playBackSlider.value = 0
             timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            self.isAudioPlaying = true
+            setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
             
         } else {
             self.setUpNextSong()
@@ -169,14 +159,63 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    func formatTime(_ durationInSeconds: Double ) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute, .second]
-        formatter.unitsStyle = .abbreviated
+    var nowPlayingInfo = [String : Any]()
+    
+    func setupRemoteTransportControls() {
+        // Get the shared MPRemoteCommandCenter
+        let commandCenter = MPRemoteCommandCenter.shared()
         
-        let formattedString = formatter.string(from: durationInSeconds)!
+        // Add handler for Play Command
+        commandCenter.playCommand.addTarget { [unowned self] event in
+            if self.soundPlayer.rate == 0.0 {
+                self.playOrPause()
+                return .success
+            }
+            
+            return .commandFailed
+        }
         
-        return formattedString
+        // Add handler for Pause Command
+        commandCenter.pauseCommand.addTarget { [unowned self] event in
+            if self.soundPlayer.rate == 1.0 {
+                //self.soundPlayer.pause()
+                self.playOrPause()
+                return .success
+            }
+            
+            return .commandFailed
+        }
+        
+        commandCenter.nextTrackCommand.addTarget { [unowned self] event in
+            self.setUpNextSong()
+            return .success
+        }
+    }
+    
+    func setupBackgroundAudioNowPlaying(_ playerItem: AVURLAsset, player: AVAudioPlayer) {
+        // Define Now Playing Info
+        nowPlayingInfo[MPMediaItemPropertyTitle] = songtitle.text!
+        
+        let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = playerItem.duration.seconds
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+        
+        // Set the metadata
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    func playOrPause() {
+        if self.soundPlayer.rate == 1.0 {
+            self.soundPlayer.pause()
+            timer.invalidate()
+            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            
+        } else {
+            self.soundPlayer.play()
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        }
     }
     
     //mark: View
@@ -213,7 +252,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     lazy var songtitle: UILabel = {
         let label = UILabel()
-        label.text = "Dallas Strong"
+        label.text = "Sound Title"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textAlignment = .center
@@ -373,10 +412,23 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     func setCurrentSoundView(_ sound: Sound, i: Int) {
         self.songtitle.text = sound.title
-        self.songArt.kf.setImage(with: URL(string: sound.art))
+        self.songArt.kf.setImage(with: URL(string: sound.art), placeholder: nil, options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
+            if error == nil {
+                if let backgroundAudioArtwork = image {
+                    self.nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                        MPMediaItemArtwork(boundsSize: backgroundAudioArtwork.size) { size in
+                            return backgroundAudioArtwork
+                    }
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo = self.nowPlayingInfo
+                }
+            }
+            })
+
         self.songTags.text = convertArrayToString(sound.tags)
         if let artistName = sound.artistName {
             self.artistName.setTitle(artistName, for: .normal)
+            self.nowPlayingInfo[MPMediaItemPropertyArtist] = artistName
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             
         } else {
             loadUserInfoFromCloud(sound.userId, i: i)
@@ -384,7 +436,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        //self.performSegue(withIdentifier: "showArtistProfile", sender: self)
         self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
     }
     
@@ -398,18 +449,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if isAudioPlaying {
-            self.soundPlayer.pause()
-            timer.invalidate()
-            self.isAudioPlaying = false
-            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-            
-        } else {
-            self.soundPlayer.play()
-            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
-            self.isAudioPlaying = true
-            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-        }
+        playOrPause()
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
@@ -423,6 +463,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     //mark: data
+    var sounds = [Sound]()
+    
     func loadSounds() {
         let query = PFQuery(className: "Post")
         query.whereKey("tags", containedIn: tags)
@@ -453,11 +495,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                     }
                     
                     self.sounds.sort(by: { $0.relevancyScore > $1.relevancyScore })
-                    
-                    if !self.isAudioPlaying {
-                        self.setUpNextSong()
-                        self.isAudioPlaying = true
-                    }
+                    self.setUpNextSong()
+                    self.setupRemoteTransportControls()
                 }
                 
             } else {
@@ -477,6 +516,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                 let artistName = user["artistName"] as? String
                 self.artistName.setTitle(artistName, for: .normal)
                 self.sounds[i].artistName = artistName
+                self.nowPlayingInfo[MPMediaItemPropertyArtist] = artistName
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = self.nowPlayingInfo
+                
                 self.sounds[i].artistCity = user["city"] as? String
                 
                 if let instagramHandle = user["instagramHandle"] as? String {
@@ -531,6 +573,16 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
         
         return text
+    }
+    
+    func formatTime(_ durationInSeconds: Double ) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .abbreviated
+        
+        let formattedString = formatter.string(from: durationInSeconds)!
+        
+        return formattedString
     }
     
     func showArtistSocialsAndStreams(sound: Sound) {

@@ -106,6 +106,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: button actions
     @objc func didPressNextButton(_ sender: UIBarButtonItem) {
         UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
+        print(self.chosenTagsArray)
         let vc = PlayerViewController() //change this to your class name
         self.present(vc, animated: true, completion: nil)
         
@@ -320,5 +321,4 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
-
 }
