@@ -11,8 +11,9 @@ import TagListView
 import SnapKit
 import Parse
 import AVFoundation
+import NVActivityIndicatorView
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, TagListViewDelegate {
+class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, TagListViewDelegate, NVActivityIndicatorViewable {
     
     //MARK: views
     let uiElement = UIElement()
@@ -23,13 +24,27 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var tagView: TagListView!
     
-    var brewMyPlaylistButton: UIBarButtonItem!
+    //var brewMyPlaylistButton: UIBarButtonItem!
+    lazy var brewMyPlaylistButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Brew", for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
+        button.isEnabled = false
+        return button
+    }()
+    
+    lazy var menuButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "menu"), for: .normal)
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        loadTags()
+        startAnimating()
         setUpViews()
+        setUpSearchBar()
+        loadTags()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -47,15 +62,23 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setUpViews() {
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: color.black()]
+        //self.view.backgroundColor = color.black()
+        self.view.backgroundColor = color.tan()
         
-        brewMyPlaylistButton = UIBarButtonItem(title: "Brew My Playlist", style: .plain, target: self, action: #selector(self.didPressNextButton(_:)))
-        brewMyPlaylistButton.isEnabled = false
+        self.brewMyPlaylistButton.addTarget(self, action: #selector(self.didPressBrewMyPlaylistButton(_:)), for: .touchUpInside)
+        self.view.addSubview(self.brewMyPlaylistButton)
+        brewMyPlaylistButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(self.uiElement.topOffset + 10)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+        }
         
-        self.navigationItem.rightBarButtonItem = brewMyPlaylistButton
+        self.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+        self.view.addSubview(self.menuButton)
+        menuButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.top.equalTo(self.brewMyPlaylistButton).offset(5)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+        }
     }
     
     //MARK: Tableview
@@ -67,7 +90,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: tagReuse)
-        tableView.backgroundColor = color.black()
+        tableView.backgroundColor = color.tan()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         //tableView.frame = view.bounds
@@ -91,7 +114,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as! MainTableViewCell
-        cell.backgroundColor = color.black()
+        cell.backgroundColor = color.tan()
         
         cell.selectionStyle = .none
         
@@ -104,13 +127,26 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: button actions
-    @objc func didPressNextButton(_ sender: UIBarButtonItem) {
+    @objc func didPressBrewMyPlaylistButton(_ sender: UIButton) {
         UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
-        print(self.chosenTagsArray)
-        let vc = PlayerViewController() //change this to your class name
-        self.present(vc, animated: true, completion: nil)
+        self.uiElement.segueToView("Main", withIdentifier: "player", target: self)
+    }
+    
+    @objc func didPressMenuButton(_ sender: UIButton) {
+        let alertController = UIAlertController (title: nil, message: nil, preferredStyle: .actionSheet)
         
-        //self.performSegue(withIdentifier: "showPlayer", sender: self)
+        let uploadAction = UIAlertAction(title: "Upload to Soundbrew", style: .default) { (_) -> Void in
+            let soundbrewArtistsLink = URL(string: "https://itunes.apple.com/us/app/soundbrew-artists/id1438851832?mt=8")!
+            if UIApplication.shared.canOpenURL(soundbrewArtistsLink) {
+                UIApplication.shared.open(soundbrewArtistsLink, completionHandler: nil)
+            }
+        }
+        alertController.addAction(uploadAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
@@ -134,7 +170,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
         label.text = "Choose Tags"
-        label.textColor = .white
+        label.textColor = color.black()
+        label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
         return label
     }()
@@ -150,7 +187,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.searchBar.snp.bottom)
+            make.top.equalTo(self.searchBar.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -159,8 +196,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func addChooseTagsLabel() {
         self.chosenTagsScrollview.addSubview(chooseTagsLabel)
         chooseTagsLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.chosenTagsScrollview).offset(uiElement.topOffset)
+            make.top.equalTo(self.chosenTagsScrollview)
             make.left.equalTo(self.chosenTagsScrollview).offset(uiElement.leftOffset)
+            make.right.equalTo(self.chosenTagsScrollview).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.chosenTagsScrollview)
         }
     }
@@ -191,11 +229,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonWidth , height: 45)
-        chosenTagButton.setTitle(" \(buttonTitle) ", for: .normal)
-        chosenTagButton.setTitleColor(color.black(), for: .normal)
+        chosenTagButton.setTitle("\(buttonTitle) ", for: .normal)
+        chosenTagButton.setTitleColor(.white, for: .normal)
         chosenTagButton.backgroundColor = color.primary()
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
-        chosenTagButton.setImage(UIImage(named: "exit"), for: .normal)
+        //chosenTagButton.setImage(UIImage(named: "exit_white"), for: .normal)
         chosenTagButton.layer.cornerRadius = 22
         chosenTagButton.clipsToBounds = true
         chosenTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
@@ -244,33 +282,60 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 
     //MARK: SearchBar
-    lazy var searchBar: UISearchBar = {
+   /* lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        //searchBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width - 100, height: 15)
-        searchBar.placeholder = "genre, mood, activity, city, anything"
-        //searchBar.barStyle = .blackTranslucent
-        searchBar.backgroundColor = color.black()
-        searchBar.barTintColor = color.black()
+        searchBar.placeholder = "genre, mood, activity, city"
+        searchBar.backgroundColor = color.tan()
+        searchBar.barTintColor = color.tan()
+        searchBar.barStyle = .default
+        searchBar.isTranslucent = true
+        return searchBar
+    }()*/
+    
+    lazy var searchBar: UITextField = {
+       /* let searchBar = UISearchBar()
+        searchBar.placeholder = "genre, mood, activity, city"
+        searchBar.backgroundColor = color.tan()
+        searchBar.barTintColor = color.tan()
+        searchBar.barStyle = .default
+        searchBar.isTranslucent = true*/
+        let searchBar = UITextField()
+        searchBar.placeholder = "🔍 genre, mood, activity, city"
+        searchBar.borderStyle = .roundedRect
+        searchBar.clearButtonMode = .always
         return searchBar
     }()
     
-    func setUpSearchBar(){
-        //searchBar.delegate = self
-        //let searchBarNavItem = UIBarButtonItem(customView: searchBar)
-        //self.navigationItem.rightBarButtonItems = [nextButton, searchBarNavItem]
-        
-        //self.navigationItem.rightBarButtonItem = nextButton
-        
+    func setUpSearchBar() {
         searchBar.delegate = self
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) - CGFloat(uiElement.topOffset))
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
+            make.height.equalTo(30)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 15)
+            make.left.equalTo(self.menuButton.snp.right).offset(uiElement.elementOffset)
+            make.right.equalTo(self.brewMyPlaylistButton.snp.left).offset(-(uiElement.elementOffset))
         }
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", textField.text!)
+        
+        if textField.text!.count == 0 {
+            self.filteredTags = self.tags
+            
+        } else {
+            //filter users on MeArchive that are in current user's phone
+            var filteredTags = [Tag]()
+            filteredTags = self.tags.filter {wordPredicate.evaluate(with: $0.name)}
+            
+            filteredTags.sort(by: {$0.count > $1.count!})
+            self.filteredTags = filteredTags
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    /*func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", searchText)
         if searchText.count == 0 {
             self.filteredTags = self.tags
@@ -285,7 +350,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.tableView.reloadData()
-    }
+    }*/
  
     //mark: Data
     func loadTags() {
@@ -308,13 +373,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.filteredTags = self.tags
                 
                 if self.tableView == nil {
-                    self.setUpSearchBar()
                     self.setUpTagListView()
                     self.setUpTableView()
                     
                 } else {
                     self.tableView.reloadData()
                 }
+                
+                self.stopAnimating()
                 
             } else {
                 print("Error: \(error!)")

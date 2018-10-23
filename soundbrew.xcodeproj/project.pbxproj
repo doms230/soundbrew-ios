@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
-		F20E70B3217EBE8300D70D22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F20E70B2217EBE8300D70D22 /* GoogleService-Info.plist */; };
+		F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
 		F2689871215AEF9000C21663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2689870215AEF9000C21663 /* Assets.xcassets */; };
@@ -52,7 +52,7 @@
 		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
-		F20E70B2217EBE8300D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986E215AEF8F00C21663 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -154,7 +154,7 @@
 			children = (
 				F26898F0216B874C00C21663 /* soundbrew.entitlements */,
 				F2689875215AEF9000C21663 /* Info.plist */,
-				F20E70B2217EBE8300D70D22 /* GoogleService-Info.plist */,
+				F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */,
 				F2689870215AEF9000C21663 /* Assets.xcassets */,
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
@@ -323,10 +323,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */,
 				F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */,
 				F2689871215AEF9000C21663 /* Assets.xcassets in Resources */,
 				F268986F215AEF8F00C21663 /* Main.storyboard in Resources */,
-				F20E70B3217EBE8300D70D22 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

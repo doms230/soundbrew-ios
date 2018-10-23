@@ -14,11 +14,17 @@ class Color {
     }
     
     func black() -> UIColor {
-        return uicolorFromHex(0x180d22)
+        //return uicolorFromHex(0x180d22)
+        return uicolorFromHex(0x393939)
+    }
+    
+    func tan() -> UIColor {
+        return uicolorFromHex(0xf9f5f1)
     }
     
     func primary() -> UIColor {
-        return uicolorFromHex(0x00ff99)
+        //return uicolorFromHex(0x00ff99)
+        return uicolorFromHex(0x378869)
     }
     
     func uicolorFromHex(_ rgbValue:UInt32) -> UIColor {

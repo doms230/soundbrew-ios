@@ -33,7 +33,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             
             setUpView()
             loadSounds()
-            setupRemoteTransportControls()
             setUpAds()
         }
     }
@@ -113,13 +112,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             playNextSong()
             
         } else if soundPlayable && secondsPlayed > thirtyMinutesInSeconds {
-            //greater than
-            self.showAd()
+            self.soundPlayer.pause()
+            playBackButton.setImage(UIImage(named: "play"), for: .normal)
         }
     }
     
     func playNextSong() {
-        self.soundPlayer.play()
+        soundPlayer.play()
         isSoundPlaying = true
         
         secondsPlayed = secondsPlayed + Int(audioAsset.duration.seconds)
@@ -129,8 +128,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         playBackSlider.value = 0
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
         
-        self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         
+        setupRemoteTransportControls()
         setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
     }
     
@@ -269,10 +269,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if interstitial.isReady {
             interstitial.present(fromRootViewController: self)
             
+        //add wasn't ready, so give ad time to load.
+        } else if sounds.count == 0 {
+            loadSounds()
+                
         } else {
-            //add wasn't ready, so give ad time to load.
-            secondsPlayed = secondsPlayed - 60
-            setUpNextSong()
+            playNextSong()
         }
     }
     
@@ -307,14 +309,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     //mark: View
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "exit_white"), for: .normal)
+        button.setImage(UIImage(named: "exit"), for: .normal)
         return button
     }()
     
     lazy var chosenTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         return label
     }()
@@ -339,7 +341,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var songtitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textAlignment = .center
         return label
@@ -348,7 +350,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var songTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = .white
+        label.textColor = color.black()
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         return label
@@ -368,7 +370,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackCurrentTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -376,7 +378,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackTotalTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -400,10 +402,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }()
     
     func setUpView() {
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        self.view.backgroundColor = color.tan()
         
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
@@ -535,7 +534,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        playOrPause()
+        if secondsPlayed > thirtyMinutesInSeconds && !isSoundPlaying {
+            showAd()
+            
+        } else {
+            playOrPause()
+        }
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
@@ -722,15 +726,4 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         
         self.present(alertController, animated: true, completion: nil)
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

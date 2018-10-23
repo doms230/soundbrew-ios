@@ -24,6 +24,7 @@ target 'soundbrew' do
   pod 'TagListView'
   pod 'Kingfisher'
   pod 'Firebase/Core'
-  pod 'Google-Mobile-Ads-SDK'
+  pod 'Firebase/AdMob'
+  #pod 'Google-Mobile-Ads-SDK'
   
 end

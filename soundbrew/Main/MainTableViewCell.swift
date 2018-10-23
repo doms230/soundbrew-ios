@@ -31,9 +31,11 @@ class MainTableViewCell: UITableViewCell {
     //mark: Tags
     lazy var tagLabel: TagListView = {
         let tag = TagListView()
-        tag.tagBackgroundColor = .white
+        tag.tagBackgroundColor = color.tan()
         tag.cornerRadius = 22
         tag.textColor = color.black()
+        tag.borderWidth = 1
+        tag.borderColor = color.black()
         tag.marginX = CGFloat(uiElement.leftOffset)
         tag.marginY = CGFloat(uiElement.topOffset)
         tag.paddingX = CGFloat(uiElement.leftOffset)

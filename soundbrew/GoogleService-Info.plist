@@ -36,5 +36,7 @@
 	<string>1:799130960882:ios:062430943c78ef89</string>
 	<key>DATABASE_URL</key>
 	<string>https://soundbrew-3b8a4.firebaseio.com</string>
+	<key>ADMOB_APP_ID</key>
+	<string>ca-app-pub-9150756002517285~9630230904</string>
 </dict>
 </plist>

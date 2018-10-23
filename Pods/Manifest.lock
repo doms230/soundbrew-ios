@@ -1,5 +1,8 @@
 PODS:
   - Bolts/Tasks (1.9.0)
+  - Firebase/AdMob (5.10.0):
+    - Firebase/Core
+    - Google-Mobile-Ads-SDK (~> 7.34)
   - Firebase/Core (5.10.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.2.0)
@@ -62,8 +65,8 @@ PODS:
   - TagListView (1.3.1)
 
 DEPENDENCIES:
+  - Firebase/AdMob
   - Firebase/Core
-  - Google-Mobile-Ads-SDK
   - Kingfisher
   - NVActivityIndicatorView
   - Parse
@@ -103,6 +106,6 @@ SPEC CHECKSUMS:
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   TagListView: 6dafd34a61021c6db72c0c8e3a044054c9854311
 
-PODFILE CHECKSUM: 19c3503fcce678b8dd505e455aafd69f30c7e12d
+PODFILE CHECKSUM: 68fb7d30a811f9bd4383b72fd1342989588fe651
 
 COCOAPODS: 1.5.3
