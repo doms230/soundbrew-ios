@@ -8,6 +8,8 @@
 
 import UIKit
 import Parse
+import Firebase
+import GoogleMobileAds
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,12 +21,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().barTintColor = Color().black()
         UITabBar.appearance().tintColor = .white
 
+        //Parse
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
             $0.server = "https://soundbrew.herokuapp.com/parse"
         }
         Parse.initialize(with: configuration)
+        
+        //Google
+        FirebaseApp.configure()
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-9150756002517285~9630230904")
+
         
         return true
     }

@@ -5,6 +5,7 @@
 //  Created by Dominic  Smith on 9/26/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
 //
+//MARK: Player, View, Ads, Data
 
 import UIKit
 import SnapKit
@@ -12,8 +13,9 @@ import Parse
 import Kingfisher
 import AVFoundation
 import MediaPlayer
+import GoogleMobileAds
 
-class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
+class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADInterstitialDelegate {
 
     let uiElement = UIElement()
     let color = Color()
@@ -26,19 +28,30 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
             self.title = convertArrayToString(tags)
+            
+            self.secondsPlayed = UserDefaults.standard.integer(forKey: "secondsPlayed")
+            
             setUpView()
             loadSounds()
+            setupRemoteTransportControls()
+            setUpAds()
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        UserDefaults.standard.set(secondsPlayed, forKey: "secondsPlayed")
     }
     
     //mark: Player
     var soundPlayer: AVAudioPlayer!
-    
+    var audioAsset: AVURLAsset!
+    var secondsPlayed = 0
+    var thirtyMinutesInSeconds = 1800
+    var isSoundPlaying = false
     var playlistPosition: Int?
     
     func prepareAndPlay(_ audioData: Data) {
         var soundPlayable = true
-        var audioAsset: AVURLAsset!
         
         //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
         let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("audio.mp3")
@@ -53,6 +66,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } catch {
             print(error)
             soundPlayable = false
+            isSoundPlaying = false
         }
         
         // Set up the session.
@@ -66,6 +80,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             
         } catch let error {
             soundPlayable = false
+            isSoundPlaying = false
             fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
         
@@ -77,6 +92,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } catch let error {
             print("*** Unable to set up the audio player: \(error.localizedDescription) ***")
             soundPlayable = false
+            isSoundPlaying = false
             //return
         }
         
@@ -87,21 +103,35 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } catch let error {
             print("Unable to activate audio session:  \(error.localizedDescription)")
             soundPlayable = false
+            isSoundPlaying = false
         }
             
-        // Play the audio file.
-        if soundPlayable {
-            self.soundPlayer.play()
-            timer.invalidate()
-            counter = 0
-            playBackSlider.value = 0
-            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
-            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
+        if !soundPlayable {
+            setUpNextSong()
             
-        } else {
-            self.setUpNextSong()
+        } else if soundPlayable && secondsPlayed < thirtyMinutesInSeconds {
+            playNextSong()
+            
+        } else if soundPlayable && secondsPlayed > thirtyMinutesInSeconds {
+            //greater than
+            self.showAd()
         }
+    }
+    
+    func playNextSong() {
+        self.soundPlayer.play()
+        isSoundPlaying = true
+        
+        secondsPlayed = secondsPlayed + Int(audioAsset.duration.seconds)
+        print(secondsPlayed)
+        timer.invalidate()
+        counter = 0
+        playBackSlider.value = 0
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
+        
+        self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        
+        setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -167,7 +197,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         // Add handler for Play Command
         commandCenter.playCommand.addTarget { [unowned self] event in
-            if self.soundPlayer.rate == 0.0 {
+            if !self.isSoundPlaying {
                 self.playOrPause()
                 return .success
             }
@@ -177,8 +207,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         // Add handler for Pause Command
         commandCenter.pauseCommand.addTarget { [unowned self] event in
-            if self.soundPlayer.rate == 1.0 {
-                //self.soundPlayer.pause()
+            if self.isSoundPlaying {
                 self.playOrPause()
                 return .success
             }
@@ -206,16 +235,73 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func playOrPause() {
-        if self.soundPlayer.rate == 1.0 {
+        if self.isSoundPlaying {
             self.soundPlayer.pause()
+            isSoundPlaying = false
             timer.invalidate()
             self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
             
         } else {
             self.soundPlayer.play()
+            isSoundPlaying = true
             timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         }
+    }
+    
+    //mark: Ads
+    var interstitial: GADInterstitial!
+    var productionKey = "ca-app-pub-9150756002517285/6848154898"
+    var testKey = "ca-app-pub-3940256099942544/4411468910"
+    
+    func setUpAds() {
+        interstitial = createAndLoadInterstitial()
+    }
+    
+    func createAndLoadInterstitial() -> GADInterstitial {
+        let interstitial = GADInterstitial(adUnitID: testKey)
+        interstitial.delegate = self
+        interstitial.load(GADRequest())
+        return interstitial
+    }
+    
+    func showAd() {
+        if interstitial.isReady {
+            interstitial.present(fromRootViewController: self)
+            
+        } else {
+            //add wasn't ready, so give ad time to load.
+            secondsPlayed = secondsPlayed - 60
+            setUpNextSong()
+        }
+    }
+    
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+    }
+    
+    /// Tells the delegate an ad request succeeded.
+    func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+    }
+    
+    /// Tells the delegate an ad request failed.
+    func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
+    }
+    
+    /// Tells the delegate that an interstitial will be presented.
+    func interstitialWillPresentScreen(_ ad: GADInterstitial) {
+        self.soundPlayer.pause()
+    }
+    
+    /// Tells the delegate the interstitial is to be animated off the screen.
+    func interstitialWillDismissScreen(_ ad: GADInterstitial) {
+        secondsPlayed = 0
+        playNextSong()
+    }
+    
+    /// Tells the delegate that a user click will open another app
+    /// (such as the App Store), backgrounding the current app.
+    func interstitialWillLeaveApplication(_ ad: GADInterstitial) {
     }
     
     //mark: View
@@ -495,8 +581,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                     }
                     
                     self.sounds.sort(by: { $0.relevancyScore > $1.relevancyScore })
-                    self.setUpNextSong()
-                    self.setupRemoteTransportControls()
+                    
+                    if objects.count > 0 {
+                        self.setUpNextSong()
+                        
+                    } else {
+                        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+                    }
                 }
                 
             } else {

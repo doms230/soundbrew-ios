@@ -23,5 +23,7 @@ target 'soundbrew' do
   #pod 'SidebarOverlay'
   pod 'TagListView'
   pod 'Kingfisher'
+  pod 'Firebase/Core'
+  pod 'Google-Mobile-Ads-SDK'
   
 end
