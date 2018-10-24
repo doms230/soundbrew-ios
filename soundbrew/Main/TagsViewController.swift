@@ -13,7 +13,7 @@ import Parse
 import AVFoundation
 import NVActivityIndicatorView
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, TagListViewDelegate, NVActivityIndicatorViewable {
+class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate, NVActivityIndicatorViewable {
     
     //MARK: views
     let uiElement = UIElement()
@@ -28,10 +28,20 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     lazy var brewMyPlaylistButton: UIButton = {
         let button = UIButton()
         button.setTitle("Brew", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
+        button.setTitleColor(.lightGray, for: .normal)
         button.isEnabled = false
         return button
     }()
+    
+    func shouldEnableBrewMyPlaylistButton(_ shouldEnable: Bool) {
+        brewMyPlaylistButton.isEnabled = shouldEnable
+        if shouldEnable {
+            brewMyPlaylistButton.setTitleColor(.white, for: .normal)
+            
+        } else {
+            brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
+        }
+    }
     
     lazy var menuButton: UIButton = {
         let button = UIButton()
@@ -62,8 +72,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setUpViews() {
-        //self.view.backgroundColor = color.black()
-        self.view.backgroundColor = color.tan()
+        self.view.backgroundColor = color.black()
+        //self.view.backgroundColor = color.tan()
         
         self.brewMyPlaylistButton.addTarget(self, action: #selector(self.didPressBrewMyPlaylistButton(_:)), for: .touchUpInside)
         self.view.addSubview(self.brewMyPlaylistButton)
@@ -90,7 +100,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: tagReuse)
-        tableView.backgroundColor = color.tan()
+        tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         //tableView.frame = view.bounds
@@ -114,7 +124,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as! MainTableViewCell
-        cell.backgroundColor = color.tan()
+        cell.backgroundColor = color.black()
         
         cell.selectionStyle = .none
         
@@ -170,7 +180,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
         label.text = "Choose Tags"
-        label.textColor = color.black()
+        label.textColor = .white
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
         return label
@@ -242,7 +252,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
         
-        brewMyPlaylistButton.isEnabled = true
+        shouldEnableBrewMyPlaylistButton(true)
     }
     
     func removeTagButton(_ button: UIButton) {
@@ -268,7 +278,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if self.chosenTagsArray.count == 0 {
             addChooseTagsLabel()
-            brewMyPlaylistButton.isEnabled = false
+            shouldEnableBrewMyPlaylistButton(false)
         }
     }
     
@@ -282,23 +292,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 
     //MARK: SearchBar
-   /* lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "genre, mood, activity, city"
-        searchBar.backgroundColor = color.tan()
-        searchBar.barTintColor = color.tan()
-        searchBar.barStyle = .default
-        searchBar.isTranslucent = true
-        return searchBar
-    }()*/
     
     lazy var searchBar: UITextField = {
-       /* let searchBar = UISearchBar()
-        searchBar.placeholder = "genre, mood, activity, city"
-        searchBar.backgroundColor = color.tan()
-        searchBar.barTintColor = color.tan()
-        searchBar.barStyle = .default
-        searchBar.isTranslucent = true*/
         let searchBar = UITextField()
         searchBar.placeholder = "🔍 genre, mood, activity, city"
         searchBar.borderStyle = .roundedRect
@@ -307,7 +302,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }()
     
     func setUpSearchBar() {
-        searchBar.delegate = self
+        searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(30)
@@ -317,7 +312,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    @objc func searchBarDidChange(_ textField: UITextField) {
         let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", textField.text!)
         
         if textField.text!.count == 0 {
@@ -335,9 +330,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.tableView.reloadData()
     }
     
-    /*func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", searchText)
-        if searchText.count == 0 {
+    /*func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("text did")
+        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", textField.text!)
+        
+        if textField.text!.count == 0 {
             self.filteredTags = self.tags
             
         } else {
@@ -351,7 +348,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.tableView.reloadData()
     }*/
- 
+    
     //mark: Data
     func loadTags() {
         self.tags.removeAll()

@@ -34,6 +34,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             setUpView()
             loadSounds()
             setUpAds()
+            setupRemoteTransportControls()
         }
     }
     
@@ -113,6 +114,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             
         } else if soundPlayable && secondsPlayed > thirtyMinutesInSeconds {
             self.soundPlayer.pause()
+            shouldEnableButtons(false)
             playBackButton.setImage(UIImage(named: "play"), for: .normal)
         }
     }
@@ -130,7 +132,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         
         playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         
-        setupRemoteTransportControls()
         setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
     }
     
@@ -190,10 +191,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     var nowPlayingInfo = [String : Any]()
+    var commandCenter = MPRemoteCommandCenter.shared()
     
     func setupRemoteTransportControls() {
         // Get the shared MPRemoteCommandCenter
-        let commandCenter = MPRemoteCommandCenter.shared()
+        //let commandCenter = MPRemoteCommandCenter.shared()
         
         // Add handler for Play Command
         commandCenter.playCommand.addTarget { [unowned self] event in
@@ -221,6 +223,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         }
     }
     
+    func shouldEnableButtons(_ shouldEnable: Bool) {
+        skipButton.isEnabled = shouldEnable
+        
+        commandCenter.nextTrackCommand.isEnabled = shouldEnable
+        commandCenter.playCommand.isEnabled = shouldEnable
+        commandCenter.pauseCommand.isEnabled = shouldEnable
+    }
+    
     func setupBackgroundAudioNowPlaying(_ playerItem: AVURLAsset, player: AVAudioPlayer) {
         // Define Now Playing Info
         nowPlayingInfo[MPMediaItemPropertyTitle] = songtitle.text!
@@ -231,6 +241,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
         
         // Set the metadata
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    func setBackgoundAudioArtistName(_ artistName: String) {
+        self.nowPlayingInfo[MPMediaItemPropertyArtist] = artistName
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
@@ -261,13 +276,17 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     func createAndLoadInterstitial() -> GADInterstitial {
         let interstitial = GADInterstitial(adUnitID: testKey)
         interstitial.delegate = self
-        interstitial.load(GADRequest())
+        let request = GADRequest()
+        request.testDevices = ["da8e23242ac0690b867b0fe94ba2f2a7"]
+        interstitial.load(request)
         return interstitial
     }
     
     func showAd() {
         if interstitial.isReady {
-            interstitial.present(fromRootViewController: self)
+            DispatchQueue.main.async {
+                self.interstitial.present(fromRootViewController: self)
+            }
             
         //add wasn't ready, so give ad time to load.
         } else if sounds.count == 0 {
@@ -275,6 +294,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 
         } else {
             playNextSong()
+            self.shouldEnableButtons(true)
         }
     }
     
@@ -299,6 +319,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     func interstitialWillDismissScreen(_ ad: GADInterstitial) {
         secondsPlayed = 0
         playNextSong()
+        shouldEnableButtons(true)
     }
     
     /// Tells the delegate that a user click will open another app
@@ -309,14 +330,15 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     //mark: View
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "exit"), for: .normal)
+        button.setImage(UIImage(named: "exit_white"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
     
     lazy var chosenTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         return label
     }()
@@ -341,7 +363,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var songtitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textAlignment = .center
         return label
@@ -350,7 +372,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var songTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = color.black()
+        label.textColor = .white
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         return label
@@ -370,7 +392,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackCurrentTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -378,7 +400,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackTotalTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -402,7 +424,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }()
     
     func setUpView() {
-        self.view.backgroundColor = color.tan()
+        self.view.backgroundColor = color.black()
         
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
@@ -470,19 +492,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        /*self.view.addSubview(goBackButton)
-        goBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset + 50)
-        }*/
-        
         self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(65)
             make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.elementOffset)
-            //make.left.equalTo(self.goBackButton.snp.right).offset(uiElement.leftOffset + 20)
             make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(35))
         }
         
@@ -497,7 +511,20 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     
     func setCurrentSoundView(_ sound: Sound, i: Int) {
         self.songtitle.text = sound.title
-        self.songArt.kf.setImage(with: URL(string: sound.art), placeholder: nil, options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
+        
+        self.songTags.text = convertArrayToString(sound.tags)
+        if let artistName = sound.artistName {
+            self.artistName.setTitle(artistName, for: .normal)
+            self.setBackgoundAudioArtistName(artistName)
+            
+        } else {
+            let placeHolder = ""
+            self.artistName.setTitle(placeHolder, for: .normal)
+            self.setBackgoundAudioArtistName(placeHolder)
+            loadUserInfoFromCloud(sound.userId, i: i)
+        }
+        
+        self.songArt.kf.setImage(with: URL(string: sound.art), placeholder: UIImage(named: "appy"), options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
             if error == nil {
                 if let backgroundAudioArtwork = image {
                     self.nowPlayingInfo[MPMediaItemPropertyArtwork] =
@@ -508,16 +535,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 }
             }
             })
-
-        self.songTags.text = convertArrayToString(sound.tags)
-        if let artistName = sound.artistName {
-            self.artistName.setTitle(artistName, for: .normal)
-            self.nowPlayingInfo[MPMediaItemPropertyArtist] = artistName
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-            
-        } else {
-            loadUserInfoFromCloud(sound.userId, i: i)
-        }
     }
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
@@ -529,13 +546,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
     }
     
-    @objc func didPressBackButton(_ sender: UIButton) {
-        
-    }
-    
     @objc func didPressPlayBackButton(_ sender: UIButton) {
         if secondsPlayed > thirtyMinutesInSeconds && !isSoundPlaying {
-            showAd()
+            self.showAd()
             
         } else {
             playOrPause()
@@ -610,10 +623,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             } else if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.setTitle(artistName, for: .normal)
+                self.setBackgoundAudioArtistName(artistName ?? "Artist")
                 self.sounds[i].artistName = artistName
-                self.nowPlayingInfo[MPMediaItemPropertyArtist] = artistName
-                MPNowPlayingInfoCenter.default().nowPlayingInfo = self.nowPlayingInfo
-                
+
                 self.sounds[i].artistCity = user["city"] as? String
                 
                 if let instagramHandle = user["instagramHandle"] as? String {

@@ -31,16 +31,16 @@ class MainTableViewCell: UITableViewCell {
     //mark: Tags
     lazy var tagLabel: TagListView = {
         let tag = TagListView()
-        tag.tagBackgroundColor = color.tan()
+        tag.tagBackgroundColor = color.black()
         tag.cornerRadius = 22
-        tag.textColor = color.black()
-        tag.borderWidth = 1
-        tag.borderColor = color.black()
+        tag.textColor = .lightGray
+        tag.borderWidth = 3
+        tag.borderColor = .lightGray
         tag.marginX = CGFloat(uiElement.leftOffset)
         tag.marginY = CGFloat(uiElement.topOffset)
         tag.paddingX = CGFloat(uiElement.leftOffset)
         tag.paddingY = CGFloat(uiElement.topOffset)
-        tag.textFont = UIFont(name: uiElement.mainFont, size: 15)!
+        tag.textFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!
         return tag
     }()
     
