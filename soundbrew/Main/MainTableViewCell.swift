@@ -33,9 +33,9 @@ class MainTableViewCell: UITableViewCell {
         let tag = TagListView()
         tag.tagBackgroundColor = color.black()
         tag.cornerRadius = 22
-        tag.textColor = .lightGray
+        tag.textColor = .darkGray
         tag.borderWidth = 3
-        tag.borderColor = .lightGray
+        tag.borderColor = .darkGray
         tag.marginX = CGFloat(uiElement.leftOffset)
         tag.marginY = CGFloat(uiElement.topOffset)
         tag.paddingX = CGFloat(uiElement.leftOffset)

@@ -24,7 +24,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var tagView: TagListView!
     
-    //var brewMyPlaylistButton: UIBarButtonItem!
     lazy var brewMyPlaylistButton: UIButton = {
         let button = UIButton()
         button.setTitle("Brew", for: .normal)
@@ -57,6 +56,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         loadTags()
     }
     
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         do {
             try AVAudioSession.sharedInstance().setActive(false)
@@ -73,12 +76,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func setUpViews() {
         self.view.backgroundColor = color.black()
-        //self.view.backgroundColor = color.tan()
         
         self.brewMyPlaylistButton.addTarget(self, action: #selector(self.didPressBrewMyPlaylistButton(_:)), for: .touchUpInside)
         self.view.addSubview(self.brewMyPlaylistButton)
         brewMyPlaylistButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(self.uiElement.topOffset + 10)
+            make.top.equalTo(self.view).offset(self.uiElement.topOffset + 25)
             make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
         }
         
@@ -103,7 +105,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
-        //tableView.frame = view.bounds
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) -> Void in
@@ -152,6 +153,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         alertController.addAction(uploadAction)
+        
+        let provideFeedbackAction = UIAlertAction(title: "Provide Feedback", style: .default) { (_) -> Void in
+            let soundbrewArtistsLink = URL(string: "https://www.soundbrew.app/feedback")!
+            if UIApplication.shared.canOpenURL(soundbrewArtistsLink) {
+                UIApplication.shared.open(soundbrewArtistsLink, completionHandler: nil)
+            }
+        }
+        alertController.addAction(provideFeedbackAction)
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
@@ -240,10 +249,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonWidth , height: 45)
         chosenTagButton.setTitle("\(buttonTitle) ", for: .normal)
-        chosenTagButton.setTitleColor(.white, for: .normal)
+        chosenTagButton.setTitleColor(color.black(), for: .normal)
         chosenTagButton.backgroundColor = color.primary()
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
-        //chosenTagButton.setImage(UIImage(named: "exit_white"), for: .normal)
         chosenTagButton.layer.cornerRadius = 22
         chosenTagButton.clipsToBounds = true
         chosenTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
@@ -306,7 +314,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(30)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 15)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 30)
             make.left.equalTo(self.menuButton.snp.right).offset(uiElement.elementOffset)
             make.right.equalTo(self.brewMyPlaylistButton.snp.left).offset(-(uiElement.elementOffset))
         }
@@ -329,25 +337,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.tableView.reloadData()
     }
-    
-    /*func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("text did")
-        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", textField.text!)
-        
-        if textField.text!.count == 0 {
-            self.filteredTags = self.tags
-            
-        } else {
-            //filter users on MeArchive that are in current user's phone
-            var filteredTags = [Tag]()
-            filteredTags = self.tags.filter {wordPredicate.evaluate(with: $0.name)}
-            
-            filteredTags.sort(by: {$0.count > $1.count!})
-            self.filteredTags = filteredTags
-        }
-        
-        self.tableView.reloadData()
-    }*/
     
     //mark: Data
     func loadTags() {

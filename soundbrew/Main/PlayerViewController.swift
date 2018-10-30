@@ -31,11 +31,15 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             
             self.secondsPlayed = UserDefaults.standard.integer(forKey: "secondsPlayed")
             
+            setupRemoteTransportControls()
             setUpView()
             loadSounds()
             setUpAds()
-            setupRemoteTransportControls()
         }
+    }
+    
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -125,14 +129,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         
         secondsPlayed = secondsPlayed + Int(audioAsset.duration.seconds)
         print(secondsPlayed)
-        timer.invalidate()
-        counter = 0
-        playBackSlider.value = 0
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
         
         playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         
         setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
+        incrementPlayCount(sound: sounds[playlistPosition!])
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -140,6 +142,18 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     func setUpNextSong() {
+        //stop soundplayer audio from playing over each other
+        if soundPlayer != nil {
+            soundPlayer.pause()
+            soundPlayer = nil
+            audioAsset = nil
+        }
+        
+        //put playback time back to zero
+        timer.invalidate()
+        counter = 0
+        playBackSlider.value = 0
+        
         let sound = incrementPlaylistPositionAndReturnSound()
 
         self.setCurrentSoundView(sound, i: playlistPosition!)
@@ -274,7 +288,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     func createAndLoadInterstitial() -> GADInterstitial {
-        let interstitial = GADInterstitial(adUnitID: testKey)
+        let interstitial = GADInterstitial(adUnitID: productionKey)
         interstitial.delegate = self
         let request = GADRequest()
         request.testDevices = ["da8e23242ac0690b867b0fe94ba2f2a7"]
@@ -320,6 +334,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         secondsPlayed = 0
         playNextSong()
         shouldEnableButtons(true)
+        UserDefaults.standard.set(0, forKey: "secondsPlayed")
     }
     
     /// Tells the delegate that a user click will open another app
@@ -330,8 +345,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     //mark: View
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "exit_white"), for: .normal)
-        button.imageView?.contentMode = .scaleAspectFit
+        //button.setImage(UIImage(named: "exit_white"), for: .normal)
+        //button.imageView?.contentMode = .scaleAspectFit
+        button.setTitle("<Back", for: .normal)
         return button
     }()
     
@@ -351,6 +367,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         return button
     }()
     
+    lazy var verifiedCheck: UIImageView = {
+        let image = UIImageView()
+        return image
+    }()
+    
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 3
@@ -364,8 +385,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         let label = UILabel()
         label.text = "Sound Title"
         label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textAlignment = .center
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+       // label.textAlignment = .center
         return label
     }()
     
@@ -373,8 +394,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         let label = UILabel()
         label.text = "Tags"
         label.textColor = .white
-        label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+       //label.textAlignment = .center
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         return label
     }()
     
@@ -419,7 +440,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     
     lazy var goBackButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "goBack"), for: .normal)
+        //button.setImage(UIImage(named: "goBack"), for: .normal)
+        button.setTitle("<Back", for: .normal)
         return button
     }()
     
@@ -429,8 +451,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
+            make.height.equalTo(25)
+            make.width.equalTo(60)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 20)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
@@ -463,7 +486,15 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         artistName.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songtitle.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+           // make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(verifiedCheck)
+        verifiedCheck.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(15)
+            make.top.equalTo(self.artistName).offset(10)
+            make.left.equalTo(self.artistName.snp.right).offset(uiElement.elementOffset)
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         self.view.addSubview(songTags)
@@ -495,27 +526,35 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(65)
+            make.height.width.equalTo(50)
             make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(35))
+            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(25))
         }
         
         self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(40)
-            make.top.equalTo(playBackButton).offset(10)
+            make.top.equalTo(playBackButton).offset(5)
             make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }        
     }
     
     func setCurrentSoundView(_ sound: Sound, i: Int) {
         self.songtitle.text = sound.title
-        
         self.songTags.text = convertArrayToString(sound.tags)
         if let artistName = sound.artistName {
             self.artistName.setTitle(artistName, for: .normal)
             self.setBackgoundAudioArtistName(artistName)
+            
+            if let artistVerified = sound.artistVerified {
+                if artistVerified {
+                    self.verifiedCheck.image = UIImage(named: "check")
+                }
+                
+            } else {
+                self.verifiedCheck.image = nil
+            }
             
         } else {
             let placeHolder = ""
@@ -593,7 +632,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                             }
                         }
                         
-                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil)
+                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
                         self.sounds.append(newSound)
                     }
                     
@@ -627,6 +666,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 self.sounds[i].artistName = artistName
 
                 self.sounds[i].artistCity = user["city"] as? String
+                
+                //Don't want to add blank space to social and streams... that's why we're checking.
                 
                 if let instagramHandle = user["instagramHandle"] as? String {
                     if !instagramHandle.isEmpty {
@@ -663,6 +704,56 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                         self.sounds[i].otherLink = otherLlink
                     }
                 }
+                
+                if let artistVerified = user["artistVerified"] as? Bool {
+                    self.sounds[i].artistVerified = artistVerified
+                    if artistVerified {
+                        self.verifiedCheck.image = UIImage(named: "check")
+                        
+                    } else {
+                        self.verifiedCheck.image = nil
+                    }
+                    
+                } else {
+                    self.verifiedCheck.image = nil
+                }
+            }
+        }
+    }
+    
+    func incrementPlayCount(sound: Sound) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: sound.objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else {
+                object?.incrementKey("plays")
+                object?.saveEventually()
+            }
+        }
+    }
+    
+    func incrementSocialAndStreamClicks(sound: Sound, socialAndStreamClick: String) {
+        let query = PFQuery(className: "Click")
+        query.whereKey("userId", equalTo: sound.userId)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                //can't get error code from "Error", so converting to "NSError".. Can't do "NSError" above because Parse requires "Error" be used. 
+                let nsError = error as NSError
+                if nsError.code == 101 {
+                    //Click row for artist hasn't been created yet. create one.
+                    let newClickRow = PFObject(className: "Click")
+                    newClickRow["userId"] = sound.userId
+                    newClickRow[socialAndStreamClick] = 1
+                    newClickRow.saveEventually()
+                }
+                
+            } else if let object = object {
+                object.incrementKey(socialAndStreamClick)
+                object.saveEventually()
             }
         }
     }
@@ -727,9 +818,43 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 }
                 
                 if UIApplication.shared.canOpenURL(socialAndStreamURL) {
-                    UIApplication.shared.open(socialAndStreamURL, completionHandler: nil)
+                    UIApplication.shared.open(socialAndStreamURL, completionHandler: { (success) in
+                        if success {
+                            var socialAndStreamToIncrement: String!
+                            if let host = socialAndStreamURL.host {
+                                switch host {
+                                case "www.instagram.com", "instagram.com":
+                                    socialAndStreamToIncrement = "instagramClicks"
+                                    break
+                                    
+                                case "www.twitter.com", "twitter.com":
+                                    socialAndStreamToIncrement = "twitterClicks"
+                                    break
+                                    
+                                case "open.spotify.com", "www.spotify.com", "spotify.com":
+                                    socialAndStreamToIncrement = "spotifyClicks"
+                                    break
+                                    
+                                case "applemusic.com", "itunes.apple.com", "www.applemusic.com":
+                                    socialAndStreamToIncrement = "appleMusicClicks"
+                                    break
+                                    
+                                case "soundcloud.com", "www.soundcloud.com", "m.soundcloud.com":
+                                    socialAndStreamToIncrement = "soundcloudClicks"
+                                    break
+                                    
+                                default:
+                                    socialAndStreamToIncrement = "otherLinkClicks"
+                                    break
+                                }
+                            }
+                            
+                            self.incrementSocialAndStreamClicks(sound: sound, socialAndStreamClick: socialAndStreamToIncrement)
+                        }
+                    })
                 }
             }
+            
             alertController.addAction(settingsAction)
         }
         

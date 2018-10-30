@@ -28,8 +28,9 @@ class Sound {
     var soundcloudLink: String?
     var appleMusicLink: String?
     var otherLink: String?
+    var artistVerified: Bool?
     
-    init(objectId: String!, title: String!, art: String!, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFile!, relevancyScore: Int!, audioData: Data?, artistName: String?, artistCity: String?, instagramHandle: String?, twitterHandle: String?, spotifyLink: String?, soundcloudLink: String?, appleMusicLink: String?, otherLink: String? ) {
+    init(objectId: String!, title: String!, art: String!, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFile!, relevancyScore: Int!, audioData: Data?, artistName: String?, artistCity: String?, instagramHandle: String?, twitterHandle: String?, spotifyLink: String?, soundcloudLink: String?, appleMusicLink: String?, otherLink: String?, artistVerified: Bool?) {
         self.objectId = objectId
         self.userId = userId
         self.title = title
@@ -48,5 +49,6 @@ class Sound {
         self.soundcloudLink = soundcloudLink
         self.appleMusicLink = appleMusicLink
         self.otherLink = otherLink
+        self.artistVerified = artistVerified
     }
 }
