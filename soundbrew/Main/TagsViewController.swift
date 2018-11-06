@@ -35,7 +35,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func shouldEnableBrewMyPlaylistButton(_ shouldEnable: Bool) {
         brewMyPlaylistButton.isEnabled = shouldEnable
         if shouldEnable {
-            brewMyPlaylistButton.setTitleColor(.white, for: .normal)
+            brewMyPlaylistButton.setTitleColor(color.primary(), for: .normal)
             
         } else {
             brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
@@ -155,7 +155,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         alertController.addAction(uploadAction)
         
         let provideFeedbackAction = UIAlertAction(title: "Provide Feedback", style: .default) { (_) -> Void in
-            let soundbrewArtistsLink = URL(string: "https://www.soundbrew.app/feedback")!
+            let soundbrewArtistsLink = URL(string: "https://www.soundbrew.app/support")!
             if UIApplication.shared.canOpenURL(soundbrewArtistsLink) {
                 UIApplication.shared.open(soundbrewArtistsLink, completionHandler: nil)
             }

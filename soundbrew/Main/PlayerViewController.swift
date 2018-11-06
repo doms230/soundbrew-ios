@@ -14,6 +14,7 @@ import Kingfisher
 import AVFoundation
 import MediaPlayer
 import GoogleMobileAds
+import Alamofire
 
 class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADInterstitialDelegate {
 
@@ -728,9 +729,16 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             if let error = error {
                 print(error)
                 
-            } else {
-                object?.incrementKey("plays")
-                object?.saveEventually()
+            } else if let object = object {
+                if let plays = object["plays"] as? Double {
+                    //We want to notify artists every time their song hits a milestone like 10, 20, 100, 110, etc. Best way to determine if "plays" equally divids by 10
+                    let incrementedPlays = plays + 1.0
+                    if incrementedPlays.truncatingRemainder(dividingBy: 10) == 0 {
+                        self.sendAlert("Congrats \(sound.artistName!), \(sound.title!) just hit \(incrementedPlays) plays!", toUserId: sound.userId)
+                    }
+                }
+                object.incrementKey("plays")
+                object.saveEventually()
             }
         }
     }
@@ -862,5 +870,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func sendAlert(_ message: String, toUserId: String) {
+        Alamofire.request("https://soundbrew.herokuapp.com/notifications/alertUser", method: .post, parameters: ["message": message, "userId": toUserId], encoding: JSONEncoding.default).validate().response{response in
+        }
     }
 }

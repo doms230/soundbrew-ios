@@ -25,6 +25,7 @@ target 'soundbrew' do
   pod 'Kingfisher'
   pod 'Firebase/Core'
   pod 'Firebase/AdMob'
-  #pod 'Google-Mobile-Ads-SDK'
+  pod 'Alamofire'
+  pod 'SwiftyJSON'
   
 end
