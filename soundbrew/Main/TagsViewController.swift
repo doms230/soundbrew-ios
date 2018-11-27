@@ -19,15 +19,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     
-    var tags = [Tag]()
-    var filteredTags = [Tag]()
-    
-    var tagView: TagListView!
-    
     lazy var brewMyPlaylistButton: UIButton = {
         let button = UIButton()
         button.setTitle("Brew", for: .normal)
         button.setTitleColor(.lightGray, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
         button.isEnabled = false
         return button
     }()
@@ -35,9 +33,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func shouldEnableBrewMyPlaylistButton(_ shouldEnable: Bool) {
         brewMyPlaylistButton.isEnabled = shouldEnable
         if shouldEnable {
-            brewMyPlaylistButton.setTitleColor(color.primary(), for: .normal)
+            brewMyPlaylistButton.backgroundColor = color.primary()
+            brewMyPlaylistButton.setTitleColor(color.black(), for: .normal)
             
         } else {
+            brewMyPlaylistButton.backgroundColor = backgroundColor()
             brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
         }
     }
@@ -75,7 +75,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setUpViews() {
-        self.view.backgroundColor = color.black()
+        self.view.backgroundColor = backgroundColor()
         
         self.brewMyPlaylistButton.addTarget(self, action: #selector(self.didPressBrewMyPlaylistButton(_:)), for: .touchUpInside)
         self.view.addSubview(self.brewMyPlaylistButton)
@@ -96,13 +96,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: Tableview
     var tableView: UITableView!
     let tagReuse = "tagReuse"
+    let featureTagReuse = "featureTagReuse"
     
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: tagReuse)
-        tableView.backgroundColor = color.black()
+        tableView.register(MainTableViewCell.self, forCellReuseIdentifier: featureTagReuse)
+        tableView.backgroundColor = backgroundColor()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         view.addSubview(tableView)
@@ -116,23 +118,76 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
      func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return featureTagTitles.count
+        }
+        
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as! MainTableViewCell
-        cell.backgroundColor = color.black()
+        var cell: MainTableViewCell!
         
+        if indexPath.section == 0 {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? MainTableViewCell
+            //cell.featureTagTitle.text = featureTagTitles[indexPath.row]
+            
+            switch indexPath.row {
+            case 0:
+                addFeatureTagButton(moodTags, cell: cell)
+                break
+                
+            case 1:
+                addFeatureTagButton(activityTags, cell: cell)
+                break
+                
+            case 2:
+                addFeatureTagButton(genreTags, cell: cell)
+                
+            case 3:
+                addFeatureTagButton(cityTags, cell: cell)
+                break
+                
+            case 4:
+                addFeatureTagButton(artistTags, cell: cell)
+                break
+                
+            default:
+                break
+            }
+            
+        } else {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
+            cell.tagLabel.delegate = self
+            cell.tagLabel.removeAllTags()
+            cell.tagLabel.addTags(filteredTags.map({$0.name}))
+            self.tagView = cell.tagLabel
+            
+            /*let tagColors = [color.primary(), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
+            var colorI = 0
+            
+            for i in 0..<cell.tagLabel.tagViews.count {
+                let tag = cell.tagLabel.tagViews[i]
+                
+                let color = tagColors[colorI]
+                tag.borderColor = color
+                tag.textColor = color 
+                
+                if tagColors.indices.contains(colorI + 1) {
+                    colorI = 0
+                    
+                } else {
+                    colorI = colorI + 1
+                }
+            }*/
+        }
+
+        cell.backgroundColor = backgroundColor()
         cell.selectionStyle = .none
-        
-        cell.tagLabel.delegate = self
-        cell.tagLabel.removeAllTags()
-        cell.tagLabel.addTags(filteredTags.map({$0.name}))
-        self.tagView = cell.tagLabel
         
         return cell
     }
@@ -183,13 +238,25 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: tags
+    var tags = [Tag]()
+    var filteredTags = [Tag]()
+    var tagView: TagListView!
+    
+    let featureTagTitles = ["Genre", "City", "Artists", "Mood", "Activity"]
+    
+    var genreTags = [String]()
+    var moodTags = [String]()
+    var activityTags = [String]()
+    var cityTags = [String]()
+    var artistTags = [String]()
+    
     var chosenTagsArray = [String]()
     var xPositionForChosenTags = UIElement().leftOffset
     
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
         label.text = "Choose Tags"
-        label.textColor = .white
+        label.textColor = color.black()
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
         return label
@@ -241,16 +308,16 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func addChosenTagButton(_ buttonTitle: String) {
-        //not using snpakit to set button frame becuase not able to get button width.
-        
         self.chooseTagsLabel.removeFromSuperview()
-        let buttonWidth = determineChosenTagButtonTitleWidth(buttonTitle)
+        
+        //not using snpakit to set button frame becuase not able to get button width from button title.
+        let buttonTitleWidth = determineChosenTagButtonTitleWidth(buttonTitle)
         
         let chosenTagButton = UIButton()
-        chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonWidth , height: 45)
-        chosenTagButton.setTitle("\(buttonTitle) ", for: .normal)
+        chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonTitleWidth , height: 45)
+        chosenTagButton.setTitle(" \(buttonTitle) ", for: .normal)
         chosenTagButton.setTitleColor(color.black(), for: .normal)
-        chosenTagButton.backgroundColor = color.primary()
+        chosenTagButton.backgroundColor = color.uicolorFromHex(0x70b784)
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         chosenTagButton.layer.cornerRadius = 22
         chosenTagButton.clipsToBounds = true
@@ -261,6 +328,111 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
         
         shouldEnableBrewMyPlaylistButton(true)
+    }
+    
+    //MARK: featured tags
+    func addFeatureTagButton(_ featuredTags: Array<String>, cell: MainTableViewCell) {
+        var xPositionForFeaturedTag = uiElement.leftOffset
+        let tagColors = [color.primary(), color.uicolorFromHex(0xa9c5d0), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0a9cb), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
+        var colorI = 0
+        
+        for tag in featuredTags {
+            let color = tagColors[colorI]
+            let buttonTitleWidth = determineChosenTagButtonTitleWidth(tag)
+            
+            let featureTagButton = UIButton()
+            
+            var buttonImageWidth = 0
+            if let buttonImageString = self.determineFeaturedTagImage(tag) {
+                buttonImageWidth = 25
+                featureTagButton.setImage(UIImage(named: buttonImageString), for: .normal)
+            }
+            
+            featureTagButton.frame = CGRect(x: xPositionForFeaturedTag, y: 0, width: buttonImageWidth + buttonTitleWidth , height: 45)
+            featureTagButton.setTitle(" \(tag) ", for: .normal)
+            featureTagButton.setTitleColor(self.color.black(), for: .normal)
+            if self.chosenTagsArray.contains(tag) {
+                removeColorFromTag(featureTagButton)
+                
+            } else {
+                featureTagButton.backgroundColor = color
+            }
+            featureTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
+            featureTagButton.layer.cornerRadius = 20
+            featureTagButton.clipsToBounds = true
+            //featureTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
+            featureTagButton.addTarget(self, action: #selector(self.didPressFeatureTag(_:)), for: .touchUpInside)
+            cell.featureTagsScrollview.addSubview(featureTagButton)
+            
+            xPositionForFeaturedTag = xPositionForFeaturedTag + Int(featureTagButton.frame.width) + uiElement.leftOffset
+            cell.featureTagsScrollview.contentSize = CGSize(width: xPositionForFeaturedTag, height: uiElement.buttonHeight)
+            
+            //rotating through colors, so go back to zero if colors went through
+            if !tagColors.indices.contains(colorI + 1) {
+                colorI = 0
+                
+            } else {
+                colorI = colorI + 1
+            }
+        }
+    }
+    
+    @objc func didPressFeatureTag(_ sender: UIButton) {
+        let tag = sender.titleLabel!.text!
+        self.chosenTagsArray.append(tag)
+        self.addChosenTagButton(tag)
+        removeColorFromTag(sender)
+    }
+    
+    func removeColorFromTag(_ button: UIButton) {
+        button.layer.borderColor = color.black().cgColor
+        button.layer.borderWidth = 1
+        button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = .white
+    }
+    
+    func determineFeaturedTagImage(_ tag: String) -> String? {
+        let tagLowercased = tag.lowercased()
+        switch tagLowercased {
+        case "happy":
+            return "happy"
+            
+        case "sad":
+            return "sad"
+            
+        case "angry":
+            return "angry"
+            
+        case "netflix-and-chill":
+            return "love"
+            
+        case "creative":
+            return "idea"
+            
+        case "workout":
+            return "workout"
+            
+        case "party":
+            return "party"
+            
+        case "work":
+            return "money"
+            
+        case "sleep":
+            return "bed"
+            
+        case "gaming":
+            return "game"
+            
+        case "high-energy":
+            return "high-energy"
+            
+        case "chill":
+            return "chill"
+            
+        default:
+            return nil
+        }
     }
     
     func removeTagButton(_ button: UIButton) {
@@ -298,9 +470,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let totalButtonWidth = buttonTitleWidth + buttonImageWidth
         return totalButtonWidth
     }
-
-    //MARK: SearchBar
     
+    //MARK: SearchBar
     lazy var searchBar: UITextField = {
         let searchBar = UITextField()
         searchBar.placeholder = "🔍 genre, mood, activity, city"
@@ -314,7 +485,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(30)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 30)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 27)
             make.left.equalTo(self.menuButton.snp.right).offset(uiElement.elementOffset)
             make.right.equalTo(self.brewMyPlaylistButton.snp.left).offset(-(uiElement.elementOffset))
         }
@@ -350,9 +521,35 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     for object in objects {
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
-                        
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount)
-                        self.tags.append(newTag)
+                        if let tagType = object["type"] as? String {
+                            switch tagType {
+                            case "genre":
+                                self.genreTags.append(tagName)
+                                break
+                                
+                            case "mood":
+                                self.moodTags.append(tagName)
+                                break
+                                
+                            case "activity":
+                                self.activityTags.append(tagName)
+                                break
+                                
+                            case "city":
+                                self.cityTags.append(tagName)
+                                break
+                                
+                            case "artist":
+                                self.artistTags.append(tagName)
+                                
+                            default:
+                                break
+                            }
+                            
+                        } else {
+                            let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount)
+                            self.tags.append(newTag)
+                        }
                     }
                 }
                 
@@ -372,5 +569,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 print("Error: \(error!)")
             }
         }
+    }
+    
+    func backgroundColor() -> UIColor {
+        //return color.tan()
+        return .white
     }
 }

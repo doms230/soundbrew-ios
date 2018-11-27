@@ -15,66 +15,67 @@ class MainTableViewCell: UITableViewCell {
     let color = Color()
     let uiElement = UIElement()
     
-    //mark: Artist profile
-    lazy var itemImage: UIImageView = {
-        let image = UIImageView()
-        return image
-    }()
     
-    lazy var itemLabel: UILabel = {
+    lazy var featureTagTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: UIElement().mainFont, size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
         label.textColor = color.black()
+        label.numberOfLines = 0
         return label
     }()
     
-    //mark: Tags
+    lazy var featureTagsScrollview: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
     lazy var tagLabel: TagListView = {
         let tag = TagListView()
-        tag.tagBackgroundColor = color.black()
+        tag.tagBackgroundColor = color.primary()
         tag.cornerRadius = 22
-        tag.textColor = .darkGray
-        tag.borderWidth = 3
-        tag.borderColor = .darkGray
+        tag.textColor = color.black()
+        //tag.borderWidth = 1
+        //tag.borderColor = color.black()
         tag.marginX = CGFloat(uiElement.leftOffset)
         tag.marginY = CGFloat(uiElement.topOffset)
         tag.paddingX = CGFloat(uiElement.leftOffset)
         tag.paddingY = CGFloat(uiElement.topOffset)
-        tag.textFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!
+        tag.textFont = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
         return tag
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
+        case "featureTagReuse":
+            self.addSubview(featureTagsScrollview)
+            //self.addSubview(featureTagTitle)
+            
+            /*featureTagTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }*/
+            
+            featureTagsScrollview.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(uiElement.buttonHeight)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.left.equalTo(self)
+                make.right.equalTo(self)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            break 
+            
         case "tagReuse":
             self.addSubview(self.tagLabel)
             tagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             break
-            
-        case "artistProfileReuse":
-            self.addSubview(itemImage)
-            self.addSubview(itemLabel)
-            
-            itemImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            itemLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self.itemImage.snp.right).offset(5)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
             
         default:
             break
