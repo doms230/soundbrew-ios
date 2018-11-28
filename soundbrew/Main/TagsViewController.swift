@@ -134,37 +134,46 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if indexPath.section == 0 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? MainTableViewCell
-            //cell.featureTagTitle.text = featureTagTitles[indexPath.row]
+            
+            var tagType: String?
             
             switch indexPath.row {
             case 0:
-                addFeatureTagButton(moodTags, cell: cell)
+                tagType = "mood"
                 break
                 
             case 1:
-                addFeatureTagButton(activityTags, cell: cell)
+                tagType = "activity"
                 break
                 
             case 2:
-                addFeatureTagButton(genreTags, cell: cell)
+                tagType = "genre"
+                break
                 
             case 3:
-                addFeatureTagButton(cityTags, cell: cell)
+                tagType = "city"
                 break
                 
             case 4:
-                addFeatureTagButton(artistTags, cell: cell)
+                tagType = "artist"
                 break
                 
             default:
                 break
             }
             
+            if let tagType = tagType {
+                let tags: Array<Tag> = self.filteredTags.filter {$0.tagType == tagType}
+                //addFeatureTagButton(tags, cell: cell)
+                addFeatureTagButton(tags, cell: cell)
+            }
+            
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
             cell.tagLabel.delegate = self
             cell.tagLabel.removeAllTags()
-            cell.tagLabel.addTags(filteredTags.map({$0.name}))
+            let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
+            cell.tagLabel.addTags(otherTags)
             self.tagView = cell.tagLabel
             
             /*let tagColors = [color.primary(), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
@@ -225,9 +234,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
         let title = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
-        for i in 0..<self.tags.count {
-            if self.tags[i].name! == title {
-                self.filteredTags.append(self.tags[i])
+        for i in 0..<self.filteredTags.count {
+            if self.filteredTags[i].name! == title {
+                self.filteredTags[i].isSelected = false
+                print("re")
             }
         }
         
@@ -310,12 +320,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func addChosenTagButton(_ buttonTitle: String) {
         self.chooseTagsLabel.removeFromSuperview()
         
+        let buttonTitleWithX = "\(buttonTitle) | X"
+        
         //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonTitleWidth = determineChosenTagButtonTitleWidth(buttonTitle)
+        let buttonTitleWidth = determineChosenTagButtonTitleWidth(buttonTitleWithX)
         
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonTitleWidth , height: 45)
-        chosenTagButton.setTitle(" \(buttonTitle) ", for: .normal)
+        chosenTagButton.setTitle(" \(buttonTitle) | X ", for: .normal)
         chosenTagButton.setTitleColor(color.black(), for: .normal)
         chosenTagButton.backgroundColor = color.uicolorFromHex(0x70b784)
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
@@ -331,65 +343,83 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: featured tags
-    func addFeatureTagButton(_ featuredTags: Array<String>, cell: MainTableViewCell) {
+    func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: MainTableViewCell) {
         var xPositionForFeaturedTag = uiElement.leftOffset
         let tagColors = [color.primary(), color.uicolorFromHex(0xa9c5d0), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0a9cb), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
         var colorI = 0
+        cell.featureTagsScrollview.subviews.forEach({$0.removeFromSuperview()})
         
         for tag in featuredTags {
-            let color = tagColors[colorI]
-            let buttonTitleWidth = determineChosenTagButtonTitleWidth(tag)
-            
-            let featureTagButton = UIButton()
-            
-            var buttonImageWidth = 0
-            if let buttonImageString = self.determineFeaturedTagImage(tag) {
-                buttonImageWidth = 25
-                featureTagButton.setImage(UIImage(named: buttonImageString), for: .normal)
-            }
-            
-            featureTagButton.frame = CGRect(x: xPositionForFeaturedTag, y: 0, width: buttonImageWidth + buttonTitleWidth , height: 45)
-            featureTagButton.setTitle(" \(tag) ", for: .normal)
-            featureTagButton.setTitleColor(self.color.black(), for: .normal)
-            if self.chosenTagsArray.contains(tag) {
-                removeColorFromTag(featureTagButton)
+            if !tag.isSelected {
+                let color = tagColors[colorI]
                 
-            } else {
+                let buttonTitleWidth = determineChosenTagButtonTitleWidth(tag.name)
+                
+                let featureTagButton = UIButton()
+                
+                var buttonImageWidth = 0
+                if let buttonImageString = self.determineFeaturedTagImage(tag.name) {
+                    buttonImageWidth = 25
+                    featureTagButton.setImage(UIImage(named: buttonImageString), for: .normal)
+                }
+                
+                featureTagButton.frame = CGRect(x: xPositionForFeaturedTag, y: 0, width: buttonImageWidth + buttonTitleWidth , height: 45)
+                featureTagButton.setTitle(" \(tag.name!) ", for: .normal)
+                featureTagButton.setTitleColor(self.color.black(), for: .normal)
                 featureTagButton.backgroundColor = color
-            }
-            featureTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-            featureTagButton.layer.cornerRadius = 20
-            featureTagButton.clipsToBounds = true
-            //featureTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
-            featureTagButton.addTarget(self, action: #selector(self.didPressFeatureTag(_:)), for: .touchUpInside)
-            cell.featureTagsScrollview.addSubview(featureTagButton)
-            
-            xPositionForFeaturedTag = xPositionForFeaturedTag + Int(featureTagButton.frame.width) + uiElement.leftOffset
-            cell.featureTagsScrollview.contentSize = CGSize(width: xPositionForFeaturedTag, height: uiElement.buttonHeight)
-            
-            //rotating through colors, so go back to zero if colors went through
-            if !tagColors.indices.contains(colorI + 1) {
-                colorI = 0
+                /*if tag.isSelected {
+                 //tagWasSelectedLook(featureTagButton)
+                 
+                 } else {
+                 featureTagButton.backgroundColor = color
+                 }*/
+                featureTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
+                featureTagButton.layer.cornerRadius = 20
+                featureTagButton.clipsToBounds = true
+                //featureTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
+                featureTagButton.addTarget(self, action: #selector(self.didPressFeatureTag(_:)), for: .touchUpInside)
+                cell.featureTagsScrollview.addSubview(featureTagButton)
                 
-            } else {
-                colorI = colorI + 1
+                xPositionForFeaturedTag = xPositionForFeaturedTag + Int(featureTagButton.frame.width) + uiElement.leftOffset
+                cell.featureTagsScrollview.contentSize = CGSize(width: xPositionForFeaturedTag, height: uiElement.buttonHeight)
+                
+                //rotating through colors, so go back to zero if colors reach end of index
+                if !tagColors.indices.contains(colorI + 1) {
+                    colorI = 0
+                    
+                } else {
+                    colorI = colorI + 1
+                }
             }
         }
     }
     
     @objc func didPressFeatureTag(_ sender: UIButton) {
-        let tag = sender.titleLabel!.text!
-        self.chosenTagsArray.append(tag)
-        self.addChosenTagButton(tag)
-        removeColorFromTag(sender)
+        let tagName = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
+        self.chosenTagsArray.append(tagName)
+        self.addChosenTagButton(tagName)
+        //tagWasSelectedLook(sender)
+        
+        for i in 0..<self.filteredTags.count {
+            if tagName == self.filteredTags[i].name {
+                self.filteredTags[i].isSelected = true
+                self.tableView.reloadData()
+                break
+            }
+        }
     }
     
-    func removeColorFromTag(_ button: UIButton) {
-        button.layer.borderColor = color.black().cgColor
-        button.layer.borderWidth = 1
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = .white
-    }
+    /*func tagWasSelectedLook(_ button: UIButton) {
+        if button.backgroundColor == .white {
+            button.layer.borderColor = color.black().cgColor
+            button.layer.borderWidth = 1
+            button.setTitleColor(color.black(), for: .normal)
+            button.backgroundColor = .white
+            
+        } else {
+            
+        }
+    }*/
     
     func determineFeaturedTagImage(_ tag: String) -> String? {
         let tagLowercased = tag.lowercased()
@@ -440,7 +470,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         var position: Int?
         for i in 0..<self.chosenTagsArray.count {
             if self.chosenTagsArray[i] == title  {
-                print("remove chosen tag")
                 position = i
             }
         }
@@ -449,9 +478,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.chosenTagsArray.remove(at: p)
         }
         
+        //reset scrollview
         self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
         xPositionForChosenTags = UIElement().leftOffset
         
+        //add back chosen tags to chosen tag scrollview
         for title in chosenTagsArray {
             self.addChosenTagButton(title)
         }
@@ -514,6 +545,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.tags.removeAll()
         let query = PFQuery(className: "Tag")
         query.addDescendingOrder("count")
+        query.limit = 1000
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -521,7 +553,18 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     for object in objects {
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
+                        
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, tagType: nil)
+                        
                         if let tagType = object["type"] as? String {
+                            if !tagType.isEmpty {
+                                newTag.tagType = tagType
+                            }
+                        }
+                        
+                        self.tags.append(newTag)
+                        
+                        /*if let tagType = object["type"] as? String {
                             switch tagType {
                             case "genre":
                                 self.genreTags.append(tagName)
@@ -543,13 +586,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 self.artistTags.append(tagName)
                                 
                             default:
+                                let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, tagType: nil)
+                                self.tags.append(newTag)
                                 break
                             }
                             
                         } else {
                             let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount)
                             self.tags.append(newTag)
-                        }
+                        }*/
                     }
                 }
                 
