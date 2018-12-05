@@ -31,6 +31,10 @@ class Color {
         //return uicolorFromHex(0x378869)
     }
     
+    func green() -> UIColor {
+        return uicolorFromHex(0x70b784)
+    }
+    
     func uicolorFromHex(_ rgbValue:UInt32) -> UIColor {
         let red = CGFloat((rgbValue & 0xFF0000) >> 16)/256.0
         let green = CGFloat((rgbValue & 0xFF00) >> 8)/256.0

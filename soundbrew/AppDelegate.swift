@@ -10,6 +10,7 @@ import UIKit
 import Parse
 import Firebase
 import NVActivityIndicatorView
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -38,7 +39,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE = CGSize(width: 60, height: 60)
         NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         
+        registerForRemoteNotification()
+        
         return true
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let installation = PFInstallation.current()
+        installation?.setDeviceTokenFrom(deviceToken)
+        installation?.saveInBackground()
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        if application.applicationState == UIApplication.State.background {
+            PFPush.handle(userInfo)
+        }
+    }
+    
+    @available(iOS 10.0, *)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        PFPush.handle(notification.request.content.userInfo)
+        completionHandler(.alert)
+    }
+    
+    func registerForRemoteNotification() {
+        let center  = UNUserNotificationCenter.current()
+        
+        center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
+            if granted && error == nil {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
+        }
     }
 }
 

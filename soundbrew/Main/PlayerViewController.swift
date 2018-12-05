@@ -346,9 +346,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     //mark: View
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        //button.setImage(UIImage(named: "exit_white"), for: .normal)
-        //button.imageView?.contentMode = .scaleAspectFit
-        button.setTitle("<Back", for: .normal)
+        button.setTitle("←", for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 30)
         return button
     }()
     
@@ -363,14 +363,20 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var artistName: UIButton = {
         let button = UIButton()
         button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(color.primary(), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        button.setTitleColor(color.black(), for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         return button
     }()
     
     lazy var verifiedCheck: UIImageView = {
         let image = UIImageView()
         return image
+    }()
+    
+    lazy var moreButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "more"), for: .normal)
+        return button
     }()
     
     lazy var songArt: UIImageView = {
@@ -386,7 +392,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         let label = UILabel()
         label.text = "Sound Title"
         label.textColor = color.black()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
        // label.textAlignment = .center
         return label
     }()
@@ -396,8 +402,15 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         label.text = "Tags"
         label.textColor = color.black()
        //label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        //label.numberOfLines = 0
         return label
+    }()
+    
+    lazy var playbackView: UIView = {
+        let view = UIView()
+        view.backgroundColor = color.black()
+        return view
     }()
     
     lazy var playBackSlider: UISlider = {
@@ -449,6 +462,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     func setUpView() {
         self.view.backgroundColor = .white
         
+        //top views
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) -> Void in
@@ -466,6 +480,40 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        //playback views
+        self.view.addSubview(playbackView)
+        playbackView.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
+        
+        self.playbackView.addSubview(playBackButton)
+        self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
+        self.view.addSubview(playBackButton)
+        playBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(40)
+            make.top.equalTo(playbackView).offset(uiElement.elementOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
+        self.playbackView.addSubview(skipButton)
+        skipButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(35)
+            make.top.equalTo(playBackButton).offset(3)
+            make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
+        }
+        
+        self.playbackView.addSubview(playBackSlider)
+        playBackSlider.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.skipButton).offset(3)
+            make.left.equalTo(self.skipButton.snp.right).offset(uiElement.elementOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        //sound views
         self.view.addSubview(songArt)
         songArt.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(self.view.frame.height / 2)
@@ -477,23 +525,30 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         
         self.view.addSubview(songtitle)
         songtitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        artistName.addTarget(self, action: #selector(self.didPressArtistNameButton(_:)), for: .touchUpInside)
+        moreButton.addTarget(self, action: #selector(self.didPressArtistNameButton(_:)), for: .touchUpInside)
+        self.view.addSubview(moreButton)
+        moreButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(self.songtitle.snp.bottom)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
         self.view.addSubview(artistName)
         artistName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songtitle.snp.bottom).offset(uiElement.elementOffset)
+            make.top.equalTo(self.moreButton).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-           // make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            //make.right.equalTo(self.moreButton.snp.left).offset(-(uiElement.elementOffset))
         }
         
         self.view.addSubview(verifiedCheck)
         verifiedCheck.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(15)
-            make.top.equalTo(self.artistName).offset(10)
+            make.top.equalTo(self.artistName).offset(13)
             make.left.equalTo(self.artistName.snp.right).offset(uiElement.elementOffset)
             //make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -504,41 +559,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
-        
-        self.view.addSubview(playBackSlider)
-        playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songTags.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        self.view.addSubview(playBackCurrentTime)
-        playBackCurrentTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        self.view.addSubview(playBackTotalTime)
-        playBackTotalTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playBackCurrentTime)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
-        self.view.addSubview(playBackButton)
-        playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(playBackTotalTime.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(25))
-        }
-        
-        self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
-        self.view.addSubview(skipButton)
-        skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(40)
-            make.top.equalTo(playBackButton).offset(5)
-            make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
-        }        
     }
     
     func setCurrentSoundView(_ sound: Sound, i: Int) {

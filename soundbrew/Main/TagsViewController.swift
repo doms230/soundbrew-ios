@@ -20,41 +20,22 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var brewMyPlaylistButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Brew My Playlist", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = color.uicolorFromHex(0xa9c5d0)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
-        button.isHidden = true
-        return button
-    }()
-    
-    func shouldHideBrewMyPlaylistButton(_ shouldHide: Bool) {
-        brewMyPlaylistButton.isHidden = shouldHide
-        /*if shouldEnable {
-            brewMyPlaylistButton.backgroundColor = color.primary()
-            brewMyPlaylistButton.setTitleColor(color.black(), for: .normal)
-            
-            
-        } else {
-            brewMyPlaylistButton.backgroundColor = backgroundColor()
-            brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
-        }*/
-    }
-    
-    lazy var menuButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "menu"), for: .normal)
-        return button
-    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         startAnimating()
         setUpSearchBar()
         loadTags()
+        
+        if UserDefaults.standard.stringArray(forKey: "tags") != nil {
+            SKStoreReviewController.requestReview()
+        }
     }
+    
+    /*lazy var menuButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "menu"), for: .normal)
+        return button
+    }()*/
     
     override var preferredStatusBarStyle : UIStatusBarStyle {
         return .lightContent
@@ -72,6 +53,29 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: PlayerViewController = segue.destination as! PlayerViewController
         viewController.tags = self.chosenTagsArray
+    }
+    
+    lazy var brewMyPlaylistButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Brew My Playlist", for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = color.uicolorFromHex(0xa9c5d0)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
+        button.isHidden = true
+        return button
+    }()
+    
+    func shouldHideBrewMyPlaylistButton(_ shouldHide: Bool) {
+        brewMyPlaylistButton.isHidden = shouldHide
+        /*if shouldEnable {
+         brewMyPlaylistButton.backgroundColor = color.primary()
+         brewMyPlaylistButton.setTitleColor(color.black(), for: .normal)
+         
+         
+         } else {
+         brewMyPlaylistButton.backgroundColor = backgroundColor()
+         brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
+         }*/
     }
     
     func setUpBrewMyPlaylistButton() {
@@ -365,7 +369,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         chosenTagButton.setTitle("\(buttonTitle)", for: .normal)
         chosenTagButton.setImage(UIImage(named: "chosenTag-exit"), for: .normal)
         chosenTagButton.setTitleColor(color.black(), for: .normal)
-        chosenTagButton.backgroundColor = color.uicolorFromHex(0x70b784)
+        chosenTagButton.backgroundColor = color.green()
         chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         chosenTagButton.layer.cornerRadius = 22
         chosenTagButton.clipsToBounds = true
