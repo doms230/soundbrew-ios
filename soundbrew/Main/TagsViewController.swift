@@ -12,6 +12,7 @@ import SnapKit
 import Parse
 import AVFoundation
 import NVActivityIndicatorView
+import Alamofire
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate, NVActivityIndicatorViewable {
     
@@ -21,25 +22,25 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     lazy var brewMyPlaylistButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Brew", for: .normal)
-        button.setTitleColor(.lightGray, for: .normal)
+        button.setTitle("Brew My Playlist", for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = color.uicolorFromHex(0xa9c5d0)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        button.isEnabled = false
+        button.isHidden = true
         return button
     }()
     
-    func shouldEnableBrewMyPlaylistButton(_ shouldEnable: Bool) {
-        brewMyPlaylistButton.isEnabled = shouldEnable
-        if shouldEnable {
+    func shouldHideBrewMyPlaylistButton(_ shouldHide: Bool) {
+        brewMyPlaylistButton.isHidden = shouldHide
+        /*if shouldEnable {
             brewMyPlaylistButton.backgroundColor = color.primary()
             brewMyPlaylistButton.setTitleColor(color.black(), for: .normal)
+            
             
         } else {
             brewMyPlaylistButton.backgroundColor = backgroundColor()
             brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
-        }
+        }*/
     }
     
     lazy var menuButton: UIButton = {
@@ -51,7 +52,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         startAnimating()
-        setUpViews()
         setUpSearchBar()
         loadTags()
     }
@@ -74,23 +74,25 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         viewController.tags = self.chosenTagsArray
     }
     
-    func setUpViews() {
+    func setUpBrewMyPlaylistButton() {
         self.view.backgroundColor = backgroundColor()
         
         self.brewMyPlaylistButton.addTarget(self, action: #selector(self.didPressBrewMyPlaylistButton(_:)), for: .touchUpInside)
-        self.view.addSubview(self.brewMyPlaylistButton)
+        self.tableView.addSubview(self.brewMyPlaylistButton)
         brewMyPlaylistButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(self.uiElement.topOffset + 25)
-            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+            make.height.equalTo(60)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view)
         }
         
-        self.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+        /*self.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
         self.view.addSubview(self.menuButton)
         menuButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(30)
             make.top.equalTo(self.brewMyPlaylistButton).offset(5)
             make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-        }
+        }*/
     }
     
     //MARK: Tableview
@@ -115,6 +117,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
+        
+        setUpBrewMyPlaylistButton()
     }
     
      func numberOfSections(in tableView: UITableView) -> Int {
@@ -233,18 +237,49 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
+        self.startAnimating()
+        removeChosenTag(sender)
+        setFilteredTagIsSelectedAsFalse(sender)
+    }
+    
+    func setFilteredTagIsSelectedAsFalse(_ sender: UIButton) {
         let title = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
         for i in 0..<self.filteredTags.count {
             if self.filteredTags[i].name! == title {
                 self.filteredTags[i].isSelected = false
-                print("re")
+                break
+            }
+        }
+        self.filteredTags.sort(by: {$0.count > $1.count!})
+        self.tableView.reloadData()
+        self.stopAnimating()
+    }
+    
+    func removeChosenTag(_ sender: UIButton) {
+        let title = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
+        
+        //remove tag from chosen Tags
+        for i in 0..<self.chosenTagsArray.count {
+            if self.chosenTagsArray[i] == title  {
+                self.chosenTagsArray.remove(at: i)
+                break
             }
         }
         
-        removeTagButton(sender)
+        //reset scrollview
+        self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
+        xPositionForChosenTags = UIElement().leftOffset
         
-        self.filteredTags.sort(by: {$0.count > $1.count!})
-        self.tableView.reloadData()
+        //add back chosen tags to chosen tag scrollview
+        for title in chosenTagsArray {
+            self.addChosenTagButton(title)
+        }
+        
+        //show tags label if no more chosen tags
+        if self.chosenTagsArray.count == 0 {
+            addChooseTagsLabel()
+            shouldHideBrewMyPlaylistButton(true)
+        }
     }
     
     //MARK: tags
@@ -320,17 +355,18 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func addChosenTagButton(_ buttonTitle: String) {
         self.chooseTagsLabel.removeFromSuperview()
         
-        let buttonTitleWithX = "\(buttonTitle) | X"
-        
+        let buttonTitleWithX = "\(buttonTitle)"
+        let buttonImageWidth = 25
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonTitleWidth = determineChosenTagButtonTitleWidth(buttonTitleWithX)
         
         let chosenTagButton = UIButton()
-        chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonTitleWidth , height: 45)
-        chosenTagButton.setTitle(" \(buttonTitle) | X ", for: .normal)
+        chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonTitleWidth + buttonImageWidth , height: 45)
+        chosenTagButton.setTitle("\(buttonTitle)", for: .normal)
+        chosenTagButton.setImage(UIImage(named: "chosenTag-exit"), for: .normal)
         chosenTagButton.setTitleColor(color.black(), for: .normal)
         chosenTagButton.backgroundColor = color.uicolorFromHex(0x70b784)
-        chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        chosenTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         chosenTagButton.layer.cornerRadius = 22
         chosenTagButton.clipsToBounds = true
         chosenTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
@@ -339,7 +375,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
         
-        shouldEnableBrewMyPlaylistButton(true)
+        shouldHideBrewMyPlaylistButton(false)
     }
     
     //MARK: featured tags
@@ -376,8 +412,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 featureTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
                 featureTagButton.layer.cornerRadius = 20
                 featureTagButton.clipsToBounds = true
-                //featureTagButton.addTarget(self, action: #selector(self.didPressRemoveSelectedTag(_:)), for: .touchUpInside)
                 featureTagButton.addTarget(self, action: #selector(self.didPressFeatureTag(_:)), for: .touchUpInside)
+                
                 cell.featureTagsScrollview.addSubview(featureTagButton)
                 
                 xPositionForFeaturedTag = xPositionForFeaturedTag + Int(featureTagButton.frame.width) + uiElement.leftOffset
@@ -395,6 +431,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func didPressFeatureTag(_ sender: UIButton) {
+        self.startAnimating()
         let tagName = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
         self.chosenTagsArray.append(tagName)
         self.addChosenTagButton(tagName)
@@ -404,6 +441,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if tagName == self.filteredTags[i].name {
                 self.filteredTags[i].isSelected = true
                 self.tableView.reloadData()
+                self.stopAnimating()
                 break
             }
         }
@@ -465,36 +503,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func removeTagButton(_ button: UIButton) {
-        let title = button.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
-        var position: Int?
-        for i in 0..<self.chosenTagsArray.count {
-            if self.chosenTagsArray[i] == title  {
-                position = i
-            }
-        }
-        
-        if let p = position {
-            self.chosenTagsArray.remove(at: p)
-        }
-        
-        //reset scrollview
-        self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
-        xPositionForChosenTags = UIElement().leftOffset
-        
-        //add back chosen tags to chosen tag scrollview
-        for title in chosenTagsArray {
-            self.addChosenTagButton(title)
-        }
-        
-        if self.chosenTagsArray.count == 0 {
-            addChooseTagsLabel()
-            shouldEnableBrewMyPlaylistButton(false)
-        }
-    }
-    
     func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
-        let uiFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)!
+        let uiFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)!
         let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
         let buttonTitleWidth = Int(buttonTitleSize.width)
         let buttonImageWidth = 50
@@ -516,9 +526,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(30)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 27)
-            make.left.equalTo(self.menuButton.snp.right).offset(uiElement.elementOffset)
-            make.right.equalTo(self.brewMyPlaylistButton.snp.left).offset(-(uiElement.elementOffset))
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
     }
     

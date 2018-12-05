@@ -355,7 +355,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var chosenTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         return label
     }()
@@ -378,14 +378,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         image.layer.cornerRadius = 3
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
-        image.backgroundColor = .black
+        image.backgroundColor = .white
         return image
     }()
     
     lazy var songtitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
        // label.textAlignment = .center
         return label
@@ -394,7 +394,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var songTags: UILabel = {
         let label = UILabel()
         label.text = "Tags"
-        label.textColor = .white
+        label.textColor = color.black()
        //label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         return label
@@ -414,7 +414,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackCurrentTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -422,7 +422,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackTotalTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -447,7 +447,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }()
     
     func setUpView() {
-        self.view.backgroundColor = color.black()
+        self.view.backgroundColor = .white
         
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
