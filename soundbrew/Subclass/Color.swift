@@ -26,6 +26,7 @@ class Color {
     
     func primary() -> UIColor {
         return uicolorFromHex(0xa9d0b4)
+        
         //return uicolorFromHex(0xee1848)
         //return uicolorFromHex(0x00ff99)
         //return uicolorFromHex(0x378869)

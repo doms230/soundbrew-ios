@@ -31,11 +31,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    /*lazy var menuButton: UIButton = {
+    lazy var menuButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "menu"), for: .normal)
         return button
-    }()*/
+    }()
     
     override var preferredStatusBarStyle : UIStatusBarStyle {
         return .lightContent
@@ -58,8 +58,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     lazy var brewMyPlaylistButton: UIButton = {
         let button = UIButton()
         button.setTitle("Brew My Playlist", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = color.uicolorFromHex(0xa9c5d0)
+        button.setTitleColor(.white, for: .normal)
+        //button.backgroundColor = color.uicolorFromHex(0xa9c5d0)
+        button.backgroundColor = color.black()
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
         button.isHidden = true
         return button
@@ -67,15 +68,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func shouldHideBrewMyPlaylistButton(_ shouldHide: Bool) {
         brewMyPlaylistButton.isHidden = shouldHide
-        /*if shouldEnable {
-         brewMyPlaylistButton.backgroundColor = color.primary()
-         brewMyPlaylistButton.setTitleColor(color.black(), for: .normal)
-         
-         
-         } else {
-         brewMyPlaylistButton.backgroundColor = backgroundColor()
-         brewMyPlaylistButton.setTitleColor(.lightGray, for: .normal)
-         }*/
     }
     
     func setUpBrewMyPlaylistButton() {
@@ -89,14 +81,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
-        
-        /*self.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-        self.view.addSubview(self.menuButton)
-        menuButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.top.equalTo(self.brewMyPlaylistButton).offset(5)
-            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-        }*/
     }
     
     //MARK: Tableview
@@ -176,6 +160,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 addFeatureTagButton(tags, cell: cell)
             }
             
+            cell.featureTagTitle.text = featureTagTitles[indexPath.row]
+            
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
             cell.tagLabel.delegate = self
@@ -183,24 +169,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
             cell.tagLabel.addTags(otherTags)
             self.tagView = cell.tagLabel
-            
-            /*let tagColors = [color.primary(), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
-            var colorI = 0
-            
-            for i in 0..<cell.tagLabel.tagViews.count {
-                let tag = cell.tagLabel.tagViews[i]
-                
-                let color = tagColors[colorI]
-                tag.borderColor = color
-                tag.textColor = color 
-                
-                if tagColors.indices.contains(colorI + 1) {
-                    colorI = 0
-                    
-                } else {
-                    colorI = colorI + 1
-                }
-            }*/
         }
 
         cell.backgroundColor = backgroundColor()
@@ -291,7 +259,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var filteredTags = [Tag]()
     var tagView: TagListView!
     
-    let featureTagTitles = ["Genre", "City", "Artists", "Mood", "Activity"]
+    let featureTagTitles = ["Mood", "Activity", "Genre", "City", "Artist"]
     
     var genreTags = [String]()
     var moodTags = [String]()
@@ -407,12 +375,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 featureTagButton.setTitle(" \(tag.name!) ", for: .normal)
                 featureTagButton.setTitleColor(self.color.black(), for: .normal)
                 featureTagButton.backgroundColor = color
-                /*if tag.isSelected {
-                 //tagWasSelectedLook(featureTagButton)
-                 
-                 } else {
-                 featureTagButton.backgroundColor = color
-                 }*/
                 featureTagButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
                 featureTagButton.layer.cornerRadius = 20
                 featureTagButton.clipsToBounds = true
@@ -439,7 +401,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let tagName = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
         self.chosenTagsArray.append(tagName)
         self.addChosenTagButton(tagName)
-        //tagWasSelectedLook(sender)
         
         for i in 0..<self.filteredTags.count {
             if tagName == self.filteredTags[i].name {
@@ -450,18 +411,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
-    
-    /*func tagWasSelectedLook(_ button: UIButton) {
-        if button.backgroundColor == .white {
-            button.layer.borderColor = color.black().cgColor
-            button.layer.borderWidth = 1
-            button.setTitleColor(color.black(), for: .normal)
-            button.backgroundColor = .white
-            
-        } else {
-            
-        }
-    }*/
     
     func determineFeaturedTagImage(_ tag: String) -> String? {
         let tagLowercased = tag.lowercased()
@@ -526,12 +475,20 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }()
     
     func setUpSearchBar() {
+        menuButton.addTarget(self, action: #selector(didPressMenuButton(_:)), for: .touchUpInside)
+        self.view.addSubview(self.menuButton)
+        menuButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 20)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
         searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
         self.view.addSubview(self.searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(30)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.top.equalTo(self.menuButton)
+            make.left.equalTo(self.menuButton.snp.right).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
     }
@@ -577,38 +534,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         }
                         
                         self.tags.append(newTag)
-                        
-                        /*if let tagType = object["type"] as? String {
-                            switch tagType {
-                            case "genre":
-                                self.genreTags.append(tagName)
-                                break
-                                
-                            case "mood":
-                                self.moodTags.append(tagName)
-                                break
-                                
-                            case "activity":
-                                self.activityTags.append(tagName)
-                                break
-                                
-                            case "city":
-                                self.cityTags.append(tagName)
-                                break
-                                
-                            case "artist":
-                                self.artistTags.append(tagName)
-                                
-                            default:
-                                let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, tagType: nil)
-                                self.tags.append(newTag)
-                                break
-                            }
-                            
-                        } else {
-                            let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount)
-                            self.tags.append(newTag)
-                        }*/
                     }
                 }
                 

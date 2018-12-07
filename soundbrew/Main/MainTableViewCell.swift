@@ -49,17 +49,17 @@ class MainTableViewCell: UITableViewCell {
         switch reuseIdentifier {
         case "featureTagReuse":
             self.addSubview(featureTagsScrollview)
-            //self.addSubview(featureTagTitle)
+            self.addSubview(featureTagTitle)
             
-            /*featureTagTitle.snp.makeConstraints { (make) -> Void in
+            featureTagTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-            }*/
+            }
             
             featureTagsScrollview.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(uiElement.buttonHeight)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.top.equalTo(self.featureTagTitle.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))

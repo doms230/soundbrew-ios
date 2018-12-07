@@ -28,7 +28,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         
         if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
-            self.title = convertArrayToString(tags)
             
             self.secondsPlayed = UserDefaults.standard.integer(forKey: "secondsPlayed")
             
@@ -346,9 +345,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     //mark: View
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        button.setTitle("←", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 30)
+        button.setImage(UIImage(named: "exit"), for: .normal)
         return button
     }()
     
@@ -463,13 +460,22 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         self.view.backgroundColor = .white
         
         //top views
+        let tagsAsString = convertArrayToString(tags)
+        exitButton.setTitle(tagsAsString, for: .normal)
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(25)
-            make.width.equalTo(60)
+            make.height.width.equalTo(25)
             make.top.equalTo(self.view).offset(uiElement.topOffset + 20)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        moreButton.addTarget(self, action: #selector(self.didPressArtistNameButton(_:)), for: .touchUpInside)
+        self.view.addSubview(moreButton)
+        moreButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.exitButton)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         chosenTags.text = convertArrayToString(tags)
@@ -477,7 +483,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         chosenTags.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(exitButton).offset(2)
             make.left.equalTo(self.exitButton.snp.right).offset(uiElement.elementOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.right.equalTo(self.moreButton.snp.left).offset(-(uiElement.elementOffset))
         }
         
         //playback views
@@ -530,17 +536,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        moreButton.addTarget(self, action: #selector(self.didPressArtistNameButton(_:)), for: .touchUpInside)
-        self.view.addSubview(moreButton)
-        moreButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(self.songtitle.snp.bottom)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         self.view.addSubview(artistName)
         artistName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.moreButton).offset(uiElement.elementOffset)
+            make.top.equalTo(self.songtitle.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             //make.right.equalTo(self.moreButton.snp.left).offset(-(uiElement.elementOffset))
         }
