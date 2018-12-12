@@ -48,5 +48,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>SCSDKClientId</key>
+	<string>7530c9a7-b226-43ba-9c5e-082c14b6db3c</string>
+	<key>SCSDKRedirectUrl</key>
+	<string>soundbrew://snap</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>snapchat</string>
+		<string>bitmoji-sdk</string>
+		<string>itms-apps</string>
+	</array>
+	<key>CFBundleURLSchemes</key>
+	<array>
+		<string>soundbrew</string>
+	</array>
 </dict>
 </plist>

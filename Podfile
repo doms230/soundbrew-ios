@@ -27,5 +27,6 @@ target 'soundbrew' do
   pod 'Firebase/AdMob'
   pod 'Alamofire'
   pod 'SwiftyJSON'
+  pod 'SnapSDK'
   
 end

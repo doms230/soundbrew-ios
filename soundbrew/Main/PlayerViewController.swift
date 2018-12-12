@@ -15,6 +15,7 @@ import AVFoundation
 import MediaPlayer
 import GoogleMobileAds
 import Alamofire
+import SCSDKCreativeKit
 
 class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADInterstitialDelegate {
 
@@ -29,7 +30,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
             
-            self.secondsPlayed = UserDefaults.standard.integer(forKey: "secondsPlayed")
+            self.secondsPlayedSinceLastAd = UserDefaults.standard.integer(forKey: "secondsPlayed")
             
             setupRemoteTransportControls()
             setUpView()
@@ -43,14 +44,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        UserDefaults.standard.set(secondsPlayed, forKey: "secondsPlayed")
+        UserDefaults.standard.set(secondsPlayedSinceLastAd, forKey: "secondsPlayed")
     }
     
     //mark: Player
     var soundPlayer: AVAudioPlayer!
     var audioAsset: AVURLAsset!
-    var secondsPlayed = 0
-    var thirtyMinutesInSeconds = 1800
+    var secondsPlayedSinceLastAd = 0
+    let thirtyMinutesInSeconds = 1800
     var isSoundPlaying = false
     var playlistPosition: Int?
     
@@ -58,7 +59,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         var soundPlayable = true
         
         //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
-        let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("audio.mp3")
+        let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("audio")
         
         do {
             try audioData.write(to: audioFileURL, options: .atomic)
@@ -113,10 +114,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if !soundPlayable {
             setUpNextSong()
             
-        } else if soundPlayable && secondsPlayed < thirtyMinutesInSeconds {
+        } else if soundPlayable && secondsPlayedSinceLastAd < thirtyMinutesInSeconds {
             playNextSong()
             
-        } else if soundPlayable && secondsPlayed > thirtyMinutesInSeconds {
+        } else if soundPlayable && secondsPlayedSinceLastAd > thirtyMinutesInSeconds {
             self.soundPlayer.pause()
             shouldEnableButtons(false)
             playBackButton.setImage(UIImage(named: "play"), for: .normal)
@@ -127,8 +128,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         soundPlayer.play()
         isSoundPlaying = true
         
-        secondsPlayed = secondsPlayed + Int(audioAsset.duration.seconds)
-        print(secondsPlayed)
+        secondsPlayedSinceLastAd = secondsPlayedSinceLastAd + Int(audioAsset.duration.seconds)
+        
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
         
         playBackButton.setImage(UIImage(named: "pause"), for: .normal)
@@ -196,6 +197,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 print(error)
                 
             } else if let audioData = audioData {
+                print(audioData)
                 if prepareAndPlay {
                     self.prepareAndPlay(audioData)
                 }
@@ -247,7 +249,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     
     func setupBackgroundAudioNowPlaying(_ playerItem: AVURLAsset, player: AVAudioPlayer) {
         // Define Now Playing Info
-        nowPlayingInfo[MPMediaItemPropertyTitle] = songtitle.text!
+        nowPlayingInfo[MPMediaItemPropertyTitle] = songTitle.text!
         
         let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
         nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
@@ -291,7 +293,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         let interstitial = GADInterstitial(adUnitID: productionKey)
         interstitial.delegate = self
         let request = GADRequest()
-        request.testDevices = ["da8e23242ac0690b867b0fe94ba2f2a7"]
+        //request.testDevices = ["da8e23242ac0690b867b0fe94ba2f2a7"]
         interstitial.load(request)
         return interstitial
     }
@@ -331,7 +333,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     
     /// Tells the delegate the interstitial is to be animated off the screen.
     func interstitialWillDismissScreen(_ ad: GADInterstitial) {
-        secondsPlayed = 0
+        secondsPlayedSinceLastAd = 0
         playNextSong()
         shouldEnableButtons(true)
         UserDefaults.standard.set(0, forKey: "secondsPlayed")
@@ -385,7 +387,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         return image
     }()
     
-    lazy var songtitle: UILabel = {
+    lazy var songTitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
         label.textColor = color.black()
@@ -529,8 +531,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(songtitle)
-        songtitle.snp.makeConstraints { (make) -> Void in
+        self.view.addSubview(songTitle)
+        songTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -538,7 +540,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         
         self.view.addSubview(artistName)
         artistName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songtitle.snp.bottom).offset(uiElement.elementOffset)
+            make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             //make.right.equalTo(self.moreButton.snp.left).offset(-(uiElement.elementOffset))
         }
@@ -560,7 +562,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     func setCurrentSoundView(_ sound: Sound, i: Int) {
-        self.songtitle.text = sound.title
+        self.songTitle.text = sound.title
         self.songTags.text = convertArrayToString(sound.tags)
         if let artistName = sound.artistName {
             self.artistName.setTitle(artistName, for: .normal)
@@ -596,7 +598,24 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
+        //self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
+        if let stickerImage = createShareableSticker() {
+            let sticker = SCSDKSnapSticker(stickerImage: stickerImage)
+            
+            let snap = SCSDKNoSnapContent()
+            snap.sticker = sticker
+            snap.attachmentUrl = "https://www.soundbrew.app/ios"
+            let api = SCSDKSnapAPI(content: snap)
+            api.startSnapping(completionHandler: { (error: Error?) in
+                if let error = error {
+                    print("Snapchat error: \(error)")
+                }
+            })
+            
+        } else {
+            print("didn't work")
+        }
+
     }
     
     @objc func didPressExitButton(_ sender: UIButton) {
@@ -605,7 +624,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if secondsPlayed > thirtyMinutesInSeconds && !isSoundPlaying {
+        if secondsPlayedSinceLastAd > thirtyMinutesInSeconds && !isSoundPlaying {
             self.showAd()
             
         } else {
@@ -623,20 +642,59 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         playBackSlider.value = Float(counter)
     }
     
+    //mark: share snap
+    func createShareableSticker() -> UIImage? {
+       // let image: UIImage?
+        let stickerView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
+        stickerView.backgroundColor = .white
+        
+        let songArt = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        songArt.image = self.songArt.image!
+        songArt.backgroundColor = .white
+        
+        let songTitle = UILabel(frame: CGRect(x: 55, y: 0, width: 90, height: 20))
+        songTitle.text = self.songTitle.text!
+        songTitle.textColor = color.black()
+        songTitle.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 12)
+        
+        let artistName = UILabel(frame: CGRect(x: 55, y: 15, width: 90, height: 20))
+        artistName.text = self.artistName.titleLabel!.text!
+        artistName.textColor = color.black()
+        artistName.font = UIFont(name: uiElement.mainFont, size: 11)
+        
+        let listenOnLabel = UILabel(frame: CGRect(x: 55, y: 30, width: 90, height: 20))
+        listenOnLabel.text = "Listen on Soundbrew"
+        listenOnLabel.textColor = color.black()
+        listenOnLabel.font = UIFont(name: uiElement.mainFont, size: 9)
+        
+        stickerView.addSubview(songArt)
+        stickerView.addSubview(listenOnLabel)
+        stickerView.addSubview(songTitle)
+        stickerView.addSubview(artistName)
+        
+        UIGraphicsBeginImageContextWithOptions(stickerView.bounds.size, stickerView.isOpaque, 0.0)
+        stickerView.drawHierarchy(in: stickerView.bounds, afterScreenUpdates: true)
+        let snapshotImageFromMyView = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        //snapshotImageFromMyView
+        return snapshotImageFromMyView
+    }
+    
     //mark: data
     var sounds = [Sound]()
     
     func loadSounds() {
         let query = PFQuery(className: "Post")
         query.whereKey("tags", containedIn: tags)
+        query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
                 if let objects = objects {
                     for object in objects {
                         let title = object["title"] as! String
-                        let audioFile = object["audioFile"] as! PFFile
-                        let songArt = (object["songArt"] as! PFFile).url!
+                        let audioFile = object["audioFile"] as! PFFileObject
+                        let songArt = (object["songArt"] as! PFFileObject).url!
                         let userId = object["userId"] as! String
                         let tags = object["tags"] as! Array<String>
                         var playCount = 0

@@ -13,7 +13,7 @@ class Sound {
     var objectId: String!
     var userId: String!
     var title: String!
-    var audio: PFFile!
+    var audio: PFFileObject!
     var audioData: Data?
     var art: String!
     var tags: Array<String>!
@@ -30,7 +30,7 @@ class Sound {
     var otherLink: String?
     var artistVerified: Bool?
     
-    init(objectId: String!, title: String!, art: String!, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFile!, relevancyScore: Int!, audioData: Data?, artistName: String?, artistCity: String?, instagramHandle: String?, twitterHandle: String?, spotifyLink: String?, soundcloudLink: String?, appleMusicLink: String?, otherLink: String?, artistVerified: Bool?) {
+    init(objectId: String!, title: String!, art: String!, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, relevancyScore: Int!, audioData: Data?, artistName: String?, artistCity: String?, instagramHandle: String?, twitterHandle: String?, spotifyLink: String?, soundcloudLink: String?, appleMusicLink: String?, otherLink: String?, artistVerified: Bool?) {
         self.objectId = objectId
         self.userId = userId
         self.title = title
