@@ -1,0 +1,6 @@
+framework module ShareInstagram {
+  umbrella header "ShareInstagram-umbrella.h"
+
+  export *
+  module * { export * }
+}

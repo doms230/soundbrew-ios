@@ -28,5 +28,6 @@ target 'soundbrew' do
   pod 'Alamofire'
   pod 'SwiftyJSON'
   pod 'SnapSDK'
+  pod 'ShareInstagram'
   
 end

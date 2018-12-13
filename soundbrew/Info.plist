@@ -57,6 +57,8 @@
 		<string>snapchat</string>
 		<string>bitmoji-sdk</string>
 		<string>itms-apps</string>
+		<string>instagram-stories</string>
+		<string>instagram</string>
 	</array>
 	<key>CFBundleURLSchemes</key>
 	<array>

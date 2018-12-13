@@ -64,6 +64,7 @@ PODS:
     - Bolts/Tasks (~> 1.9)
   - PINCache (2.3)
   - PINOperation (1.1.1)
+  - ShareInstagram (1.6)
   - SnapKit (4.2.0)
   - SnapSDK (1.1.5):
     - SnapSDK/SCSDKBitmojiKit (= 1.1.5)
@@ -84,6 +85,7 @@ DEPENDENCIES:
   - Kingfisher
   - NVActivityIndicatorView
   - Parse
+  - ShareInstagram
   - SnapKit
   - SnapSDK
   - SwiftyJSON
@@ -106,6 +108,7 @@ SPEC REPOS:
     - Parse
     - PINCache
     - PINOperation
+    - ShareInstagram
     - SnapKit
     - SnapSDK
     - SwiftyJSON
@@ -127,11 +130,12 @@ SPEC CHECKSUMS:
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
+  ShareInstagram: 787136afff8d1fbe899b1c3e5450560694071dff
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
   SnapSDK: 0f8dd0415db25a64b3bde4e3fddc271849820ac7
   SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
   TagListView: 0c7e9c26b9aff858224ee6b155f5fcacd9e27c83
 
-PODFILE CHECKSUM: 1dd2dc86df55c095a1cc1bf7cfb96482b950fc18
+PODFILE CHECKSUM: 82946d23989ee292b9ff2814061ef682784d49a5
 
 COCOAPODS: 1.5.3

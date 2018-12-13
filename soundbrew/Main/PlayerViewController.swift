@@ -16,6 +16,7 @@ import MediaPlayer
 import GoogleMobileAds
 import Alamofire
 import SCSDKCreativeKit
+import ShareInstagram
 
 class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADInterstitialDelegate {
 
@@ -39,9 +40,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         }
     }
     
-    override var preferredStatusBarStyle : UIStatusBarStyle {
+    /*override var preferredStatusBarStyle : UIStatusBarStyle {
         return .lightContent
-    }
+    }*/
     
     override func viewWillDisappear(_ animated: Bool) {
         UserDefaults.standard.set(secondsPlayedSinceLastAd, forKey: "secondsPlayed")
@@ -372,9 +373,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         return image
     }()
     
-    lazy var moreButton: UIButton = {
+    lazy var shareButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "more"), for: .normal)
+        button.setImage(UIImage(named: "share"), for: .normal)
         return button
     }()
     
@@ -472,9 +473,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        moreButton.addTarget(self, action: #selector(self.didPressArtistNameButton(_:)), for: .touchUpInside)
-        self.view.addSubview(moreButton)
-        moreButton.snp.makeConstraints { (make) -> Void in
+        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
+        self.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
             make.top.equalTo(self.exitButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -485,7 +486,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         chosenTags.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(exitButton).offset(2)
             make.left.equalTo(self.exitButton.snp.right).offset(uiElement.elementOffset)
-            make.right.equalTo(self.moreButton.snp.left).offset(-(uiElement.elementOffset))
+            make.right.equalTo(self.shareButton.snp.left).offset(-(uiElement.elementOffset))
         }
         
         //playback views
@@ -539,6 +540,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         }
         
         self.view.addSubview(artistName)
+        artistName.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         artistName.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
@@ -598,24 +600,27 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        //self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
-        if let stickerImage = createShareableSticker() {
-            let sticker = SCSDKSnapSticker(stickerImage: stickerImage)
-            
-            let snap = SCSDKNoSnapContent()
-            snap.sticker = sticker
-            snap.attachmentUrl = "https://www.soundbrew.app/ios"
-            let api = SCSDKSnapAPI(content: snap)
-            api.startSnapping(completionHandler: { (error: Error?) in
-                if let error = error {
-                    print("Snapchat error: \(error)")
-                }
-            })
-            
-        } else {
-            print("didn't work")
-        }
+        self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
+    }
+    
+    @objc func didPressShareButton(_ sender: UIButton) {
+        let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
 
+        let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
+            self.shareToSnapchat()
+        }
+        alertController.addAction(snapchatAction)
+        
+        let instagramAction = UIAlertAction(title: "Instagram", style: .default) { (_) -> Void in
+            self.shareToInstagram()
+        }
+        alertController.addAction(instagramAction)
+        
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func didPressExitButton(_ sender: UIButton) {
@@ -642,11 +647,41 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         playBackSlider.value = Float(counter)
     }
     
-    //mark: share snap
+    //mark: share
+    let shareAppURL = "https://www.soundbrew.app/ios"
+    
+    func shareToSnapchat() {
+        if let stickerImage = createShareableSticker() {
+            let sticker = SCSDKSnapSticker(stickerImage: stickerImage)
+            
+            let snap = SCSDKNoSnapContent()
+            snap.sticker = sticker
+            snap.attachmentUrl = shareAppURL
+            let api = SCSDKSnapAPI(content: snap)
+            api.startSnapping(completionHandler: { (error: Error?) in
+                if let error = error {
+                    print("Snapchat error: \(error)")
+                }
+            })
+            
+        } else {
+            print("didn't work")
+        }
+    }
+    
+    func shareToInstagram() {
+        if let stickerImage = createShareableSticker() {
+            let share = ShareImageInstagram()
+            
+            share.postToInstagramStories(image: stickerImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
+        }
+    }
+    
     func createShareableSticker() -> UIImage? {
        // let image: UIImage?
+        
         let stickerView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
-        stickerView.backgroundColor = .white
+        stickerView.backgroundColor = .white        
         
         let songArt = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         songArt.image = self.songArt.image!
@@ -672,7 +707,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         stickerView.addSubview(songTitle)
         stickerView.addSubview(artistName)
         
-        UIGraphicsBeginImageContextWithOptions(stickerView.bounds.size, stickerView.isOpaque, 0.0)
+        UIGraphicsBeginImageContextWithOptions(stickerView.bounds.size, false, 0.0)
         stickerView.drawHierarchy(in: stickerView.bounds, afterScreenUpdates: true)
         let snapshotImageFromMyView = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
