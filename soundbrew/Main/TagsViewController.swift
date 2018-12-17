@@ -37,10 +37,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return button
     }()
     
-    override var preferredStatusBarStyle : UIStatusBarStyle {
-        return .lightContent
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         do {
             try AVAudioSession.sharedInstance().setActive(false)
@@ -129,25 +125,33 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             var tagType: String?
             
+            var color: UIColor!
+            //        let tagColors = [color.primary(), color.uicolorFromHex(0xa9c5d0), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0a9cb), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
+            
             switch indexPath.row {
             case 0:
                 tagType = "mood"
+                color = self.color.primary()
                 break
                 
             case 1:
                 tagType = "activity"
+                color = self.color.uicolorFromHex(0xa9c5d0)
                 break
                 
             case 2:
                 tagType = "genre"
+                color = self.color.uicolorFromHex(0xaea9d0)
                 break
                 
             case 3:
                 tagType = "city"
+                color = self.color.uicolorFromHex(0xd0a9cb)
                 break
                 
             case 4:
                 tagType = "artist"
+                color = self.color.uicolorFromHex(0xd0aba9)
                 break
                 
             default:
@@ -157,7 +161,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if let tagType = tagType {
                 let tags: Array<Tag> = self.filteredTags.filter {$0.tagType == tagType}
                 //addFeatureTagButton(tags, cell: cell)
-                addFeatureTagButton(tags, cell: cell)
+                addFeatureTagButton(tags, cell: cell, color: color)
             }
             
             cell.featureTagTitle.text = featureTagTitles[indexPath.row]
@@ -351,15 +355,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: featured tags
-    func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: MainTableViewCell) {
+    func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: MainTableViewCell, color: UIColor) {
         var xPositionForFeaturedTag = uiElement.leftOffset
-        let tagColors = [color.primary(), color.uicolorFromHex(0xa9c5d0), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0a9cb), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
-        var colorI = 0
+
         cell.featureTagsScrollview.subviews.forEach({$0.removeFromSuperview()})
         
         for tag in featuredTags {
             if !tag.isSelected {
-                let color = tagColors[colorI]
                 
                 let buttonTitleWidth = determineChosenTagButtonTitleWidth(tag.name)
                 
@@ -384,14 +386,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
                 xPositionForFeaturedTag = xPositionForFeaturedTag + Int(featureTagButton.frame.width) + uiElement.leftOffset
                 cell.featureTagsScrollview.contentSize = CGSize(width: xPositionForFeaturedTag, height: uiElement.buttonHeight)
-                
-                //rotating through colors, so go back to zero if colors reach end of index
-                if !tagColors.indices.contains(colorI + 1) {
-                    colorI = 0
-                    
-                } else {
-                    colorI = colorI + 1
-                }
             }
         }
     }
@@ -450,6 +444,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         case "chill":
             return "chill"
+            
+        case "girlpower":
+            return "female"
             
         default:
             return nil

@@ -17,6 +17,7 @@ import GoogleMobileAds
 import Alamofire
 import SCSDKCreativeKit
 import ShareInstagram
+import Firebase
 
 class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADInterstitialDelegate {
 
@@ -40,10 +41,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         }
     }
     
-    /*override var preferredStatusBarStyle : UIStatusBarStyle {
-        return .lightContent
-    }*/
-    
     override func viewWillDisappear(_ animated: Bool) {
         UserDefaults.standard.set(secondsPlayedSinceLastAd, forKey: "secondsPlayed")
     }
@@ -58,9 +55,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     
     func prepareAndPlay(_ audioData: Data) {
         var soundPlayable = true
+
+        //need audio url so can see what type of file audio is... helps get audio duration
+        let audioURL = URL(string: sounds[playlistPosition!].audioURL)
         
         //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
-        let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("audio")
+        let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
         
         do {
             try audioData.write(to: audioFileURL, options: .atomic)
@@ -68,7 +68,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             let duration = audioAsset.duration.seconds
             self.playBackTotalTime.text = self.formatTime(duration)
             self.playBackSlider.maximumValue = Float(duration)
-            
+                        
         } catch {
             print(error)
             soundPlayable = false
@@ -120,7 +120,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             
         } else if soundPlayable && secondsPlayedSinceLastAd > thirtyMinutesInSeconds {
             self.soundPlayer.pause()
-            shouldEnableButtons(false)
+            shouldEnableBackgroundAudioButtons(false)
             playBackButton.setImage(UIImage(named: "play"), for: .normal)
         }
     }
@@ -134,9 +134,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
         
         playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        self.shouldEnableSoundView(true)
+        
+        let sound = sounds[playlistPosition!]
+        self.setCurrentSoundView(sound, i: playlistPosition!)
         
         setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
-        incrementPlayCount(sound: sounds[playlistPosition!])
+        incrementPlayCount(sound: sound)
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -157,8 +161,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         playBackSlider.value = 0
         
         let sound = incrementPlaylistPositionAndReturnSound()
-
-        self.setCurrentSoundView(sound, i: playlistPosition!)
         
         if let audioData = sound.audioData {
             self.prepareAndPlay(audioData)
@@ -240,7 +242,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         }
     }
     
-    func shouldEnableButtons(_ shouldEnable: Bool) {
+    func shouldEnableBackgroundAudioButtons(_ shouldEnable: Bool) {
         skipButton.isEnabled = shouldEnable
         
         commandCenter.nextTrackCommand.isEnabled = shouldEnable
@@ -311,7 +313,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 
         } else {
             playNextSong()
-            self.shouldEnableButtons(true)
+            self.shouldEnableBackgroundAudioButtons(true)
         }
     }
     
@@ -336,7 +338,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     func interstitialWillDismissScreen(_ ad: GADInterstitial) {
         secondsPlayedSinceLastAd = 0
         playNextSong()
-        shouldEnableButtons(true)
+        shouldEnableBackgroundAudioButtons(true)
         UserDefaults.standard.set(0, forKey: "secondsPlayed")
     }
     
@@ -492,7 +494,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         //playback views
         self.view.addSubview(playbackView)
         playbackView.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
+            make.height.equalTo(60)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
@@ -502,7 +504,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(40)
+            make.height.width.equalTo(50)
             make.top.equalTo(playbackView).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
@@ -510,14 +512,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.playbackView.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(35)
+            make.height.width.equalTo(45)
             make.top.equalTo(playBackButton).offset(3)
             make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }
         
         self.playbackView.addSubview(playBackSlider)
         playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.skipButton).offset(3)
+            make.top.equalTo(self.skipButton).offset(7)
             make.left.equalTo(self.skipButton.snp.right).offset(uiElement.elementOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -599,6 +601,11 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             })
     }
     
+    func shouldEnableSoundView(_ shouldEnable: Bool) {
+        self.playBackButton.isEnabled = shouldEnable
+        self.skipButton.isEnabled = shouldEnable
+    }
+    
     @objc func didPressArtistNameButton(_ sender: UIButton) {
         self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
     }
@@ -624,7 +631,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressExitButton(_ sender: UIButton) {
-        self.soundPlayer.pause()
+        if self.soundPlayer != nil {
+            self.soundPlayer.pause()
+        }
+        
         self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
     }
     
@@ -638,6 +648,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
+        shouldEnableSoundView(false)
         self.setUpNextSong()
     }
     
@@ -661,6 +672,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             api.startSnapping(completionHandler: { (error: Error?) in
                 if let error = error {
                     print("Snapchat error: \(error)")
+                    
+                } else {
+                    self.logExternalShareEvent("Snapchat")
                 }
             })
             
@@ -674,7 +688,16 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             let share = ShareImageInstagram()
             
             share.postToInstagramStories(image: stickerImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
+            self.logExternalShareEvent("Instagram")
         }
+    }
+    
+    func logExternalShareEvent(_ title: String) {
+        Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+            AnalyticsParameterItemID: "id-\(title)",
+            AnalyticsParameterItemName: title,
+            AnalyticsParameterContentType: "cont"
+            ])
     }
     
     func createShareableSticker() -> UIImage? {
@@ -698,7 +721,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         artistName.font = UIFont(name: uiElement.mainFont, size: 11)
         
         let listenOnLabel = UILabel(frame: CGRect(x: 55, y: 30, width: 90, height: 20))
-        listenOnLabel.text = "Listen on Soundbrew"
+        listenOnLabel.text = "Listening on Soundbrew"
         listenOnLabel.textColor = color.black()
         listenOnLabel.font = UIFont(name: uiElement.mainFont, size: 9)
         
@@ -744,7 +767,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                             }
                         }
                         
-                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
+                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
                         self.sounds.append(newSound)
                     }
                     
