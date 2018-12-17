@@ -120,6 +120,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             
         } else if soundPlayable && secondsPlayedSinceLastAd > thirtyMinutesInSeconds {
             self.soundPlayer.pause()
+            shouldEnableSoundView(true)
             shouldEnableBackgroundAudioButtons(false)
             playBackButton.setImage(UIImage(named: "play"), for: .normal)
         }
@@ -445,12 +446,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     lazy var playBackButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "pause"), for: .normal)
+        button.isEnabled = false
         return button
     }()
     
     lazy var skipButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "skip"), for: .normal)
+        button.isEnabled = false 
         return button
     }()
     
@@ -648,7 +651,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
-        shouldEnableSoundView(false)
+        self.shouldEnableSoundView(false)
         self.setUpNextSong()
     }
     
@@ -703,24 +706,24 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     func createShareableSticker() -> UIImage? {
        // let image: UIImage?
         
-        let stickerView = UIView(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
+        let stickerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
         stickerView.backgroundColor = .white        
         
         let songArt = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         songArt.image = self.songArt.image!
         songArt.backgroundColor = .white
         
-        let songTitle = UILabel(frame: CGRect(x: 55, y: 0, width: 90, height: 20))
+        let songTitle = UILabel(frame: CGRect(x: 55, y: 0, width: 140, height: 20))
         songTitle.text = self.songTitle.text!
         songTitle.textColor = color.black()
         songTitle.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 12)
         
-        let artistName = UILabel(frame: CGRect(x: 55, y: 15, width: 90, height: 20))
+        let artistName = UILabel(frame: CGRect(x: 55, y: 15, width: 140, height: 20))
         artistName.text = self.artistName.titleLabel!.text!
         artistName.textColor = color.black()
         artistName.font = UIFont(name: uiElement.mainFont, size: 11)
         
-        let listenOnLabel = UILabel(frame: CGRect(x: 55, y: 30, width: 90, height: 20))
+        let listenOnLabel = UILabel(frame: CGRect(x: 55, y: 30, width: 140, height: 20))
         listenOnLabel.text = "Listening on Soundbrew"
         listenOnLabel.textColor = color.black()
         listenOnLabel.font = UIFont(name: uiElement.mainFont, size: 9)
