@@ -47,13 +47,15 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     
     //mark: Player
     var soundPlayer: AVAudioPlayer!
-    var audioAsset: AVURLAsset!
+    //var audioAsset: AVURLAsset!
     var secondsPlayedSinceLastAd = 0
     let thirtyMinutesInSeconds = 1800
     var isSoundPlaying = false
     var playlistPosition: Int?
     
     func prepareAndPlay(_ audioData: Data) {
+        var audioAsset: AVURLAsset!
+        
         var soundPlayable = true
 
         //need audio url so can see what type of file audio is... helps get audio duration
@@ -68,7 +70,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             let duration = audioAsset.duration.seconds
             self.playBackTotalTime.text = self.formatTime(duration)
             self.playBackSlider.maximumValue = Float(duration)
-                        
+            self.secondsPlayedSinceLastAd = secondsPlayedSinceLastAd + Int(audioAsset.duration.seconds)
+            
         } catch {
             print(error)
             soundPlayable = false
@@ -130,8 +133,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         soundPlayer.play()
         isSoundPlaying = true
         
-        secondsPlayedSinceLastAd = secondsPlayedSinceLastAd + Int(audioAsset.duration.seconds)
-        
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
         
         playBackButton.setImage(UIImage(named: "pause"), for: .normal)
@@ -140,7 +141,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         let sound = sounds[playlistPosition!]
         self.setCurrentSoundView(sound, i: playlistPosition!)
         
-        setupBackgroundAudioNowPlaying(audioAsset, player: soundPlayer)
         incrementPlayCount(sound: sound)
     }
     
@@ -153,7 +153,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if soundPlayer != nil {
             soundPlayer.pause()
             soundPlayer = nil
-            audioAsset = nil
+            //audioAsset = nil
         }
         
         //put playback time back to zero
@@ -210,7 +210,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         }
     }
     
-    var nowPlayingInfo = [String : Any]()
+    //var nowPlayingInfo = [String : Any]()
     var commandCenter = MPRemoteCommandCenter.shared()
     
     func setupRemoteTransportControls() {
@@ -251,23 +251,34 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         commandCenter.pauseCommand.isEnabled = shouldEnable
     }
     
-    func setupBackgroundAudioNowPlaying(_ playerItem: AVURLAsset, player: AVAudioPlayer) {
+    func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer, sound: Sound) {
+        var nowPlayingInfo = [String : Any]()
+        
         // Define Now Playing Info
-        nowPlayingInfo[MPMediaItemPropertyTitle] = songTitle.text!
+        nowPlayingInfo[MPMediaItemPropertyTitle] = sound.title
+        
+        nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artistName
+        
+        if let image = sound.artImage {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                MPMediaItemArtwork(boundsSize: image.size) { size in
+                    return image
+            }
+        }
         
         let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
         nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = playerItem.duration.seconds
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
         
         // Set the metadata
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
-    func setBackgoundAudioArtistName(_ artistName: String) {
+    /*func setBackgoundAudioArtistName(_ artistName: String) {
         self.nowPlayingInfo[MPMediaItemPropertyArtist] = artistName
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-    }
+    }*/
     
     func playOrPause() {
         if self.isSoundPlaying {
@@ -571,10 +582,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     func setCurrentSoundView(_ sound: Sound, i: Int) {
         self.songTitle.text = sound.title
         self.songTags.text = convertArrayToString(sound.tags)
+        
         if let artistName = sound.artistName {
             self.artistName.setTitle(artistName, for: .normal)
-            self.setBackgoundAudioArtistName(artistName)
-            
+            self.setCurrentSoundViewImageAndbackgroundAudio(sound)
             if let artistVerified = sound.artistVerified {
                 if artistVerified {
                     self.verifiedCheck.image = UIImage(named: "check")
@@ -587,21 +598,33 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         } else {
             let placeHolder = ""
             self.artistName.setTitle(placeHolder, for: .normal)
-            self.setBackgoundAudioArtistName(placeHolder)
             loadUserInfoFromCloud(sound.userId, i: i)
         }
         
-        self.songArt.kf.setImage(with: URL(string: sound.art), placeholder: UIImage(named: "appy"), options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
+        /*self.songArt.kf.setImage(with: URL(string: sound.art), placeholder: UIImage(named: "appy"), options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
             if error == nil {
                 if let backgroundAudioArtwork = image {
-                    self.nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                    /*self.nowPlayingInfo[MPMediaItemPropertyArtwork] =
                         MPMediaItemArtwork(boundsSize: backgroundAudioArtwork.size) { size in
                             return backgroundAudioArtwork
                     }
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo = self.nowPlayingInfo
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo = self.nowPlayingInfo*/
+                    
+                } else {
+                    
                 }
             }
-            })
+            })*/
+    }
+    
+    func setCurrentSoundViewImageAndbackgroundAudio(_ sound: Sound) {
+        self.songArt.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "appy"), options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
+            if error == nil {
+                self.sounds[self.playlistPosition!].artImage = image
+                sound.artImage = image
+                self.setBackgroundAudioNowPlaying(self.soundPlayer, sound: sound)
+            }
+        })
     }
     
     func shouldEnableSoundView(_ shouldEnable: Bool) {
@@ -625,7 +648,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             self.shareToInstagram()
         }
         alertController.addAction(instagramAction)
-        
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
@@ -770,7 +792,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                             }
                         }
                         
-                        let newSound = Sound(objectId: object.objectId, title: title, art: songArt, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
+                        let newSound = Sound(objectId: object.objectId, title: title, artURL: songArt, artImage: nil, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
                         self.sounds.append(newSound)
                     }
                     
@@ -800,9 +822,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             } else if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.setTitle(artistName, for: .normal)
-                self.setBackgoundAudioArtistName(artistName ?? "Artist")
                 self.sounds[i].artistName = artistName
-
+                
+                self.setCurrentSoundViewImageAndbackgroundAudio(self.sounds[i])
+                
                 self.sounds[i].artistCity = user["city"] as? String
                 
                 //Don't want to add blank space to social and streams... that's why we're checking.
@@ -867,13 +890,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
                 print(error)
                 
             } else if let object = object {
-                if let plays = object["plays"] as? Double {
+                /*if let plays = object["plays"] as? Double {
                     //We want to notify artists every time their song hits a milestone like 10, 20, 100, 110, etc. Best way to determine if "plays" equally divids by 10
                     let incrementedPlays = plays + 1.0
                     if incrementedPlays.truncatingRemainder(dividingBy: 10) == 0 {
                         self.sendAlert("Congrats \(sound.artistName!), \(sound.title!) just hit \(incrementedPlays) plays!", toUserId: sound.userId)
                     }
-                }
+                }*/
                 object.incrementKey("plays")
                 object.saveEventually()
             }
