@@ -32,24 +32,24 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
             
-            self.secondsPlayedSinceLastAd = UserDefaults.standard.integer(forKey: "secondsPlayed")
+            //self.secondsPlayedSinceLastAd = UserDefaults.standard.integer(forKey: "secondsPlayed")
             
             setupRemoteTransportControls()
             setUpView()
             loadSounds()
-            setUpAds()
+            //setUpAds()
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    /*override func viewWillDisappear(_ animated: Bool) {
         UserDefaults.standard.set(secondsPlayedSinceLastAd, forKey: "secondsPlayed")
-    }
+    }*/
     
     //mark: Player
     var soundPlayer: AVAudioPlayer!
     //var audioAsset: AVURLAsset!
-    var secondsPlayedSinceLastAd = 0
-    let thirtyMinutesInSeconds = 1800
+    //var secondsPlayedSinceLastAd = 0
+    //let thirtyMinutesInSeconds = 1800
     var isSoundPlaying = false
     var playlistPosition: Int?
     
@@ -70,7 +70,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             let duration = audioAsset.duration.seconds
             self.playBackTotalTime.text = self.formatTime(duration)
             self.playBackSlider.maximumValue = Float(duration)
-            self.secondsPlayedSinceLastAd = secondsPlayedSinceLastAd + Int(audioAsset.duration.seconds)
+            //self.secondsPlayedSinceLastAd = secondsPlayedSinceLastAd + Int(audioAsset.duration.seconds)
             
         } catch {
             print(error)
@@ -118,7 +118,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if !soundPlayable {
             setUpNextSong()
             
-        } else if soundPlayable && secondsPlayedSinceLastAd < thirtyMinutesInSeconds {
+        } else {
+            playNextSong()
+        } /*else if soundPlayable && secondsPlayedSinceLastAd < thirtyMinutesInSeconds {
             playNextSong()
             
         } else if soundPlayable && secondsPlayedSinceLastAd > thirtyMinutesInSeconds {
@@ -126,7 +128,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             shouldEnableSoundView(true)
             shouldEnableBackgroundAudioButtons(false)
             playBackButton.setImage(UIImage(named: "play"), for: .normal)
-        }
+        }*/
     }
     
     func playNextSong() {
@@ -296,7 +298,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     //mark: Ads
-    var interstitial: GADInterstitial!
+    /*var interstitial: GADInterstitial!
     var productionKey = "ca-app-pub-9150756002517285/6848154898"
     var testKey = "ca-app-pub-3940256099942544/4411468910"
     
@@ -357,7 +359,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     /// Tells the delegate that a user click will open another app
     /// (such as the App Store), backgrounding the current app.
     func interstitialWillLeaveApplication(_ ad: GADInterstitial) {
-    }
+    }*/
     
     //mark: View
     lazy var exitButton: UIButton = {
@@ -664,12 +666,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if secondsPlayedSinceLastAd > thirtyMinutesInSeconds && !isSoundPlaying {
+        /*if secondsPlayedSinceLastAd > thirtyMinutesInSeconds && !isSoundPlaying {
             self.showAd()
             
         } else {
             playOrPause()
-        }
+        }*/
+        
+        playOrPause()
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
