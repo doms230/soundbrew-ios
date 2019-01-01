@@ -24,10 +24,14 @@ target 'soundbrew' do
   pod 'TagListView'
   pod 'Kingfisher'
   pod 'Firebase/Core'
-  pod 'Firebase/AdMob'
+  #pod 'Firebase/AdMob'
   pod 'Alamofire'
   pod 'SwiftyJSON'
   pod 'SnapSDK'
   pod 'ShareInstagram'
+  pod 'Fabric'
+  pod 'Crashlytics'
+  pod 'Firebase/Performance'
+  pod 'PinterestSegment'
   
 end

@@ -17,6 +17,7 @@
 #import "SCSDKSnapPhoto.h"
 #import "SCSDKSnapSticker.h"
 #import "SCSDKVideoSnapContent.h"
+#import "SCSDKCameraViewState.h"
 
 #import "SCSDKSnapErrorCode.h"
 

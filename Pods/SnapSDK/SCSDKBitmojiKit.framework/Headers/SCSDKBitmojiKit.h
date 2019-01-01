@@ -7,5 +7,7 @@
 //
 
 #import "SCSDKBitmojiClient.h"
+#import "SCSDKBitmojiStickerPickerConfig.h"
+#import "SCSDKBitmojiStickerPickerTheme.h"
 #import "SCSDKBitmojiStickerPickerViewController.h"
 #import "SCSDKBitmojiIconView.h"

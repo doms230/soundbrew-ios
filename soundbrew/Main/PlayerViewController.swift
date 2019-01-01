@@ -13,13 +13,12 @@ import Parse
 import Kingfisher
 import AVFoundation
 import MediaPlayer
-import GoogleMobileAds
 import Alamofire
 import SCSDKCreativeKit
 import ShareInstagram
 import Firebase
 
-class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADInterstitialDelegate {
+class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
 
     let uiElement = UIElement()
     let color = Color()
@@ -32,24 +31,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
             
-            //self.secondsPlayedSinceLastAd = UserDefaults.standard.integer(forKey: "secondsPlayed")
-            
             setupRemoteTransportControls()
             setUpView()
             loadSounds()
-            //setUpAds()
         }
     }
     
-    /*override func viewWillDisappear(_ animated: Bool) {
-        UserDefaults.standard.set(secondsPlayedSinceLastAd, forKey: "secondsPlayed")
-    }*/
-    
     //mark: Player
     var soundPlayer: AVAudioPlayer!
-    //var audioAsset: AVURLAsset!
-    //var secondsPlayedSinceLastAd = 0
-    //let thirtyMinutesInSeconds = 1800
     var isSoundPlaying = false
     var playlistPosition: Int?
     
@@ -70,7 +59,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             let duration = audioAsset.duration.seconds
             self.playBackTotalTime.text = self.formatTime(duration)
             self.playBackSlider.maximumValue = Float(duration)
-            //self.secondsPlayedSinceLastAd = secondsPlayedSinceLastAd + Int(audioAsset.duration.seconds)
             
         } catch {
             print(error)
@@ -120,15 +108,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             
         } else {
             playNextSong()
-        } /*else if soundPlayable && secondsPlayedSinceLastAd < thirtyMinutesInSeconds {
-            playNextSong()
-            
-        } else if soundPlayable && secondsPlayedSinceLastAd > thirtyMinutesInSeconds {
-            self.soundPlayer.pause()
-            shouldEnableSoundView(true)
-            shouldEnableBackgroundAudioButtons(false)
-            playBackButton.setImage(UIImage(named: "play"), for: .normal)
-        }*/
+        }
     }
     
     func playNextSong() {
@@ -155,7 +135,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
         if soundPlayer != nil {
             soundPlayer.pause()
             soundPlayer = nil
-            //audioAsset = nil
         }
         
         //put playback time back to zero
@@ -296,70 +275,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         }
     }
-    
-    //mark: Ads
-    /*var interstitial: GADInterstitial!
-    var productionKey = "ca-app-pub-9150756002517285/6848154898"
-    var testKey = "ca-app-pub-3940256099942544/4411468910"
-    
-    func setUpAds() {
-        interstitial = createAndLoadInterstitial()
-    }
-    
-    func createAndLoadInterstitial() -> GADInterstitial {
-        let interstitial = GADInterstitial(adUnitID: productionKey)
-        interstitial.delegate = self
-        let request = GADRequest()
-        //request.testDevices = ["da8e23242ac0690b867b0fe94ba2f2a7"]
-        interstitial.load(request)
-        return interstitial
-    }
-    
-    func showAd() {
-        if interstitial.isReady {
-            DispatchQueue.main.async {
-                self.interstitial.present(fromRootViewController: self)
-            }
-            
-        //add wasn't ready, so give ad time to load.
-        } else if sounds.count == 0 {
-            loadSounds()
-                
-        } else {
-            playNextSong()
-            self.shouldEnableBackgroundAudioButtons(true)
-        }
-    }
-    
-    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
-        interstitial = createAndLoadInterstitial()
-    }
-    
-    /// Tells the delegate an ad request succeeded.
-    func interstitialDidReceiveAd(_ ad: GADInterstitial) {
-    }
-    
-    /// Tells the delegate an ad request failed.
-    func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
-    }
-    
-    /// Tells the delegate that an interstitial will be presented.
-    func interstitialWillPresentScreen(_ ad: GADInterstitial) {
-        self.soundPlayer.pause()
-    }
-    
-    /// Tells the delegate the interstitial is to be animated off the screen.
-    func interstitialWillDismissScreen(_ ad: GADInterstitial) {
-        secondsPlayedSinceLastAd = 0
-        playNextSong()
-        shouldEnableBackgroundAudioButtons(true)
-        UserDefaults.standard.set(0, forKey: "secondsPlayed")
-    }
-    
-    /// Tells the delegate that a user click will open another app
-    /// (such as the App Store), backgrounding the current app.
-    func interstitialWillLeaveApplication(_ ad: GADInterstitial) {
-    }*/
     
     //mark: View
     lazy var exitButton: UIButton = {
@@ -602,21 +517,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate, GADIntersti
             self.artistName.setTitle(placeHolder, for: .normal)
             loadUserInfoFromCloud(sound.userId, i: i)
         }
-        
-        /*self.songArt.kf.setImage(with: URL(string: sound.art), placeholder: UIImage(named: "appy"), options: nil, progressBlock: nil, completionHandler: {(image, error, cacheType, imageURL) in
-            if error == nil {
-                if let backgroundAudioArtwork = image {
-                    /*self.nowPlayingInfo[MPMediaItemPropertyArtwork] =
-                        MPMediaItemArtwork(boundsSize: backgroundAudioArtwork.size) { size in
-                            return backgroundAudioArtwork
-                    }
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo = self.nowPlayingInfo*/
-                    
-                } else {
-                    
-                }
-            }
-            })*/
     }
     
     func setCurrentSoundViewImageAndbackgroundAudio(_ sound: Sound) {

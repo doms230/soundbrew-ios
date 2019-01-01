@@ -1,14 +1,20 @@
 PODS:
   - Alamofire (4.8.0)
   - Bolts/Tasks (1.9.0)
-  - Firebase/AdMob (5.14.0):
-    - Firebase/Core
-    - Google-Mobile-Ads-SDK (~> 7.36)
-  - Firebase/Core (5.14.0):
+  - Crashlytics (3.12.0):
+    - Fabric (~> 1.9.0)
+  - Fabric (1.9.0)
+  - Firebase/Core (5.15.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.4.0)
-  - Firebase/CoreOnly (5.14.0):
-    - FirebaseCore (= 5.1.9)
+  - Firebase/CoreOnly (5.15.0):
+    - FirebaseCore (= 5.1.10)
+  - Firebase/Performance (5.15.0):
+    - Firebase/Core
+    - FirebasePerformance (= 2.2.2)
+  - FirebaseABTesting (2.0.0):
+    - FirebaseCore (~> 5.0)
+    - Protobuf (~> 3.5)
   - FirebaseAnalytics (5.4.0):
     - FirebaseCore (~> 5.1)
     - FirebaseInstanceID (~> 3.3)
@@ -18,24 +24,47 @@ PODS:
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
-  - FirebaseCore (5.1.9):
+  - FirebaseCore (5.1.10):
     - GoogleUtilities/Logger (~> 5.2)
   - FirebaseInstanceID (3.3.0):
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
     - GoogleUtilities/UserDefaults (~> 5.3)
-  - Google-Mobile-Ads-SDK (7.37.0)
+  - FirebasePerformance (2.2.2):
+    - FirebaseAnalytics (~> 5.4)
+    - FirebaseInstanceID (~> 3.3)
+    - FirebaseRemoteConfig (~> 3.1)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GoogleUtilities/ISASwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.5)
+  - FirebaseRemoteConfig (3.1.0):
+    - FirebaseABTesting (~> 2.0)
+    - FirebaseAnalytics (~> 5.3)
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleUtilities/Environment (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - Protobuf (~> 3.5)
   - GoogleAppMeasurement (5.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
+  - GoogleToolboxForMac/Defines (2.2.0)
+  - GoogleToolboxForMac/Logger (2.2.0):
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
+    - GoogleToolboxForMac/Defines (= 2.2.0)
   - GoogleUtilities/AppDelegateSwizzler (5.3.6):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
   - GoogleUtilities/Environment (5.3.6)
+  - GoogleUtilities/ISASwizzler (5.3.6)
   - GoogleUtilities/Logger (5.3.6):
     - GoogleUtilities/Environment
   - GoogleUtilities/MethodSwizzler (5.3.6):
@@ -49,42 +78,48 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (5.3.6):
     - GoogleUtilities/Logger
-  - Kingfisher (5.0.0)
+  - GTMSessionFetcher/Core (1.2.1)
+  - Kingfisher (5.0.1)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - NVActivityIndicatorView (4.4.0):
-    - NVActivityIndicatorView/Presenter (= 4.4.0)
-  - NVActivityIndicatorView/Presenter (4.4.0)
+  - NVActivityIndicatorView (4.5.0):
+    - NVActivityIndicatorView/Presenter (= 4.5.0)
+  - NVActivityIndicatorView/Presenter (4.5.0)
   - Parse (1.17.2):
     - Parse/Core (= 1.17.2)
   - Parse/Core (1.17.2):
     - Bolts/Tasks (~> 1.9)
   - PINCache (2.3)
   - PINOperation (1.1.1)
+  - PinterestSegment (1.2.0)
+  - Protobuf (3.6.1)
   - ShareInstagram (1.6)
   - SnapKit (4.2.0)
-  - SnapSDK (1.1.5):
-    - SnapSDK/SCSDKBitmojiKit (= 1.1.5)
-    - SnapSDK/SCSDKCreativeKit (= 1.1.5)
-    - SnapSDK/SCSDKLoginKit (= 1.1.5)
-  - SnapSDK/SCSDKBitmojiKit (1.1.5):
+  - SnapSDK (1.2.0):
+    - SnapSDK/SCSDKBitmojiKit (= 1.2.0)
+    - SnapSDK/SCSDKCreativeKit (= 1.2.0)
+    - SnapSDK/SCSDKLoginKit (= 1.2.0)
+  - SnapSDK/SCSDKBitmojiKit (1.2.0):
     - PINCache (~> 2.3)
     - PINOperation (~> 1.1)
-  - SnapSDK/SCSDKCreativeKit (1.1.5)
-  - SnapSDK/SCSDKLoginKit (1.1.5)
+  - SnapSDK/SCSDKCreativeKit (1.2.0)
+  - SnapSDK/SCSDKLoginKit (1.2.0)
   - SwiftyJSON (4.2.0)
   - TagListView (1.3.2)
 
 DEPENDENCIES:
   - Alamofire
-  - Firebase/AdMob
+  - Crashlytics
+  - Fabric
   - Firebase/Core
+  - Firebase/Performance
   - Kingfisher
   - NVActivityIndicatorView
   - Parse
+  - PinterestSegment
   - ShareInstagram
   - SnapKit
   - SnapSDK
@@ -95,19 +130,27 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
     - Bolts
+    - Crashlytics
+    - Fabric
     - Firebase
+    - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseInstanceID
-    - Google-Mobile-Ads-SDK
+    - FirebasePerformance
+    - FirebaseRemoteConfig
     - GoogleAppMeasurement
+    - GoogleToolboxForMac
     - GoogleUtilities
+    - GTMSessionFetcher
     - Kingfisher
     - nanopb
     - NVActivityIndicatorView
     - Parse
     - PINCache
     - PINOperation
+    - PinterestSegment
+    - Protobuf
     - ShareInstagram
     - SnapKit
     - SnapSDK
@@ -117,25 +160,33 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
-  Firebase: 963d5685fae888a56d6d4d9cfce6b9c976958798
+  Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
+  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+  Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
+  FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
-  FirebaseCore: 8f49b70f57ab5cbb032ef41d64992ded21606459
+  FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
-  Google-Mobile-Ads-SDK: d028682d7450749a1955679da050eaf70d997b3e
+  FirebasePerformance: 6f77b930f982a54ad487d3de5523ce641db9dcc9
+  FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
+  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
   GoogleUtilities: 95996bea7c7d9b8fb811b7507669a4a8762f80c7
-  Kingfisher: 2b0dd651e4fe5a07305b8242fde56f8e2d410f58
+  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  Kingfisher: 4f771421b9208185217550528a06fd48756cb7c2
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  NVActivityIndicatorView: ec7440a57af2450319d3a4181cca7da6fc127064
+  NVActivityIndicatorView: 1e4e3ed79248cf1666af182593c3a2acf0fcf193
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
+  PinterestSegment: d589fce6c62141466b9f36ea8ab0a16fde9ac8f4
+  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   ShareInstagram: 787136afff8d1fbe899b1c3e5450560694071dff
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
-  SnapSDK: 0f8dd0415db25a64b3bde4e3fddc271849820ac7
+  SnapSDK: c71296609cc8ed78b79cf202a70acf939fbf2fc3
   SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
   TagListView: 0c7e9c26b9aff858224ee6b155f5fcacd9e27c83
 
-PODFILE CHECKSUM: 82946d23989ee292b9ff2814061ef682784d49a5
+PODFILE CHECKSUM: 0d02ea876cfd011518875fcb7967896926068425
 
 COCOAPODS: 1.5.3

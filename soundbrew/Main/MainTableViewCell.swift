@@ -15,7 +15,6 @@ class MainTableViewCell: UITableViewCell {
     let color = Color()
     let uiElement = UIElement()
     
-    
     lazy var featureTagTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
@@ -44,9 +43,28 @@ class MainTableViewCell: UITableViewCell {
         return tag
     }()
     
+    lazy var featureTagButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        return button
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
+            
+        case "newBrewReuse":
+            self.addSubview(featureTagButton)
+            featureTagButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(100)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
+            
         case "featureTagReuse":
             self.addSubview(featureTagsScrollview)
             self.addSubview(featureTagTitle)
@@ -78,9 +96,7 @@ class MainTableViewCell: UITableViewCell {
             break
             
         default:
-            break
-            
-            
+            break            
         }
     }
 

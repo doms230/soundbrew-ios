@@ -32,6 +32,10 @@ class Color {
         //return uicolorFromHex(0x378869)
     }
     
+    func blue() -> UIColor {
+        return uicolorFromHex(0x0066ff)
+    }
+    
     func green() -> UIColor {
         return uicolorFromHex(0x70b784)
     }

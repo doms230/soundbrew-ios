@@ -18,6 +18,7 @@ class UIElement {
     let buttonHeight = 50
     let userImageHeightWidth = 40
     let elementOffset = 5
+    let titleLabelFontSize: CGFloat = 25
     
     let mainFont = "HelveticaNeue"
     
@@ -58,5 +59,16 @@ class UIElement {
         target.present(alertController, animated: true, completion: nil)
     }
     
+    func setUserDefault(_ key: String, value: String) {
+        UserDefaults.standard.set(value, forKey: key)
+        UserDefaults.standard.synchronize()
+    }
     
+    func getUserDefault(_ key: String) -> String? {
+        if let name = UserDefaults.standard.string(forKey: key) {
+            return name
+        }
+        
+        return nil
+    }    
 }

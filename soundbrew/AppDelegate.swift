@@ -4,7 +4,8 @@
 //
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//
+// "${PODS_ROOT}/Fabric/run"
+// $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
 
 import UIKit
 import Parse
@@ -32,7 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //Google
         FirebaseApp.configure()
-        GADMobileAds.configure(withApplicationID: "ca-app-pub-9150756002517285~9630230904")
 
         NVActivityIndicatorView.DEFAULT_TYPE = .ballScaleMultiple
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)
