@@ -61,8 +61,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let menuButton = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(self.didPressMenuButton(_:)))
         self.navigationItem.rightBarButtonItem = menuButton
         
-        setUpViews()
-        loadUserInfoFromCloud(PFUser.current()!.objectId!)
+        if PFUser.current() != nil {
+            setUpViews()
+            loadUserInfoFromCloud(PFUser.current()!.objectId!)
+            
+        } else {
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+        }
     }
     
     let reuse = "reuse"

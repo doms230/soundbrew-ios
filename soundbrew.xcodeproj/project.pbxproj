@@ -10,6 +10,14 @@
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
 		F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */; };
+		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
+		F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* SignupViewController.swift */; };
+		F23C621521DC350F005C9FF0 /* AddArtistNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621421DC350F005C9FF0 /* AddArtistNameViewController.swift */; };
+		F23C621721DC3518005C9FF0 /* AddCityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621621DC3518005C9FF0 /* AddCityViewController.swift */; };
+		F23C621921DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621821DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift */; };
+		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
+		F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */; };
+		F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23C621E21DC38E6005C9FF0 /* Login.storyboard */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
 		F2689871215AEF9000C21663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2689870215AEF9000C21663 /* Assets.xcassets */; };
@@ -66,6 +74,14 @@
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		F23C621221DC34FA005C9FF0 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
+		F23C621421DC350F005C9FF0 /* AddArtistNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddArtistNameViewController.swift; sourceTree = "<group>"; };
+		F23C621621DC3518005C9FF0 /* AddCityViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCityViewController.swift; sourceTree = "<group>"; };
+		F23C621821DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddSocialAndStreamsViewController.swift; sourceTree = "<group>"; };
+		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		F23C621E21DC38E6005C9FF0 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986E215AEF8F00C21663 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -153,6 +169,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		F23C620F21DC34DB005C9FF0 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				F23C621E21DC38E6005C9FF0 /* Login.storyboard */,
+				F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */,
+				F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */,
+				F23C621821DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift */,
+				F23C621621DC3518005C9FF0 /* AddCityViewController.swift */,
+				F23C621421DC350F005C9FF0 /* AddArtistNameViewController.swift */,
+				F23C621221DC34FA005C9FF0 /* SignupViewController.swift */,
+				F23C621021DC34EC005C9FF0 /* LoginViewController.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
 		F268985D215AEF8F00C21663 = {
 			isa = PBXGroup;
 			children = (
@@ -178,7 +209,6 @@
 		F2689868215AEF8F00C21663 /* soundbrew */ = {
 			isa = PBXGroup;
 			children = (
-				F2F8B98E21DBEEF50024AFB6 /* Artists */,
 				F26898F0216B874C00C21663 /* soundbrew.entitlements */,
 				F2689875215AEF9000C21663 /* Info.plist */,
 				F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */,
@@ -187,6 +217,9 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268989A215AF87200C21663 /* Subclass */,
 				F2689899215AF7FB00C21663 /* Main */,
+				F2F8B9A321DBEF690024AFB6 /* Profile */,
+				F23C620F21DC34DB005C9FF0 /* Login */,
+				F2F8B98E21DBEEF50024AFB6 /* Artists */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
@@ -238,7 +271,6 @@
 			isa = PBXGroup;
 			children = (
 				F2F8B9A421DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift */,
-				F2F8B9A321DBEF690024AFB6 /* Artist Profile */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B98F21DBEF030024AFB6 /* My Sounds */,
 			);
@@ -265,14 +297,14 @@
 			path = "New Sound";
 			sourceTree = "<group>";
 		};
-		F2F8B9A321DBEF690024AFB6 /* Artist Profile */ = {
+		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
+				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 			);
-			path = "Artist Profile";
+			path = Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -403,6 +435,7 @@
 				F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */,
 				F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */,
 				F2689871215AEF9000C21663 /* Assets.xcassets in Resources */,
+				F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */,
 				F268986F215AEF8F00C21663 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -553,16 +586,23 @@
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
+				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
+				F23C621521DC350F005C9FF0 /* AddArtistNameViewController.swift in Sources */,
+				F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
+				F23C621921DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift in Sources */,
 				F26898A0215AFF8200C21663 /* MainTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */,
 				F2F8B99A21DBEF4A0024AFB6 /* ChooseGenreViewController.swift in Sources */,
+				F23C621721DC3518005C9FF0 /* AddCityViewController.swift in Sources */,
 				F2F8B9A521DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift in Sources */,
+				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
+				F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
