@@ -32,6 +32,5 @@ target 'soundbrew' do
   pod 'Fabric'
   pod 'Crashlytics'
   pod 'Firebase/Performance'
-  pod 'PinterestSegment'
-  
+  pod 'XLPagerTabStrip'
 end

@@ -31,6 +31,8 @@
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A7215B56F200C21663 /* PlayerViewController.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
+		F2B4D6CB21E52E3300C88C5C /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */; };
+		F2B4D6CD21E5322300C88C5C /* ChildSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6CC21E5322300C88C5C /* ChildSearchViewController.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
@@ -100,6 +102,8 @@
 		F26898A7215B56F200C21663 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		F2B4D6CC21E5322300C88C5C /* ChildSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildSearchViewController.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsViewController.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
@@ -231,8 +235,9 @@
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
+				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
 				F268989A215AF87200C21663 /* Subclass */,
-				F2689899215AF7FB00C21663 /* Main */,
+				F2689899215AF7FB00C21663 /* Search */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
 			);
@@ -257,14 +262,15 @@
 			path = soundbrewUITests;
 			sourceTree = "<group>";
 		};
-		F2689899215AF7FB00C21663 /* Main */ = {
+		F2689899215AF7FB00C21663 /* Search */ = {
 			isa = PBXGroup;
 			children = (
 				F268989F215AFF8200C21663 /* MainTableViewCell.swift */,
 				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
-				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
+				F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */,
+				F2B4D6CC21E5322300C88C5C /* ChildSearchViewController.swift */,
 			);
-			path = Main;
+			path = Search;
 			sourceTree = "<group>";
 		};
 		F268989A215AF87200C21663 /* Subclass */ = {
@@ -313,7 +319,6 @@
 				F2689863215AEF8F00C21663 /* Frameworks */,
 				F2689864215AEF8F00C21663 /* Resources */,
 				B082AF0E245F1D3F45DAB765 /* [CP] Embed Pods Frameworks */,
-				F23C622021E3CD0B005C9FF0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -487,7 +492,6 @@
 				"${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework",
 				"${BUILT_PRODUCTS_DIR}/PINOperation/PINOperation.framework",
 				"${BUILT_PRODUCTS_DIR}/Parse/Parse.framework",
-				"${BUILT_PRODUCTS_DIR}/PinterestSegment/PinterestSegment.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/ShareInstagram/ShareInstagram.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
@@ -497,6 +501,7 @@
 				"${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/TagListView/TagListView.framework",
+				"${BUILT_PRODUCTS_DIR}/XLPagerTabStrip/XLPagerTabStrip.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -511,7 +516,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINCache.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINOperation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Parse.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinterestSegment.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ShareInstagram.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
@@ -521,6 +525,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TagListView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/XLPagerTabStrip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -564,24 +569,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F23C622021E3CD0B005C9FF0 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/Fabric/run\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -592,6 +579,7 @@
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */,
 				F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */,
+				F2B4D6CB21E52E3300C88C5C /* SearchViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
@@ -611,6 +599,7 @@
 				F2F8B99A21DBEF4A0024AFB6 /* ChooseGenreViewController.swift in Sources */,
 				F23C621721DC3518005C9FF0 /* AddCityViewController.swift in Sources */,
 				F2F8B9A521DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift in Sources */,
+				F2B4D6CD21E5322300C88C5C /* ChildSearchViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */,
