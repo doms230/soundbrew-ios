@@ -29,7 +29,12 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }()
     
     override func viewDidLoad() {
-        showNewSoundUI()
+        if PFUser.current() != nil {
+            showNewSoundUI()
+            
+        } else {
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

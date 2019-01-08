@@ -17,14 +17,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let uiElement = UIElement()
     let color = Color()
     
-    var socialsAndStreams = [String]()
     var socialsAndStreamImages = [String]()
     
     var artist: Artist!
     
+    var selectedIndex = 0
+    
     lazy var userImage: UIImageView = {
         let image = UIImageView()
-        image.layer.cornerRadius = 25
+        image.layer.cornerRadius = 50
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
@@ -70,14 +71,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showSounds" {
+            let mySoundsVC: MySoundsViewController = segue.destination as! MySoundsViewController
+            mySoundsVC.soundType = "Uploads"
+            if selectedIndex == 0 {
+                mySoundsVC.soundType = "Uploads"
+                
+            } else {
+                mySoundsVC.soundType = "Likes"
+            }
+        }
+    }
+    
     let reuse = "reuse"
     
     func setUpViews() {
-        self.title = "Profile"
-        
         self.view.addSubview(userImage)
         userImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
+            make.height.width.equalTo(100)
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
@@ -96,13 +108,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.editProfileButton.addTarget(self, action: #selector(self.didPressEditProfileButton(_:)), for: .touchUpInside)
+       /* self.editProfileButton.addTarget(self, action: #selector(self.didPressEditProfileButton(_:)), for: .touchUpInside)
         self.view.addSubview(editProfileButton)
         editProfileButton.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(100)
             make.top.equalTo(artistCity.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
+        }*/
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -110,7 +122,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.separatorStyle = .none
         self.view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(editProfileButton.snp.bottom)
+            make.top.equalTo(artistCity.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
@@ -119,15 +131,29 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //MARK: TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return socialsAndStreams.count
+        return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
-        cell.socialStreamImage.image = UIImage(named: socialsAndStreamImages[indexPath.row])
-        cell.socialStreamClicks.text = socialsAndStreams[indexPath.row]
+        
+        var imageName = "soundwave"
+        var labelTitle = "My Uploads"
+        
+        if indexPath.row == 1 {
+            imageName = "like"
+            labelTitle = "Liked Tracks"
+        }
+        
+        cell.soundImage.image = UIImage(named: imageName)
+        cell.soundLabel.text = labelTitle
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedIndex = indexPath.row
+        self.performSegue(withIdentifier: "showSounds", sender: self)
     }
     
     //mark: button actions
@@ -143,50 +169,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             appDelegate.window?.rootViewController = controller
         }))
         
+        menuAlert.addAction(UIAlertAction(title: "Edit Profile", style: .default, handler: { action in
+            self.performSegue(withIdentifier: "showEditProfile", sender: self)
+        }))
+        
         self.present(menuAlert, animated: true, completion: nil)
-    }
-    
-    @objc func didPressSocialStreamButton(_ sender: UIButton) {
-        var isAbleToShowLink = false
-        
-        if let senderTitle = sender.titleLabel?.text {
-            let url = (URL(string: senderTitle))
-            if let url = url {
-                isAbleToShowLink = true
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-        }
-        
-        if !isAbleToShowLink {
-            self.uiElement.showAlert("Problem with URL", message: "Double check the link, then click the 'Edit Profile' button to update.", target: self)
-        }
-    }
-    
-    @objc func didPressEditProfileButton(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "showEditProfile", sender: self)
-    }
-    
-    func determineTableViewSize() {
-        self.appendSocialStream(artist.instagramHandle, socialStreamClicks: artist.instagramClicks, logo: "ig_logo")
-        self.appendSocialStream(artist.twitterHandle, socialStreamClicks: artist.twitterClicks, logo: "twitter_logo")
-        self.appendSocialStream(artist.soundcloud, socialStreamClicks: artist.soundcloudClicks, logo: "soundcloud_logo")
-        self.appendSocialStream(artist.spotify, socialStreamClicks: artist.spotifyClicks, logo: "spotify_logo")
-        self.appendSocialStream(artist.appleMusic, socialStreamClicks: artist.appleMusicClicks, logo: "appleMusic_logo")
-        self.appendSocialStream(artist.otherLink, socialStreamClicks: artist.otherLinkClicks, logo: "link_logo")
-        
-        self.tableView.reloadData()
-    }
-    
-    func appendSocialStream(_ socialStream: String?, socialStreamClicks: Int?, logo: String ) {
-        if socialStream != nil {
-            if let clicks = socialStreamClicks {
-                self.socialsAndStreams.append("\(clicks) Clicks")
-                
-            } else {
-                self.socialsAndStreams.append("Clicks N/A")
-            }
-            self.socialsAndStreamImages.append(logo)
-        }
     }
     
     //Mark: Data
@@ -207,89 +194,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 var artistURL = ""
                 if let userImageFile = user["userImage"] as? PFFileObject {
                     artistURL = userImageFile.url!
-                    //self.userImage.kf.setImage(with: URL(string: userImageFile.url!), placeholder: UIImage(named: "profile_icon"), options: nil, progressBlock: nil, completionHandler: nil)
-                    
                     self.userImage.kf.setImage(with: URL(string: userImageFile.url!))
                 }
                 
                 self.artist = Artist(objectId: user.objectId, name: artistName!, city: artistCity!, image: artistURL, instagramHandle: nil, instagramClicks: nil, twitterHandle: nil, twitterClicks: nil, soundcloud: nil, soundcloudClicks: nil, spotify: nil, spotifyClicks: nil, appleMusic: nil, appleMusicClicks: nil, otherLink: nil, otherLinkClicks: nil)
                 
-                if let instagramHandle = user["instagramHandle"] as? String {
-                    if !instagramHandle.isEmpty {
-                        self.artist.instagramHandle = instagramHandle
-                    }
-                }
-                
-                if let twitterHandle = user["twitterHandle"] as? String {
-                    if !twitterHandle.isEmpty {
-                        self.artist.twitterHandle = twitterHandle
-                    }
-                }
-                
-                if let soundCloudLink = user["soundCloudLink"] as? String {
-                    if !soundCloudLink.isEmpty {
-                        self.artist.soundcloud = soundCloudLink
-                    }
-                }
-                
-                if let appleMusicLink = user["appleMusicLink"] as? String {
-                    if !appleMusicLink.isEmpty {
-                        self.artist.appleMusic = appleMusicLink
-                    }
-                }
-                
-                if let spotifyLink = user["spotifyLink"] as? String {
-                    if !spotifyLink.isEmpty {
-                        self.artist.spotify = spotifyLink
-                    }
-                }
-                
-                if let otherLlink = user["otherLink"] as? String {
-                    if !otherLlink.isEmpty {
-                        self.artist.otherLink = otherLlink
-                    }
-                }
-                
-                self.loadClicks()
+                self.tableView.reloadData()
             }
-        }
-    }
-    
-    func loadClicks() {
-        let query = PFQuery(className: "Click")
-        query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
-        query.getFirstObjectInBackground { (object: PFObject?, error: Error?) in
-            if let error = error {
-                print(error.localizedDescription)
-                
-            } else if let object = object {
-                if let instagramClicks = object["instagramClicks"] as? Int {
-                    self.artist.instagramClicks = instagramClicks
-                    print(instagramClicks)
-                }
-                
-                if let twitterClicks = object["twitterClicks"] as? Int {
-                    self.artist.twitterClicks = twitterClicks
-                }
-                
-                if let soundcloudClicks = object["soundcloudClicks"] as? Int {
-                    self.artist.soundcloudClicks = soundcloudClicks
-                }
-                
-                if let spotifyClicks = object["spotifyClicks"] as? Int {
-                    self.artist.spotifyClicks = spotifyClicks
-                }
-                
-                if let appleMusicClicks = object["appleMusicClicks"] as? Int {
-                    self.artist.appleMusicClicks = appleMusicClicks
-                }
-                
-                if let otherLinkClicks = object["otherLinkClicks"] as? Int {
-                    self.artist.otherLinkClicks = otherLinkClicks
-                }
-            }
-            
-            self.determineTableViewSize()
         }
     }
 }

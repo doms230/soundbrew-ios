@@ -31,7 +31,6 @@
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A7215B56F200C21663 /* PlayerViewController.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
-		F2F8B98B21D2C5600024AFB6 /* NewBrewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B98A21D2C5600024AFB6 /* NewBrewViewController.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
@@ -43,7 +42,6 @@
 		F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */; };
 		F2F8B9A521DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B9A421DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift */; };
 		F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B9A621DBFBE30024AFB6 /* Artist.swift */; };
-		F2F8B9A921DBFFE10024AFB6 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B9A821DBFFE00024AFB6 /* Song.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -102,7 +100,6 @@
 		F26898A7215B56F200C21663 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
-		F2F8B98A21D2C5600024AFB6 /* NewBrewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBrewViewController.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsViewController.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
@@ -114,7 +111,6 @@
 		F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		F2F8B9A421DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsAndSocialsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B9A621DBFBE30024AFB6 /* Artist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
-		F2F8B9A821DBFFE00024AFB6 /* Song.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -184,6 +180,25 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
+		F23C622321E3F62F005C9FF0 /* My Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */,
+				F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */,
+			);
+			path = "My Sounds";
+			sourceTree = "<group>";
+		};
+		F23C622421E3F653005C9FF0 /* User Info */ = {
+			isa = PBXGroup;
+			children = (
+				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
+				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
+				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
+			);
+			path = "User Info";
+			sourceTree = "<group>";
+		};
 		F268985D215AEF8F00C21663 = {
 			isa = PBXGroup;
 			children = (
@@ -215,11 +230,11 @@
 				F2689870215AEF9000C21663 /* Assets.xcassets */,
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
+				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F268989A215AF87200C21663 /* Subclass */,
 				F2689899215AF7FB00C21663 /* Main */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
-				F2F8B98E21DBEEF50024AFB6 /* Artists */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
@@ -245,11 +260,9 @@
 		F2689899215AF7FB00C21663 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F268989F215AFF8200C21663 /* MainTableViewCell.swift */,
 				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
 				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
-				F2F8B98A21D2C5600024AFB6 /* NewBrewViewController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -257,7 +270,6 @@
 		F268989A215AF87200C21663 /* Subclass */ = {
 			isa = PBXGroup;
 			children = (
-				F2F8B9A821DBFFE00024AFB6 /* Song.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F268989B215AF88200C21663 /* Color.swift */,
 				F268989D215AF8F100C21663 /* UIElement.swift */,
@@ -265,25 +277,6 @@
 				F268992A21753A3B00C21663 /* Tag.swift */,
 			);
 			path = Subclass;
-			sourceTree = "<group>";
-		};
-		F2F8B98E21DBEEF50024AFB6 /* Artists */ = {
-			isa = PBXGroup;
-			children = (
-				F2F8B9A421DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift */,
-				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
-				F2F8B98F21DBEF030024AFB6 /* My Sounds */,
-			);
-			path = Artists;
-			sourceTree = "<group>";
-		};
-		F2F8B98F21DBEF030024AFB6 /* My Sounds */ = {
-			isa = PBXGroup;
-			children = (
-				F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */,
-				F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */,
-			);
-			path = "My Sounds";
 			sourceTree = "<group>";
 		};
 		F2F8B99421DBEF2D0024AFB6 /* New Sound */ = {
@@ -300,9 +293,10 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
-				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
-				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
+				F2F8B9A421DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift */,
+				F23C622421E3F653005C9FF0 /* User Info */,
+				F23C622321E3F62F005C9FF0 /* My Sounds */,
+				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -319,6 +313,7 @@
 				F2689863215AEF8F00C21663 /* Frameworks */,
 				F2689864215AEF8F00C21663 /* Resources */,
 				B082AF0E245F1D3F45DAB765 /* [CP] Embed Pods Frameworks */,
+				F23C622021E3CD0B005C9FF0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -569,6 +564,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		F23C622021E3CD0B005C9FF0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/Fabric/run\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -576,13 +589,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2F8B9A921DBFFE10024AFB6 /* Song.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */,
 				F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
-				F2F8B98B21D2C5600024AFB6 /* NewBrewViewController.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,

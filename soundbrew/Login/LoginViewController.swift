@@ -126,7 +126,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     func validateUsername() -> Bool {
         if emailText.text!.isEmpty {
             
-            emailText.attributedPlaceholder = NSAttributedString(string:"Field required",
+            emailText.attributedPlaceholder = NSAttributedString(string: "Field required",
                                                                  attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
             valUsername = false
             
@@ -165,26 +165,13 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
                 
-                self.determineNextScreen()
+                self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
                 
             } else {
                 self.stopAnimating()
                 UIElement().showAlert("Oops", message: "Incorrect Email/Password combo.", target: self)
             }
         }
-    }
-    
-    func determineNextScreen() {
-        let current = UNUserNotificationCenter.current()
-        current.getNotificationSettings(completionHandler: { (settings) in
-            if settings.authorizationStatus == .notDetermined {
-                self.uiElement.segueToView("Main", withIdentifier: "notification", target: self)
-                
-            } else if settings.authorizationStatus == .denied ||
-                settings.authorizationStatus == .authorized {
-                self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
-            }
-        })
     }
     
     @objc func didPressForgotPassword(_ sender: UIBarButtonItem) {

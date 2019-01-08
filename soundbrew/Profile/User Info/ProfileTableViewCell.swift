@@ -14,12 +14,18 @@ class ProfileTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var socialStreamImage: UIImageView = {
+    lazy var soundImage: UIImageView = {
         let image = UIImageView()
         return image
     }()
     
-    lazy var socialStreamClicks: UILabel = {
+    lazy var soundLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: UIElement().mainFont, size: 17)
+        return label
+    }()
+    
+    lazy var soundPlays: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: UIElement().mainFont, size: 17)
         return label
@@ -28,19 +34,19 @@ class ProfileTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.addSubview(socialStreamImage)
-        self.addSubview(socialStreamClicks)
+        self.addSubview(soundImage)
+        self.addSubview(soundLabel)
         
-        socialStreamImage.snp.makeConstraints { (make) -> Void in
+        soundImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(uiElement.buttonHeight)
             make.top.equalTo(self).offset(uiElement.topOffset)
             make.left.equalTo(self).offset(uiElement.leftOffset)
             make.bottom.equalTo(self).offset(uiElement.bottomOffset)
         }
         
-        socialStreamClicks.snp.makeConstraints { (make) -> Void in
+        soundLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self).offset(uiElement.topOffset)
-            make.left.equalTo(self.socialStreamImage.snp.right).offset(5)
+            make.left.equalTo(self.soundImage.snp.right).offset(5)
             make.right.equalTo(self).offset(uiElement.rightOffset)
             make.bottom.equalTo(self).offset(uiElement.bottomOffset)
         }

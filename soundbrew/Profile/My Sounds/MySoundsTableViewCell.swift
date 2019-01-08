@@ -21,28 +21,27 @@ class MySoundsTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var soundCreatedAt: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
-        return label
-    }()
-    
     lazy var soundTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         return label
     }()
     
-    lazy var soundPlays: UILabel = {
+    lazy var soundArtist: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         return label
     }()
     
-    lazy var soundTags: UILabel = {
+    lazy var soundPlaysImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "playIcon")
+        return image
+    }()
+    
+    lazy var soundPlays: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.textColor = .darkGray
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
         return label
     }()
     
@@ -57,46 +56,48 @@ class MySoundsTableViewCell: UITableViewCell {
         
         self.addSubview(menuButton)
         self.addSubview(soundArtImage)
-        self.addSubview(soundCreatedAt)
         self.addSubview(soundTitle)
-        self.addSubview(soundTags)
+        self.addSubview(soundArtist)
+        self.addSubview(soundPlaysImage)
         self.addSubview(soundPlays)
-        
-        menuButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self).offset(uiElement.topOffset)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
-        }
-        
-        soundCreatedAt.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(menuButton)
-            make.left.equalTo(self).offset(uiElement.leftOffset)
-            make.right.equalTo(menuButton.snp.left).offset(uiElement.rightOffset)
-        }
         
         soundArtImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(100)
-            make.top.equalTo(soundCreatedAt.snp.bottom).offset(uiElement.elementOffset)
+            make.top.equalTo(self).offset(uiElement.elementOffset)
             make.left.equalTo(self).offset(uiElement.leftOffset)
             make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+        }
+        
+        menuButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(soundArtImage)
+            make.right.equalTo(self).offset(uiElement.rightOffset)
         }
         
         soundTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
             make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
+            make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
+        }
+        
+        soundArtist.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(soundTitle.snp.bottom)
+            make.left.equalTo(soundTitle)
             make.right.equalTo(self).offset(uiElement.rightOffset)
+        }
+        
+        soundPlaysImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
+            make.left.equalTo(soundTitle)
+            //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
         }
         
         soundPlays.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(soundTitle).offset(uiElement.elementOffset)
+            make.top.equalTo(soundPlaysImage).offset(2)
+            make.left.equalTo(soundPlaysImage.snp.right)
             make.right.equalTo(self).offset(uiElement.rightOffset)
-        }
-        
-        soundTags.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(soundPlays.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(soundTitle).offset(uiElement.elementOffset)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
+            //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
         }
     }
     
