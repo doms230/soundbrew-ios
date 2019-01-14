@@ -19,6 +19,7 @@ class MainTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
         label.textColor = color.black()
+        label.text = "Tag"
         label.numberOfLines = 0
         return label
     }()
@@ -47,6 +48,8 @@ class MainTableViewCell: UITableViewCell {
         let button = UIButton()
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
+        button.backgroundColor = .black
+        button.setTitle("Tag", for: .normal)
         return button
     }()
     
@@ -54,10 +57,11 @@ class MainTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
             
-        case "newBrewReuse":
+        case "searchReuse":
             self.addSubview(featureTagButton)
             featureTagButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(100)
+                make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)

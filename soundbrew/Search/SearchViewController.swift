@@ -10,7 +10,7 @@ import UIKit
 import XLPagerTabStrip
 
 class SearchViewController: ButtonBarPagerTabStripViewController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,30 +39,12 @@ class SearchViewController: ButtonBarPagerTabStripViewController {
     }
     
     override func viewControllers(for pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
-        
-        let featuredTags = ["Mood", "Activity", "City", "SXSW", "More"]
-        var childViewControllers = [ChildSearchViewController]()
-        for featuredTag in featuredTags {
-            childViewControllers.append(ChildSearchViewController(itemInfo: featuredTag))
-        }
-        return childViewControllers
-        
-        //let child_1 = ChildSearchViewController(itemInfo: "Following")
-        //let child_2 = ChildSearchViewController(itemInfo: "You")
-        //let child_1 = TableChildExampleViewController(style: .plain, itemInfo: "FOLLOWING")
-        //let child_2 = ChildExampleViewController(itemInfo: "YOU")
-        //return [child_1, child_2]
-        
+                
+        let moodChild = ChildSearchViewController(itemInfo: "Mood")
+        let activityChild = ChildSearchViewController(itemInfo: "Activity")
+        let cityChild = ChildSearchViewController(itemInfo: "City")
+        let sxswChild = ChildSearchViewController(itemInfo: "SXSW")
+        let moreChild = ChildSearchViewController(itemInfo: "More")
+        return [moodChild, activityChild, cityChild, sxswChild, moreChild]
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

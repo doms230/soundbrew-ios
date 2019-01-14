@@ -33,6 +33,8 @@
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
 		F2B4D6CB21E52E3300C88C5C /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */; };
 		F2B4D6CD21E5322300C88C5C /* ChildSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6CC21E5322300C88C5C /* ChildSearchViewController.swift */; };
+		F2B4D6CF21EC250600C88C5C /* MainCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6CE21EC250600C88C5C /* MainCollectionViewCell.swift */; };
+		F2B4D6D121EC333700C88C5C /* GridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6D021EC333700C88C5C /* GridLayout.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
@@ -104,6 +106,8 @@
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F2B4D6CC21E5322300C88C5C /* ChildSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildSearchViewController.swift; sourceTree = "<group>"; };
+		F2B4D6CE21EC250600C88C5C /* MainCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCollectionViewCell.swift; sourceTree = "<group>"; };
+		F2B4D6D021EC333700C88C5C /* GridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridLayout.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsViewController.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
@@ -266,9 +270,11 @@
 			isa = PBXGroup;
 			children = (
 				F268989F215AFF8200C21663 /* MainTableViewCell.swift */,
+				F2B4D6CE21EC250600C88C5C /* MainCollectionViewCell.swift */,
 				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
 				F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */,
 				F2B4D6CC21E5322300C88C5C /* ChildSearchViewController.swift */,
+				F2B4D6D021EC333700C88C5C /* GridLayout.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -592,6 +598,7 @@
 				F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F23C621921DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift in Sources */,
+				F2B4D6CF21EC250600C88C5C /* MainCollectionViewCell.swift in Sources */,
 				F26898A0215AFF8200C21663 /* MainTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
@@ -602,6 +609,7 @@
 				F2B4D6CD21E5322300C88C5C /* ChildSearchViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
+				F2B4D6D121EC333700C88C5C /* GridLayout.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,
 			);
