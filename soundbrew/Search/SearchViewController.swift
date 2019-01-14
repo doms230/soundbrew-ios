@@ -39,12 +39,12 @@ class SearchViewController: ButtonBarPagerTabStripViewController {
     }
     
     override func viewControllers(for pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
-                
-        let moodChild = ChildSearchViewController(itemInfo: "Mood")
-        let activityChild = ChildSearchViewController(itemInfo: "Activity")
-        let cityChild = ChildSearchViewController(itemInfo: "City")
-        let sxswChild = ChildSearchViewController(itemInfo: "SXSW")
-        let moreChild = ChildSearchViewController(itemInfo: "More")
-        return [moodChild, activityChild, cityChild, sxswChild, moreChild]
+        
+        let genreChild = TagsViewController(itemInfo: "Genre")
+        let cityChild = TagsViewController(itemInfo: "City")
+        let moodChild = TagsViewController(itemInfo: "Mood")
+        let activityChild = TagsViewController(itemInfo: "Activity")
+        let moreChild = TagsViewController(itemInfo: "More")
+        return [genreChild, cityChild, moodChild, activityChild, moreChild]
     }
 }

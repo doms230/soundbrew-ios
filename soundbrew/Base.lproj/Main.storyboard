@@ -145,10 +145,10 @@
             </objects>
             <point key="canvasLocation" x="-1636" y="-403"/>
         </scene>
-        <!--Child Search View Controller-->
+        <!--Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
             <objects>
-                <viewController id="EFp-6t-Bz1" customClass="ChildSearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="EFp-6t-Bz1" customClass="TagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HvH-Jy-vPO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -161,10 +161,10 @@
             </objects>
             <point key="canvasLocation" x="1072.8" y="-1135.6821589205399"/>
         </scene>
-        <!--Search View Controller-->
+        <!--My Sounds View Controller-->
         <scene sceneID="lMR-qf-QRn">
             <objects>
-                <viewController id="6zd-xs-mPB" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="6zd-xs-mPB" customClass="MySoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="N5c-eh-yGd">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

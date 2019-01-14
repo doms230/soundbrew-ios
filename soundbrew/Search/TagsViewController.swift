@@ -13,8 +13,9 @@ import Parse
 import AVFoundation
 import NVActivityIndicatorView
 import Alamofire
+import XLPagerTabStrip
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate, NVActivityIndicatorViewable {
+class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate, NVActivityIndicatorViewable, IndicatorInfoProvider  {
     
     //MARK: views
     let uiElement = UIElement()
@@ -22,13 +23,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        startAnimating()
-        setUpSearchBar()
+        //startAnimating()
+        //setUpSearchBar()
         loadTags()
         
-        if UserDefaults.standard.stringArray(forKey: "tags") != nil {
+        /*if UserDefaults.standard.stringArray(forKey: "tags") != nil {
             SKStoreReviewController.requestReview()
-        }
+        }*/
     }
     
     lazy var menuButton: UIButton = {
@@ -85,7 +86,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let featureTagReuse = "featureTagReuse"
     
     func setUpTableView() {
-        tableView = UITableView()
+        tableView = UITableView(frame: view.bounds)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: tagReuse)
@@ -95,32 +96,45 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.separatorStyle = .none
         view.addSubview(tableView)
         
-        tableView.snp.makeConstraints { (make) -> Void in
+        /*tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
-        }
+        }*/
         
         setUpBrewMyPlaylistButton()
     }
     
      func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
+        /*if section == 0 {
             return featureTagTitles.count
-        }
+        }*/
         
-        return 1
+        return filteredTags.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: MainTableViewCell!
         
-        if indexPath.section == 0 {
+        cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
+        let tag = self.filteredTags[indexPath.row]
+        cell.tagLabel.text = tag.name
+        cell.tagView.backgroundColor = color.uicolorFromHex(0xd0a9cb)
+        
+       // cell.tagLabel.text =
+        /*cell.tagLabel.delegate = self
+        cell.tagLabel.removeAllTags()
+        //let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
+        let tags: Array<String> = self.filteredTags.map{$0.name}
+        cell.tagLabel.addTags(tags)
+        self.tagView = cell.tagLabel*/
+        
+        /*if indexPath.section == 0 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? MainTableViewCell
             
             var tagType: String?
@@ -173,7 +187,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
             cell.tagLabel.addTags(otherTags)
             self.tagView = cell.tagLabel
-        }
+        }*/
 
         cell.backgroundColor = backgroundColor()
         cell.selectionStyle = .none
@@ -512,8 +526,16 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func loadTags() {
         self.tags.removeAll()
         let query = PFQuery(className: "Tag")
+        if let type = self.itemInfo.title?.lowercased() {
+            if type == "more" {
+                query.whereKey("type", notContainedIn: ["activity", "artist", "city", "mood", "activity"])
+                
+            } else {
+                query.whereKey("type", equalTo: self.itemInfo.title!.lowercased())
+            }
+        }
         query.addDescendingOrder("count")
-        query.limit = 1000
+        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -537,14 +559,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.filteredTags = self.tags
                 
                 if self.tableView == nil {
-                    self.setUpTagListView()
+                    //self.setUpTagListView()
                     self.setUpTableView()
                     
                 } else {
                     self.tableView.reloadData()
                 }
                 
-                self.stopAnimating()
+                //self.stopAnimating()
                 
             } else {
                 print("Error: \(error!)")
@@ -555,5 +577,21 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func backgroundColor() -> UIColor {
         //return color.tan()
         return .white
+    }
+    
+    //
+    var itemInfo: IndicatorInfo = "View"
+    
+    init(itemInfo: IndicatorInfo) {
+        self.itemInfo = itemInfo
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        return itemInfo
     }
 }

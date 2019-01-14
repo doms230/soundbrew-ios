@@ -4,11 +4,12 @@
 //
 //  Created by Dominic Smith on 10/11/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//
+//TODO: Automatic loading of more sounds as the user scrolls
 
 import UIKit
 import Parse
 import Kingfisher
+import SnapKit
 
 class MySoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -17,7 +18,18 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
 
     var sounds = [Sound]()
     var likedSoundsIds = [String]()
-    var soundType: String!
+    var soundType: String?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        determinSoundType()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        /*let installation = PFInstallation.current()
+        installation?.badge = 0
+        installation?.saveInBackground()*/
+    }
     
     lazy var soundTitle: UILabel = {
         let label = UILabel()
@@ -27,24 +39,21 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         label.numberOfLines = 0
         return label
     }()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        if soundType == "Likes" {
-            self.title = "Liked Sounds"
-            self.loadLikedSounds()
+    
+    func determinSoundType() {
+        if let soundType = self.soundType {
+            if soundType == "Likes" {
+                self.title = "Liked Sounds"
+                self.loadLikedSounds()
+                
+            } else {
+                self.title = "Uploaded Sounds"
+                self.loadSounds()
+            }
             
         } else {
-            self.title = "Uploaded Sounds"
-            self.loadSounds(true)
+            self.loadSounds()
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        /*let installation = PFInstallation.current()
-        installation?.badge = 0
-        installation?.saveInBackground()*/
     }
     
     func showNoSoundsHereYetUI() {
@@ -65,47 +74,65 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
     //mark: tableview
     var tableView: UITableView!
     let reuse = "reuse"
+    let playFilterReuse = "playFilterReuse"
     
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
+        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: playFilterReuse)
         self.tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sounds.count
+        if section == 0 {
+            return 1
+            
+        } else {
+            return sounds.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! MySoundsTableViewCell
+        var cell: MySoundsTableViewCell!
+        
+        if indexPath.section == 0 {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: playFilterReuse) as? MySoundsTableViewCell
+            
+        } else {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as? MySoundsTableViewCell
+            
+            let sound = sounds[indexPath.row]
+            
+            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+            cell.menuButton.tag = indexPath.row
+            
+            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
+            cell.soundTitle.text = sound.title
+            
+            if let plays = sound.plays {
+                cell.soundPlays.text = "\(plays)"
+                
+            } else {
+                cell.soundPlays.text = "0"
+            }
+            
+            if let artistName = sound.artistName {
+                cell.soundArtist.text = artistName
+                
+            } else {
+                loadArtist(cell, userId: sound.userId, row: indexPath.row)
+            }
+        }
         
         cell.selectionStyle = .none
-        
-        let sound = sounds[indexPath.row]
-        
-        cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-        cell.menuButton.tag = indexPath.row
-        
-        cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-        cell.soundTitle.text = sound.title
-        
-        if let plays = sound.plays {
-            cell.soundPlays.text = "\(plays)"
-            
-        } else {
-            cell.soundPlays.text = "0"
-        }
-        
-        if let artistName = sound.artistName {
-            cell.soundArtist.text = artistName
-            
-        } else {
-            loadArtist(cell, userId: sound.userId, row: indexPath.row)
-        }
         
         return cell
     }
@@ -180,7 +207,7 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
                     self.showNoSoundsHereYetUI()
                     
                 } else {
-                    self.loadSounds(false)
+                    self.loadSounds()
                 }
                 
             } else {
@@ -189,14 +216,19 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func loadSounds(_ shouldLoadUploadedSounds: Bool) {
+    func loadSounds() {
         let query = PFQuery(className: "Post")
-        if shouldLoadUploadedSounds {
-            query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
-            
+    
+        if let soundType = self.soundType {
+            if soundType == "Likes" {
+                query.whereKey("objectId", containedIn: likedSoundsIds)
+            } else {
+                query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
+            }
         } else {
-            query.whereKey("objectId", containedIn: likedSoundsIds)
+            query.addDescendingOrder("createdAt")
         }
+        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
