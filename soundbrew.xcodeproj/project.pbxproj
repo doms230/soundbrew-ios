@@ -32,6 +32,10 @@
 		F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A7215B56F200C21663 /* PlayerViewController.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
 		F2B4D6CB21E52E3300C88C5C /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */; };
+		F2B4D6D321EE736400C88C5C /* MusicPlayerTransitionAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6D221EE736400C88C5C /* MusicPlayerTransitionAnimation.swift */; };
+		F2B4D6D521EE76EE00C88C5C /* ModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6D421EE76EE00C88C5C /* ModalViewController.swift */; };
+		F2B4D6D721EE776300C88C5C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6D621EE776300C88C5C /* ViewController.swift */; };
+		F2B4D6D921EE7A8900C88C5C /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B4D6D821EE7A8900C88C5C /* LineView.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
@@ -102,6 +106,10 @@
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		F2B4D6D221EE736400C88C5C /* MusicPlayerTransitionAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerTransitionAnimation.swift; sourceTree = "<group>"; };
+		F2B4D6D421EE76EE00C88C5C /* ModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViewController.swift; sourceTree = "<group>"; };
+		F2B4D6D621EE776300C88C5C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F2B4D6D821EE7A8900C88C5C /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsViewController.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
@@ -263,6 +271,8 @@
 		F2689899215AF7FB00C21663 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				F2B4D6D421EE76EE00C88C5C /* ModalViewController.swift */,
+				F2B4D6D621EE776300C88C5C /* ViewController.swift */,
 				F268989F215AFF8200C21663 /* MainTableViewCell.swift */,
 				F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */,
 				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
@@ -278,6 +288,8 @@
 				F268989D215AF8F100C21663 /* UIElement.swift */,
 				F26898A5215B527900C21663 /* Sound.swift */,
 				F268992A21753A3B00C21663 /* Tag.swift */,
+				F2B4D6D221EE736400C88C5C /* MusicPlayerTransitionAnimation.swift */,
+				F2B4D6D821EE7A8900C88C5C /* LineView.swift */,
 			);
 			path = Subclass;
 			sourceTree = "<group>";
@@ -479,6 +491,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-soundbrew/Pods-soundbrew-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ARNTransitionAnimator/ARNTransitionAnimator.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
@@ -503,6 +516,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ARNTransitionAnimator.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
@@ -573,16 +587,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2B4D6D721EE776300C88C5C /* ViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */,
 				F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */,
 				F2B4D6CB21E52E3300C88C5C /* SearchViewController.swift in Sources */,
+				F2B4D6D321EE736400C88C5C /* MusicPlayerTransitionAnimation.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
+				F2B4D6D521EE76EE00C88C5C /* ModalViewController.swift in Sources */,
+				F2B4D6D921EE7A8900C88C5C /* LineView.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
 				F23C621521DC350F005C9FF0 /* AddArtistNameViewController.swift in Sources */,
 				F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */,

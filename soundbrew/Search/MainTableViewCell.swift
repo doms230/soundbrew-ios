@@ -29,20 +29,7 @@ class MainTableViewCell: UITableViewCell {
         return scrollView
     }()
     
-    lazy var tagView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
-    lazy var tagLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
-        label.textAlignment = .center
-        label.textColor = color.black()
-        return label
-    }()
-    
-    /*lazy var tagLabel: TagListView = {
+    lazy var tagLabel: TagListView = {
         let tag = TagListView()
         tag.tagBackgroundColor = color.uicolorFromHex(0xd0bfa9)
         tag.cornerRadius = 22
@@ -55,7 +42,7 @@ class MainTableViewCell: UITableViewCell {
         tag.paddingY = CGFloat(uiElement.topOffset)
         tag.textFont = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
         return tag
-    }()*/
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -81,33 +68,13 @@ class MainTableViewCell: UITableViewCell {
             break 
             
         case "tagReuse":
-            /*self.addSubview(self.tagLabel)
+            self.addSubview(self.tagLabel)
             tagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
-            }*/
-            
-            self.addSubview(tagView)
-            self.tagView.addSubview(tagLabel)
-            
-            tagView.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(250)
-                make.top.equalTo(self)
-                make.left.equalTo(self)
-                make.right.equalTo(self)
-                make.bottom.equalTo(self).offset(-5)
             }
-            
-            tagLabel.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(uiElement.buttonHeight)
-                make.top.equalTo(self.tagView).offset(uiElement.topOffset)
-                make.left.equalTo(self.tagView).offset(uiElement.leftOffset)
-                make.right.equalTo(self.tagView).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self.tagView).offset(uiElement.bottomOffset)
-            }
-            
             break
             
         default:

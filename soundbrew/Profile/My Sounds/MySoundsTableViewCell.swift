@@ -19,25 +19,6 @@ class MySoundsTableViewCell: UITableViewCell {
         return scrollView
     }()
     
-    lazy var playButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "playIcon"), for: .normal)
-        button.setTitle(" Play", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = .lightGray
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var filterLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        label.text = "Filter"
-        return label
-    }()
-    
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 3
@@ -79,24 +60,6 @@ class MySoundsTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         switch reuseIdentifier {
-        case "playFilterReuse":
-            self.addSubview(playButton)
-            self.addSubview(filterLabel)
-            
-            playButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(40)
-                make.width.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            filterLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(playButton).offset(uiElement.elementOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            break
-            
         case "reuse":
             self.addSubview(menuButton)
             self.addSubview(soundArtImage)
@@ -107,7 +70,7 @@ class MySoundsTableViewCell: UITableViewCell {
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }

@@ -33,4 +33,5 @@ target 'soundbrew' do
   pod 'Crashlytics'
   pod 'Firebase/Performance'
   pod 'XLPagerTabStrip'
+  pod 'ARNTransitionAnimator'
 end

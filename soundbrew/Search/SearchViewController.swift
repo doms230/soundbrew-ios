@@ -10,20 +10,18 @@ import UIKit
 import XLPagerTabStrip
 
 class SearchViewController: ButtonBarPagerTabStripViewController {
-    
     override func viewDidLoad() {
-        super.viewDidLoad()
         
         // change selected bar color
         settings.style.buttonBarBackgroundColor = .white
         settings.style.buttonBarItemBackgroundColor = .white
         settings.style.selectedBarBackgroundColor = Color().blue()
-        settings.style.buttonBarItemFont = .boldSystemFont(ofSize: 14)
-        settings.style.selectedBarHeight = 2.0
+        settings.style.buttonBarItemFont = UIFont(name: "\(UIElement().mainFont)-Bold", size: 20)!
+        settings.style.selectedBarHeight = 1
         settings.style.buttonBarMinimumLineSpacing = 0
         settings.style.buttonBarItemTitleColor = .black
-        settings.style.buttonBarItemsShouldFillAvailableWidth = true
-        settings.style.buttonBarLeftContentInset = 0
+        settings.style.buttonBarItemsShouldFillAvailableWidth = false
+        settings.style.buttonBarLeftContentInset = 7
         settings.style.buttonBarRightContentInset = 0
         
         edgesForExtendedLayout = []
@@ -36,15 +34,13 @@ class SearchViewController: ButtonBarPagerTabStripViewController {
             oldCell?.label.textColor = .black
             newCell?.label.textColor = Color().blue()
         }
+        
+        super.viewDidLoad()
     }
     
     override func viewControllers(for pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
-        
-        let genreChild = TagsViewController(itemInfo: "Genre")
-        let cityChild = TagsViewController(itemInfo: "City")
-        let moodChild = TagsViewController(itemInfo: "Mood")
-        let activityChild = TagsViewController(itemInfo: "Activity")
-        let moreChild = TagsViewController(itemInfo: "More")
-        return [genreChild, cityChild, moodChild, activityChild, moreChild]
+        let recentChild = MySoundsViewController(itemInfo: "Recent")
+        let popularChild = MySoundsViewController(itemInfo: "Popular")
+        return [recentChild, popularChild]
     }
 }

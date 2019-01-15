@@ -5,17 +5,16 @@
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
 //  search Mark: view, tableView, taglist, searchbar, data
+// UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
 
 import UIKit
 import TagListView
 import SnapKit
 import Parse
 import AVFoundation
-import NVActivityIndicatorView
 import Alamofire
-import XLPagerTabStrip
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate, NVActivityIndicatorViewable, IndicatorInfoProvider  {
+class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate {
     
     //MARK: views
     let uiElement = UIElement()
@@ -23,61 +22,27 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //startAnimating()
-        //setUpSearchBar()
-        loadTags()
-        
-        /*if UserDefaults.standard.stringArray(forKey: "tags") != nil {
-            SKStoreReviewController.requestReview()
-        }*/
+        setUpSearchBar()
+        loadTagType("mood")
+        loadTagType("activity")
+        loadTagType("city")
+        loadTagType("genre")
+        loadTagType("artist")
+        loadTagType(nil)
     }
     
-    lazy var menuButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "menu"), for: .normal)
-        return button
-    }()
-    
-    override func viewDidAppear(_ animated: Bool) {
+    /*override func viewDidAppear(_ animated: Bool) {
         do {
             try AVAudioSession.sharedInstance().setActive(false)
             
         } catch let error {
             print("Unable to activate audio session:  \(error.localizedDescription)")
         }
-    }
+    }*/
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: PlayerViewController = segue.destination as! PlayerViewController
-        viewController.tags = self.chosenTagsArray
-    }
-    
-    lazy var brewMyPlaylistButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Brew My Playlist", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        //button.backgroundColor = color.uicolorFromHex(0xa9c5d0)
-        button.backgroundColor = color.black()
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!
-        button.isHidden = true
-        return button
-    }()
-    
-    func shouldHideBrewMyPlaylistButton(_ shouldHide: Bool) {
-        brewMyPlaylistButton.isHidden = shouldHide
-    }
-    
-    func setUpBrewMyPlaylistButton() {
-        self.view.backgroundColor = backgroundColor()
-        
-        self.brewMyPlaylistButton.addTarget(self, action: #selector(self.didPressBrewMyPlaylistButton(_:)), for: .touchUpInside)
-        self.tableView.addSubview(self.brewMyPlaylistButton)
-        brewMyPlaylistButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(60)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view)
-        }
+        //let viewController: PlayerViewController = segue.destination as! PlayerViewController
+        //viewController.tags = self.chosenTagsArray
     }
     
     //MARK: Tableview
@@ -86,7 +51,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let featureTagReuse = "featureTagReuse"
     
     func setUpTableView() {
-        tableView = UITableView(frame: view.bounds)
+        tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: tagReuse)
@@ -96,45 +61,30 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.separatorStyle = .none
         view.addSubview(tableView)
         
-        /*tableView.snp.makeConstraints { (make) -> Void in
+        tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
-        }*/
-        
-        setUpBrewMyPlaylistButton()
+        }
     }
     
-     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        /*if section == 0 {
+        if section == 0 {
             return featureTagTitles.count
-        }*/
+        }
         
-        return filteredTags.count
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: MainTableViewCell!
         
-        cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
-        let tag = self.filteredTags[indexPath.row]
-        cell.tagLabel.text = tag.name
-        cell.tagView.backgroundColor = color.uicolorFromHex(0xd0a9cb)
-        
-       // cell.tagLabel.text =
-        /*cell.tagLabel.delegate = self
-        cell.tagLabel.removeAllTags()
-        //let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
-        let tags: Array<String> = self.filteredTags.map{$0.name}
-        cell.tagLabel.addTags(tags)
-        self.tagView = cell.tagLabel*/
-        
-        /*if indexPath.section == 0 {
+        if indexPath.section == 0 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? MainTableViewCell
             
             var tagType: String?
@@ -187,8 +137,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
             cell.tagLabel.addTags(otherTags)
             self.tagView = cell.tagLabel
-        }*/
-
+        }
+        
         cell.backgroundColor = backgroundColor()
         cell.selectionStyle = .none
         
@@ -196,38 +146,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: button actions
-    @objc func didPressBrewMyPlaylistButton(_ sender: UIButton) {
-        UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
-        self.uiElement.segueToView("Main", withIdentifier: "player", target: self)
-    }
-    
-    @objc func didPressMenuButton(_ sender: UIButton) {
-        let alertController = UIAlertController (title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        let uploadAction = UIAlertAction(title: "Upload to Soundbrew", style: .default) { (_) -> Void in
-            let soundbrewArtistsLink = URL(string: "https://itunes.apple.com/us/app/soundbrew-artists/id1438851832?mt=8")!
-            if UIApplication.shared.canOpenURL(soundbrewArtistsLink) {
-                UIApplication.shared.open(soundbrewArtistsLink, completionHandler: nil)
-            }
-        }
-        alertController.addAction(uploadAction)
-        
-        let provideFeedbackAction = UIAlertAction(title: "Provide Feedback", style: .default) { (_) -> Void in
-            let soundbrewArtistsLink = URL(string: "https://www.soundbrew.app/support")!
-            if UIApplication.shared.canOpenURL(soundbrewArtistsLink) {
-                UIApplication.shared.open(soundbrewArtistsLink, completionHandler: nil)
-            }
-        }
-        alertController.addAction(provideFeedbackAction)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
-        self.startAnimating()
         removeChosenTag(sender)
         setFilteredTagIsSelectedAsFalse(sender)
     }
@@ -242,7 +161,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         self.filteredTags.sort(by: {$0.count > $1.count!})
         self.tableView.reloadData()
-        self.stopAnimating()
     }
     
     func removeChosenTag(_ sender: UIButton) {
@@ -268,13 +186,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         //show tags label if no more chosen tags
         if self.chosenTagsArray.count == 0 {
             addChooseTagsLabel()
-            shouldHideBrewMyPlaylistButton(true)
         }
     }
     
     //MARK: tags
     var tags = [Tag]()
     var filteredTags = [Tag]()
+    
     var tagView: TagListView!
     
     let featureTagTitles = ["Mood", "Activity", "Genre", "City", "Artist"]
@@ -364,14 +282,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
-        
-        shouldHideBrewMyPlaylistButton(false)
     }
     
     //MARK: featured tags
     func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: MainTableViewCell, color: UIColor) {
         var xPositionForFeaturedTag = uiElement.leftOffset
-
+        
         cell.featureTagsScrollview.subviews.forEach({$0.removeFromSuperview()})
         
         for tag in featuredTags {
@@ -405,7 +321,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func didPressFeatureTag(_ sender: UIButton) {
-        self.startAnimating()
         let tagName = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
         self.chosenTagsArray.append(tagName)
         self.addChosenTagButton(tagName)
@@ -414,7 +329,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if tagName == self.filteredTags[i].name {
                 self.filteredTags[i].isSelected = true
                 self.tableView.reloadData()
-                self.stopAnimating()
                 break
             }
         }
@@ -486,22 +400,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }()
     
     func setUpSearchBar() {
-        menuButton.addTarget(self, action: #selector(didPressMenuButton(_:)), for: .touchUpInside)
-        self.view.addSubview(self.menuButton)
-        menuButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 20)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
         searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
-        self.view.addSubview(self.searchBar)
-        searchBar.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(30)
-            make.top.equalTo(self.menuButton)
-            make.left.equalTo(self.menuButton.snp.right).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        searchBar.frame = CGRect(x: 0, y: 0, width: 200, height: 30)
+        let rightNavBarButton = UIBarButtonItem(customView: searchBar)
+        self.navigationItem.rightBarButtonItem = rightNavBarButton
     }
     
     @objc func searchBarDidChange(_ textField: UITextField) {
@@ -523,16 +425,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //mark: Data
-    func loadTags() {
-        self.tags.removeAll()
+    func loadTagType(_ type: String?) {
         let query = PFQuery(className: "Tag")
-        if let type = self.itemInfo.title?.lowercased() {
-            if type == "more" {
-                query.whereKey("type", notContainedIn: ["activity", "artist", "city", "mood", "activity"])
-                
-            } else {
-                query.whereKey("type", equalTo: self.itemInfo.title!.lowercased())
-            }
+        if let type = type {
+            query.whereKey("type", equalTo: type)
+            
+        } else {
+            query.whereKey("type", notContainedIn: ["artist", "city", "genre", "mood", "activity"])
         }
         query.addDescendingOrder("count")
         query.limit = 50
@@ -559,14 +458,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.filteredTags = self.tags
                 
                 if self.tableView == nil {
-                    //self.setUpTagListView()
+                    self.setUpTagListView()
                     self.setUpTableView()
                     
                 } else {
                     self.tableView.reloadData()
                 }
-                
-                //self.stopAnimating()
                 
             } else {
                 print("Error: \(error!)")
@@ -577,21 +474,5 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func backgroundColor() -> UIColor {
         //return color.tan()
         return .white
-    }
-    
-    //
-    var itemInfo: IndicatorInfo = "View"
-    
-    init(itemInfo: IndicatorInfo) {
-        self.itemInfo = itemInfo
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
-        return itemInfo
     }
 }

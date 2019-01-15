@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9001DEA18FEE7E304432D03CF35E26FB"
-               BlueprintName = "Protobuf"
+               BlueprintIdentifier = "1533F149321A5BC3F7398E3A1A1CC6D4"
+               BlueprintName = "ARNTransitionAnimator"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "Protobuf.framework">
+               BuildableName = "ARNTransitionAnimator.framework">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

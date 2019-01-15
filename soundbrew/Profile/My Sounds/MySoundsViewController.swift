@@ -10,8 +10,9 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
+import XLPagerTabStrip
 
-class MySoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MySoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, IndicatorInfoProvider {
     
     let uiElement = UIElement()
     let color = Color()
@@ -19,10 +20,32 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
     var sounds = [Sound]()
     var likedSoundsIds = [String]()
     var soundType: String?
+    
+    lazy var playButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "playIcon"), for: .normal)
+        button.setTitle(" Play", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = color.black()
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.isEnabled = false
+        return button
+    }()
+    
+    lazy var filterButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Filter", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.setTitleColor(color.black(), for: .normal)
+        button.isEnabled = false
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        determinSoundType()
+        setUpPlayAndFilterButtons()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -40,7 +63,7 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         return label
     }()
     
-    func determinSoundType() {
+    func determineSoundType() {
         if let soundType = self.soundType {
             if soundType == "Likes" {
                 self.title = "Liked Sounds"
@@ -71,6 +94,28 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
+    func setUpPlayAndFilterButtons() {
+        self.view.addSubview(playButton)
+        self.view.addSubview(filterButton)
+        
+        playButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(40)
+            make.width.equalTo(100)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        filterButton.addTarget(self, action: #selector(self.didPressFilterButton(_:)), for: .touchUpInside)
+        filterButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(40)
+            make.width.equalTo(100)
+            make.top.equalTo(playButton)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        determineSoundType()
+    }
+    
     //mark: tableview
     var tableView: UITableView!
     let reuse = "reuse"
@@ -81,55 +126,56 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: playFilterReuse)
         self.tableView.separatorStyle = .singleLine
-        tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(playButton.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
+        
+        self.playButton.isEnabled = true
+        self.filterButton.isEnabled = true
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-            
-        } else {
-            return sounds.count
+        return sounds.count
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            self.performSegue(withIdentifier: "showFilters", sender: self)
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell: MySoundsTableViewCell!
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! MySoundsTableViewCell
         
-        if indexPath.section == 0 {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: playFilterReuse) as? MySoundsTableViewCell
+        let sound = sounds[indexPath.row]
+        
+        cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+        cell.menuButton.tag = indexPath.row
+        
+        cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
+        cell.soundTitle.text = sound.title
+        
+        if let plays = sound.plays {
+            cell.soundPlays.text = "\(plays)"
             
         } else {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as? MySoundsTableViewCell
+            cell.soundPlays.text = "0"
+        }
+        
+        if let artistName = sound.artistName {
+            cell.soundArtist.text = artistName
             
-            let sound = sounds[indexPath.row]
-            
-            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-            cell.menuButton.tag = indexPath.row
-            
-            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-            cell.soundTitle.text = sound.title
-            
-            if let plays = sound.plays {
-                cell.soundPlays.text = "\(plays)"
-                
-            } else {
-                cell.soundPlays.text = "0"
-            }
-            
-            if let artistName = sound.artistName {
-                cell.soundArtist.text = artistName
-                
-            } else {
-                loadArtist(cell, userId: sound.userId, row: indexPath.row)
-            }
+        } else {
+            loadArtist(cell, userId: sound.userId, row: indexPath.row)
         }
         
         cell.selectionStyle = .none
@@ -138,6 +184,10 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //mark: button actions
+    @objc func didPressFilterButton(_ sender: UIButton) {
+        self.uiElement.segueToView("Main", withIdentifier: "tags", target: self)
+    }
+    
     @objc func didPressMenuButton(_ sender: UIButton) {
         let row = sender.tag
         let sound = sounds[sender.tag]
@@ -150,7 +200,11 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.deleteSong(sound.objectId, row: row)
             }))
             
-            menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
+            menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
+                //TODO
+            }))
+            
+            menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
                 //TODO
             }))
             
@@ -225,8 +279,11 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
             } else {
                 query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
             }
-        } else {
+        } else if self.itemInfo.title == "Recent" {
             query.addDescendingOrder("createdAt")
+            
+        } else {
+            query.addDescendingOrder("plays")
         }
         query.limit = 50
         query.findObjectsInBackground {
@@ -303,4 +360,22 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }
     }
+    
+    //
+    // MARK: - IndicatorInfoProvider
+    var itemInfo: IndicatorInfo = "View"
+    
+    init(itemInfo: IndicatorInfo) {
+        self.itemInfo = itemInfo
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        return itemInfo
+    }
+    
 }
