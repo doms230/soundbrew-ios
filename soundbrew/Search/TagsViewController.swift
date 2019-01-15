@@ -226,7 +226,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.searchBar.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }

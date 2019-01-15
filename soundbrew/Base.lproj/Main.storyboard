@@ -148,7 +148,7 @@
         <!--Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
             <objects>
-                <viewController storyboardIdentifier="tags" id="EFp-6t-Bz1" customClass="TagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="EFp-6t-Bz1" customClass="TagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HvH-Jy-vPO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -317,7 +317,7 @@
         <!--Navigation Controller-->
         <scene sceneID="MXk-4c-UqV">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="aKs-Fi-OWX" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="tags" automaticallyAdjustsScrollViewInsets="NO" id="aKs-Fi-OWX" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="uBs-HX-HUH">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
