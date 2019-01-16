@@ -400,18 +400,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }()
     
     func setUpSearchBar() {
-        let menuButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-        self.navigationItem.leftBarButtonItem = menuButton
-        
         searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
         searchBar.frame = CGRect(x: 0, y: 0, width: 200, height: 30)
         let rightNavBarButton = UIBarButtonItem(customView: searchBar)
         self.navigationItem.rightBarButtonItem = rightNavBarButton
-    }
-    
-    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        //TODO: add tags user chose to defaults 
-        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
     }
     
     @objc func searchBarDidChange(_ textField: UITextField) {

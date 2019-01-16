@@ -61,7 +61,7 @@ class ChooseGenreViewController: UIViewController, UITableViewDelegate, UITableV
         
         cell.selectionStyle = .default
         
-        switch tagType {
+        /*switch tagType {
         case "genre":
             cell.genreTitle.text = genres[indexPath.row]
             
@@ -73,7 +73,7 @@ class ChooseGenreViewController: UIViewController, UITableViewDelegate, UITableV
             
         default:
             break
-        }
+        }*/
         
         return cell
     }

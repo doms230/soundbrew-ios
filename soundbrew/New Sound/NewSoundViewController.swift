@@ -30,15 +30,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     override func viewDidLoad() {
         if PFUser.current() != nil {
-            showNewSoundUI()
+            showUploadSoundFileUI()
             
         } else {
             self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        self.title = "New Sound"
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -47,7 +43,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         viewController.soundParseFile = soundParseFile
     }
     
-    func showNewSoundUI() {
+    func showUploadSoundButton() {
         newSoundButton.addTarget(self, action: #selector(self.didPressUploadButton(_:)), for: .touchUpInside)
         self.view.addSubview(newSoundButton)
         newSoundButton.snp.makeConstraints { (make) -> Void in
@@ -59,26 +55,25 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     @objc func didPressUploadButton(_ sender: UIButton) {
-        uploadFile()
+        showUploadSoundFileUI()
     }
     
     //
-    func uploadFile() {
+    func showUploadSoundFileUI() {
         let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
         let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
         documentPicker.delegate = self
         documentPicker.modalPresentationStyle = .formSheet
-        self.present(documentPicker, animated: true, completion: nil)
+        self.present(documentPicker, animated: true, completion: {() in
+            self.showUploadSoundButton()
+        })
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        do { //"audio.\(urls[0].pathExtension)" "audio.mp3"
-            //print("audio.\(urls[0].pathExtension)")
+        do { 
             self.soundFilename = "audio.\(urls[0].pathExtension)"
             let audioFile = try Data(contentsOf: urls[0], options: .uncached)
             self.soundParseFile = PFFileObject(name: self.soundFilename, data: audioFile)
-            //self.soundFilename = "\(urls[0].lastPathComponent)"
-            self.title = self.soundFilename
             self.performSegue(withIdentifier: "showSoundInfo", sender: self)
             
         } catch {

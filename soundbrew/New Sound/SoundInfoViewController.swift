@@ -71,16 +71,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: Tableview
     var tableView: UITableView!
     let soundInfoReuse = "soundInfoReuse"
-    let soundTagButtonReuse = "soundTagButtonReuse"
+    let soundTagReuse = "soundTagReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
-        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagButtonReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
         tableView.backgroundColor = .white
         tableView.keyboardDismissMode = .onDrag
-        tableView.separatorStyle = .none
+        tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
     }
@@ -91,7 +91,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 3
+            return 5
         }
         
         return 1
@@ -107,12 +107,41 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
             
             soundTitle = cell.soundTitle
-            soundTags = cell.soundTags
+            //soundTags = cell.soundTags
             
         } else {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagButtonReuse) as? SoundInfoTableViewCell
+            cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as? SoundInfoTableViewCell
             
-            var tagDefault = ""
+            switch indexPath.row {
+            case 0:
+                cell.soundTagLabel.text = "Genre"
+                break
+                
+            case 1:
+                cell.soundTagLabel.text = "City"
+                cell.chosenSoundTagLabel.textColor = color.black()
+                break
+                
+            case 2:
+                cell.soundTagLabel.text = "Artists You Know"
+                break
+                
+            case 3:
+                cell.soundTagLabel.text = "Mood"
+                break
+                
+            case 4:
+                cell.soundTagLabel.text = "Activity"
+                
+            case 5:
+                cell.soundTagLabel.text = "More Tags"
+                tableView.separatorStyle = .none
+                
+            default:
+                break 
+            }
+                        
+            /*var tagDefault = ""
             switch indexPath.row {
             case 0:
                 tagDefault = "genre"
@@ -128,13 +157,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             default:
                 break
-            }
+            }*/
             
-            cell.soundTagButton.addTarget(self, action: #selector(didPressGenreButton(_:)), for: .touchUpInside)
-            cell.soundTagButton.tag = indexPath.row
-            cell.soundTagButton.setTitle("Add \(tagDefault)", for: .normal)
+            //cell.soundTagButton.addTarget(self, action: #selector(didPressGenreButton(_:)), for: .touchUpInside)
+            //cell.soundTagButton.tag = indexPath.row
+            //cell.soundTagButton.setTitle("Add \(tagDefault)", for: .normal)
             
-            if UserDefaults.standard.string(forKey: tagDefault) != nil {
+            /*if UserDefaults.standard.string(forKey: tagDefault) != nil {
                 let tag = UserDefaults.standard.string(forKey: tagDefault)
                 print("\(indexPath.row): \(tag!)")
                 cell.soundTagButton.setTitle(tag, for: .normal)
@@ -155,7 +184,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 default:
                     break
                 }
-            }
+            }*/
         }
         
         cell.selectionStyle = .none

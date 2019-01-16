@@ -19,32 +19,10 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
 
     var sounds = [Sound]()
     var soundType: String?
-    
-    lazy var playButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "playIcon"), for: .normal)
-        button.setTitle(" Play", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = color.black()
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        button.isEnabled = false
-        return button
-    }()
-    
-    lazy var filterButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Filter", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        button.setTitleColor(color.black(), for: .normal)
-        button.isEnabled = false
-        return button
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setUpPlayAndFilterButtons()
+        loadSounds()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -77,28 +55,6 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func setUpPlayAndFilterButtons() {
-        self.view.addSubview(playButton)
-        self.view.addSubview(filterButton)
-        
-        playButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(40)
-            make.width.equalTo(100)
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        filterButton.addTarget(self, action: #selector(self.didPressFilterButton(_:)), for: .touchUpInside)
-        filterButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(40)
-            make.width.equalTo(100)
-            make.top.equalTo(playButton)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        loadSounds()
-    }
-    
     //mark: tableview
     var tableView: UITableView!
     let reuse = "reuse"
@@ -110,16 +66,8 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
         self.tableView.separatorStyle = .singleLine
+        tableView.frame = view.bounds
         self.view.addSubview(tableView)
-        tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playButton.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view)
-        }
-        
-        self.playButton.isEnabled = true
-        self.filterButton.isEnabled = true
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -131,9 +79,7 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            self.performSegue(withIdentifier: "showFilters", sender: self)
-        }
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -167,10 +113,6 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //mark: button actions
-    @objc func didPressFilterButton(_ sender: UIButton) {
-        self.uiElement.segueToView("Main", withIdentifier: "tags", target: self)
-    }
-    
     @objc func didPressMenuButton(_ sender: UIButton) {
         let row = sender.tag
         let sound = sounds[sender.tag]

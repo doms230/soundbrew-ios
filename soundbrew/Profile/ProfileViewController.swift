@@ -104,7 +104,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! MySoundsTableViewCell
- 
             
             var sound: Sound!
             

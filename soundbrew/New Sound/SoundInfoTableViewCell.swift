@@ -46,7 +46,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         return textField
     }()
     
-    lazy var soundTagLabel: UILabel = {
+    /*lazy var soundTagLabel: UILabel = {
         let label = UILabel()
         label.text = "Add Tags. For Ex: tag1 tag2 tag3"
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
@@ -58,9 +58,23 @@ class SoundInfoTableViewCell: UITableViewCell {
         textField.placeholder = "Tag1 Tag2 Tag3"
         textField.borderStyle = .roundedRect
         return textField
+    }()*/
+    
+    lazy var soundTagLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return label
     }()
     
-    lazy var soundTagButton: UIButton = {
+    lazy var chosenSoundTagLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Add"
+        label.textColor = color.blue()
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        return label
+    }()
+    
+    /*lazy var soundTagButton: UIButton = {
         let button = UIButton()
         button.layer.cornerRadius = 3
         button.layer.borderWidth = 1
@@ -74,7 +88,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         return label
-    }()
+    }()*/
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -83,9 +97,6 @@ class SoundInfoTableViewCell: UITableViewCell {
             self.addSubview(soundArt)
             self.addSubview(soundTitleLabel)
             self.addSubview(soundTitle)
-            self.addSubview(soundTagLabel)
-            self.addSubview(soundTags)
-            //
             
             soundArtLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -97,52 +108,45 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.height.width.equalTo(100)
                 make.top.equalTo(self.soundArtLabel.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
              }
             
             soundTitleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArt.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.top.equalTo(soundArtLabel)
+                make.left.equalTo(self.soundArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundTitleLabel.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.left.equalTo(soundTitleLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
+            
+        } else if reuseIdentifier == "soundTagReuse" {
+            self.addSubview(soundTagLabel)
+            self.addSubview(chosenSoundTagLabel)
             
             soundTagLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            soundTags.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTagLabel.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-        } else if reuseIdentifier == "soundTagButtonReuse" {
-            self.addSubview(soundTagButton)
-            soundTagButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(uiElement.buttonHeight)
-                make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            chosenSoundTagLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundTagLabel)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundTagLabel)
             }
             
         } else {
-            self.addSubview(genreTitle)
+           /* self.addSubview(genreTitle)
             genreTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
+            }*/
         }
     }
     
