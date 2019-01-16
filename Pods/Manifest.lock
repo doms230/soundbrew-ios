@@ -1,6 +1,5 @@
 PODS:
   - Alamofire (4.8.0)
-  - ARNTransitionAnimator (3.1.0)
   - Bolts/Tasks (1.9.0)
   - Crashlytics (3.12.0):
     - Fabric (~> 1.9.0)
@@ -80,6 +79,7 @@ PODS:
   - GoogleUtilities/UserDefaults (5.3.6):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.2.1)
+  - Hero (1.4.0)
   - Kingfisher (5.0.1)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
@@ -113,11 +113,11 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
-  - ARNTransitionAnimator
   - Crashlytics
   - Fabric
   - Firebase/Core
   - Firebase/Performance
+  - Hero
   - Kingfisher
   - NVActivityIndicatorView
   - Parse
@@ -131,7 +131,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
-    - ARNTransitionAnimator
     - Bolts
     - Crashlytics
     - Fabric
@@ -146,6 +145,7 @@ SPEC REPOS:
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMSessionFetcher
+    - Hero
     - Kingfisher
     - nanopb
     - NVActivityIndicatorView
@@ -162,7 +162,6 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
-  ARNTransitionAnimator: 2b9bb180e4250dd847af59bda677fcbae4d2da99
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
@@ -177,6 +176,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
   GoogleUtilities: 95996bea7c7d9b8fb811b7507669a4a8762f80c7
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  Hero: bac92350d7201a1a940003e0767c7b52ce7c99a1
   Kingfisher: 4f771421b9208185217550528a06fd48756cb7c2
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   NVActivityIndicatorView: 1e4e3ed79248cf1666af182593c3a2acf0fcf193
@@ -191,6 +191,6 @@ SPEC CHECKSUMS:
   TagListView: 0c7e9c26b9aff858224ee6b155f5fcacd9e27c83
   XLPagerTabStrip: 63166e21c9844fa30f2d95d30f335e73be5caf22
 
-PODFILE CHECKSUM: 133f94012474ef6de06ab92a197860dc067978e1
+PODFILE CHECKSUM: 91c2f59dcdade2d9d1ac81c759fbd6217ff5640b
 
 COCOAPODS: 1.5.3

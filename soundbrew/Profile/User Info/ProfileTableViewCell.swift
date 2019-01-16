@@ -14,41 +14,67 @@ class ProfileTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var soundImage: UIImageView = {
+    lazy var userImage: UIImageView = {
         let image = UIImageView()
+        image.layer.cornerRadius = 50
+        image.clipsToBounds = true
+        image.contentMode = .scaleAspectFill
+        image.image = UIImage(named: "profile_icon")
         return image
     }()
     
-    lazy var soundLabel: UILabel = {
+    lazy var artistName: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: UIElement().mainFont, size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
         return label
     }()
     
-    lazy var soundPlays: UILabel = {
+    lazy var artistBio: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: UIElement().mainFont, size: 17)
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
         return label
+    }()
+    
+    lazy var artistCity: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        return label
+    }()
+    
+    lazy var editProfileButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Edit Profile", for: .normal)
+        button.backgroundColor = color.blue()
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        return button
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        self.addSubview(soundImage)
-        self.addSubview(soundLabel)
-        
-        soundImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(uiElement.buttonHeight)
+        self.addSubview(userImage)
+        self.addSubview(artistName)
+        self.addSubview(artistBio)
+        self.addSubview(artistCity)
+        userImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(75)
             make.top.equalTo(self).offset(uiElement.topOffset)
             make.left.equalTo(self).offset(uiElement.leftOffset)
-            make.bottom.equalTo(self).offset(uiElement.bottomOffset)
         }
         
-        soundLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self).offset(uiElement.topOffset)
-            make.left.equalTo(self.soundImage.snp.right).offset(5)
+        
+        artistName.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(userImage.snp.bottom).offset(uiElement.elementOffset)
+            make.left.equalTo(self).offset(uiElement.leftOffset)
             make.right.equalTo(self).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+        }
+        
+        
+        artistCity.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(artistName.snp.bottom).offset(uiElement.elementOffset)
+            make.left.equalTo(self).offset(uiElement.leftOffset)
+            make.right.equalTo(self).offset(uiElement.rightOffset)
         }
     }
     
