@@ -65,7 +65,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         documentPicker.delegate = self
         documentPicker.modalPresentationStyle = .formSheet
         self.present(documentPicker, animated: true, completion: {() in
-            self.showUploadSoundButton()
+            
         })
     }
     
@@ -75,6 +75,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             let audioFile = try Data(contentsOf: urls[0], options: .uncached)
             self.soundParseFile = PFFileObject(name: self.soundFilename, data: audioFile)
             self.performSegue(withIdentifier: "showSoundInfo", sender: self)
+            self.showUploadSoundButton()
             
         } catch {
             UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
@@ -82,6 +83,6 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        //showNewSoundUI()
+        self.showUploadSoundButton()
     }
 }

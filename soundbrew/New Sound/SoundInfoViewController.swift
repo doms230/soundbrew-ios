@@ -10,8 +10,9 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import UserNotifications
+import SnapKit
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable {
 
     let uiElement = UIElement()
     
@@ -24,11 +25,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundArtDidFinishProcessing = false
     
     var soundTitle: UITextField!
-    var soundTags: UITextField!
-        
+    
+    let genres = ["Hip-Hop/Rap", "Electronic Dance Music(EDM)", "Pop", "Alternative Rock", "Americana", "Blues", "Christian & Gospal", "Classic Rock", "Classical", "Country", "Dance", "Hard Rock", "Indie", "Jazz", "Latino", "Metal", "Reggae", "R&B", "Soul", "Funk"]
+    
+    let moods = ["Happy", "Sad", "Angry", "Chill", "High-Energy", "Netflix-And-Chill"]
+    
+    let activities = ["Creative", "Workout", "Party", "Work", "Sleep", "Gaming"]
     var soundGenre: String?
     var soundMood: String?
     var soundActivity: String?
+    var soundArtistsYouKnow: String?
+    var soundMoreTags: String?
     
     var soundFileName: String!
     var soundParseFile: PFFileObject!
@@ -91,7 +98,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 5
+            return 6
         }
         
         return 1
@@ -107,89 +114,205 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
             
             soundTitle = cell.soundTitle
-            //soundTags = cell.soundTags
+            tableView.separatorStyle = .singleLine
             
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as? SoundInfoTableViewCell
             
             switch indexPath.row {
             case 0:
-                cell.soundTagLabel.text = "Genre"
+                cell.soundTagLabel.text = "Genre Tag"
+                if let soundGenre = self.soundGenre {
+                    cell.chosenSoundTagLabel.text = soundGenre
+                }
+                tableView.separatorStyle = .singleLine
                 break
                 
             case 1:
-                cell.soundTagLabel.text = "City"
+                cell.soundTagLabel.text = "City Tag"
                 cell.chosenSoundTagLabel.textColor = color.black()
+                tableView.separatorStyle = .singleLine
                 break
                 
             case 2:
-                cell.soundTagLabel.text = "Artists You Know"
+                cell.soundTagLabel.text = "Artists You Know Tag"
+                if let soundArtistsYouKnowTag = self.soundArtistsYouKnow {
+                    cell.chosenSoundTagLabel.text = soundArtistsYouKnowTag
+                }
+                tableView.separatorStyle = .singleLine
                 break
                 
             case 3:
-                cell.soundTagLabel.text = "Mood"
+                cell.soundTagLabel.text = "Mood Tag"
+                if let soundMood = self.soundMood {
+                    cell.chosenSoundTagLabel.text = soundMood
+                }
+                tableView.separatorStyle = .singleLine
                 break
                 
             case 4:
-                cell.soundTagLabel.text = "Activity"
+                cell.soundTagLabel.text = "Activity Tag"
+                if let soundActivity = self.soundActivity {
+                    cell.chosenSoundTagLabel.text = soundActivity
+                }
+                tableView.separatorStyle = .singleLine
                 
             case 5:
                 cell.soundTagLabel.text = "More Tags"
+                if let soundMoreTags = self.soundMoreTags {
+                    cell.chosenSoundTagLabel.text = soundMoreTags
+                }
                 tableView.separatorStyle = .none
                 
             default:
                 break 
             }
-                        
-            /*var tagDefault = ""
-            switch indexPath.row {
-            case 0:
-                tagDefault = "genre"
-                break
-                
-            case 1:
-                tagDefault = "mood"
-                break
-                
-            case 2:
-                tagDefault = "activity"
-                break
-                
-            default:
-                break
-            }*/
-            
-            //cell.soundTagButton.addTarget(self, action: #selector(didPressGenreButton(_:)), for: .touchUpInside)
-            //cell.soundTagButton.tag = indexPath.row
-            //cell.soundTagButton.setTitle("Add \(tagDefault)", for: .normal)
-            
-            /*if UserDefaults.standard.string(forKey: tagDefault) != nil {
-                let tag = UserDefaults.standard.string(forKey: tagDefault)
-                print("\(indexPath.row): \(tag!)")
-                cell.soundTagButton.setTitle(tag, for: .normal)
-                
-                switch indexPath.row {
-                case 0:
-                    soundGenre = tag
-                    break
-                    
-                case 1:
-                    soundMood = tag
-                    break
-                    
-                case 2:
-                    soundActivity = tag
-                    break
-                    
-                default:
-                    break
-                }
-            }*/
         }
         
         cell.selectionStyle = .none
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.row {
+        case 0:
+            self.showPickerView("Genre")
+            self.soundGenre = "Hip-Hop/Rap"
+            break
+            
+        case 2:
+            self.showPickerView("Artists You Know")
+            self.soundArtistsYouKnow = "Drake"
+            break
+            
+        case 3:
+            self.showPickerView("Mood")
+            self.soundMood = "Happy"
+            break
+            
+        case 4:
+            self.showPickerView("Activity")
+            self.soundActivity = "Creative"
+            break
+            
+        default:
+            break
+        }
+    }
+    
+    func showPickerView(_ title: String) {
+        let alert = UIAlertController(title: "Choose \(title) Tag", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Done", style: .cancel, handler: { action in
+            self.tableView.reloadData()
+        }))
+        alert.isModalInPopover = true
+        
+        //  Create a frame (placeholder/wrapper) for the picker and then create the picker
+        let pickerFrame = CGRect(x: 0, y: 0, width: self.view.frame.width - 20, height: self.view.frame.height * (1/3)) // CGRectMake(left), top, width, height) - left and top are like margins
+        let picker = UIPickerView(frame: pickerFrame)
+        
+        //let picker = UIPickerView()
+        /*picker.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(100)
+            make.top.equalTo(alert.view).offset(uiElement.elementOffset)
+            make.left.equalTo(alert.view).offset(uiElement.elementOffset)
+            make.right.equalTo(alert.view).offset(-(uiElement.elementOffset))
+            make.bottom.equalTo(alert.view).offset(-(uiElement.elementOffset))
+        }*/
+        
+        //  set the pickers datasource and delegate
+        picker.delegate = self
+        picker.dataSource = self
+        switch title {
+        case "Genre":
+            picker.tag = 0
+            break
+            
+        case "Artists You Know":
+            picker.tag = 1
+            break
+            
+        case "Mood":
+            picker.tag = 2
+            break
+            
+        case "Activity":
+            picker.tag = 3
+            break
+            
+        default:
+            break
+        }
+        
+        //  Add the picker to the alert controller
+        alert.view.addSubview(picker)
+        
+        self.present(alert, animated: true, completion: nil);
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        switch pickerView.tag {
+        case 0:
+            return genres.count
+            
+        case 1:
+            return 1
+            
+        case 2:
+            return moods.count
+            
+        case 3:
+            return activities.count
+            
+        default:
+            return 0
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        switch pickerView.tag {
+        case 0:
+            return genres[row]
+            
+        case 1:
+            return "Artist You Know"
+            
+        case 2:
+            return moods[row]
+            
+        case 3:
+            return activities[row]
+            
+        default:
+            return "default"
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        switch pickerView.tag {
+        case 0:
+            self.soundGenre = genres[row]
+            break
+            
+        case 1:
+            break
+            
+        case 2:
+            self.soundMood = self.moods[row]
+            break
+            
+        case 3:
+            self.soundActivity = self.activities[row]
+            break
+            
+        default:
+            break
+        }        
     }
     
     //mark: media upload
@@ -281,7 +404,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func getTags() -> Array<String> {
-        var tags = soundTags.text!.split{$0 == " "}.map(String.init)
+        //var tags = soundTags.text!.split{$0 == " "}.map(String.init)
+        var tags = [String]()
         tags.append(soundGenre!)
         tags.append(soundActivity!)
         tags.append(soundMood!)
@@ -399,10 +523,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if soundTitle.text!.isEmpty {
             showAttributedPlaceholder(soundTitle, text: "Required")
             
-        } else if soundTags.text!.isEmpty {
-            showAttributedPlaceholder(soundTags, text: "required: tag1 tag2 tag3")
+        } /*else if soundTags.text!.isEmpty {
+            //showAttributedPlaceholder(soundTags, text: "required: tag1 tag2 tag3")
             
-        } else if soundArt == nil {
+        }*/ else if soundArt == nil {
             uiElement.showAlert("Oops", message: "Sound art is required.", target: self)
             
         } else if soundGenre == nil {
