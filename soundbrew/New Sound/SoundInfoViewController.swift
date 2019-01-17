@@ -61,13 +61,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         setUpTableView()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: TagsViewController = segue.destination as! TagsViewController
         viewController.isChoosingTagsForSoundUpload = true
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        self.tableView.reloadData()
     }
     
     func setUpViews() {

@@ -13,13 +13,6 @@ class SoundInfoTableViewCell: UITableViewCell {
 
     let color = Color()
     let uiElement = UIElement()
-
-    lazy var soundArtLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sound Art"
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        return label
-    }()
     
     lazy var soundArt: UIButton = {
        let image = UIButton()
@@ -32,16 +25,10 @@ class SoundInfoTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var soundTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sound Title"
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        return label
-    }()
-    
     lazy var soundTitle: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Add Title"
+        textField.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         //textField.borderStyle = .roundedRect
         textField.borderStyle = .none
         return textField
@@ -76,7 +63,7 @@ class SoundInfoTableViewCell: UITableViewCell {
              }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArt).offset(50)
+                make.top.equalTo(soundArt).offset(40)
                 make.left.equalTo(soundArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }

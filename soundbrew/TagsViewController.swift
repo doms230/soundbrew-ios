@@ -5,7 +5,7 @@
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
 //  search Mark: view, tableView, tags, featureTags, searchbar, data
-// UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
+//
 
 import UIKit
 import TagListView
@@ -37,6 +37,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             loadTagType("artist")
             loadTagType(nil)
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+
     }
     
     /*override func viewDidAppear(_ animated: Bool) {
@@ -86,11 +90,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isChoosingTagsForSoundUpload {
-            return 1
-        }
-        
-        if section == 0 {
+        if !isChoosingTagsForSoundUpload && section == 0 {
             return featureTagTitles.count
         }
         
@@ -210,10 +210,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
+        
+        self.setUpTableView()
     }
     
     func addChooseTagsLabel() {
@@ -477,7 +479,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
                 if self.tableView == nil {
                     self.setupChooseTagsView()
-                    self.setUpTableView()
                     
                 } else {
                     self.tableView.reloadData()
