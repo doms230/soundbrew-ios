@@ -55,6 +55,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
                     </view>
+                    <connections>
+                        <segue destination="EFp-6t-Bz1" kind="show" identifier="showTags" id="e22-GO-dQi"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -127,7 +130,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="991" y="-1164"/>
+            <point key="canvasLocation" x="2126" y="-403"/>
         </scene>
         <!--Discover-->
         <scene sceneID="lMR-qf-QRn">
@@ -161,7 +164,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="134" y="-1895"/>
+            <point key="canvasLocation" x="990" y="-1164"/>
         </scene>
         <!--My Sounds-->
         <scene sceneID="XyK-yh-w2g">
@@ -227,4 +230,7 @@
         <image name="mySounds" width="34.5" height="34.5"/>
         <image name="mySounds_filled" width="34.5" height="34.5"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="jRJ-VI-NkP"/>
+    </inferredMetricsTieBreakers>
 </document>

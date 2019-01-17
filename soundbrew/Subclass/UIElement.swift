@@ -22,6 +22,15 @@ class UIElement {
     
     let mainFont = "HelveticaNeue"
     
+    func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
+        let uiFont = UIFont(name: "\(mainFont)-bold", size: 17)!
+        let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
+        let buttonTitleWidth = Int(buttonTitleSize.width)
+        let buttonImageWidth = 50
+        let totalButtonWidth = buttonTitleWidth + buttonImageWidth
+        return totalButtonWidth
+    }
+    
     //This is used to make sure that top offset is below navigation bar
     func uiViewTopOffset(_ target: UIViewController ) -> CGFloat {
         return UIApplication.shared.statusBarFrame.size.height +

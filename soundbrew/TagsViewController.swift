@@ -4,7 +4,7 @@
 //
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//  search Mark: view, tableView, taglist, searchbar, data
+//  search Mark: view, tableView, tags, featureTags, searchbar, data
 // UserDefaults.standard.set(self.chosenTagsArray, forKey: "tags")
 
 import UIKit
@@ -20,15 +20,23 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     
+    var isChoosingTagsForSoundUpload = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpSearchBar()
-        loadTagType("mood")
-        loadTagType("activity")
-        loadTagType("city")
-        loadTagType("genre")
-        loadTagType("artist")
-        loadTagType(nil)
+        
+        if isChoosingTagsForSoundUpload {
+            loadTagType(nil)
+            
+        } else {
+            loadTagType("mood")
+            loadTagType("activity")
+            loadTagType("city")
+            loadTagType("genre")
+            loadTagType("artist")
+            loadTagType(nil)
+        }
     }
     
     /*override func viewDidAppear(_ animated: Bool) {
@@ -70,10 +78,18 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
+        if isChoosingTagsForSoundUpload {
+            return 1
+        }
+        
         return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if isChoosingTagsForSoundUpload {
+            return 1
+        }
+        
         if section == 0 {
             return featureTagTitles.count
         }
@@ -84,59 +100,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: MainTableViewCell!
         
-        if indexPath.section == 0 {
+        if indexPath.section == 0 && !isChoosingTagsForSoundUpload {
             cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? MainTableViewCell
-            
-            var tagType: String?
-            
-            var color: UIColor!
-            //        let tagColors = [color.primary(), color.uicolorFromHex(0xa9c5d0), color.uicolorFromHex(0xd0aba9), color.uicolorFromHex(0xd0a9cb), color.uicolorFromHex(0xd0bfa9), color.uicolorFromHex(0xaea9d0)]
-            
-            switch indexPath.row {
-            case 0:
-                tagType = "mood"
-                color = self.color.primary()
-                break
-                
-            case 1:
-                tagType = "activity"
-                color = self.color.uicolorFromHex(0xa9c5d0)
-                break
-                
-            case 2:
-                tagType = "genre"
-                color = self.color.uicolorFromHex(0xaea9d0)
-                break
-                
-            case 3:
-                tagType = "city"
-                color = self.color.uicolorFromHex(0xd0a9cb)
-                break
-                
-            case 4:
-                tagType = "artist"
-                color = self.color.uicolorFromHex(0xd0aba9)
-                break
-                
-            default:
-                break
-            }
-            
-            if let tagType = tagType {
-                let tags: Array<Tag> = self.filteredTags.filter {$0.tagType == tagType}
-                //addFeatureTagButton(tags, cell: cell)
-                addFeatureTagButton(tags, cell: cell, color: color)
-            }
-            
-            cell.featureTagTitle.text = featureTagTitles[indexPath.row]
+            setUpFeatureTagCellView(cell, row: indexPath.row)
             
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
-            cell.tagLabel.delegate = self
-            cell.tagLabel.removeAllTags()
-            let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
-            cell.tagLabel.addTags(otherTags)
-            self.tagView = cell.tagLabel
+            setUpTagListCellView(cell)
         }
         
         cell.backgroundColor = backgroundColor()
@@ -195,7 +165,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var tagView: TagListView!
     
-    let featureTagTitles = ["Mood", "Activity", "Genre", "City", "Artist"]
+    let featureTagTitles = ["mood", "activity", "genre", "city", "artist"]
     
     var genreTags = [String]()
     var moodTags = [String]()
@@ -220,7 +190,21 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return scrollView
     }()
     
-    func setUpTagListView() {
+    func setUpTagListCellView(_ cell: MainTableViewCell) {
+        cell.tagLabel.delegate = self
+        cell.tagLabel.removeAllTags()
+        let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
+        cell.tagLabel.addTags(otherTags)
+        self.tagView = cell.tagLabel
+        if isChoosingTagsForSoundUpload {
+            cell.tagLabel.tagBackgroundColor = color.primary()
+            
+        } else {
+            cell.tagLabel.tagBackgroundColor = color.uicolorFromHex(0xd0bfa9)
+        }
+    }
+    
+    func setupChooseTagsView() {
         addChooseTagsLabel()
         
         self.view.addSubview(self.chosenTagsScrollview)
@@ -266,7 +250,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let buttonTitleWithX = "\(buttonTitle)"
         let buttonImageWidth = 25
         //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonTitleWidth = determineChosenTagButtonTitleWidth(buttonTitleWithX)
+        let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(buttonTitleWithX)
         
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonTitleWidth + buttonImageWidth , height: 45)
@@ -285,6 +269,49 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: featured tags
+    func setUpFeatureTagCellView(_ cell: MainTableViewCell, row: Int) {
+        var tagType: String?
+        
+        var color: UIColor!
+        
+        switch row {
+        case 0:
+            tagType = "mood"
+            color = self.color.primary()
+            break
+            
+        case 1:
+            tagType = "activity"
+            color = self.color.uicolorFromHex(0xa9c5d0)
+            break
+            
+        case 2:
+            tagType = "genre"
+            color = self.color.uicolorFromHex(0xaea9d0)
+            break
+            
+        case 3:
+            tagType = "city"
+            color = self.color.uicolorFromHex(0xd0a9cb)
+            break
+            
+        case 4:
+            tagType = "artist"
+            color = self.color.uicolorFromHex(0xd0aba9)
+            break
+            
+        default:
+            break
+        }
+        
+        if let tagType = tagType {
+            let tags: Array<Tag> = self.filteredTags.filter {$0.tagType == tagType}
+            addFeatureTagButton(tags, cell: cell, color: color)
+        }
+        
+        cell.featureTagTitle.text = featureTagTitles[row]
+    }
+    
     func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: MainTableViewCell, color: UIColor) {
         var xPositionForFeaturedTag = uiElement.leftOffset
         
@@ -293,7 +320,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         for tag in featuredTags {
             if !tag.isSelected {
                 
-                let buttonTitleWidth = determineChosenTagButtonTitleWidth(tag.name)
+                let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(tag.name)
                 
                 let featureTagButton = UIButton()
                 
@@ -381,15 +408,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
-        let uiFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)!
-        let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
-        let buttonTitleWidth = Int(buttonTitleSize.width)
-        let buttonImageWidth = 50
-        let totalButtonWidth = buttonTitleWidth + buttonImageWidth
-        return totalButtonWidth
-    }
-    
     //MARK: SearchBar
     lazy var searchBar: UITextField = {
         let searchBar = UITextField()
@@ -431,7 +449,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             query.whereKey("type", equalTo: type)
             
         } else {
-            query.whereKey("type", notContainedIn: ["artist", "city", "genre", "mood", "activity"])
+            query.whereKey("type", notContainedIn: featureTagTitles)
         }
         query.addDescendingOrder("count")
         query.limit = 50
@@ -458,7 +476,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.filteredTags = self.tags
                 
                 if self.tableView == nil {
-                    self.setUpTagListView()
+                    self.setupChooseTagsView()
                     self.setUpTableView()
                     
                 } else {

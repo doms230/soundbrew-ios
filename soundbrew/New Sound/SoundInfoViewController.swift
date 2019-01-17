@@ -62,8 +62,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: ChooseGenreViewController = segue.destination as! ChooseGenreViewController
-        viewController.tagType = tagType
+        let viewController: TagsViewController = segue.destination as! TagsViewController
+        viewController.isChoosingTagsForSoundUpload = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -181,6 +181,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.soundGenre = "Hip-Hop/Rap"
             break
             
+        case 1:
+            //TODO: Add custom tags for city
+            break
+            
         case 2:
             self.showPickerView("Artists You Know")
             self.soundArtistsYouKnow = "Drake"
@@ -194,6 +198,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         case 4:
             self.showPickerView("Activity")
             self.soundActivity = "Creative"
+            break
+            
+        case 5:
+            self.performSegue(withIdentifier: "showTags", sender: self)
             break
             
         default:

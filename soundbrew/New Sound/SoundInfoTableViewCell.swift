@@ -76,7 +76,7 @@ class SoundInfoTableViewCell: UITableViewCell {
              }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArt)
+                make.top.equalTo(soundArt).offset(50)
                 make.left.equalTo(soundArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }

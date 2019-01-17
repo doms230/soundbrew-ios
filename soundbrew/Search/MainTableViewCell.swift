@@ -31,7 +31,6 @@ class MainTableViewCell: UITableViewCell {
     
     lazy var tagLabel: TagListView = {
         let tag = TagListView()
-        tag.tagBackgroundColor = color.uicolorFromHex(0xd0bfa9)
         tag.cornerRadius = 22
         tag.textColor = color.black()
         //tag.borderWidth = 1
