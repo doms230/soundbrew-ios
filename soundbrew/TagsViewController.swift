@@ -222,7 +222,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         var tags: Array<String>!
         if isChoosingTagsForSoundUpload {
-            tags = self.filteredTags.map{$0.name}
+            var filterTags: Array<String> = self.filteredTags.map{$0.name}
+            //if tag doesn't exist yet, add tag with search results so user can choose tag if they want.
+            if searchBar.isEditing {
+                let searchText = searchBar.text!.lowercased()
+                if !filterTags.contains(searchText) && searchText != "" {
+                    filterTags.insert(searchText, at: 0)
+                }
+            }
+            tags = filterTags
             
         } else {
             tags = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
@@ -458,7 +466,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: SearchBar
     lazy var searchBar: UITextField = {
         let searchBar = UITextField()
-        searchBar.placeholder = "🔍 genre, mood, activity, city"
+        searchBar.placeholder = "🔍 Tags"
         searchBar.borderStyle = .roundedRect
         searchBar.clearButtonMode = .always
         return searchBar
@@ -472,23 +480,54 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func searchBarDidChange(_ textField: UITextField) {
-        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", textField.text!)
-        
         if textField.text!.count == 0 {
             self.filteredTags = self.tags
+            self.tableView.reloadData()
             
         } else {
-            var filteredTags = [Tag]()
-            filteredTags = self.tags.filter {wordPredicate.evaluate(with: $0.name)}
-            
-            filteredTags.sort(by: {$0.count > $1.count!})
-            self.filteredTags = filteredTags
+            searchTags(textField.text!, type: tagType)
         }
-        
-        self.tableView.reloadData()
     }
     
     //mark: Data
+    func searchTags(_ text: String, type: String?) {
+        self.filteredTags.removeAll()
+        let query = PFQuery(className: "Tag")
+        query.whereKey("tag", hasPrefix: text.lowercased())
+        if let type = type {
+            query.whereKey("type", equalTo: type)
+            
+        } else {
+            query.whereKey("type", notContainedIn: featureTagTitles)
+        }
+        query.addDescendingOrder("count")
+        query.limit = 50
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let tagName = object["tag"] as! String
+                        let tagCount = object["count"] as! Int
+                        
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, tagType: nil)
+                        
+                        if let tagType = object["type"] as? String {
+                            if !tagType.isEmpty {
+                                newTag.tagType = tagType
+                            }
+                        }
+                        self.filteredTags.append(newTag)
+                    }
+                    self.tableView.reloadData()
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
     func loadTagType(_ type: String?) {
         let query = PFQuery(className: "Tag")
         if let type = type {
