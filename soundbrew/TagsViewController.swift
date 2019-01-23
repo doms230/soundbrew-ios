@@ -22,7 +22,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpSearchBar()
         
         if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
@@ -554,8 +553,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                         }
                         
-                        if self.isChoosingTagsForSoundUpload && self.chosenTagsArray.count != 0 && !self.chosenTagsArray.contains(newTag.name) {
-                            self.tags.append(newTag)
+                        if self.isChoosingTagsForSoundUpload && self.chosenTagsArray.count != 0 {
+                            if !self.chosenTagsArray.contains(newTag.name) {
+                                self.tags.append(newTag)
+                            }
                             
                         } else {
                             self.tags.append(newTag)
@@ -566,6 +567,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.filteredTags = self.tags
                 
                 if self.tableView == nil {
+                    self.setUpSearchBar()
                     self.setupChooseTagsView()
                     
                 } else {

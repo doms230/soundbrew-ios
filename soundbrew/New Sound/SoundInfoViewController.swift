@@ -36,7 +36,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundGenre: String?
     var soundMood: String?
     var soundActivity: String?
-    var soundArtistsYouKnow: String?
     var soundMoreTags: Array<String>?
     var soundCity: String?
     
@@ -48,27 +47,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if uiElement.getUserDefault("city") != nil && uiElement.getUserDefault("artistName") != nil {
-            self.currentUserCity = (uiElement.getUserDefault("city") as! String)
-            self.artistName = (uiElement.getUserDefault("artistName") as! String)
-            
-        } else {
-            loadUserInfo()
-        }
-        
         saveAudioFile()
         setUpViews()
         setUpTableView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if addTagsType == "city" {
-            if let soundCityTag = uiElement.getUserDefault("cityTag") as? String {
-                self.soundCity = soundCityTag
-            }
-            
-        } else if let soundMoreTags = uiElement.getUserDefault("moreTags") as? Array<String> {
+        if let soundCityTag = uiElement.getUserDefault("cityTag") as? String {
+            self.soundCity = soundCityTag
+        }
+        
+        if let soundMoreTags = uiElement.getUserDefault("moreTags") as? Array<String> {
             self.soundMoreTags = soundMoreTags
         }
         
@@ -109,7 +98,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 6
+            return 5
         }
         
         return 1
@@ -148,14 +137,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 2:
-                cell.soundTagLabel.text = "Artists You Know Tag"
-                if let soundArtistsYouKnowTag = self.soundArtistsYouKnow {
-                    cell.chosenSoundTagLabel.text = soundArtistsYouKnowTag
-                }
-                tableView.separatorStyle = .singleLine
-                break
-                
-            case 3:
                 cell.soundTagLabel.text = "Mood Tag"
                 if let soundMood = self.soundMood {
                     cell.chosenSoundTagLabel.text = soundMood
@@ -163,14 +144,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 tableView.separatorStyle = .singleLine
                 break
                 
-            case 4:
+            case 3:
                 cell.soundTagLabel.text = "Activity Tag"
                 if let soundActivity = self.soundActivity {
                     cell.chosenSoundTagLabel.text = soundActivity
                 }
                 tableView.separatorStyle = .singleLine
                 
-            case 5:
+            case 4:
                 cell.soundTagLabel.text = "More Tags"
                 if let soundMoreTags = self.soundMoreTags {
                     if soundMoreTags.count == 0 {
@@ -205,21 +186,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 2:
-            self.showPickerView("Artists You Know")
-            self.soundArtistsYouKnow = "Drake"
-            break
-            
-        case 3:
             self.showPickerView("Mood")
             self.soundMood = "Happy"
             break
             
-        case 4:
+        case 3:
             self.showPickerView("Activity")
             self.soundActivity = "Creative"
             break
             
-        case 5:
+        case 4:
             addTagsType = nil 
             self.performSegue(withIdentifier: "showTags", sender: self)
             break
@@ -240,15 +216,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let pickerFrame = CGRect(x: 0, y: 0, width: self.view.frame.width - 20, height: self.view.frame.height * (1/3)) // CGRectMake(left), top, width, height) - left and top are like margins
         let picker = UIPickerView(frame: pickerFrame)
         
-        //let picker = UIPickerView()
-        /*picker.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(100)
-            make.top.equalTo(alert.view).offset(uiElement.elementOffset)
-            make.left.equalTo(alert.view).offset(uiElement.elementOffset)
-            make.right.equalTo(alert.view).offset(-(uiElement.elementOffset))
-            make.bottom.equalTo(alert.view).offset(-(uiElement.elementOffset))
-        }*/
-        
         //  set the pickers datasource and delegate
         picker.delegate = self
         picker.dataSource = self
@@ -257,16 +224,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             picker.tag = 0
             break
             
-        case "Artists You Know":
+        case "Mood":
             picker.tag = 1
             break
             
-        case "Mood":
-            picker.tag = 2
-            break
-            
         case "Activity":
-            picker.tag = 3
+            picker.tag = 2
             break
             
         default:
@@ -289,12 +252,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             return genres.count
             
         case 1:
-            return 1
-            
-        case 2:
             return moods.count
             
-        case 3:
+        case 2:
             return activities.count
             
         default:
@@ -308,12 +268,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             return genres[row]
             
         case 1:
-            return "Artist You Know"
-            
-        case 2:
             return moods[row]
             
-        case 3:
+        case 2:
             return activities[row]
             
         default:
@@ -328,13 +285,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 1:
-            break
-            
-        case 2:
             self.soundMood = self.moods[row]
             break
             
-        case 3:
+        case 2:
             self.soundActivity = self.activities[row]
             break
             
@@ -426,6 +380,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.saveTags(tags)
                 
             } else if let error = error {
+                self.stopAnimating()
                 self.uiElement.showAlert("Oops", message: error.localizedDescription, target: self)
             }
         }
@@ -434,19 +389,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func getTags() -> Array<String> {
         //var tags = soundTags.text!.split{$0 == " "}.map(String.init)
         var tags = [String]()
-        tags.append(soundGenre!)
-        tags.append(soundActivity!)
-        tags.append(soundMood!)
-        
-        if let currentUserCity = self.currentUserCity {
-            tags.append(currentUserCity)
+        if let moreTags = self.soundMoreTags {
+            tags = moreTags
         }
-        
-        if let artistName = self.artistName {
-            tags.append(artistName)
-        }
+        tags.append(soundGenre!.lowercased())
+        tags.append(soundActivity!.lowercased())
+        tags.append(soundMood!.lowercased())
+        tags.append(soundCity!.lowercased())
     
-        var finalTags = [String]()
+        return tags
+        
+        /*var finalTags = [String]()
         
         for i in 0..<tags.count {
             let tagLowercased = tags[i].lowercased()
@@ -466,7 +419,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
-        return finalTags
+        return finalTags */
     }
     
     func saveTags(_ tags: Array<String>) {
@@ -498,9 +451,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 self.stopAnimating()
-                self.determineNextScreen()
+                self.uiElement.setUserDefault("moreTags", value: [])
+                self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
                 
             } else {
+                self.stopAnimating()
                 print("Error: \(error!)")
             }
         }
@@ -549,12 +504,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func soundInfoIsVerified() -> Bool {
         if soundTitle.text!.isEmpty {
-            showAttributedPlaceholder(soundTitle, text: "Required")
+            showAttributedPlaceholder(soundTitle, text: "Title Required")
             
-        } /*else if soundTags.text!.isEmpty {
-            //showAttributedPlaceholder(soundTags, text: "required: tag1 tag2 tag3")
-            
-        }*/ else if soundArt == nil {
+        } else if soundArt == nil {
             uiElement.showAlert("Oops", message: "Sound art is required.", target: self)
             
         } else if soundGenre == nil {
@@ -566,6 +518,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else if soundMood == nil {
             uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
             
+        } else if soundCity == nil {
+            uiElement.showAlert("Sound City is Required", message: "Tap the 'add mood tag' button to choose", target: self)
+            
         } else {
             return true
         }
@@ -576,39 +531,5 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func showAttributedPlaceholder(_ textField: UITextField, text: String) {
         textField.attributedPlaceholder = NSAttributedString(string:"\(text)",
                                                               attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-    }
-    
-    func loadUserInfo() {
-        let query = PFQuery(className:"_User")
-        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                if let city = user["city"] as? String {
-                    self.currentUserCity = city
-                    self.uiElement.setUserDefault("city", value: city)
-                }
-                
-                if let artistName = user["artistName"] as? String {
-                    self.artistName = artistName
-                    self.uiElement.setUserDefault("artistName", value: artistName)
-                }
-            }
-        }
-    }
-    
-    func determineNextScreen() {
-        let current = UNUserNotificationCenter.current()
-        current.getNotificationSettings(completionHandler: { (settings) in
-            if settings.authorizationStatus == .notDetermined {
-                self.uiElement.segueToView("Main", withIdentifier: "notification", target: self)
-                
-            } else if settings.authorizationStatus == .denied ||
-                settings.authorizationStatus == .authorized {
-                self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
-            }
-        })
     }
 }
