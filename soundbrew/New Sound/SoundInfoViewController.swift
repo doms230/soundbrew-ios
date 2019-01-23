@@ -26,6 +26,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var soundTitle: UITextField!
     
+    var tagType: String?
+    var addTagsType: String?
     let genres = ["Hip-Hop/Rap", "Electronic Dance Music(EDM)", "Pop", "Alternative Rock", "Americana", "Blues", "Christian & Gospal", "Classic Rock", "Classical", "Country", "Dance", "Hard Rock", "Indie", "Jazz", "Latino", "Metal", "Reggae", "R&B", "Soul", "Funk"]
     
     let moods = ["Happy", "Sad", "Angry", "Chill", "High-Energy", "Netflix-And-Chill"]
@@ -35,13 +37,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundMood: String?
     var soundActivity: String?
     var soundArtistsYouKnow: String?
-    var soundMoreTags: String?
+    var soundMoreTags: Array<String>?
+    var soundCity: String?
     
     var soundFileName: String!
     var soundParseFile: PFFileObject!
     var soundParseFileDidFinishProcessing = false
-    
-    var tagType: String!
     
     var didPressUploadButton = false
     
@@ -49,8 +50,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         
         if uiElement.getUserDefault("city") != nil && uiElement.getUserDefault("artistName") != nil {
-            self.currentUserCity = uiElement.getUserDefault("city")
-            self.artistName = uiElement.getUserDefault("artistName")
+            self.currentUserCity = (uiElement.getUserDefault("city") as! String)
+            self.artistName = (uiElement.getUserDefault("artistName") as! String)
             
         } else {
             loadUserInfo()
@@ -62,12 +63,22 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewDidAppear(_ animated: Bool) {
-
+        if addTagsType == "city" {
+            if let soundCityTag = uiElement.getUserDefault("cityTag") as? String {
+                self.soundCity = soundCityTag
+            }
+            
+        } else if let soundMoreTags = uiElement.getUserDefault("moreTags") as? Array<String> {
+            self.soundMoreTags = soundMoreTags
+        }
+        
+        self.tableView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: TagsViewController = segue.destination as! TagsViewController
         viewController.isChoosingTagsForSoundUpload = true
+        viewController.tagType = addTagsType
     }
     
     func setUpViews() {
@@ -130,7 +141,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             case 1:
                 cell.soundTagLabel.text = "City Tag"
-                cell.chosenSoundTagLabel.textColor = color.black()
+                if let soundCityTag = self.soundCity {
+                    cell.chosenSoundTagLabel.text = soundCityTag
+                }
                 tableView.separatorStyle = .singleLine
                 break
                 
@@ -160,7 +173,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 5:
                 cell.soundTagLabel.text = "More Tags"
                 if let soundMoreTags = self.soundMoreTags {
-                    cell.chosenSoundTagLabel.text = soundMoreTags
+                    if soundMoreTags.count == 0 {
+                        cell.chosenSoundTagLabel.text = "Add"
+                        
+                    } else {
+                        cell.chosenSoundTagLabel.text = "\(soundMoreTags.count) tags"
+                    }
                 }
                 tableView.separatorStyle = .none
                 
@@ -182,7 +200,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 1:
-            //TODO: Add custom tags for city
+            addTagsType = "city"
+            self.performSegue(withIdentifier: "showTags", sender: self)
             break
             
         case 2:
@@ -201,6 +220,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 5:
+            addTagsType = nil 
             self.performSegue(withIdentifier: "showTags", sender: self)
             break
             

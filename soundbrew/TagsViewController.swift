@@ -20,14 +20,20 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     
-    var isChoosingTagsForSoundUpload = false
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpSearchBar()
         
         if isChoosingTagsForSoundUpload {
-            loadTagType(nil)
+            if let tagType = tagType {
+                loadTagType(tagType)
+                
+            } else {
+                if let chosenTags = self.uiElement.getUserDefault(moreTags) as? Array<String> {
+                    chosenTagsArray = chosenTags
+                }
+                loadTagType(nil)
+            }
             
         } else {
             loadTagType("mood")
@@ -40,17 +46,32 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-
+        if isChoosingTagsForSoundUpload {
+            if let tagType = tagType {
+                if tagType == "city" && chosenTagsArray.count != 0 {
+                    uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
+                    
+                } else if tagType == "genre" && chosenTagsArray.count != 0 {
+                    //TODO: add genre selected tag
+                }
+                
+            } else {
+                uiElement.setUserDefault(moreTags, value: chosenTagsArray)
+            }
+            
+        } else {
+            //TODO: add tags that user selected to filter tags for discovering
+        }
     }
     
-    /*override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         do {
             try AVAudioSession.sharedInstance().setActive(false)
             
         } catch let error {
             print("Unable to activate audio session:  \(error.localizedDescription)")
         }
-    }*/
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //let viewController: PlayerViewController = segue.destination as! PlayerViewController
@@ -160,6 +181,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: tags
+    let moreTags = "moreTags"
+    
+    var isChoosingTagsForSoundUpload = false
+    var tagType: String?
+    
     var tags = [Tag]()
     var filteredTags = [Tag]()
     
@@ -193,8 +219,16 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func setUpTagListCellView(_ cell: MainTableViewCell) {
         cell.tagLabel.delegate = self
         cell.tagLabel.removeAllTags()
-        let otherTags: Array<String> = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
-        cell.tagLabel.addTags(otherTags)
+        
+        var tags: Array<String>!
+        if isChoosingTagsForSoundUpload {
+            tags = self.filteredTags.map{$0.name}
+            
+        } else {
+            tags = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
+        }
+        cell.tagLabel.addTags(tags)
+        
         self.tagView = cell.tagLabel
         if isChoosingTagsForSoundUpload {
             cell.tagLabel.tagBackgroundColor = color.primary()
@@ -205,7 +239,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setupChooseTagsView() {
-        addChooseTagsLabel()
+        if isChoosingTagsForSoundUpload && self.chosenTagsArray.count != 0 {
+            for tag in self.chosenTagsArray {
+                addChosenTagButton(tag)
+            }
+            
+        } else {
+           addChooseTagsLabel()
+        }
         
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
@@ -229,7 +270,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        if !tagView.isSelected {
+        if isChoosingTagsForSoundUpload && tagType != nil {
+            self.chosenTagsArray.append(title)
+            self.uiElement.goBackToPreviousViewController(self)
+            
+        } else if !tagView.isSelected {
             sender.removeTag(title)
             self.chosenTagsArray.append(title)
             self.addChosenTagButton(title)
@@ -433,7 +478,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.filteredTags = self.tags
             
         } else {
-            //filter users on MeArchive that are in current user's phone
             var filteredTags = [Tag]()
             filteredTags = self.tags.filter {wordPredicate.evaluate(with: $0.name)}
             
@@ -471,7 +515,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                         }
                         
-                        self.tags.append(newTag)
+                        if self.isChoosingTagsForSoundUpload && self.chosenTagsArray.count != 0 && !self.chosenTagsArray.contains(newTag.name) {
+                            self.tags.append(newTag)
+                            
+                        } else {
+                            self.tags.append(newTag)
+                        }
                     }
                 }
                 
@@ -491,7 +540,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func backgroundColor() -> UIColor {
-        //return color.tan()
         return .white
     }
 }

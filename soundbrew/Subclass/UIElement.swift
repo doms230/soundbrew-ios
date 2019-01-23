@@ -68,16 +68,20 @@ class UIElement {
         target.present(alertController, animated: true, completion: nil)
     }
     
-    func setUserDefault(_ key: String, value: String) {
+    func setUserDefault(_ key: String, value: Any) {
         UserDefaults.standard.set(value, forKey: key)
         UserDefaults.standard.synchronize()
     }
     
-    func getUserDefault(_ key: String) -> String? {
-        if let name = UserDefaults.standard.string(forKey: key) {
-            return name
+    func getUserDefault(_ key: String) -> Any? {
+        if let value = UserDefaults.standard.object(forKey: key) {
+            return value
         }
         
         return nil
-    }    
+    }
+    
+    func goBackToPreviousViewController(_ target: UIViewController) {
+        target.navigationController?.popViewController(animated: true)
+    }
 }

@@ -17,7 +17,7 @@ class Tag {
     var isSelected: Bool!
     
     
-    init(objectId: String!, name: String!, count: Int!, isSelected: Bool!, tagType: String?) {
+    init(objectId: String?, name: String!, count: Int!, isSelected: Bool!, tagType: String?) {
         self.objectId = objectId
         self.name = name
         self.count = count
