@@ -86,8 +86,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(MainTableViewCell.self, forCellReuseIdentifier: tagReuse)
-        tableView.register(MainTableViewCell.self, forCellReuseIdentifier: featureTagReuse)
+        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: tagReuse)
+        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: featureTagReuse)
         tableView.backgroundColor = backgroundColor()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
@@ -118,14 +118,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell: MainTableViewCell!
+        var cell: TagTableViewCell!
         
         if indexPath.section == 0 && !isChoosingTagsForSoundUpload {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? MainTableViewCell
+            cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? TagTableViewCell
             setUpFeatureTagCellView(cell, row: indexPath.row)
             
         } else {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? MainTableViewCell
+            cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? TagTableViewCell
             setUpTagListCellView(cell)
         }
         
@@ -215,7 +215,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return scrollView
     }()
     
-    func setUpTagListCellView(_ cell: MainTableViewCell) {
+    func setUpTagListCellView(_ cell: TagTableViewCell) {
         cell.tagLabel.delegate = self
         cell.tagLabel.removeAllTags()
         
@@ -323,7 +323,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: featured tags
-    func setUpFeatureTagCellView(_ cell: MainTableViewCell, row: Int) {
+    func setUpFeatureTagCellView(_ cell: TagTableViewCell, row: Int) {
         var tagType: String?
         
         var color: UIColor!
@@ -366,7 +366,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.featureTagTitle.text = featureTagTitles[row]
     }
     
-    func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: MainTableViewCell, color: UIColor) {
+    func addFeatureTagButton(_ featuredTags: Array<Tag>, cell: TagTableViewCell, color: UIColor) {
         var xPositionForFeaturedTag = uiElement.leftOffset
         
         cell.featureTagsScrollview.subviews.forEach({$0.removeFromSuperview()})
@@ -576,6 +576,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
             } else {
                 print("Error: \(error!)")
+                self.uiElement.showAlert("Oops", message: "\(error!)", target: self)
             }
         }
     }

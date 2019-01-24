@@ -225,9 +225,7 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.sounds[row].artistName = artistName
                 
                 let artistCity = user["city"] as? String
-                self.sounds[row].artistCity = artistCity!
-        
-                //self.tableView.reloadData()
+                self.sounds[row].artistCity = artistCity!        
             }
         }
     }
@@ -270,5 +268,4 @@ class MySoundsViewController: UIViewController, UITableViewDelegate, UITableView
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         return itemInfo
     }
-    
 }

@@ -14,6 +14,20 @@ class MySoundsTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
+    lazy var headerTitle: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        return label
+    }()
+    
+    lazy var viewButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("View", for: .normal)
+        button.setTitleColor(color.blue(), for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        return button
+    }()
+    
     lazy var playFilterScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         return scrollView
@@ -56,68 +70,29 @@ class MySoundsTableViewCell: UITableViewCell {
         return button 
     }()
     
-    //profile
-    lazy var artistImage: UIImageView = {
-        let image = UIImageView()
-        image.layer.cornerRadius = 75/2
-        image.clipsToBounds = true
-        image.contentMode = .scaleAspectFill
-        image.image = UIImage(named: "profile_icon")
-        return image
-    }()
-    
-    lazy var artistName: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-        return label
-    }()
-    
-    lazy var artistBio: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        return label
-    }()
-    
-    lazy var artistCity: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        return label
-    }()
-    
-    lazy var uploadsButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Uploads", for: .normal)
-        button.setTitleColor(color.blue(), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var likesButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Likes", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var editProfileButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Edit Profile", for: .normal)
-        button.backgroundColor = color.blue()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
-    }()
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         switch reuseIdentifier {
+        case "headerReuse":
+            self.addSubview(headerTitle)
+            self.addSubview(viewButton)
+            
+            viewButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            headerTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(viewButton)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self.viewButton.snp.left).offset(-(uiElement.elementOffset))
+                make.bottom.equalTo(viewButton)
+            }
+            
+            break
+            
         case "reuse":
             self.addSubview(menuButton)
             self.addSubview(soundArtImage)
@@ -166,59 +141,8 @@ class MySoundsTableViewCell: UITableViewCell {
             }
             break
             
-        case "profileReuse":
-            self.addSubview(artistImage)
-            self.addSubview(artistName)
-            self.addSubview(artistCity)
-            self.addSubview(artistBio)
-            self.addSubview(uploadsButton)
-            self.addSubview(likesButton)
-            
-            artistImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(75)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            artistName.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistImage.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            artistCity.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistName.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(artistName)
-                make.right.equalTo(artistName)
-            }
-            
-            artistBio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistCity.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(artistName)
-                make.right.equalTo(artistName)
-            }
-            
-            uploadsButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(100)
-                make.height.equalTo(uiElement.buttonHeight)
-                make.top.equalTo(artistBio.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(artistName)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            likesButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(100)
-                make.height.equalTo(uiElement.buttonHeight)
-                make.top.equalTo(uploadsButton)
-                make.left.equalTo(uploadsButton.snp.right).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            break
-            
         default:
             break
-            
         }
     }
     

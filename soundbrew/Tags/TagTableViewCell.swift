@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import TagListView
 
-class MainTableViewCell: UITableViewCell {
+class TagTableViewCell: UITableViewCell {
     
     let color = Color()
     let uiElement = UIElement()

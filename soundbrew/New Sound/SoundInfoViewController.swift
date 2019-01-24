@@ -326,7 +326,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
             } else if let error = error {
-                self.uiElement.showAlert("Sound Processing Failed", message: error.localizedDescription, target: self)
+                self.errorAlert("Art Processing Failed", message: error.localizedDescription)
             }
             
         }, progressBlock: {
@@ -381,7 +381,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else if let error = error {
                 self.stopAnimating()
-                self.uiElement.showAlert("Oops", message: error.localizedDescription, target: self)
+                self.uiElement.showAlert("We Couldn't Post Your Sound", message: error.localizedDescription, target: self)
             }
         }
     }
@@ -398,28 +398,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tags.append(soundCity!.lowercased())
     
         return tags
-        
-        /*var finalTags = [String]()
-        
-        for i in 0..<tags.count {
-            let tagLowercased = tags[i].lowercased()
-            let tagNoSpace = tagLowercased.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
-            tags[i] = tagNoSpace
-            
-            if tags[i].hasPrefix("#") {
-                tags[i].removeFirst()
-            }
-            
-            if tags[i].hasSuffix(",") {
-                tags[i].removeLast()
-            }
-            
-            if !finalTags.contains(tags[i]) {
-                finalTags.append(tags[i])
-            }
-        }
-        
-        return finalTags */
     }
     
     func saveTags(_ tags: Array<String>) {
@@ -472,7 +450,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
             } else if let error = error {
-                self.uiElement.showAlert("Sound Processing Failed", message: error.localizedDescription, target: self)
+                self.errorAlert("Sound Processing Failed", message: error.localizedDescription)
             }
             
         }, progressBlock: {
@@ -507,7 +485,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             showAttributedPlaceholder(soundTitle, text: "Title Required")
             
         } else if soundArt == nil {
-            uiElement.showAlert("Oops", message: "Sound art is required.", target: self)
+            uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
             
         } else if soundGenre == nil {
             uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
@@ -531,5 +509,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func showAttributedPlaceholder(_ textField: UITextField, text: String) {
         textField.attributedPlaceholder = NSAttributedString(string:"\(text)",
                                                               attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
+    }
+    
+    func errorAlert(_ title: String, message: String) {
+        let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
+        
+        let settingsAction = UIAlertAction(title: "Okay", style: .cancel) { (_) -> Void in
+            self.uiElement.goBackToPreviousViewController(self)
+        }
+        alertController.addAction(settingsAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
 }

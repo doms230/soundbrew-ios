@@ -26,7 +26,7 @@
 		F268988A215AEF9000C21663 /* soundbrewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689889215AEF9000C21663 /* soundbrewUITests.swift */; };
 		F268989C215AF88200C21663 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989B215AF88200C21663 /* Color.swift */; };
 		F268989E215AF8F100C21663 /* UIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989D215AF8F100C21663 /* UIElement.swift */; };
-		F26898A0215AFF8200C21663 /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989F215AFF8200C21663 /* MainTableViewCell.swift */; };
+		F26898A0215AFF8200C21663 /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989F215AFF8200C21663 /* TagTableViewCell.swift */; };
 		F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A1215B2C9100C21663 /* TagsViewController.swift */; };
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A7215B56F200C21663 /* PlayerViewController.swift */; };
@@ -35,7 +35,6 @@
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99321DBEF1C0024AFB6 /* MySoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
-		F2F8B99A21DBEF4A0024AFB6 /* ChooseMoreTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99621DBEF450024AFB6 /* ChooseMoreTagsViewController.swift */; };
 		F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */; };
 		F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */; };
 		F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */; };
@@ -95,7 +94,7 @@
 		F268988B215AEF9000C21663 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F268989B215AF88200C21663 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		F268989D215AF8F100C21663 /* UIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIElement.swift; sourceTree = "<group>"; };
-		F268989F215AFF8200C21663 /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
+		F268989F215AFF8200C21663 /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		F26898A1215B2C9100C21663 /* TagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
 		F26898A5215B527900C21663 /* Sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
 		F26898A7215B56F200C21663 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
@@ -105,7 +104,6 @@
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsViewController.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
-		F2F8B99621DBEF450024AFB6 /* ChooseMoreTagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseMoreTagsViewController.swift; sourceTree = "<group>"; };
 		F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewSoundViewController.swift; sourceTree = "<group>"; };
 		F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -215,8 +213,8 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
-				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
 				F268989A215AF87200C21663 /* Subclass */,
+				F2E5081821F95D0700985E34 /* Tags */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2689899215AF7FB00C21663 /* Search */,
@@ -247,9 +245,8 @@
 			isa = PBXGroup;
 			children = (
 				F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */,
-				F268989F215AFF8200C21663 /* MainTableViewCell.swift */,
-				F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */,
 				F2B4D6CA21E52E3300C88C5C /* SearchViewController.swift */,
+				F2F8B99221DBEF1C0024AFB6 /* MySoundsViewController.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -266,11 +263,19 @@
 			path = Subclass;
 			sourceTree = "<group>";
 		};
+		F2E5081821F95D0700985E34 /* Tags */ = {
+			isa = PBXGroup;
+			children = (
+				F268989F215AFF8200C21663 /* TagTableViewCell.swift */,
+				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
+			);
+			path = Tags;
+			sourceTree = "<group>";
+		};
 		F2F8B99421DBEF2D0024AFB6 /* New Sound */ = {
 			isa = PBXGroup;
 			children = (
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
-				F2F8B99621DBEF450024AFB6 /* ChooseMoreTagsViewController.swift */,
 				F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
 			);
@@ -575,11 +580,10 @@
 				F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F23C621921DC3523005C9FF0 /* AddSocialAndStreamsViewController.swift in Sources */,
-				F26898A0215AFF8200C21663 /* MainTableViewCell.swift in Sources */,
+				F26898A0215AFF8200C21663 /* TagTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */,
-				F2F8B99A21DBEF4A0024AFB6 /* ChooseMoreTagsViewController.swift in Sources */,
 				F23C621721DC3518005C9FF0 /* AddCityViewController.swift in Sources */,
 				F2F8B9A521DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
