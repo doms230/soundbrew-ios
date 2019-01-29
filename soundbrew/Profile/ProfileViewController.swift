@@ -21,10 +21,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     var artist: Artist?
     
-    var uploadedSoundsIsPressed = true
     var uploadedSounds = [Sound]()
     var likedSounds = [Sound]()
     var likedSoundsIds = [String]()
+    var selectedViewAllSound = "uploads"
     
     var selectedIndex = 0
 
@@ -34,18 +34,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let menuButton = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(self.didPressMenuButton(_:)))
         self.navigationItem.rightBarButtonItem = menuButton
         
-        if PFUser.current() != nil {
-            if artist != nil {
-                loadSounds("uploads")
-                self.setUpTableView()
-                
-            } else {
-                loadUserInfoFromCloud(PFUser.current()!.objectId!)
-            }
+        if artist != nil {
+            loadSounds("uploads")
+            self.setUpTableView()
+            
+        } else if let currentUserId = PFUser.current()?.objectId {
+            loadUserInfoFromCloud(currentUserId)
             
         } else {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+            self.uiElement.segueToView("Welcome", withIdentifier: "login", target: self)
         }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController: SoundListViewController = segue.destination as! SoundListViewController
+        viewController.userId = artist!.objectId
+        viewController.soundType = selectedViewAllSound
+        viewController.soundTitle = "\(artist!.name!)'s \(selectedViewAllSound.capitalized)"
     }
     
     let reuse = "reuse"
@@ -96,13 +101,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = UITableViewCell()
         var headerTitle: String!
+        var viewAllButtonTag = 0
         var sounds: Array<Sound>!
         
         if indexPath.section == 0 {
             let profileCell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
             
             if let artist = artist {
-                profileCell.artistImage.kf.setImage(with: URL(string: artist.image))
+                if let artistImage = artist.image {
+                    profileCell.artistImage.kf.setImage(with: URL(string: artistImage))
+                }
                 profileCell.artistName.text = artist.name
                 profileCell.artistCity.text = artist.city
                 profileCell.artistBio.text = "Hey, I'm Dom! The best rapper aliveeeeeeee. Cha"
@@ -114,10 +122,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else if indexPath.section == 1 {
             headerTitle = "Uploaded Sounds"
             sounds = uploadedSounds
+            viewAllButtonTag = 0
 
         } else if indexPath.section == 2 {
             headerTitle = "Liked Sounds"
             sounds = likedSounds
+            viewAllButtonTag = 1
         }
         
         if indexPath.section != 0 {
@@ -130,6 +140,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 } else {
                     headerCell.headerTitle.text = headerTitle
                     headerCell.viewButton.isHidden = false
+                    headerCell.viewButton.addTarget(self, action: #selector(self.didPressViewAllButton(_:)), for: .touchUpInside)
+                    headerCell.viewButton.tag = viewAllButtonTag
                 }
                 
                 cell = headerCell
@@ -150,8 +162,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     mySoundsCell.soundPlays.text = "0"
                 }
                 
-                if let artistName = sound.artistName {
+                if let artistName = sound.artist?.name {
                     mySoundsCell.soundArtist.text = artistName
+                    
+                } else {
+                    loadArtist(mySoundsCell, userId: sound.artist!.objectId, row: indexPath.row)
                 }
                 
                 cell = mySoundsCell
@@ -183,18 +198,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.present(menuAlert, animated: true, completion: nil)
     }
     
-    @objc func didPressLikesButton(_ sender: UIButton) {
-        if uploadedSoundsIsPressed {
-            uploadedSoundsIsPressed = false
-            self.tableView.reloadData()
+    @objc func didPressViewAllButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            selectedViewAllSound = "uploads"
+            
+        } else {
+            selectedViewAllSound = "likes"
         }
-    }
-    
-    @objc func didPressUploadsButton(_ sender: UIButton) {
-        if !uploadedSoundsIsPressed {
-            uploadedSoundsIsPressed = true
-            self.tableView.reloadData()
-        }
+        
+        self.performSegue(withIdentifier: "showSounds", sender: self)
     }
     
     //Mark: Data
@@ -215,10 +227,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     artistURL = userImageFile.url!
                 }
                 
-                self.artist = Artist(objectId: user.objectId, name: artistName!, city: artistCity!, image: artistURL, instagramHandle: nil, instagramClicks: nil, twitterHandle: nil, twitterClicks: nil, soundcloud: nil, soundcloudClicks: nil, spotify: nil, spotifyClicks: nil, appleMusic: nil, appleMusicClicks: nil, otherLink: nil, otherLinkClicks: nil)
+                self.artist = Artist(objectId: user.objectId, name: artistName!, city: artistCity!, image: artistURL)
                 
                 self.setUpTableView()
                 self.loadSounds("uploads")
+            }
+        }
+    }
+    
+    func loadArtist(_ cell: MySoundsTableViewCell, userId: String, row: Int) {
+        let query = PFQuery(className:"_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                let artistName = user["artistName"] as? String
+                cell.soundArtist.text = artistName!
             }
         }
     }
@@ -275,7 +301,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                             soundPlays = plays
                         }
                         
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, userId: userId, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: nil)
+                        
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil)
+                        sound.artist = artist
+                        
                         if soundType == "uploads" {
                             self.uploadedSounds.append(sound)
                             

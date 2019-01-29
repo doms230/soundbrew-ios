@@ -9,7 +9,6 @@
 import UIKit
 import Parse
 import NVActivityIndicatorView
-import UserNotifications
 import SnapKit
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable {
@@ -205,6 +204,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    //MARK: PickerView
     func showPickerView(_ title: String) {
         let alert = UIAlertController(title: "Choose \(title) Tag", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Done", style: .cancel, handler: { action in

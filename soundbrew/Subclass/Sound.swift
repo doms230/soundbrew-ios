@@ -11,7 +11,6 @@ import Parse
 
 class Sound {
     var objectId: String!
-    var userId: String!
     var title: String!
     var audio: PFFileObject!
     var audioURL: String!
@@ -22,19 +21,10 @@ class Sound {
     var plays: Int?
     var createdAt: Date!
     var relevancyScore: Int!
-    var artistName: String?
-    var artistCity: String?
-    var instagramHandle: String?
-    var twitterHandle: String?
-    var spotifyLink: String?
-    var soundcloudLink: String?
-    var appleMusicLink: String?
-    var otherLink: String?
-    var artistVerified: Bool?
+    var artist: Artist?
     
-    init(objectId: String!, title: String!, artURL: String!,artImage: UIImage?, userId: String!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artistName: String?, artistCity: String?, instagramHandle: String?, twitterHandle: String?, spotifyLink: String?, soundcloudLink: String?, appleMusicLink: String?, otherLink: String?, artistVerified: Bool?) {
+    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?) {
         self.objectId = objectId
-        self.userId = userId
         self.title = title
         self.audio = audio
         self.audioURL = audioURL
@@ -45,14 +35,6 @@ class Sound {
         self.plays = plays
         self.relevancyScore = relevancyScore
         self.audioData = audioData
-        self.artistName = artistName
-        self.artistCity = artistCity
-        self.instagramHandle = instagramHandle
-        self.twitterHandle = twitterHandle
-        self.spotifyLink = spotifyLink
-        self.soundcloudLink = soundcloudLink
-        self.appleMusicLink = appleMusicLink
-        self.otherLink = otherLink
-        self.artistVerified = artistVerified
+        self.artist = artist 
     }
 }

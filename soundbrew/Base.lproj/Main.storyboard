@@ -24,7 +24,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1636" y="285"/>
+            <point key="canvasLocation" x="-2626" y="263"/>
         </scene>
         <!--New Sound View Controller-->
         <scene sceneID="54r-NH-38P">
@@ -43,7 +43,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="134" y="285"/>
+            <point key="canvasLocation" x="-570" y="510"/>
         </scene>
         <!--Sound Info View Controller-->
         <scene sceneID="R29-0C-CbA">
@@ -61,7 +61,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="990" y="285"/>
+            <point key="canvasLocation" x="302" y="510"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -76,11 +76,12 @@
                     <navigationItem key="navigationItem" id="N3L-mg-Zvf"/>
                     <connections>
                         <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="wBb-Ll-LfM"/>
+                        <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="kbj-II-I4F"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="134" y="-403"/>
+            <point key="canvasLocation" x="302" y="-403"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -95,7 +96,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="990" y="-403"/>
+            <point key="canvasLocation" x="1271" y="124"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ini-3B-14d">
@@ -114,7 +115,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bk6-yl-ZEN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1636" y="-403"/>
+            <point key="canvasLocation" x="-1319" y="-403"/>
         </scene>
         <!--Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
@@ -130,7 +131,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2126" y="-403"/>
+            <point key="canvasLocation" x="3366" y="-342"/>
         </scene>
         <!--Discover-->
         <scene sceneID="lMR-qf-QRn">
@@ -143,28 +144,29 @@
                         <viewLayoutGuide key="safeArea" id="62z-c1-Shx"/>
                     </view>
                     <navigationItem key="navigationItem" title="Discover" id="7Yw-zY-2Kq"/>
-                    <connections>
-                        <segue destination="EFp-6t-Bz1" kind="show" identifier="showTags" id="jRJ-VI-NkP"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vqo-Gp-lcO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="134" y="-1164"/>
+            <point key="canvasLocation" x="394" y="-2046"/>
         </scene>
-        <!--My Sounds View Controller-->
+        <!--Sound List View Controller-->
         <scene sceneID="PqT-ua-W6V">
             <objects>
-                <viewController id="o5t-RR-tBo" customClass="MySoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="o5t-RR-tBo" customClass="SoundListViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aLf-9i-MQn">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="6fn-jt-ZCv"/>
                     </view>
+                    <navigationItem key="navigationItem" id="4gr-jb-nT0"/>
+                    <connections>
+                        <segue destination="EFp-6t-Bz1" kind="show" identifier="showTags" id="ADJ-0N-2H5"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="990" y="-1164"/>
+            <point key="canvasLocation" x="1270" y="-882"/>
         </scene>
         <!--My Sounds-->
         <scene sceneID="XyK-yh-w2g">
@@ -183,7 +185,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q7s-df-FU1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-655" y="-402"/>
+            <point key="canvasLocation" x="-570" y="-403"/>
         </scene>
         <!--New Sound-->
         <scene sceneID="jPz-0A-X5Q">
@@ -202,7 +204,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JP1-7e-IgD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-655" y="285"/>
+            <point key="canvasLocation" x="-1319" y="510"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="gi0-ci-PE6">
@@ -216,12 +218,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="6zd-xs-mPB" kind="relationship" relationship="rootViewController" id="ULl-lQ-ijt"/>
+                        <segue destination="o5t-RR-tBo" kind="relationship" relationship="rootViewController" id="1Ht-a5-ag8"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wEN-te-UDI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-655.20000000000005" y="-1164.4677661169417"/>
+            <point key="canvasLocation" x="-570" y="-1141"/>
         </scene>
     </scenes>
     <resources>
@@ -231,6 +233,7 @@
         <image name="mySounds_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="jRJ-VI-NkP"/>
+        <segue reference="kbj-II-I4F"/>
+        <segue reference="ADJ-0N-2H5"/>
     </inferredMetricsTieBreakers>
 </document>
