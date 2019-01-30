@@ -14,11 +14,13 @@ class Artist {
     var name: String?
     var city: String?
     var image: String?
+    var isVerified: Bool?
     
-    init(objectId: String!, name: String?, city: String?, image: String?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?) {
         self.objectId = objectId
         self.name = name
         self.city = city
         self.image = image
+        self.isVerified = isVerified
     }
 }

@@ -243,7 +243,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     artistURL = userImageFile.url!
                 }
                 
-                self.artist = Artist(objectId: user.objectId, name: artistName!, city: artistCity!, image: artistURL)
+                var isArtistVerified: Bool?
+                if let artistVerification = user["artistVerification"] as? Bool {
+                    isArtistVerified = artistVerification
+                }
+                
+                self.artist = Artist(objectId: user.objectId, name: artistName!, city: artistCity!, image: artistURL, isVerified: isArtistVerified)
                 
                 self.setUpTableView()
                 self.loadSounds("uploads")
@@ -317,10 +322,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                             soundPlays = plays
                         }
                         
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: nil)
-                        
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil)
-                        sound.artist = artist
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist)
                         
                         if soundType == "uploads" {
                             self.uploadedSounds.append(sound)

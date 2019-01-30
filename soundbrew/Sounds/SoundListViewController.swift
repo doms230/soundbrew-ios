@@ -10,6 +10,7 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
+import DeckTransition
 
 class SoundListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -27,19 +28,27 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     var popularRecentButton: UIBarButtonItem!
     var filterButton: UIBarButtonItem!
     
-    lazy var viewButton: UIButton = {
+    lazy var MiniPlayerButton: UIButton = {
         let button = UIButton()
-        button.setTitle("View", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle("Mini Player", for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
         button.backgroundColor = .white 
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
         return button
     }()
     
+    func showPlayerViewController() {
+        let modal = PlayerViewController()
+        let transitionDelegate = DeckTransitioningDelegate()
+        modal.transitioningDelegate = transitionDelegate
+        modal.modalPresentationStyle = .custom
+        present(modal, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle()
-        setMiniPlayer()
+        setUpMiniPlayer()
         determineTypeOfSoundToLoad()
     }
     
@@ -49,10 +58,15 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
          installation?.saveInBackground()*/
     }
     
-    func setMiniPlayer() {
+    func setUpMiniPlayer() {
         if let tabBarView = self.tabBarController?.view {
-            tabBarView.addSubview(viewButton)
-            viewButton.snp.makeConstraints { (make) -> Void in
+            tabBarView.addSubview(MiniPlayerButton)
+            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+            slide.direction = .up
+            MiniPlayerButton.addGestureRecognizer(slide)
+            MiniPlayerButton.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+            
+            MiniPlayerButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(40)
                 make.right.equalTo(tabBarView)
                 make.left.equalTo(tabBarView)
@@ -166,6 +180,14 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: button actions
+    @objc func miniPlayerWasSwiped() {
+        showPlayerViewController()
+    }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
+    }
+    
     @objc func didPressFilterbutton(_ sender: UIBarButtonItem) {
         self.performSegue(withIdentifier: "showTags", sender: self)
     }
@@ -280,10 +302,9 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                             soundPlays = plays
                         }
                         
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: nil)
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist)
                         
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil)
-                        sound.artist = artist 
                         self.sounds.append(sound)
                     }
                 }
@@ -307,9 +328,13 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                 let artistName = user["artistName"] as? String
                 let artistCity = user["city"] as? String
                 
+                var isArtistVerified: Bool?
+                if let verified = user["artistVerified"] as? Bool {
+                    isArtistVerified = verified
+                }
                 cell.soundArtist.text = artistName!
                 
-                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil)
+                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil, isVerified: isArtistVerified)
                 self.sounds[row].artist = artist
             }
         }

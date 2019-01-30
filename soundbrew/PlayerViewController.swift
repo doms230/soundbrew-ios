@@ -28,13 +28,17 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
+        tags = ["pop"]
+        setupRemoteTransportControls()
+        setUpView()
+        loadSounds()
+        /*if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
             
             setupRemoteTransportControls()
             setUpView()
             loadSounds()
-        }
+        }*/
     }
     
     //mark: Player
@@ -238,7 +242,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         // Define Now Playing Info
         nowPlayingInfo[MPMediaItemPropertyTitle] = sound.title
         
-        nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artistName
+        nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artist?.name
         
         if let image = sound.artImage {
             nowPlayingInfo[MPMediaItemPropertyArtwork] =
@@ -500,10 +504,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         self.songTitle.text = sound.title
         self.songTags.text = convertArrayToString(sound.tags)
         
-        if let artistName = sound.artistName {
+        if let artistName = sound.artist?.name {
             self.artistName.setTitle(artistName, for: .normal)
             self.setCurrentSoundViewImageAndbackgroundAudio(sound)
-            if let artistVerified = sound.artistVerified {
+            if let artistVerified = sound.artist?.isVerified {
                 if artistVerified {
                     self.verifiedCheck.image = UIImage(named: "check")
                 }
@@ -515,7 +519,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } else {
             let placeHolder = ""
             self.artistName.setTitle(placeHolder, for: .normal)
-            loadUserInfoFromCloud(sound.userId, i: i)
+            loadUserInfoFromCloud(sound.artist!.objectId, i: i)
         }
     }
     
@@ -535,7 +539,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        self.showArtistSocialsAndStreams(sound: self.sounds[playlistPosition!])
+        //TODO: segue to artist profile page
     }
     
     @objc func didPressShareButton(_ sender: UIButton) {
@@ -696,7 +700,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                             }
                         }
                         
-                        let newSound = Sound(objectId: object.objectId, title: title, artURL: songArt, artImage: nil, userId: userId, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artistName: nil, artistCity: nil, instagramHandle: nil, twitterHandle: nil, spotifyLink: nil, soundcloudLink: nil, appleMusicLink: nil, otherLink: nil, artistVerified: nil)
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
+                        
+                        let newSound = Sound(objectId: object.objectId, title: title, artURL: songArt, artImage: nil, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist)
+                        
                         self.sounds.append(newSound)
                     }
                     
@@ -726,15 +733,15 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             } else if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.setTitle(artistName, for: .normal)
-                self.sounds[i].artistName = artistName
+                self.sounds[i].artist?.name = artistName
                 
                 self.setCurrentSoundViewImageAndbackgroundAudio(self.sounds[i])
                 
-                self.sounds[i].artistCity = user["city"] as? String
+                self.sounds[i].artist?.city = user["city"] as? String
                 
                 //Don't want to add blank space to social and streams... that's why we're checking.
                 
-                if let instagramHandle = user["instagramHandle"] as? String {
+                /*if let instagramHandle = user["instagramHandle"] as? String {
                     if !instagramHandle.isEmpty {
                         self.sounds[i].instagramHandle = "https://www.instagram.com/\(instagramHandle)"
                     }
@@ -768,10 +775,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                     if !otherLlink.isEmpty {
                         self.sounds[i].otherLink = otherLlink
                     }
-                }
+                }*/
                 
                 if let artistVerified = user["artistVerified"] as? Bool {
-                    self.sounds[i].artistVerified = artistVerified
+                    self.sounds[i].artist?.isVerified = artistVerified
                     if artistVerified {
                         self.verifiedCheck.image = UIImage(named: "check")
                         
@@ -807,9 +814,9 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    func incrementSocialAndStreamClicks(sound: Sound, socialAndStreamClick: String) {
+    /*func incrementSocialAndStreamClicks(sound: Sound, socialAndStreamClick: String) {
         let query = PFQuery(className: "Click")
-        query.whereKey("userId", equalTo: sound.userId)
+        query.whereKey("userId", equalTo: sound.artist!.objectId)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
@@ -828,7 +835,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                 object.saveEventually()
             }
         }
-    }
+    }*/
     
     //MARK: mich
     func convertArrayToString(_ array: Array<String>) -> String{
@@ -855,7 +862,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         return formattedString
     }
     
-    func showArtistSocialsAndStreams(sound: Sound) {
+    /*func showArtistSocialsAndStreams(sound: Sound) {
         let alertController = UIAlertController (title: sound.artistName , message: sound.artistCity, preferredStyle: .actionSheet)
         
         var socialsAndStreams = [String]()
@@ -934,7 +941,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true, completion: nil)
-    }
+    }*/
     
     func sendAlert(_ message: String, toUserId: String) {
         Alamofire.request("https://soundbrew.herokuapp.com/notifications/alertUser", method: .post, parameters: ["message": message, "userId": toUserId], encoding: JSONEncoding.default).validate().response{response in
