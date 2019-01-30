@@ -32,6 +32,6 @@ target 'soundbrew' do
   pod 'Fabric'
   pod 'Crashlytics'
   pod 'Firebase/Performance'
-  pod 'XLPagerTabStrip'
-  pod 'Hero'
+  pod 'DeckTransition'
+  pod 'ComplimentaryGradientView'
 end

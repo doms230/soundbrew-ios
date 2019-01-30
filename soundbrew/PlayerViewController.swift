@@ -18,7 +18,7 @@ import SCSDKCreativeKit
 import ShareInstagram
 import Firebase
 
-/*class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
+class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
 
     let uiElement = UIElement()
     let color = Color()
@@ -940,4 +940,4 @@ import Firebase
         Alamofire.request("https://soundbrew.herokuapp.com/notifications/alertUser", method: .post, parameters: ["message": message, "userId": toUserId], encoding: JSONEncoding.default).validate().response{response in
         }
     }
-}*/
+}

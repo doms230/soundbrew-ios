@@ -27,6 +27,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var selectedViewAllSound = "uploads"
     
     var selectedIndex = 0
+    
+    lazy var viewButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("View", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = color.black()
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +75,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.separatorStyle = .none
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        
+        self.view.addSubview(viewButton)
+        viewButton.snp.makeConstraints { (make) -> Void in
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-50)
+        }
     }
     
     //MARK: TableView

@@ -27,9 +27,19 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     var popularRecentButton: UIBarButtonItem!
     var filterButton: UIBarButtonItem!
     
+    lazy var viewButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("View", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .white 
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle()
+        setMiniPlayer()
         determineTypeOfSoundToLoad()
     }
     
@@ -37,6 +47,18 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         /*let installation = PFInstallation.current()
          installation?.badge = 0
          installation?.saveInBackground()*/
+    }
+    
+    func setMiniPlayer() {
+        if let tabBarView = self.tabBarController?.view {
+            tabBarView.addSubview(viewButton)
+            viewButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(40)
+                make.right.equalTo(tabBarView)
+                make.left.equalTo(tabBarView)
+                make.bottom.equalTo(tabBarView).offset(-48)
+            }
+        }
     }
     
     func setTitle() {
@@ -98,6 +120,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
