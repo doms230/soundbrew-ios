@@ -28,17 +28,16 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tags = ["pop"]
-        setupRemoteTransportControls()
-        setUpView()
-        loadSounds()
-        /*if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
+
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
-            
             setupRemoteTransportControls()
             setUpView()
             loadSounds()
-        }*/
+        }
     }
     
     //mark: Player
@@ -287,11 +286,21 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         return button
     }()
     
-    lazy var chosenTags: UILabel = {
+    lazy var songArt: UIImageView = {
+        let image = UIImageView()
+        image.layer.cornerRadius = 3
+        image.clipsToBounds = true
+        image.contentMode = .scaleAspectFill
+        image.backgroundColor = .white
+        return image
+    }()
+    
+    lazy var songTitle: UILabel = {
         let label = UILabel()
-        label.text = "Tags"
+        label.text = "Sound Title"
         label.textColor = color.black()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
+        label.textAlignment = .center
         return label
     }()
     
@@ -314,46 +323,12 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         return button
     }()
     
-    lazy var songArt: UIImageView = {
-        let image = UIImageView()
-        image.layer.cornerRadius = 3
-        image.clipsToBounds = true
-        image.contentMode = .scaleAspectFill
-        image.backgroundColor = .white
-        return image
-    }()
-    
-    lazy var songTitle: UILabel = {
-        let label = UILabel()
-        label.text = "Sound Title"
-        label.textColor = color.black()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-       // label.textAlignment = .center
-        return label
-    }()
-    
-    lazy var songTags: UILabel = {
-        let label = UILabel()
-        label.text = "Tags"
-        label.textColor = color.black()
-       //label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        //label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var playbackView: UIView = {
-        let view = UIView()
-        view.backgroundColor = color.black()
-        return view
-    }()
-    
     lazy var playBackSlider: UISlider = {
         let slider = UISlider()
         slider.minimumValue = 0
         slider.tintColor = .darkGray
         slider.value = 0
-        slider.isEnabled = false
+        //slider.isEnabled = false
         return slider
     }()
     
@@ -391,8 +366,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     lazy var goBackButton: UIButton = {
         let button = UIButton()
-        //button.setImage(UIImage(named: "goBack"), for: .normal)
-        button.setTitle("<Back", for: .normal)
+        button.setImage(UIImage(named: "goBack"), for: .normal)
+        //button.setTitle("<Back", for: .normal)
         return button
     }()
     
@@ -400,63 +375,14 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         self.view.backgroundColor = .white
         
         //top views
-        let tagsAsString = convertArrayToString(tags)
-        exitButton.setTitle(tagsAsString, for: .normal)
+        //let tagsAsString = convertArrayToString(tags)
+        //exitButton.setTitle(tagsAsString, for: .normal)
         exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 20)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
-        self.view.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.exitButton)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        chosenTags.text = convertArrayToString(tags)
-        self.view.addSubview(chosenTags)
-        chosenTags.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(exitButton).offset(2)
-            make.left.equalTo(self.exitButton.snp.right).offset(uiElement.elementOffset)
-            make.right.equalTo(self.shareButton.snp.left).offset(-(uiElement.elementOffset))
-        }
-        
-        //playback views
-        self.view.addSubview(playbackView)
-        playbackView.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(60)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view)
-        }
-        
-        self.playbackView.addSubview(playBackButton)
-        self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
-        self.view.addSubview(playBackButton)
-        playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(playbackView).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
-        self.playbackView.addSubview(skipButton)
-        skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.top.equalTo(playBackButton).offset(3)
-            make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
-        }
-        
-        self.playbackView.addSubview(playBackSlider)
-        playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.skipButton).offset(7)
-            make.left.equalTo(self.skipButton.snp.right).offset(uiElement.elementOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         //sound views
@@ -465,44 +391,89 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             make.height.equalTo(self.view.frame.height / 2)
             make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
             //make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.left.equalTo(exitButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         self.view.addSubview(songTitle)
         songTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.left.equalTo(exitButton)
+            make.right.equalTo(songArt)
         }
         
         self.view.addSubview(artistName)
         artistName.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         artistName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            //make.right.equalTo(self.moreButton.snp.left).offset(-(uiElement.elementOffset))
+            make.top.equalTo(self.songTitle.snp.bottom)
+            make.left.equalTo(exitButton)
+            make.right.equalTo(songArt)
         }
         
-        self.view.addSubview(verifiedCheck)
+        /*self.artistName.addSubview(verifiedCheck)
         verifiedCheck.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(15)
             make.top.equalTo(self.artistName).offset(13)
             make.left.equalTo(self.artistName.snp.right).offset(uiElement.elementOffset)
             //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }*/
+        
+        //playback views
+        self.view.addSubview(playBackSlider)
+        playBackSlider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
+        playBackSlider.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.artistName.snp.bottom)
+            make.left.equalTo(exitButton)
+            make.right.equalTo(songArt)
         }
         
-        self.view.addSubview(songTags)
-        songTags.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.artistName.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        self.view.addSubview(playBackCurrentTime)
+        playBackCurrentTime.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(playBackSlider.snp.bottom)
+            make.left.equalTo(playBackSlider)
+        }
+        
+        self.view.addSubview(playBackTotalTime)
+        playBackTotalTime.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(playBackCurrentTime)
+            make.right.equalTo(songArt)
+        }
+        
+        self.view.addSubview(playBackButton)
+        self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
+        playBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(65)
+            make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo((self.view.frame.width / 2) - (65 / 2))
+        }
+        
+        self.view.addSubview(goBackButton)
+        goBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(55)
+            make.top.equalTo(playBackButton).offset(3)
+            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
+        }
+        
+        self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
+        self.view.addSubview(skipButton)
+        skipButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(55)
+            make.top.equalTo(playBackButton).offset(3)
+            make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
+        }
+        
+        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
+        self.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
     }
     
     func setCurrentSoundView(_ sound: Sound, i: Int) {
         self.songTitle.text = sound.title
-        self.songTags.text = convertArrayToString(sound.tags)
+        //self.songTags.text = convertArrayToString(sound.tags)
         
         if let artistName = sound.artist?.name {
             self.artistName.setTitle(artistName, for: .normal)
@@ -538,6 +509,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         self.skipButton.isEnabled = shouldEnable
     }
     
+    //MARK: Button actions
     @objc func didPressArtistNameButton(_ sender: UIButton) {
         //TODO: segue to artist profile page
     }
@@ -562,27 +534,32 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     @objc func didPressExitButton(_ sender: UIButton) {
-        if self.soundPlayer != nil {
-            self.soundPlayer.pause()
-        }
-        
-        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        /*if secondsPlayedSinceLastAd > thirtyMinutesInSeconds && !isSoundPlaying {
-            self.showAd()
-            
-        } else {
-            playOrPause()
-        }*/
-        
         playOrPause()
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
         self.shouldEnableSoundView(false)
         self.setUpNextSong()
+    }
+    
+    @objc func didPressGoBackButton(_ sender: UIButton) {
+        //TODO: do this 
+    }
+    
+    @objc func sliderValueDidChange(_ sender: UISlider) {
+        //soundPlayer.pause()
+        soundPlayer.currentTime = TimeInterval(sender.value)
+        playBackCurrentTime.text = formatTime(Double(sender.value))
+        //soundPlayer.play()
+        //let durationToSeek = Float(soundPlayer.duration) * sender.value
+        //soundPlayer.play(atTime: )
+        //soundPlayer.seek(to: CMTimeMakeWithSeconds(Float64(durationToSeek), soundPlayer.currentItem!.duration.timescale)) { [weak self](state) in
+            //do what is relevant to your app on seeing to particular offset
+        //}
     }
     
     @objc func UpdateTimer() {

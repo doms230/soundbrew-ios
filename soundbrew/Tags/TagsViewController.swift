@@ -13,6 +13,7 @@ import SnapKit
 import Parse
 import AVFoundation
 import Alamofire
+import DeckTransition
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate {
     
@@ -22,6 +23,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpMiniPlayer()
         
         if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
@@ -59,23 +61,70 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
         } else {
-            //TODO: add tags that user selected to filter tags for discovering
+            
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        do {
+        /*do {
             try AVAudioSession.sharedInstance().setActive(false)
             
         } catch let error {
             print("Unable to activate audio session:  \(error.localizedDescription)")
+        }*/
+    }
+    
+    //MARK: mini player
+    lazy var MiniPlayerButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Mini Player", for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = .white
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        return button
+    }()
+    
+    func showPlayerViewController() {
+        uiElement.setUserDefault("tags", value: chosenTagsArray)
+        
+        let modal = PlayerViewController()
+        let transitionDelegate = DeckTransitioningDelegate()
+        modal.transitioningDelegate = transitionDelegate
+        modal.modalPresentationStyle = .custom
+        present(modal, animated: true, completion: nil)
+    }
+    
+    func setUpMiniPlayer() {
+        if let tabBarView = self.tabBarController?.view {
+            tabBarView.addSubview(MiniPlayerButton)
+            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+            slide.direction = .up
+            MiniPlayerButton.addGestureRecognizer(slide)
+            MiniPlayerButton.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+            
+            MiniPlayerButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(40)
+                make.right.equalTo(tabBarView)
+                make.left.equalTo(tabBarView)
+                make.bottom.equalTo(tabBarView).offset(-48)
+            }
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        //let viewController: PlayerViewController = segue.destination as! PlayerViewController
-        //viewController.tags = self.chosenTagsArray
+    @objc func miniPlayerWasSwiped() {
+        
+        showPlayerViewController()
     }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
+    }
+
+    
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController: PlayerViewController = segue.destination as! PlayerViewController
+        viewController.tags = self.chosenTagsArray
+    }*/
     
     //MARK: Tableview
     var tableView: UITableView!

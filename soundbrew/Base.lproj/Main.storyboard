@@ -96,7 +96,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1270" y="9"/>
+            <point key="canvasLocation" x="1270" y="-112"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ini-3B-14d">
@@ -131,7 +131,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2422" y="-389"/>
+            <point key="canvasLocation" x="302" y="-1141"/>
         </scene>
         <!--Sound List View Controller-->
         <scene sceneID="PqT-ua-W6V">
@@ -144,13 +144,10 @@
                         <viewLayoutGuide key="safeArea" id="6fn-jt-ZCv"/>
                     </view>
                     <navigationItem key="navigationItem" id="4gr-jb-nT0"/>
-                    <connections>
-                        <segue destination="EFp-6t-Bz1" kind="show" identifier="showTags" id="ADJ-0N-2H5"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1270" y="-878"/>
+            <point key="canvasLocation" x="1270" y="-806"/>
         </scene>
         <!--My Sounds-->
         <scene sceneID="XyK-yh-w2g">
@@ -170,55 +167,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q7s-df-FU1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-570" y="-403"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="iY0-jF-Sps">
-            <objects>
-                <viewController id="8EP-Mm-YvZ" customClass="ViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="F9I-R3-4hv">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sAf-M3-WOk">
-                                <rect key="frame" x="0.0" y="617" width="375" height="50"/>
-                                <color key="backgroundColor" red="0.21322323469999999" green="0.2121708195" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="buttonAction:" destination="8EP-Mm-YvZ" eventType="touchUpInside" id="Yp4-t1-qPL"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="sAf-M3-WOk" firstAttribute="leading" secondItem="F9I-R3-4hv" secondAttribute="leading" id="CdT-0D-b8z"/>
-                            <constraint firstItem="sAf-M3-WOk" firstAttribute="bottom" secondItem="cHU-6L-DJC" secondAttribute="bottom" id="Zr1-FC-Kjn"/>
-                            <constraint firstAttribute="trailing" secondItem="sAf-M3-WOk" secondAttribute="trailing" id="aXt-Jn-jg9"/>
-                            <constraint firstItem="sAf-M3-WOk" firstAttribute="top" secondItem="cHU-6L-DJC" secondAttribute="top" constant="597" id="x2i-AQ-kHJ"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="cHU-6L-DJC"/>
-                    </view>
-                    <connections>
-                        <outlet property="button" destination="sAf-M3-WOk" id="B6s-nx-l4r"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="uHq-kC-mgK" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-2405.5999999999999" y="1258.920539730135"/>
-        </scene>
-        <!--Modal View Controller-->
-        <scene sceneID="oE6-lG-84J">
-            <objects>
-                <viewController id="o1V-Fj-3M5" customClass="ModalViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="TGq-is-DYL">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="0.24266042409999999" blue="0.1867879492" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="irD-ep-QEO"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ieX-pi-ahr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1413" y="1259"/>
         </scene>
         <!--New Sound-->
         <scene sceneID="jPz-0A-X5Q">
@@ -251,7 +199,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="o5t-RR-tBo" kind="relationship" relationship="rootViewController" id="1Ht-a5-ag8"/>
+                        <segue destination="EFp-6t-Bz1" kind="relationship" relationship="rootViewController" id="1Hj-gu-7KF"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wEN-te-UDI" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -266,7 +214,6 @@
         <image name="mySounds_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="kbj-II-I4F"/>
-        <segue reference="ADJ-0N-2H5"/>
+        <segue reference="e22-GO-dQi"/>
     </inferredMetricsTieBreakers>
 </document>
