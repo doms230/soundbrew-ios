@@ -230,7 +230,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
-        /*if sound.userId == PFUser.current()!.objectId! {
+        if sound.artist!.objectId == PFUser.current()!.objectId! {
             menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
                 self.deleteSong(sound.objectId, row: row)
             }))
@@ -247,7 +247,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             menuAlert.addAction(UIAlertAction(title: "Unlike Sound", style: .default, handler: { action in
                 self.unlikeSound(sound.objectId, row: row)
             }))
-        }*/
+        }
         
         self.present(menuAlert, animated: true, completion: nil)
     }
