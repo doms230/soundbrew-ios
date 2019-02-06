@@ -34,6 +34,8 @@
 		F2E5081C21FFC5A200985E34 /* SoundListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */; };
 		F2E508242200FF2000985E34 /* ModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E508232200FF2000985E34 /* ModalViewController.swift */; };
 		F2E508262200FFA400985E34 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E508252200FFA400985E34 /* ViewController.swift */; };
+		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
+		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
 		F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */; };
@@ -104,6 +106,8 @@
 		F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundListViewController.swift; sourceTree = "<group>"; };
 		F2E508232200FF2000985E34 /* ModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViewController.swift; sourceTree = "<group>"; };
 		F2E508252200FFA400985E34 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
 		F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -216,6 +220,7 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
+				F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */,
 				F268989A215AF87200C21663 /* Subclass */,
 				F2E5081821F95D0700985E34 /* Tags */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
@@ -263,6 +268,7 @@
 				F268989D215AF8F100C21663 /* UIElement.swift */,
 				F26898A5215B527900C21663 /* Sound.swift */,
 				F268992A21753A3B00C21663 /* Tag.swift */,
+				F2EA6F4D220B630B007FA614 /* Player.swift */,
 			);
 			path = Subclass;
 			sourceTree = "<group>";
@@ -571,6 +577,8 @@
 				F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
+				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
+				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,

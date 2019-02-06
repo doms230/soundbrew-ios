@@ -690,7 +690,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                         
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
                         
-                        let newSound = Sound(objectId: object.objectId, title: title, artURL: songArt, artImage: nil, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist)
+                        let newSound = Sound(objectId: object.objectId, title: title, artURL: songArt, artImage: nil, artFile: nil, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist)
                         
                         self.sounds.append(newSound)
                     }

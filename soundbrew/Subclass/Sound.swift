@@ -16,6 +16,7 @@ class Sound {
     var audioURL: String!
     var audioData: Data?
     var artURL: String!
+    var artFile: PFFileObject!
     var artImage: UIImage?
     var tags: Array<String>!
     var plays: Int?
@@ -23,13 +24,14 @@ class Sound {
     var relevancyScore: Int!
     var artist: Artist?
     
-    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?) {
+    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
         self.audioURL = audioURL
         self.artURL = artURL
         self.artImage = artImage
+        self.artFile = artFile
         self.tags = tags
         self.createdAt = createdAt
         self.plays = plays

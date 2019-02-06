@@ -86,8 +86,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func showPlayerViewController() {
         uiElement.setUserDefault("tags", value: chosenTagsArray)
-        
-        let modal = PlayerViewController()
+        let modal = PlayerV2ViewController()
         let transitionDelegate = DeckTransitioningDelegate()
         modal.transitioningDelegate = transitionDelegate
         modal.modalPresentationStyle = .custom
