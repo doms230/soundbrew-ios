@@ -42,7 +42,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     //mark: Player
     var soundPlayer: AVAudioPlayer!
-    var isSoundPlaying = false
     var playlistPosition: Int?
     
     func prepareAndPlay(_ audioData: Data) {
@@ -66,7 +65,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } catch {
             print(error)
             soundPlayable = false
-            isSoundPlaying = false
         }
         
         // Set up the session.
@@ -80,7 +78,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
             
         } catch let error {
             soundPlayable = false
-            isSoundPlaying = false
             fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
         
@@ -92,8 +89,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } catch let error {
             print("*** Unable to set up the audio player: \(error.localizedDescription) ***")
             soundPlayable = false
-            isSoundPlaying = false
-            //return
         }
         
         // Activate and request the route.
@@ -103,11 +98,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         } catch let error {
             print("Unable to activate audio session:  \(error.localizedDescription)")
             soundPlayable = false
-            isSoundPlaying = false
         }
             
         if !soundPlayable {
-            setUpNextSong()
+            setUpNextSong(false)
             
         } else {
             playNextSong()
@@ -116,9 +110,8 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     func playNextSong() {
         soundPlayer.play()
-        isSoundPlaying = true
         
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
         
         playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         self.shouldEnableSoundView(true)
@@ -130,10 +123,10 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        setUpNextSong()
+        setUpNextSong(false)
     }
     
-    func setUpNextSong() {
+    func setUpNextSong(_ didPressGoBackButton: Bool) {
         //stop soundplayer audio from playing over each other
         if soundPlayer != nil {
             soundPlayer.pause()
@@ -142,10 +135,16 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         //put playback time back to zero
         timer.invalidate()
-        counter = 0
         playBackSlider.value = 0
         
-        let sound = incrementPlaylistPositionAndReturnSound()
+        var sound: Sound
+        
+        if didPressGoBackButton {
+            sound = decrementPlaylistPositionAndReturnSound()
+            
+        } else {
+            sound = incrementPlaylistPositionAndReturnSound()
+        }
         
         if let audioData = sound.audioData {
             self.prepareAndPlay(audioData)
@@ -161,19 +160,36 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func incrementPlaylistPositionAndReturnSound() -> Sound {
-        if let playlistPostion = self.playlistPosition {
-            self.playlistPosition = playlistPostion + 1
+        if let playlistPosition = self.playlistPosition {
+            self.playlistPosition = playlistPosition + 1
             
         } else {
-            playlistPosition = 0
+            self.playlistPosition = 0
         }
         
-        if playlistPosition == sounds.count {
+        if self.playlistPosition == sounds.count {
             //no sounds left, go back to zero.
-            playlistPosition = 0
+            self.playlistPosition = 0
         }
         
-        let sound = sounds[playlistPosition!]
+        let sound = sounds[self.playlistPosition!]
+        
+        return sound
+    }
+    
+    func decrementPlaylistPositionAndReturnSound() -> Sound {
+        if let playlistPosition = self.playlistPosition {
+            self.playlistPosition = playlistPosition - 1
+            
+        } else {
+            self.playlistPosition = 0
+        }
+        
+        if self.playlistPosition! < 0 {
+            self.playlistPosition = 0
+        }
+        
+        let sound = sounds[self.playlistPosition!]
         
         return sound
     }
@@ -203,7 +219,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         // Add handler for Play Command
         commandCenter.playCommand.addTarget { [unowned self] event in
-            if !self.isSoundPlaying {
+            if !self.soundPlayer.isPlaying {
                 self.playOrPause()
                 return .success
             }
@@ -213,23 +229,22 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         
         // Add handler for Pause Command
         commandCenter.pauseCommand.addTarget { [unowned self] event in
-            if self.isSoundPlaying {
+            if self.soundPlayer.isPlaying {
                 self.playOrPause()
                 return .success
             }
-            
+
             return .commandFailed
         }
         
         commandCenter.nextTrackCommand.addTarget { [unowned self] event in
-            self.setUpNextSong()
+            self.setUpNextSong(false)
             return .success
         }
     }
     
     func shouldEnableBackgroundAudioButtons(_ shouldEnable: Bool) {
         skipButton.isEnabled = shouldEnable
-        
         commandCenter.nextTrackCommand.isEnabled = shouldEnable
         commandCenter.playCommand.isEnabled = shouldEnable
         commandCenter.pauseCommand.isEnabled = shouldEnable
@@ -265,15 +280,13 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     }*/
     
     func playOrPause() {
-        if self.isSoundPlaying {
+        if self.soundPlayer.isPlaying {
             self.soundPlayer.pause()
-            isSoundPlaying = false
             timer.invalidate()
             self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
             
         } else {
             self.soundPlayer.play()
-            isSoundPlaying = true
             timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer), userInfo: nil, repeats: true)
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         }
@@ -332,7 +345,6 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         return slider
     }()
     
-    var counter = 00.00
     var timer = Timer()
     lazy var playBackCurrentTime: UILabel = {
         let label = UILabel()
@@ -448,6 +460,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
         }
         
         self.view.addSubview(goBackButton)
+        goBackButton.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
             make.top.equalTo(playBackButton).offset(3)
@@ -543,29 +556,27 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
     
     @objc func didPressSkipButton(_ sender: UIButton) {
         self.shouldEnableSoundView(false)
-        self.setUpNextSong()
+        self.setUpNextSong(false)
     }
     
     @objc func didPressGoBackButton(_ sender: UIButton) {
-        //TODO: do this 
+        if Int(soundPlayer.currentTime) > 5 || playlistPosition! == 0 {
+            soundPlayer.currentTime = 0.0
+            playBackCurrentTime.text = formatTime(0.0)
+            
+        } else {
+            self.setUpNextSong(true)
+        }
     }
     
     @objc func sliderValueDidChange(_ sender: UISlider) {
-        //soundPlayer.pause()
         soundPlayer.currentTime = TimeInterval(sender.value)
         playBackCurrentTime.text = formatTime(Double(sender.value))
-        //soundPlayer.play()
-        //let durationToSeek = Float(soundPlayer.duration) * sender.value
-        //soundPlayer.play(atTime: )
-        //soundPlayer.seek(to: CMTimeMakeWithSeconds(Float64(durationToSeek), soundPlayer.currentItem!.duration.timescale)) { [weak self](state) in
-            //do what is relevant to your app on seeing to particular offset
-        //}
     }
     
-    @objc func UpdateTimer() {
-        counter = counter + 0.1
-        playBackCurrentTime.text = formatTime(counter)
-        playBackSlider.value = Float(counter)
+    @objc func UpdateTimer(_ timer: Timer) {
+        playBackCurrentTime.text = "\(formatTime(Double(soundPlayer.currentTime)))"
+        playBackSlider.value = Float(soundPlayer.currentTime)
     }
     
     //mark: share
@@ -687,7 +698,7 @@ class PlayerViewController: UIViewController, AVAudioPlayerDelegate {
                     self.sounds.sort(by: { $0.relevancyScore > $1.relevancyScore })
                     
                     if objects.count > 0 {
-                        self.setUpNextSong()
+                        self.setUpNextSong(false)
                         
                     } else {
                         self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
