@@ -228,6 +228,7 @@ class PlayerV2ViewController: UIViewController {
     @objc func didPressSkipButton(_ sender: UIButton) {
         if let player = self.player {
             self.shouldEnableSoundView(false)
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
             player.skip()
         }
     }
@@ -342,9 +343,7 @@ class PlayerV2ViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        if self.player != nil {
-            setSound()
-        }
+        setSound()
     }
     
     //mark: share

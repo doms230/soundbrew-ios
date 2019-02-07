@@ -22,13 +22,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
     init(sounds: Array<Sound>) {
         super.init()
         self.sounds = sounds
-        self.setUpNextSong(false)
+        self.setUpNextSong(false, at: nil)
         setupRemoteTransportControls()
-        /*if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
-            tags = tagArray
-            loadSounds()
-            setupRemoteTransportControls()
-        }*/
     }
     
     func play() {
@@ -48,7 +43,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func skip() {
-        self.setUpNextSong(false)
+        self.setUpNextSong(false, at: nil)
     }
     
     func goBack() {
@@ -57,18 +52,22 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.currentTime = 0.0
                 
             } else {
-                self.setUpNextSong(true)
+                self.setUpNextSong(true, at: nil)
             }
         }
     }
     
+    func didSelectSoundAt(_ i: Int) {
+        self.setUpNextSong(false, at: i)
+    }
+    
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-           setUpNextSong(false)
+            setUpNextSong(false, at: nil)
         }
     }
     
-    func setUpNextSong(_ didPressGoBackButton: Bool) {
+    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?) {
         //stop soundplayer audio from playing over each other
         if player != nil {
             player?.pause()
@@ -77,7 +76,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         var sound: Sound
         
-        if didPressGoBackButton {
+        if let at = at {
+            currentSoundIndex = at
+            sound = sounds[at]
+            
+        } else if didPressGoBackButton {
             sound = decrementPlaylistPositionAndReturnSound()
             
         } else {
@@ -188,7 +191,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             incrementPlayCount(sound: sound)
             
         } else {
-            setUpNextSong(false)
+            //setUpNextSong(false, at: nil)
         }
     }
     
@@ -239,7 +242,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         commandCenter.nextTrackCommand.addTarget { [unowned self] event in
-            self.setUpNextSong(false)
+            self.setUpNextSong(false, at: nil)
             return .success
         }
     }
@@ -278,7 +281,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 self.sounds[self.currentSoundIndex].artImage = image
                 
                 if (self.sounds[self.currentSoundIndex].artist?.name) != nil {
-                    self.setBackgroundAudioNowPlaying(self.player!, sound: self.sounds[self.currentSoundIndex])
+                    if let player = self.player {
+                        self.setBackgroundAudioNowPlaying(player, sound: self.sounds[self.currentSoundIndex])
+                    }
                     
                 } else {
                     self.loadUserInfoFromCloud(self.sounds[self.currentSoundIndex].artist!.objectId, i: self.currentSoundIndex)
@@ -288,53 +293,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     //mark: data
-    func loadSounds() {
-        let query = PFQuery(className: "Post")
-        query.whereKey("tags", containedIn: tags)
-        query.addDescendingOrder("createdAt")
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let title = object["title"] as! String
-                        let audioFile = object["audioFile"] as! PFFileObject
-                        let artFile = object["songArt"] as! PFFileObject
-                        let artURL = artFile.url!
-                        let userId = object["userId"] as! String
-                        let tags = object["tags"] as! Array<String>
-                        var playCount = 0
-                        if let plays = object["plays"] as? Int {
-                            playCount = plays
-                        }
-                        
-                        var relevancyScore = 0
-                        for tag in self.tags {
-                            if tags.contains(tag) {
-                                relevancyScore = relevancyScore + 1
-                            }
-                        }
-                        
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
-                        
-                        let newSound = Sound(objectId: object.objectId, title: title, artURL: artURL, artImage: nil, artFile: artFile, tags: tags, createdAt: object.createdAt, plays: playCount, audio: audioFile, audioURL: audioFile.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist)
-                        
-                        self.sounds.append(newSound)
-                    }
-                    
-                    self.sounds.sort(by: { $0.relevancyScore > $1.relevancyScore })
-                    
-                    if objects.count > 0 {
-                        self.setUpNextSong(false)
-                    }
-                }
-                
-            } else {
-                print("Error: \(error!)")
-            }
-        }
-    }
-    
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {

@@ -30,17 +30,6 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var tags: Array<String>?
     
-    var miniPlayerView: MiniPlayerView!
-    
-    /*lazy var MiniPlayerButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Mini Player", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = .white 
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        return button
-    }()*/
-    
     func showPlayerViewController() {
         let modal = PlayerV2ViewController()
         modal.player = self.player
@@ -50,12 +39,9 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         present(modal, animated: true, completion: nil)
     }
     
-    var player: Player?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle()
-        setUpMiniPlayer()
     }
     
     /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -81,9 +67,14 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         determineTypeOfSoundToLoad()
     }
     
+    //mark: mini player
+    var player: Player?
+    var miniPlayerView: MiniPlayerView!
+    
     func setUpMiniPlayer() {
-        if let tabBarView = self.tabBarController?.view {
+        if let tabBarView = self.tabBarController?.view {            
             miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+            miniPlayerView.player = self.player
             tabBarView.addSubview(miniPlayerView)
             let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
             slide.direction = .up
@@ -91,7 +82,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
             
             miniPlayerView.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(40)
+                make.height.equalTo(45)
                 make.right.equalTo(tabBarView)
                 make.left.equalTo(tabBarView)
                 make.bottom.equalTo(tabBarView).offset(-48)
@@ -99,10 +90,10 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if let player = self.player?.player {
                 if player.isPlaying {
-                    miniPlayerView.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    miniPlayerView.playBackButton.setImage(UIImage(named: "pause_white"), for: .normal)
                     
                 } else {
-                    miniPlayerView.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                    miniPlayerView.playBackButton.setImage(UIImage(named: "play_white"), for: .normal)
                 }
                 miniPlayerView.playBackButton.isEnabled = true
             }
@@ -172,8 +163,15 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             make.top.equalTo(self.view)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(miniPlayerView.snp.top)
+            make.bottom.equalTo(self.miniPlayerView.snp.top)
         }
+    }
+    
+    func changeArtistSongColor(_ cell: MySoundsTableViewCell, color: UIColor, playIconName: String) {
+        cell.soundTitle.textColor = color
+        cell.soundArtist.textColor = color
+        cell.soundPlays.textColor = color
+        cell.soundPlaysImage.image = UIImage(named: playIconName)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -185,13 +183,27 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        if let player = player {
+            player.didSelectSoundAt(indexPath.row)
+            tableView.reloadData()
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! MySoundsTableViewCell
         
         let sound = sounds[indexPath.row]
+        if let player = self.player {
+            if player.sounds[player.currentSoundIndex].objectId == sound.objectId {
+                changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
+                
+            } else {
+                changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
+            }
+            
+        } else {
+            changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
+        }
         
         cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
         cell.menuButton.tag = indexPath.row
@@ -331,7 +343,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             query.whereKey("tags", containedIn: tags)
         }
         query.addDescendingOrder(descendingOrder)
-        query.limit = 50
+        query.limit = 100
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -355,10 +367,14 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 if self.tableView == nil {
-                    self.setUpTableView()
                     self.player = Player(sounds: self.sounds)
+                    self.setUpMiniPlayer()
+                    self.setUpTableView()
                     
                 } else {
+                    if let player = self.player {
+                        player.sounds = self.sounds
+                    }
                     self.tableView.reloadData()
                 }
                 

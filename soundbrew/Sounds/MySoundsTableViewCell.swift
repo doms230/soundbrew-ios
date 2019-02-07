@@ -48,7 +48,7 @@ class MySoundsTableViewCell: UITableViewCell {
     
     lazy var soundArtist: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
         return label
     }()
     
@@ -103,9 +103,9 @@ class MySoundsTableViewCell: UITableViewCell {
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in

@@ -9,16 +9,20 @@
 import Foundation
 import UIKit
 import SnapKit
+import Parse
 
 class MiniPlayerView: UIButton {
     let color = Color()
     let uiElement = UIElement()
     var shouldSetupConstraints = true
     
+    var player: Player?
+    var sound: Sound?
+    
     lazy var songTitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         label.textAlignment = .center
         return label
@@ -27,22 +31,34 @@ class MiniPlayerView: UIButton {
     lazy var artistName: UIButton = {
         let button = UIButton()
         button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 10)
         return button
     }()
     
     lazy var playBackButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "pause"), for: .normal)
-        button.isEnabled = false
+        button.setImage(UIImage(named: "pause_white"), for: .normal)
         return button
     }()
+    @objc func didPressPlayBackButton(_ sender: UIButton) {
+        if let player = self.player?.player {
+            if player.isPlaying {
+                player.pause()
+                self.playBackButton.setImage(UIImage(named: "play_white"), for: .normal)
+                
+            } else {
+                player.play()
+                self.playBackButton.setImage(UIImage(named: "pause_white"), for: .normal)
+            }
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = .white
+        self.backgroundColor = color.black()
+        setupNotificationCenter()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -52,6 +68,7 @@ class MiniPlayerView: UIButton {
     override func updateConstraints() {
         if(shouldSetupConstraints) {
             self.addSubview(playBackButton)
+            playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
             playBackButton.snp.makeConstraints { (make) -> Void in
                 make.width.height.equalTo(30)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
@@ -74,7 +91,70 @@ class MiniPlayerView: UIButton {
             }
             
             shouldSetupConstraints = false
+            setSound()
         }
+    
         super.updateConstraints()
+    }
+    
+    func setupNotificationCenter(){
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+    }
+    
+    @objc func didReceiveSound() {
+        setSound()
+    }
+    
+    @objc func playbackWasPaused() {
+        self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+    }
+    
+    func setSound() {
+        if let player = self.player {
+            self.sound = player.sounds[player.currentSoundIndex]
+            setCurrentSoundView(self.sound!)
+            self.playBackButton.isEnabled = true
+            
+            //if audio is paused when mini isn't showing ... won't go back to pause logo without below code.
+           /* if let player = player.player {
+                if player.isPlaying {
+                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    
+                } else {
+                    
+                }
+                
+            } else {
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            }*/
+        }
+    }
+    
+    func setCurrentSoundView(_ sound: Sound) {
+        self.songTitle.text = sound.title
+        
+        if let artistName = sound.artist?.name {
+            self.artistName.setTitle(artistName, for: .normal)
+            
+        } else {
+            let placeHolder = ""
+            self.artistName.setTitle(placeHolder, for: .normal)
+            loadUserInfoFromCloud(sound.artist!.objectId)
+        }
+    }
+    
+    func loadUserInfoFromCloud(_ userId: String) {
+        let query = PFQuery(className:"_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                let artistName = user["artistName"] as? String
+                self.artistName.setTitle(artistName, for: .normal)
+                self.sound!.artist?.name = artistName
+            }
+        }
     }
 }
