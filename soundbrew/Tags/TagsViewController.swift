@@ -13,7 +13,6 @@ import SnapKit
 import Parse
 import AVFoundation
 import Alamofire
-import DeckTransition
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate {
     
@@ -21,9 +20,32 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     
+    lazy var exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "exit"), for: .normal)
+        return button
+    }()
+    @objc func didPressExitButton(_ sender: UIButton) {
+        handleTagsForDismissle()
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func setUpExitButton() {
+        self.view.addSubview(self.exitButton)
+        exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        exitButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpMiniPlayer()
+        
+        self.view.backgroundColor = .white
+        
+        setUpExitButton()
         
         if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
@@ -37,6 +59,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
         } else {
+            if let chosenTags = self.uiElement.getUserDefault("tags") as? Array<String> {
+                chosenTagsArray = chosenTags
+            }
+            
             loadTagType("mood")
             loadTagType("activity")
             loadTagType("city")
@@ -46,7 +72,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    /*override func viewWillDisappear(_ animated: Bool) {
         if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
                 if tagType == "city" && chosenTagsArray.count != 0 {
@@ -61,9 +87,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
         } else {
-            
+           uiElement.setUserDefault("tags", value: chosenTagsArray)
         }
-    }
+    }*/
+    
+    
     
     override func viewDidAppear(_ animated: Bool) {
         /*do {
@@ -73,52 +101,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             print("Unable to activate audio session:  \(error.localizedDescription)")
         }*/
     }
-    
-    //MARK: mini player
-    lazy var MiniPlayerButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Mini Player", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = .white
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        return button
-    }()
-    
-    func showPlayerViewController() {
-        uiElement.setUserDefault("tags", value: chosenTagsArray)
-        let modal = PlayerV2ViewController()
-        let transitionDelegate = DeckTransitioningDelegate()
-        modal.transitioningDelegate = transitionDelegate
-        modal.modalPresentationStyle = .custom
-        present(modal, animated: true, completion: nil)
-    }
-    
-    func setUpMiniPlayer() {
-        if let tabBarView = self.tabBarController?.view {
-            tabBarView.addSubview(MiniPlayerButton)
-            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-            slide.direction = .up
-            MiniPlayerButton.addGestureRecognizer(slide)
-            MiniPlayerButton.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            
-            MiniPlayerButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(40)
-                make.right.equalTo(tabBarView)
-                make.left.equalTo(tabBarView)
-                make.bottom.equalTo(tabBarView).offset(-48)
-            }
-        }
-    }
-    
-    @objc func miniPlayerWasSwiped() {
-        
-        showPlayerViewController()
-    }
-    
-    @objc func miniPlayerWasPressed(_ sender: UIButton) {
-        showPlayerViewController()
-    }
-
     
     /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: PlayerViewController = segue.destination as! PlayerViewController
@@ -294,7 +276,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setupChooseTagsView() {
-        if isChoosingTagsForSoundUpload && self.chosenTagsArray.count != 0 {
+        if self.chosenTagsArray.count != 0 {
             for tag in self.chosenTagsArray {
                 addChosenTagButton(tag)
             }
@@ -306,7 +288,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -368,6 +351,25 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         xPositionForChosenTags = xPositionForChosenTags + Int(chosenTagButton.frame.width) + uiElement.leftOffset
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
+    }
+    
+    func handleTagsForDismissle() {
+        if isChoosingTagsForSoundUpload {
+            if let tagType = tagType {
+                if tagType == "city" && chosenTagsArray.count != 0 {
+                    uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
+                    
+                } else if tagType == "genre" && chosenTagsArray.count != 0 {
+                    //TODO: add genre selected tag
+                }
+                
+            } else {
+                uiElement.setUserDefault(moreTags, value: chosenTagsArray)
+            }
+            
+        } else {
+            uiElement.setUserDefault("tags", value: chosenTagsArray)
+        }
     }
     
     //MARK: featured tags
@@ -601,7 +603,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                         }
                         
-                        if self.isChoosingTagsForSoundUpload && self.chosenTagsArray.count != 0 {
+                        if self.chosenTagsArray.count != 0 {
                             if !self.chosenTagsArray.contains(newTag.name) {
                                 self.tags.append(newTag)
                             }

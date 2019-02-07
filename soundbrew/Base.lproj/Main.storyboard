@@ -43,7 +43,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-570" y="510"/>
+            <point key="canvasLocation" x="-570" y="338"/>
         </scene>
         <!--Sound Info View Controller-->
         <scene sceneID="R29-0C-CbA">
@@ -55,13 +55,10 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
                     </view>
-                    <connections>
-                        <segue destination="EFp-6t-Bz1" kind="show" identifier="showTags" id="e22-GO-dQi"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="302" y="510"/>
+            <point key="canvasLocation" x="302" y="338"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -76,7 +73,7 @@
                     <navigationItem key="navigationItem" id="N3L-mg-Zvf"/>
                     <connections>
                         <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="wBb-Ll-LfM"/>
-                        <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="kbj-II-I4F"/>
+                        <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="eW3-lv-tSJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -96,7 +93,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1270" y="-112"/>
+            <point key="canvasLocation" x="1401" y="69"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ini-3B-14d">
@@ -117,10 +114,10 @@
             </objects>
             <point key="canvasLocation" x="-1319" y="-403"/>
         </scene>
-        <!--Tags View Controller-->
+        <!--View Controller-->
         <scene sceneID="MiY-1a-dLz">
             <objects>
-                <viewController id="EFp-6t-Bz1" customClass="TagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="EFp-6t-Bz1" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HvH-Jy-vPO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -131,7 +128,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="302" y="-1141"/>
+            <point key="canvasLocation" x="1465" y="-753"/>
         </scene>
         <!--Sound List View Controller-->
         <scene sceneID="PqT-ua-W6V">
@@ -147,7 +144,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1270" y="-806"/>
+            <point key="canvasLocation" x="329" y="-1084"/>
         </scene>
         <!--My Sounds-->
         <scene sceneID="XyK-yh-w2g">
@@ -185,7 +182,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JP1-7e-IgD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1319" y="510"/>
+            <point key="canvasLocation" x="-1319" y="338"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="gi0-ci-PE6">
@@ -199,12 +196,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="EFp-6t-Bz1" kind="relationship" relationship="rootViewController" id="1Hj-gu-7KF"/>
+                        <segue destination="o5t-RR-tBo" kind="relationship" relationship="rootViewController" id="cJs-1X-ayw"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wEN-te-UDI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-570" y="-1141"/>
+            <point key="canvasLocation" x="-599" y="-1141"/>
         </scene>
     </scenes>
     <resources>
@@ -214,6 +211,6 @@
         <image name="mySounds_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="e22-GO-dQi"/>
+        <segue reference="cJs-1X-ayw"/>
     </inferredMetricsTieBreakers>
 </document>

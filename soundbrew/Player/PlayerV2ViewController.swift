@@ -89,7 +89,7 @@ class PlayerV2ViewController: UIViewController {
     //mark: View
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "exit"), for: .normal)
+        button.setImage(UIImage(named: "dismiss"), for: .normal)
         return button
     }()
     @objc func didPressExitButton(_ sender: UIButton) {

@@ -274,7 +274,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 let image = UIImage(data:imageData)
                 self.sounds[self.currentSoundIndex].artImage = image
                 
-                if let artist = self.sounds[self.currentSoundIndex].artist?.name {
+                if (self.sounds[self.currentSoundIndex].artist?.name) != nil {
                     self.setBackgroundAudioNowPlaying(self.player!, sound: self.sounds[self.currentSoundIndex])
                     
                 } else {

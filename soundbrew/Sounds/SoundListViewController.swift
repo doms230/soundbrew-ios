@@ -28,6 +28,8 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     var popularRecentButton: UIBarButtonItem!
     var filterButton: UIBarButtonItem!
     
+    var tags: Array<String>?
+    
     lazy var MiniPlayerButton: UIButton = {
         let button = UIButton()
         button.setTitle("Mini Player", for: .normal)
@@ -38,7 +40,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }()
     
     func showPlayerViewController() {
-        let modal = PlayerViewController()
+        let modal = PlayerV2ViewController()
         let transitionDelegate = DeckTransitioningDelegate()
         modal.transitioningDelegate = transitionDelegate
         modal.modalPresentationStyle = .custom
@@ -49,13 +51,24 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         setTitle()
         setUpMiniPlayer()
-        determineTypeOfSoundToLoad()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         /*let installation = PFInstallation.current()
          installation?.badge = 0
          installation?.saveInBackground()*/
+        
+        if let tags = UserDefaults.standard.stringArray(forKey: "tags") {
+            if tags.count == 0 {
+                self.tags = nil
+                
+            } else {
+                self.tags = tags
+            }
+        }
+        
+        self.sounds.removeAll()
+        determineTypeOfSoundToLoad()
     }
     
     func setUpMiniPlayer() {
@@ -97,11 +110,11 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         switch soundType {
         case "search":
-            loadSounds(soundDescendingOrder, containedIn: nil, userId: nil)
+            loadSounds(soundDescendingOrder, containedIn: nil, userId: nil, tags: tags)
             break
             
         case "uploads":
-            loadSounds(soundDescendingOrder, containedIn: nil, userId: userId!)
+            loadSounds(soundDescendingOrder, containedIn: nil, userId: userId!, tags: tags)
             break
             
         case "likes":
@@ -134,7 +147,6 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
-        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -189,7 +201,10 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressFilterbutton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showTags", sender: self)
+        //self.performSegue(withIdentifier: "showTags", sender: self)
+        let modal = TagsViewController()
+        modal.modalPresentationStyle = .formSheet
+        present(modal, animated: true, completion: nil)
     }
     
     @objc func didPressSoundPopularRecentButton(_ sender: UIBarButtonItem) {
@@ -198,7 +213,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         if self.soundDescendingOrder == "createdAt" {
             let popularAction = UIAlertAction(title: "Popular", style: .default) { (_) -> Void in
                 self.sounds.removeAll()
-                self.loadSounds("plays", containedIn: nil, userId: nil)
+                self.loadSounds("plays", containedIn: nil, userId: nil, tags: self.tags)
                 self.uiElement.setUserDefault(self.soundDescendingOrderKey, value: "plays")
                 self.popularRecentButton.image = UIImage(named: "popular")
                 self.soundDescendingOrder = "popular"
@@ -209,7 +224,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             let mostRecentAction = UIAlertAction(title: "Most Recent", style: .default) { (_) -> Void in
                 self.sounds.removeAll()
-                self.loadSounds("createdAt", containedIn: nil, userId: nil)
+                self.loadSounds("createdAt", containedIn: nil, userId: nil, tags: self.tags)
                 self.uiElement.setUserDefault(self.soundDescendingOrderKey, value: "createdAt")
                 self.popularRecentButton.image = UIImage(named: "recent")
                 self.soundDescendingOrder = "createdAt"
@@ -269,7 +284,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                     }
                 }
                 
-                self.loadSounds(self.soundDescendingOrder, containedIn: self.likedSoundIds, userId: nil)
+                self.loadSounds(self.soundDescendingOrder, containedIn: self.likedSoundIds, userId: nil, tags: nil)
                 
             } else {
                 print("Error: \(error!)")
@@ -277,13 +292,16 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func loadSounds(_ descendingOrder: String, containedIn: Array<String>?, userId: String?) {
+    func loadSounds(_ descendingOrder: String, containedIn: Array<String>?, userId: String?, tags: Array<String>?) {
         let query = PFQuery(className: "Post")
         if let containedIn = containedIn {
             query.whereKey("objectId", containedIn: containedIn)
         }
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
+        }
+        if let tags = tags {
+            query.whereKey("tags", containedIn: tags)
         }
         query.addDescendingOrder(descendingOrder)
         query.limit = 50
@@ -303,13 +321,18 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                         }
                         
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist)
                         
                         self.sounds.append(sound)
                     }
                 }
                 
-                self.setUpTableView()
+                if self.tableView == nil {
+                    self.setUpTableView()
+                    
+                } else {
+                    self.tableView.reloadData()
+                }
                 
             } else {
                 print("Error: \(error!)")

@@ -32,8 +32,6 @@
 		F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A7215B56F200C21663 /* PlayerViewController.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
 		F2E5081C21FFC5A200985E34 /* SoundListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */; };
-		F2E508242200FF2000985E34 /* ModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E508232200FF2000985E34 /* ModalViewController.swift */; };
-		F2E508262200FFA400985E34 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E508252200FFA400985E34 /* ViewController.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
 		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
@@ -104,8 +102,6 @@
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundListViewController.swift; sourceTree = "<group>"; };
-		F2E508232200FF2000985E34 /* ModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViewController.swift; sourceTree = "<group>"; };
-		F2E508252200FFA400985E34 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
@@ -219,16 +215,13 @@
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
-				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
-				F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */,
-				F268989A215AF87200C21663 /* Subclass */,
+				F2EA6F51220BDE89007FA614 /* Player */,
+				F268989A215AF87200C21663 /* UI */,
 				F2E5081821F95D0700985E34 /* Tags */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2689899215AF7FB00C21663 /* Sounds */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
-				F2E508232200FF2000985E34 /* ModalViewController.swift */,
-				F2E508252200FFA400985E34 /* ViewController.swift */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
@@ -254,32 +247,40 @@
 		F2689899215AF7FB00C21663 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				F26898A5215B527900C21663 /* Sound.swift */,
 				F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */,
 				F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */,
 			);
 			path = Sounds;
 			sourceTree = "<group>";
 		};
-		F268989A215AF87200C21663 /* Subclass */ = {
+		F268989A215AF87200C21663 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F268989B215AF88200C21663 /* Color.swift */,
 				F268989D215AF8F100C21663 /* UIElement.swift */,
-				F26898A5215B527900C21663 /* Sound.swift */,
-				F268992A21753A3B00C21663 /* Tag.swift */,
-				F2EA6F4D220B630B007FA614 /* Player.swift */,
 			);
-			path = Subclass;
+			path = UI;
 			sourceTree = "<group>";
 		};
 		F2E5081821F95D0700985E34 /* Tags */ = {
 			isa = PBXGroup;
 			children = (
+				F268992A21753A3B00C21663 /* Tag.swift */,
 				F268989F215AFF8200C21663 /* TagTableViewCell.swift */,
 				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
 			);
 			path = Tags;
+			sourceTree = "<group>";
+		};
+		F2EA6F51220BDE89007FA614 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				F2EA6F4D220B630B007FA614 /* Player.swift */,
+				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
+				F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */,
+			);
+			path = Player;
 			sourceTree = "<group>";
 		};
 		F2F8B99421DBEF2D0024AFB6 /* New Sound */ = {
@@ -295,6 +296,7 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
@@ -596,9 +598,7 @@
 				F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */,
 				F23C621721DC3518005C9FF0 /* AddCityViewController.swift in Sources */,
 				F2F8B9A521DBF8A50024AFB6 /* StreamsAndSocialsTableViewCell.swift in Sources */,
-				F2E508262200FFA400985E34 /* ViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
-				F2E508242200FF2000985E34 /* ModalViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,
