@@ -30,28 +30,38 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var tags: Array<String>?
     
-    lazy var MiniPlayerButton: UIButton = {
+    var miniPlayerView: MiniPlayerView!
+    
+    /*lazy var MiniPlayerButton: UIButton = {
         let button = UIButton()
         button.setTitle("Mini Player", for: .normal)
         button.setTitleColor(color.black(), for: .normal)
         button.backgroundColor = .white 
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
         return button
-    }()
+    }()*/
     
     func showPlayerViewController() {
         let modal = PlayerV2ViewController()
+        modal.player = self.player
         let transitionDelegate = DeckTransitioningDelegate()
         modal.transitioningDelegate = transitionDelegate
         modal.modalPresentationStyle = .custom
         present(modal, animated: true, completion: nil)
     }
     
+    var player: Player?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle()
         setUpMiniPlayer()
     }
+    
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController: PlayerV2ViewController = segue.destination as! PlayerV2ViewController
+        viewController.player = self.player
+    }*/
     
     override func viewDidAppear(_ animated: Bool) {
         /*let installation = PFInstallation.current()
@@ -73,17 +83,28 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func setUpMiniPlayer() {
         if let tabBarView = self.tabBarController?.view {
-            tabBarView.addSubview(MiniPlayerButton)
+            miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+            tabBarView.addSubview(miniPlayerView)
             let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
             slide.direction = .up
-            MiniPlayerButton.addGestureRecognizer(slide)
-            MiniPlayerButton.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+            miniPlayerView.addGestureRecognizer(slide)
+            miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
             
-            MiniPlayerButton.snp.makeConstraints { (make) -> Void in
+            miniPlayerView.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(40)
                 make.right.equalTo(tabBarView)
                 make.left.equalTo(tabBarView)
                 make.bottom.equalTo(tabBarView).offset(-48)
+            }
+            
+            if let player = self.player?.player {
+                if player.isPlaying {
+                    miniPlayerView.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    
+                } else {
+                    miniPlayerView.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                }
+                miniPlayerView.playBackButton.isEnabled = true
             }
         }
     }
@@ -145,8 +166,14 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.dataSource = self
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
         self.tableView.separatorStyle = .singleLine
-        tableView.frame = view.bounds
+        //tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(miniPlayerView.snp.top)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -329,6 +356,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 if self.tableView == nil {
                     self.setUpTableView()
+                    self.player = Player(sounds: self.sounds)
                     
                 } else {
                     self.tableView.reloadData()

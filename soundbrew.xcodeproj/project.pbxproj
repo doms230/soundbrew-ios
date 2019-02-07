@@ -29,11 +29,11 @@
 		F26898A0215AFF8200C21663 /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989F215AFF8200C21663 /* TagTableViewCell.swift */; };
 		F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A1215B2C9100C21663 /* TagsViewController.swift */; };
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
-		F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A7215B56F200C21663 /* PlayerViewController.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
 		F2E5081C21FFC5A200985E34 /* SoundListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
 		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
+		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
 		F2F8B99121DBEF140024AFB6 /* MySoundsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
 		F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */; };
@@ -98,12 +98,12 @@
 		F268989F215AFF8200C21663 /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		F26898A1215B2C9100C21663 /* TagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
 		F26898A5215B527900C21663 /* Sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
-		F26898A7215B56F200C21663 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundListViewController.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
+		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* MySoundsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySoundsTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
 		F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -277,8 +277,8 @@
 			isa = PBXGroup;
 			children = (
 				F2EA6F4D220B630B007FA614 /* Player.swift */,
-				F26898A7215B56F200C21663 /* PlayerViewController.swift */,
 				F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */,
+				F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -576,7 +576,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
-				F26898A8215B56F200C21663 /* PlayerViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
@@ -585,6 +584,7 @@
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SoundListViewController.swift in Sources */,
+				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
 				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
 				F23C621521DC350F005C9FF0 /* AddArtistNameViewController.swift in Sources */,

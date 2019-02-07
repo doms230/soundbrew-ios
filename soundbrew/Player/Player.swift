@@ -16,16 +16,19 @@ import Kingfisher
 class Player: NSObject, AVAudioPlayerDelegate {
     var player: AVAudioPlayer?
     var currentSoundIndex = -1
-    var sounds = [Sound]()
+    var sounds: Array<Sound>!
     var tags = [String]()
     
-    override init() {
+    init(sounds: Array<Sound>) {
         super.init()
-        if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
+        self.sounds = sounds
+        self.setUpNextSong(false)
+        setupRemoteTransportControls()
+        /*if let tagArray = UserDefaults.standard.stringArray(forKey: "tags") {
             tags = tagArray
             loadSounds()
             setupRemoteTransportControls()
-        }
+        }*/
     }
     
     func play() {

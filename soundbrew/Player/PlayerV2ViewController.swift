@@ -26,7 +26,6 @@ class PlayerV2ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNotificationCenter()
-        player = Player()
         setUpView()
     }
     
@@ -42,11 +41,15 @@ class PlayerV2ViewController: UIViewController {
     }
     
     func setupNotificationCenter(){
-        NotificationCenter.default.addObserver(self, selector: #selector(self.setSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
     }
     
     //mark: sound
-    @objc func setSound(){
+    @objc func didReceiveSound(){
+        setSound()
+    }
+    
+    func setSound() {
         if let player = self.player {
             self.sound = player.sounds[player.currentSoundIndex]
             setCurrentSoundView(self.sound!)
@@ -337,6 +340,10 @@ class PlayerV2ViewController: UIViewController {
             make.height.width.equalTo(25)
             make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        if self.player != nil {
+            setSound()
         }
     }
     

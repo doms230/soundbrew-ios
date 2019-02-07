@@ -102,11 +102,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }*/
     }
     
-    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: PlayerViewController = segue.destination as! PlayerViewController
-        viewController.tags = self.chosenTagsArray
-    }*/
-    
     //MARK: Tableview
     var tableView: UITableView!
     let tagReuse = "tagReuse"
