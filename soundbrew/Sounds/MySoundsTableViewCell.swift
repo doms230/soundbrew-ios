@@ -23,8 +23,27 @@ class MySoundsTableViewCell: UITableViewCell {
     lazy var viewButton: UIButton = {
         let button = UIButton()
         button.setTitle("View", for: .normal)
-        button.setTitleColor(color.blue(), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        button.setTitleColor(color.blue(), for: .normal)
+        return button
+    }()
+    
+    lazy var soundTypeButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Most Recent", for: .normal)
+        button.setImage(UIImage(named: "recent"), for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = color.black().cgColor
+        return button
+    }()
+    
+    lazy var filterByTagsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Filter", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        button.backgroundColor = color.black()
+        button.setTitleColor(.white, for: .normal)
         return button
     }()
     
@@ -35,8 +54,6 @@ class MySoundsTableViewCell: UITableViewCell {
     
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
-        image.layer.cornerRadius = 3
-        image.clipsToBounds = true
         return image
     }()
     
@@ -139,6 +156,11 @@ class MySoundsTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
+            break
+            
+        case "filterReuse":
+            self.addSubview(soundTypeButton)
+            self.addSubview(filterByTagsButton)
             break
             
         default:

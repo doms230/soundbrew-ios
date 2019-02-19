@@ -101,9 +101,7 @@ class PlayerV2ViewController: UIViewController {
     
     lazy var songArt: UIImageView = {
         let image = UIImageView()
-        image.layer.cornerRadius = 3
-        image.clipsToBounds = true
-        image.contentMode = .scaleAspectFill
+        image.contentMode = .scaleAspectFit
         image.backgroundColor = .white
         return image
     }()

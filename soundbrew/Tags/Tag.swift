@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import DeckTransition
 
 class Tag {
     var objectId: String!
@@ -24,4 +25,8 @@ class Tag {
         self.isSelected = isSelected
         self.tagType = tagType
     }
+}
+
+protocol TagDelegate {
+    func changeTags(_ value: Array<String>?)
 }

@@ -147,40 +147,30 @@ class Player: NSObject, AVAudioPlayerDelegate {
         //need audio url so can see what type of file audio is... helps get audio duration
         let audioURL = URL(string: sounds[currentSoundIndex].audioURL)
         
-        //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
-        let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
         
         // Set up the session.
         let session = AVAudioSession.sharedInstance()
         
         do {
+            //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
+            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
+            try audioData.write(to: audioFileURL, options: .atomic)
+            
             try session.setCategory(AVAudioSession.Category.playback,
                                     mode: .default,
                                     policy: .longForm,
                                     options: [])
             
-        } catch let error {
-            soundPlayable = false
-            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
-        }
-        
-        // Set up the player.
-        do {
+            // Set up the player.
             self.player = try AVAudioPlayer(contentsOf: audioFileURL)
             player?.delegate = self
             
-        } catch let error {
-            print("*** Unable to set up the audio player: \(error.localizedDescription) ***")
-            soundPlayable = false
-        }
-        
-        // Activate and request the route.
-        do {
+            // Activate and request the route.
             try session.setActive(true)
             
         } catch let error {
-            print("Unable to activate audio session:  \(error.localizedDescription)")
             soundPlayable = false
+            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
         
         if soundPlayable {

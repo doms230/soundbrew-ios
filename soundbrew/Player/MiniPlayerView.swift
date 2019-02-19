@@ -22,7 +22,7 @@ class MiniPlayerView: UIButton {
     lazy var songTitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
-        label.textColor = .white
+        label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         label.textAlignment = .center
         return label
@@ -31,25 +31,25 @@ class MiniPlayerView: UIButton {
     lazy var artistName: UIButton = {
         let button = UIButton()
         button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 10)
         return button
     }()
     
     lazy var playBackButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "pause_white"), for: .normal)
+        button.setImage(UIImage(named: "pause"), for: .normal)
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
         if let player = self.player?.player {
             if player.isPlaying {
                 player.pause()
-                self.playBackButton.setImage(UIImage(named: "play_white"), for: .normal)
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                 
             } else {
                 player.play()
-                self.playBackButton.setImage(UIImage(named: "pause_white"), for: .normal)
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
             }
         }
     }
@@ -57,7 +57,7 @@ class MiniPlayerView: UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = color.black()
+        self.backgroundColor = .clear
         setupNotificationCenter()
     }
     
@@ -70,7 +70,7 @@ class MiniPlayerView: UIButton {
             self.addSubview(playBackButton)
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
             playBackButton.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(30)
+                make.width.height.equalTo(40)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
@@ -116,17 +116,17 @@ class MiniPlayerView: UIButton {
             self.playBackButton.isEnabled = true
             
             //if audio is paused when mini isn't showing ... won't go back to pause logo without below code.
-           /* if let player = player.player {
+            if let player = player.player {
                 if player.isPlaying {
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
                     
                 } else {
-                    
+                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                 }
                 
             } else {
                 self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-            }*/
+            }
         }
     }
     

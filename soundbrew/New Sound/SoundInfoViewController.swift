@@ -10,8 +10,9 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
+import DeckTransition
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable, TagDelegate {
 
     let uiElement = UIElement()
     
@@ -24,20 +25,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundArtDidFinishProcessing = false
     
     var soundTitle: UITextField!
-    
-    var tagType: String?
-    var addTagsType: String?
-    let genres = ["Hip-Hop/Rap", "Electronic Dance Music(EDM)", "Pop", "Alternative Rock", "Americana", "Blues", "Christian & Gospal", "Classic Rock", "Classical", "Country", "Dance", "Hard Rock", "Indie", "Jazz", "Latino", "Metal", "Reggae", "R&B", "Soul", "Funk"]
-    
-    let moods = ["Happy", "Sad", "Angry", "Chill", "High-Energy", "Netflix-And-Chill"]
-    
-    let activities = ["Creative", "Workout", "Party", "Work", "Sleep", "Gaming"]
-    var soundGenre: String?
-    var soundMood: String?
-    var soundActivity: String?
-    var soundMoreTags: Array<String>?
-    var soundCity: String?
-    
+
     var soundFileName: String!
     var soundParseFile: PFFileObject!
     var soundParseFileDidFinishProcessing = false
@@ -51,27 +39,74 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         setUpTableView()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    /*override func viewDidAppear(_ animated: Bool) {
         if let soundCityTag = uiElement.getUserDefault("cityTag") as? String {
-            self.soundCity = soundCityTag
+            self.cityTag = soundCityTag
         }
         
         if let soundMoreTags = uiElement.getUserDefault("moreTags") as? Array<String> {
-            self.soundMoreTags = soundMoreTags
+            self.moreTags = soundMoreTags
         }
         
         self.tableView.reloadData()
-    }
+    }*/
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: TagsViewController = segue.destination as! TagsViewController
         viewController.isChoosingTagsForSoundUpload = true
         viewController.tagType = addTagsType
-    }
+    }*/
     
     func setUpViews() {
         let uploadButton = UIBarButtonItem(title: "UPLOAD", style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
+    }
+    
+    //MARK: tags
+    var tagType: String?
+    //var addTagsType: String?
+    let genres = ["Hip-Hop/Rap", "Electronic Dance Music(EDM)", "Pop", "Alternative Rock", "Americana", "Blues", "Christian & Gospal", "Classic Rock", "Classical", "Country", "Dance", "Hard Rock", "Indie", "Jazz", "Latino", "Metal", "Reggae", "R&B", "Soul", "Funk"]
+    
+    let moods = ["Happy", "Sad", "Angry", "Chill", "High-Energy", "Netflix-And-Chill"]
+    
+    let activities = ["Creative", "Workout", "Party", "Work", "Sleep", "Gaming"]
+    var genreTag: String?
+    var moodTag: String?
+    var activityTag: String?
+    var moreTags: Array<String>?
+    var cityTag: String?
+    
+    func showTagsViewController(_ tags: Array<String>?, tagType: String?) {
+        let modal = TagsViewController()
+        let transitionDelegate = DeckTransitioningDelegate()
+        modal.transitioningDelegate = transitionDelegate
+        modal.modalPresentationStyle = .custom
+        modal.tagDelegate = self
+        modal.isChoosingTagsForSoundUpload = true 
+        if let tags = tags {
+            modal.chosenTagsArray = tags
+        }
+        
+        if let tagType = tagType {
+            modal.tagType = tagType
+        }
+        
+        present(modal, animated: true, completion: nil)
+    }
+    
+    func changeTags(_ value: Array<String>?) {
+        if tagType != nil {
+            if tagType! == "city" {
+                if let tag = value {
+                    self.cityTag = tag[0]
+                }
+            }
+            
+        } else {
+            self.moreTags = value
+        }
+        
+        self.tableView.reloadData()
     }
     
     //MARK: Tableview
@@ -121,44 +156,54 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             switch indexPath.row {
             case 0:
                 cell.soundTagLabel.text = "Genre Tag"
-                if let soundGenre = self.soundGenre {
-                    cell.chosenSoundTagLabel.text = soundGenre
+                if let genreTag = self.genreTag {
+                    cell.chosenSoundTagLabel.text = genreTag
+                    cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
                 break
                 
             case 1:
                 cell.soundTagLabel.text = "City Tag"
-                if let soundCityTag = self.soundCity {
-                    cell.chosenSoundTagLabel.text = soundCityTag
+                if let cityTag = self.cityTag {
+                    cell.chosenSoundTagLabel.text = cityTag
+                    cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
                 break
                 
             case 2:
                 cell.soundTagLabel.text = "Mood Tag"
-                if let soundMood = self.soundMood {
-                    cell.chosenSoundTagLabel.text = soundMood
+                if let moodTag = self.moodTag {
+                    cell.chosenSoundTagLabel.text = moodTag
+                    cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
                 break
                 
             case 3:
                 cell.soundTagLabel.text = "Activity Tag"
-                if let soundActivity = self.soundActivity {
-                    cell.chosenSoundTagLabel.text = soundActivity
+                if let activityTag = self.activityTag {
+                    cell.chosenSoundTagLabel.text = activityTag
+                    cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
                 
             case 4:
                 cell.soundTagLabel.text = "More Tags"
-                if let soundMoreTags = self.soundMoreTags {
-                    if soundMoreTags.count == 0 {
-                        cell.chosenSoundTagLabel.text = "Add"
+                if let moreTags = self.moreTags {
+                    if moreTags.count == 1 {
+                        cell.chosenSoundTagLabel.text = "\(moreTags.count) tag"
                         
                     } else {
-                        cell.chosenSoundTagLabel.text = "\(soundMoreTags.count) tags"
+                        cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
                     }
+                    
+                    cell.chosenSoundTagLabel.textColor = color.blue()
+                    
+                } else {
+                    cell.chosenSoundTagLabel.text = "Add"
+                    cell.chosenSoundTagLabel.textColor = color.red()
                 }
                 tableView.separatorStyle = .none
                 
@@ -173,34 +218,42 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0:
-            self.showPickerView("Genre")
-            self.soundGenre = "Hip-Hop/Rap"
-            break
-            
-        case 1:
-            addTagsType = "city"
-            self.performSegue(withIdentifier: "showTags", sender: self)
-            break
-            
-        case 2:
-            self.showPickerView("Mood")
-            self.soundMood = "Happy"
-            break
-            
-        case 3:
-            self.showPickerView("Activity")
-            self.soundActivity = "Creative"
-            break
-            
-        case 4:
-            addTagsType = nil 
-            self.performSegue(withIdentifier: "showTags", sender: self)
-            break
-            
-        default:
-            break
+        if indexPath.section == 1 {
+            switch indexPath.row {
+            case 0:
+                self.showPickerView("Genre")
+                self.genreTag = "Hip-Hop/Rap"
+                break
+                
+            case 1:
+                tagType = "city"
+                //self.performSegue(withIdentifier: "showTags", sender: self)
+                var cityTags: Array<String>?
+                if let cityTag = self.cityTag {
+                    cityTags?.append(cityTag)
+                }
+                self.showTagsViewController(cityTags, tagType: "city")
+                break
+                
+            case 2:
+                self.showPickerView("Mood")
+                self.moodTag = "Happy"
+                break
+                
+            case 3:
+                self.showPickerView("Activity")
+                self.activityTag = "Creative"
+                break
+                
+            case 4:
+                tagType = nil
+                //self.performSegue(withIdentifier: "showTags", sender: self)
+                self.showTagsViewController(moreTags, tagType: nil)
+                break
+                
+            default:
+                break
+            }
         }
     }
     
@@ -281,15 +334,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         switch pickerView.tag {
         case 0:
-            self.soundGenre = genres[row]
+            self.genreTag = genres[row]
             break
             
         case 1:
-            self.soundMood = self.moods[row]
+            self.moodTag = self.moods[row]
             break
             
         case 2:
-            self.soundActivity = self.activities[row]
+            self.activityTag = self.activities[row]
             break
             
         default:
@@ -372,7 +425,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["title"] = soundTitle.text
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
-        newSound["genre"] = soundGenre
+        newSound["genre"] = genreTag
         newSound["tags"] = tags
         newSound.saveEventually {
             (success: Bool, error: Error?) in
@@ -389,13 +442,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func getTags() -> Array<String> {
         //var tags = soundTags.text!.split{$0 == " "}.map(String.init)
         var tags = [String]()
-        if let moreTags = self.soundMoreTags {
+        if let moreTags = self.moreTags {
             tags = moreTags
         }
-        tags.append(soundGenre!.lowercased())
-        tags.append(soundActivity!.lowercased())
-        tags.append(soundMood!.lowercased())
-        tags.append(soundCity!.lowercased())
+        tags.append(genreTag!.lowercased())
+        tags.append(activityTag!.lowercased())
+        tags.append(moodTag!.lowercased())
+        tags.append(cityTag!.lowercased())
     
         return tags
     }
@@ -487,16 +540,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else if soundArt == nil {
             uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
             
-        } else if soundGenre == nil {
+        } else if genreTag == nil {
             uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
             
-        } else if soundActivity == nil {
+        } else if activityTag == nil {
             uiElement.showAlert("Sound Activity is Required", message: "Tap the 'add activity tag' button to choose", target: self)
             
-        } else if soundMood == nil {
+        } else if moodTag == nil {
             uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
             
-        } else if soundCity == nil {
+        } else if cityTag == nil {
             uiElement.showAlert("Sound City is Required", message: "Tap the 'add mood tag' button to choose", target: self)
             
         } else {

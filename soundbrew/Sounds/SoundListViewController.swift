@@ -4,6 +4,7 @@
 //
 //  Created by Dominic  Smith on 1/28/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
+//  MARK: Data, tableview, player, tags, button actions
 //TODO: Automatic loading of more sounds as the user scrolls
 
 import UIKit
@@ -12,7 +13,7 @@ import Kingfisher
 import SnapKit
 import DeckTransition
 
-class SoundListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SoundListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagDelegate {
 
     let uiElement = UIElement()
     let color = Color()
@@ -25,49 +26,50 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundDescendingOrder = "createdAt"
     var soundDescendingOrderKey = "soundDescendingOrder"
     
-    var popularRecentButton: UIBarButtonItem!
-    var filterButton: UIBarButtonItem!
-    
-    var tags: Array<String>?
-    
-    func showPlayerViewController() {
-        let modal = PlayerV2ViewController()
-        modal.player = self.player
-        let transitionDelegate = DeckTransitioningDelegate()
-        modal.transitioningDelegate = transitionDelegate
-        modal.modalPresentationStyle = .custom
-        present(modal, animated: true, completion: nil)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTitle()
+        self.sounds.removeAll()
+        determineTypeOfSoundToLoad()
     }
-    
-    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: PlayerV2ViewController = segue.destination as! PlayerV2ViewController
-        viewController.player = self.player
-    }*/
     
     override func viewDidAppear(_ animated: Bool) {
         /*let installation = PFInstallation.current()
          installation?.badge = 0
          installation?.saveInBackground()*/
         
-        if let tags = UserDefaults.standard.stringArray(forKey: "tags") {
+        /*if let tags = UserDefaults.standard.stringArray(forKey: "tags") {
             if tags.count == 0 {
                 self.tags = nil
                 
             } else {
                 self.tags = tags
             }
-        }
-        
-        self.sounds.removeAll()
-        determineTypeOfSoundToLoad()
+        }*/
     }
     
-    //mark: mini player
+    //mark: tags
+    var tags: Array<String>?
+    func changeTags(_ value: Array<String>?) {
+        if self.tags != value {
+            self.tags = value
+            self.sounds.removeAll()
+            determineTypeOfSoundToLoad()
+        }
+    }
+    
+    func showTagsViewController() {
+        let modal = TagsViewController()
+        let transitionDelegate = DeckTransitioningDelegate()
+        modal.transitioningDelegate = transitionDelegate
+        modal.modalPresentationStyle = .custom
+        modal.tagDelegate = self
+        if let tags = self.tags {
+            modal.chosenTagsArray = tags
+        }
+        present(modal, animated: true, completion: nil)
+    }
+    
+    //mark: player
     var player: Player?
     var miniPlayerView: MiniPlayerView!
     
@@ -82,7 +84,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
             
             miniPlayerView.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(45)
+                make.height.equalTo(55)
                 make.right.equalTo(tabBarView)
                 make.left.equalTo(tabBarView)
                 make.bottom.equalTo(tabBarView).offset(-48)
@@ -100,10 +102,13 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func setTitle() {
-        if let title = self.soundTitle {
-            self.title = title
-        }
+    func showPlayerViewController() {
+        let modal = PlayerV2ViewController()
+        modal.player = self.player
+        let transitionDelegate = DeckTransitioningDelegate()
+        modal.transitioningDelegate = transitionDelegate
+        modal.modalPresentationStyle = .custom
+        present(modal, animated: true, completion: nil)
     }
     
     func determineTypeOfSoundToLoad() {
@@ -138,6 +143,9 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    //mark: navigation
+    var popularRecentButton: UIBarButtonItem!
+    var filterButton: UIBarButtonItem!
     func setUpNavigationViews(_ popularRecentButtonImage: String) {
         filterButton = UIBarButtonItem(image: UIImage(named: "filter"), style: .plain, target: self, action: #selector(didPressFilterbutton(_:)))
         
@@ -240,10 +248,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressFilterbutton(_ sender: UIBarButtonItem) {
-        //self.performSegue(withIdentifier: "showTags", sender: self)
-        let modal = TagsViewController()
-        modal.modalPresentationStyle = .formSheet
-        present(modal, animated: true, completion: nil)
+        showTagsViewController()
     }
     
     @objc func didPressSoundPopularRecentButton(_ sender: UIBarButtonItem) {
@@ -304,10 +309,6 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         self.present(menuAlert, animated: true, completion: nil)
-    }
-    
-    @objc func didPressUploadSoundButton(_ sender: UIButton) {
-        tabBarController?.selectedIndex = 1
     }
     
     //mark: data

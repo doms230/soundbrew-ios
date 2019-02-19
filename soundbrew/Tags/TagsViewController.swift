@@ -22,11 +22,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     lazy var exitButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "exit"), for: .normal)
+        button.setImage(UIImage(named: "dismiss"), for: .normal)
         return button
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
-        handleTagsForDismissle()
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -52,16 +51,16 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 loadTagType(tagType)
                 
             } else {
-                if let chosenTags = self.uiElement.getUserDefault(moreTags) as? Array<String> {
+               /* if let chosenTags = self.uiElement.getUserDefault(moreTags) as? Array<String> {
                     chosenTagsArray = chosenTags
-                }
+                }*/
                 loadTagType(nil)
             }
             
         } else {
-            if let chosenTags = self.uiElement.getUserDefault("tags") as? Array<String> {
+            /*if let chosenTags = self.uiElement.getUserDefault("tags") as? Array<String> {
                 chosenTagsArray = chosenTags
-            }
+            }*/
             
             loadTagType("mood")
             loadTagType("activity")
@@ -72,34 +71,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    /*override func viewWillDisappear(_ animated: Bool) {
-        if isChoosingTagsForSoundUpload {
-            if let tagType = tagType {
-                if tagType == "city" && chosenTagsArray.count != 0 {
-                    uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
-                    
-                } else if tagType == "genre" && chosenTagsArray.count != 0 {
-                    //TODO: add genre selected tag
-                }
-                
-            } else {
-                uiElement.setUserDefault(moreTags, value: chosenTagsArray)
-            }
-            
-        } else {
-           uiElement.setUserDefault("tags", value: chosenTagsArray)
-        }
-    }*/
-    
-    
-    
-    override func viewDidAppear(_ animated: Bool) {
-        /*do {
-            try AVAudioSession.sharedInstance().setActive(false)
-            
-        } catch let error {
-            print("Unable to activate audio session:  \(error.localizedDescription)")
-        }*/
+    override func viewWillDisappear(_ animated: Bool) {
+        handleTagsForDismissle()
     }
     
     //MARK: Tableview
@@ -205,6 +178,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: tags
+    var tagDelegate: TagDelegate?
     let moreTags = "moreTags"
     
     var isChoosingTagsForSoundUpload = false
@@ -305,7 +279,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
         if isChoosingTagsForSoundUpload && tagType != nil {
             self.chosenTagsArray.append(title)
-            self.uiElement.goBackToPreviousViewController(self)
+            self.dismiss(animated: true, completion: nil)
+            //self.uiElement.goBackToPreviousViewController(self)
             
         } else if !tagView.isSelected {
             sender.removeTag(title)
@@ -349,7 +324,21 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func handleTagsForDismissle() {
-        if isChoosingTagsForSoundUpload {
+        var tags: Array<String>?
+        if chosenTagsArray.count != 0 {
+            tags = chosenTagsArray
+        }
+        
+        if let tagDelegate = self.tagDelegate {
+            tagDelegate.changeTags(tags)
+        }
+        
+        if tagType == "city" && chosenTagsArray.count != 0 {
+            uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
+            
+        } 
+        
+        /*if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
                 if tagType == "city" && chosenTagsArray.count != 0 {
                     uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
@@ -364,7 +353,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         } else {
             uiElement.setUserDefault("tags", value: chosenTagsArray)
-        }
+        }*/
     }
     
     //MARK: featured tags
