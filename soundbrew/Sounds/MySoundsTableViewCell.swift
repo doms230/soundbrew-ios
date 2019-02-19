@@ -28,22 +28,24 @@ class MySoundsTableViewCell: UITableViewCell {
         return button
     }()
     
-    lazy var soundTypeButton: UIButton = {
+    lazy var tagsScrollview: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
+    lazy var mostRecentButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Most Recent", for: .normal)
-        button.setImage(UIImage(named: "recent"), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        button.layer.borderWidth = 1
-        button.layer.borderColor = color.black().cgColor
+        button.setTitle("Recent", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.setTitleColor(color.black(), for: .normal)
         return button
     }()
     
-    lazy var filterByTagsButton: UIButton = {
+    lazy var popularButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Filter", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        button.backgroundColor = color.black()
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle("Popular", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.setTitleColor(.darkGray, for: .normal)
         return button
     }()
     
@@ -158,10 +160,38 @@ class MySoundsTableViewCell: UITableViewCell {
             }
             break
             
-        case "filterReuse":
-            self.addSubview(soundTypeButton)
-            self.addSubview(filterByTagsButton)
+        case "recentPopularReuse":
+            self.addSubview(mostRecentButton)
+            self.addSubview(popularButton)
+            
+            mostRecentButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.width.equalTo(150)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            
+            popularButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.width.equalTo(150)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+        
             break
+            
+        case "filterTagsReuse":
+            self.addSubview(tagsScrollview)
+            tagsScrollview.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(40)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.left.equalTo(self)
+                make.right.equalTo(self)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            break 
             
         default:
             break

@@ -32,23 +32,9 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         determineTypeOfSoundToLoad()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        /*let installation = PFInstallation.current()
-         installation?.badge = 0
-         installation?.saveInBackground()*/
-        
-        /*if let tags = UserDefaults.standard.stringArray(forKey: "tags") {
-            if tags.count == 0 {
-                self.tags = nil
-                
-            } else {
-                self.tags = tags
-            }
-        }*/
-    }
-    
     //mark: tags
     var tags: Array<String>?
+    
     func changeTags(_ value: Array<String>?) {
         if self.tags != value {
             self.tags = value
@@ -67,6 +53,42 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             modal.chosenTagsArray = tags
         }
         present(modal, animated: true, completion: nil)
+    }
+    
+    func setupTagFilterReuse() {
+        var xPositionForTag = uiElement.elementOffset
+        cell.tagsScrollview.subviews.forEach({$0.removeFromSuperview()})
+        var tagLabel: UILabel
+        
+        tagLabel = labelForScrollview("Chosen Tags: ", x: uiElement.leftOffset)
+        tagLabel.textColor = .lightGray
+        cell.tagsScrollview.addSubview(tagLabel)
+        xPositionForTag = xPositionForTag + Int(tagLabel.frame.width)
+        cell.tagsScrollview.contentSize = CGSize(width: xPositionForTag, height: 40)
+
+        if let tags = self.tags {
+            for tag in tags {
+                tagLabel = labelForScrollview(tag, x: xPositionForTag)
+                cell.tagsScrollview.addSubview(tagLabel)
+                xPositionForTag = xPositionForTag + Int(tagLabel.frame.width)
+                cell.tagsScrollview.contentSize = CGSize(width: xPositionForTag, height: 40)
+            }
+            
+        } else {
+           // tagLabel = labelForScrollview("Filter", x: xPositionForTag)
+            //cell.tagsScrollview.addSubview(tagLabel)
+        }
+    }
+    
+    func labelForScrollview(_ text: String, x: Int) -> UILabel {
+        let labelTitleWidth = uiElement.determineChosenTagButtonTitleWidth(text)
+        let label = UILabel()
+        label.frame = CGRect(x: x, y: 0, width: labelTitleWidth, height: 40)
+        label.text = text
+        label.textColor = color.black()
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        
+        return label
     }
     
     //mark: player
@@ -112,19 +134,6 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func determineTypeOfSoundToLoad() {
-        if let soundDescendingOrder = uiElement.getUserDefault(self.soundDescendingOrderKey) as? String {
-            self.soundDescendingOrder = soundDescendingOrder
-            if soundDescendingOrder == "createdAt" {
-                self.setUpNavigationViews("recent")
-                
-            } else {
-                self.setUpNavigationViews("popular")
-            }
-            
-        } else {
-            self.setUpNavigationViews("recent")
-        }
-        
         switch soundType {
         case "search":
             loadSounds(soundDescendingOrder, containedIn: nil, userId: nil, tags: tags)
@@ -156,14 +165,19 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: tableview
     var tableView: UITableView!
+    var cell: MySoundsTableViewCell!
+    
     let reuse = "reuse"
     let playFilterReuse = "playFilterReuse"
-    
+    let recentPopularReuse = "recentPopularReuse"
+    let filterTagsReuse = "filterTagsReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
+        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
+        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: filterTagsReuse)
         self.tableView.separatorStyle = .singleLine
         //tableView.frame = view.bounds
         self.view.addSubview(tableView)
@@ -183,54 +197,89 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sounds.count
+        if section == 2 {
+            return sounds.count
+        }
+        return 1
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let player = player {
-            player.didSelectSoundAt(indexPath.row)
-            tableView.reloadData()
+        if indexPath.section == 0 {
+            print("h")
+            showTagsViewController()
+            
+        } else if indexPath.section == 2 {
+            if let player = player {
+                player.didSelectSoundAt(indexPath.row)
+                tableView.reloadData()
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! MySoundsTableViewCell
-        
-        let sound = sounds[indexPath.row]
-        if let player = self.player {
-            if player.sounds[player.currentSoundIndex].objectId == sound.objectId {
-                changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
+        if indexPath.section == 0 {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: filterTagsReuse) as? MySoundsTableViewCell
+            setupTagFilterReuse()
+            
+        } else if indexPath.section == 1{
+            cell = self.tableView.dequeueReusableCell(withIdentifier: recentPopularReuse) as? MySoundsTableViewCell
+            
+            cell.mostRecentButton.addTarget(self, action: #selector(self.didPressRecentPopularButton(_:)), for: .touchUpInside)
+            cell.mostRecentButton.tag = 0
+            
+            cell.popularButton.addTarget(self, action: #selector(self.didPressRecentPopularButton(_:)), for: .touchUpInside)
+            
+            cell.popularButton.tag = 1
+            
+            if self.soundDescendingOrder == "createdAt" {
+                cell.mostRecentButton.setTitleColor(color.black(), for: .normal)
+                cell.popularButton.setTitleColor(.lightGray, for: .normal)
+                
+            } else {
+                cell.popularButton.setTitleColor(color.black(), for: .normal)
+                cell.mostRecentButton.setTitleColor(.lightGray, for: .normal)
+            }
+            
+            
+        } else if indexPath.section == 2 {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as? MySoundsTableViewCell
+            
+            let sound = sounds[indexPath.row]
+            if let player = self.player {
+                if player.sounds[player.currentSoundIndex].objectId == sound.objectId {
+                    changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
+                    
+                } else {
+                    changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
+                }
                 
             } else {
                 changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
             }
             
-        } else {
-            changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
-        }
-        
-        cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-        cell.menuButton.tag = indexPath.row
-        
-        cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-        cell.soundTitle.text = sound.title
-        
-        if let plays = sound.plays {
-            cell.soundPlays.text = "\(plays)"
+            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+            cell.menuButton.tag = indexPath.row
             
-        } else {
-            cell.soundPlays.text = "0"
-        }
-        
-        if let artist = sound.artist?.name {
-            cell.soundArtist.text = artist
+            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
+            cell.soundTitle.text = sound.title
             
-        } else {
-            loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
+            if let plays = sound.plays {
+                cell.soundPlays.text = "\(plays)"
+                
+            } else {
+                cell.soundPlays.text = "0"
+            }
+            
+            if let artist = sound.artist?.name {
+                cell.soundArtist.text = artist
+                
+            } else {
+                loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
+            }
         }
         
         cell.selectionStyle = .none
@@ -239,6 +288,26 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: button actions
+    @objc func didPressRecentPopularButton(_ sender: UIButton) {
+        var soundDescendingOrder = "createdAt"
+        
+        if sender.tag == 1 {
+            soundDescendingOrder = "plays"
+        }
+        self.soundDescendingOrder = soundDescendingOrder
+        if soundDescendingOrder == "createdAt" {
+            cell.mostRecentButton.setTitleColor(color.black(), for: .normal)
+            cell.popularButton.setTitleColor(.lightGray, for: .normal)
+            
+        } else {
+            cell.popularButton.setTitleColor(color.black(), for: .normal)
+            cell.mostRecentButton.setTitleColor(.lightGray, for: .normal)
+        }
+        
+        self.sounds.removeAll()
+        self.loadSounds(soundDescendingOrder, containedIn: nil, userId: nil, tags: self.tags)
+    }
+    
     @objc func miniPlayerWasSwiped() {
         showPlayerViewController()
     }
@@ -256,11 +325,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if self.soundDescendingOrder == "createdAt" {
             let popularAction = UIAlertAction(title: "Popular", style: .default) { (_) -> Void in
-                self.sounds.removeAll()
-                self.loadSounds("plays", containedIn: nil, userId: nil, tags: self.tags)
-                self.uiElement.setUserDefault(self.soundDescendingOrderKey, value: "plays")
-                self.popularRecentButton.image = UIImage(named: "popular")
-                self.soundDescendingOrder = "popular"
+
             }
             
             alertController.addAction(popularAction)
