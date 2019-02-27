@@ -9,9 +9,11 @@
 
 import UIKit
 import Parse
-import Firebase
 import NVActivityIndicatorView
 import UserNotifications
+import AppCenter
+import AppCenterAnalytics
+import AppCenterCrashes
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,17 +24,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UITabBar.appearance().barTintColor = .white
         UITabBar.appearance().tintColor = Color().black()
+        
+        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[ MSAnalytics.self, MSCrashes.self ])
 
-        //Parse
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
             $0.server = "https://soundbrew.herokuapp.com/parse"
         }
         Parse.initialize(with: configuration)
-        
-        //Google
-        FirebaseApp.configure()
 
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)

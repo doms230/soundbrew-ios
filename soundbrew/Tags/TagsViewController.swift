@@ -335,8 +335,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if tagType == "city" && chosenTagsArray.count != 0 {
             uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
-            
-        } 
+        }
         
         /*if isChoosingTagsForSoundUpload {
             if let tagType = tagType {

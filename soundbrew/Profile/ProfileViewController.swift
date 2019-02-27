@@ -323,7 +323,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         }
                         
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
                         
                         if soundType == "uploads" {
                             self.uploadedSounds.append(sound)

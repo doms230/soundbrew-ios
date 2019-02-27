@@ -186,12 +186,23 @@ class MySoundsTableViewCell: UITableViewCell {
             self.addSubview(tagsScrollview)
             tagsScrollview.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(40)
+                make.top.equalTo(self)
+                make.left.equalTo(self)
+                make.right.equalTo(self)
+                make.bottom.equalTo(self)
+            }
+            break
+            
+        case "noFilterTagsReuse":
+            self.addSubview(headerTitle)
+            headerTitle.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(40)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
-            break 
+            break
             
         default:
             break

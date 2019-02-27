@@ -18,12 +18,21 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var currentSoundIndex = -1
     var sounds: Array<Sound>!
     var tags = [String]()
+    var tableview: UITableView?
     
     init(sounds: Array<Sound>) {
         super.init()
         self.sounds = sounds
         self.setUpNextSong(false, at: nil)
         setupRemoteTransportControls()
+    }
+    
+    func sendSoundUpdateToUI() {
+        if let tableView = self.tableview {
+            tableView.reloadData()
+        }
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
     }
     
     func play() {
@@ -42,14 +51,15 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func skip() {
+    func next() {
         self.setUpNextSong(false, at: nil)
     }
     
-    func goBack() {
+    func previous() {
         if let player = self.player {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
+                setBackgroundAudioNowPlaying(player, sound: self.sounds[currentSoundIndex])
                 
             } else {
                 self.setUpNextSong(true, at: nil)
@@ -176,9 +186,16 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if soundPlayable {
             player?.play()
             let sound = sounds[currentSoundIndex]
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+            
             setBackgroundAudioViews()
             incrementPlayCount(sound: sound)
+            
+            if let currentUser = PFUser.current() {
+                self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
+                
+            } else {
+                self.sendSoundUpdateToUI()
+            }
             
         } else {
             //setUpNextSong(false, at: nil)
@@ -232,7 +249,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         commandCenter.nextTrackCommand.addTarget { [unowned self] event in
-            self.setUpNextSong(false, at: nil)
+            self.next()
+            return .success
+        }
+        
+        commandCenter.previousTrackCommand.addTarget { [unowned self] event in
+            self.previous()
             return .success
         }
     }
@@ -296,6 +318,24 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 self.setBackgroundAudioNowPlaying(self.player!, sound: self.sounds[self.currentSoundIndex])
                 self.sounds[i].artist?.city = user["city"] as? String
             }
+        }
+    }
+    
+    func loadLikeInfo(_ postId: String, userId: String, i: Int) {
+        let query = PFQuery(className: "Like")
+        query.whereKey("postId", equalTo: postId)
+        query.whereKey("userId", equalTo: userId)
+        query.whereKey("isRemoved", equalTo: false)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                self.sounds[i].isLiked = false
+                
+            } else if object != nil {
+                self.sounds[i].isLiked = true
+            }
+            self.sendSoundUpdateToUI()
         }
     }
 }

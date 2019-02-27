@@ -10,7 +10,6 @@
 import UIKit
 import SCSDKCreativeKit
 import ShareInstagram
-import Firebase
 import Parse
 import Kingfisher
 import SnapKit
@@ -25,8 +24,11 @@ class PlayerV2ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNotificationCenter()
-        setUpView()
+        if self.player != nil {
+            self.sound = self.player!.sounds[self.player!.currentSoundIndex]
+            setupNotificationCenter()
+            setUpView()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -62,8 +64,22 @@ class PlayerV2ViewController: UIViewController {
         
         self.songArt.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "appy"))
         
+        self.playBackTotalTime.text = formatTime(Double(self.player!.player!.duration))
+        
         playBackSlider.maximumValue = Float(self.player!.player!.duration)
         self.startTimer()
+        
+        if let isLiked = sound.isLiked {
+            if isLiked {
+                self.likeButton.setImage(UIImage(named: self.likeRedImage), for: .normal)
+                
+            } else {
+                self.likeButton.setImage(UIImage(named: self.likeImage), for: .normal)
+            }
+            
+        } else {
+            self.likeButton.setImage(UIImage(named: self.likeImage), for: .normal)
+        }
         
         if let artistName = sound.artist?.name {
             self.artistName.setTitle(artistName, for: .normal)
@@ -87,6 +103,81 @@ class PlayerV2ViewController: UIViewController {
         self.playBackButton.isEnabled = shouldEnable
         self.skipButton.isEnabled = shouldEnable
         self.goBackButton.isEnabled = shouldEnable
+    }
+    
+    func isSoundLiked() -> Bool {
+        if let sound = self.sound {
+            if let isLiked = sound.isLiked {
+                if isLiked {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    func manageLikeForCurrentSound() {
+        if let currentUser = PFUser.current() {
+            if let sound = self.sound {
+                if let isLiked = self.sound?.isLiked {
+                    if isLiked {
+                        unlikeSound(currentUser.objectId!, postId: sound.objectId)
+                        
+                    } else {
+                        newLike(currentUser.objectId!, postId: sound.objectId)
+                    }
+                    
+                } else {
+                    newLike(currentUser.objectId!, postId: sound.objectId)
+                }
+            }
+            
+        } else {
+            //show sign up alert
+        }
+    }
+    
+    func newLike(_ userId: String, postId: String) {
+        self.likeButton.setImage(UIImage(named: likeRedImage), for: .normal)
+        
+        let newLike = PFObject(className: "Like")
+        newLike["userId"] = userId
+        newLike["postId"] = postId
+        newLike["isRemoved"] = false 
+        newLike.saveEventually {
+            (success: Bool, error: Error?) in
+            if (success) {
+                self.player!.sounds[self.player!.currentSoundIndex].isLiked = true
+                self.sound!.isLiked = true
+                
+            } else if let error = error {
+                self.likeButton.setImage(UIImage(named: self.likeImage), for: .normal)
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func unlikeSound(_ userId: String, postId: String) {
+        self.likeButton.setImage(UIImage(named: likeImage), for: .normal)
+        
+        let query = PFQuery(className: "Like")
+        query.whereKey("postId", equalTo: postId)
+        query.whereKey("userId", equalTo: userId)
+        query.whereKey("isRemoved", equalTo: false)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                self.likeButton.setImage(UIImage(named: self.likeRedImage), for: .normal)
+                print(error)
+                
+            } else if let object = object {
+                object["isRemoved"] = true
+                object.saveEventually()
+                self.player!.sounds[self.player!.currentSoundIndex].isLiked = false
+                self.sound!.isLiked = false
+            }
+        }
     }
     
     //mark: View
@@ -130,6 +221,16 @@ class PlayerV2ViewController: UIViewController {
         let image = UIImageView()
         return image
     }()
+    
+    let likeRedImage = "like_red"
+    let likeImage = "like"
+    lazy var likeButton: UIButton = {
+        let button = UIButton()
+        return button
+    }()
+    @objc func didPressLikeButton(_ sender: UIButton) {
+        manageLikeForCurrentSound()
+    }
     
     lazy var shareButton: UIButton = {
         let button = UIButton()
@@ -227,7 +328,7 @@ class PlayerV2ViewController: UIViewController {
         if let player = self.player {
             self.shouldEnableSoundView(false)
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            player.skip()
+            player.next()
         }
     }
     
@@ -239,7 +340,7 @@ class PlayerV2ViewController: UIViewController {
     }()
     @objc func didPressGoBackButton(_ sender: UIButton) {
         if let player = self.player {
-            player.goBack()
+            player.previous()
         }
     }
     
@@ -325,6 +426,14 @@ class PlayerV2ViewController: UIViewController {
             make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
         }
         
+        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
+        self.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.goBackButton).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
         self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
@@ -333,9 +442,15 @@ class PlayerV2ViewController: UIViewController {
             make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }
         
-        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
-        self.view.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
+        if isSoundLiked() {
+            likeButton.setImage(UIImage(named: likeRedImage), for: .normal)
+            
+        } else {
+            likeButton.setImage(UIImage(named: likeImage), for: .normal)
+        }
+        likeButton.addTarget(self, action: #selector(didPressLikeButton(_:)), for: .touchUpInside)
+        self.view.addSubview(likeButton)
+        likeButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
             make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -358,9 +473,6 @@ class PlayerV2ViewController: UIViewController {
             api.startSnapping(completionHandler: { (error: Error?) in
                 if let error = error {
                     print("Snapchat error: \(error)")
-                    
-                } else {
-                    self.logExternalShareEvent("Snapchat")
                 }
             })
             
@@ -374,16 +486,7 @@ class PlayerV2ViewController: UIViewController {
             let share = ShareImageInstagram()
             
             share.postToInstagramStories(image: stickerImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
-            self.logExternalShareEvent("Instagram")
         }
-    }
-    
-    func logExternalShareEvent(_ title: String) {
-        Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-            AnalyticsParameterItemID: "id-\(title)",
-            AnalyticsParameterItemName: title,
-            AnalyticsParameterContentType: "cont"
-            ])
     }
     
     func createShareableSticker() -> UIImage? {
