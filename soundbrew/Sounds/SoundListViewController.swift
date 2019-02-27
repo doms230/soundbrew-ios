@@ -102,6 +102,14 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    @objc func miniPlayerWasSwiped() {
+        showPlayerViewController()
+    }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
+    }
+    
     func showPlayerViewController() {
         let modal = PlayerV2ViewController()
         modal.player = self.player
@@ -220,15 +228,6 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                 tableView.reloadData()
             }
         }
-        /*if indexPath.section == 0 {
-            //showTagsViewController()
-            
-        } else if indexPath.section == 2 {
-            if let player = player {
-                player.didSelectSoundAt(indexPath.row)
-                tableView.reloadData()
-            }
-        }*/
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -278,14 +277,6 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.sounds.removeAll()
         self.loadSounds(soundDescendingOrder, containedIn: nil, userId: nil, tags: self.tags)
-    }
-    
-    @objc func miniPlayerWasSwiped() {
-        showPlayerViewController()
-    }
-    
-    @objc func miniPlayerWasPressed(_ sender: UIButton) {
-        showPlayerViewController()
     }
     
     @objc func didPressMenuButton(_ sender: UIButton) {

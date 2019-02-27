@@ -27,15 +27,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var selectedViewAllSound = "uploads"
     
     var selectedIndex = 0
-    
-    lazy var viewButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("View", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = color.black()
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        return button
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,15 +63,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: headerReuse)
-        self.tableView.separatorStyle = .none
-        tableView.frame = view.bounds
+        self.tableView.separatorStyle = .singleLine
+        //tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
-        self.view.addSubview(viewButton)
-        viewButton.snp.makeConstraints { (make) -> Void in
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
+            //make.bottom.equalTo(self.view).offset(-50)
+            make.bottom.equalTo(self.tabBarController!.view.subviews[0])
         }
     }
     
@@ -89,14 +81,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         return 3
     }
     
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    /*func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         if  section == 2 {
             let returnedView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 0)) //set these values as necessary
             return returnedView
         }
         
         return nil
-    }
+    }*/
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
@@ -129,11 +121,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 profileCell.artistName.text = artist.name
                 profileCell.artistCity.text = artist.city
-                profileCell.artistBio.text = "Hey, I'm Dom! The best rapper aliveeeeeeee. Cha"
+                //profileCell.artistBio.text = "Hey, I'm Dom! The best rapper aliveeeeeeee. Cha"
             }
             
             cell = profileCell
-            self.tableView.separatorStyle = .none
+            self.tableView.separatorStyle = .singleLine
             
         } else if indexPath.section == 1 {
             headerTitle = "Uploaded Sounds"
@@ -147,6 +139,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         if indexPath.section != 0 {
+            self.tableView.separatorStyle = .none
             if indexPath.row == 0 {
                 let headerCell = self.tableView.dequeueReusableCell(withIdentifier: headerReuse) as! MySoundsTableViewCell
                 if sounds.count == 0 {
@@ -163,6 +156,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell = headerCell
                 
             } else {
+                self.tableView.separatorStyle = .none
                 let mySoundsCell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! MySoundsTableViewCell
                 
                 var sound: Sound!

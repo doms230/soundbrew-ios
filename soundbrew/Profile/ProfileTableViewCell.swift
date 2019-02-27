@@ -17,7 +17,7 @@ class ProfileTableViewCell: UITableViewCell {
     //profile
     lazy var artistImage: UIImageView = {
         let image = UIImageView()
-        //image.layer.cornerRadius = 75/2
+        image.layer.cornerRadius = 75/2
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
@@ -33,6 +33,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var artistBio: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.text = "This is My Bio"
         return label
     }()
     
@@ -42,51 +43,35 @@ class ProfileTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var editProfileButton: UIButton = {
+    lazy var artistLink: UIButton = {
         let button = UIButton()
-        button.setTitle("Edit Profile", for: .normal)
-        button.backgroundColor = color.blue()
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
+        button.setTitle("https://www.soundbrew.app", for: .normal)
+        button.setTitleColor(color.blue(), for: .normal)
         return button
     }()
     
-    //sounds
-    lazy var soundArtImage: UIImageView = {
-        let image = UIImageView()
-        image.layer.cornerRadius = 3
-        image.clipsToBounds = true
-        return image
-    }()
-    
-    lazy var soundTitle: UILabel = {
+    lazy var followerCount: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.text = "100"
         return label
     }()
     
-    lazy var soundArtist: UILabel = {
+    lazy var followerCountLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.text = "Followers"
         return label
     }()
     
-    lazy var soundPlaysImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "playIcon")
-        return image
-    }()
-    
-    lazy var soundPlays: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
-        return label
-    }()
-    
-    lazy var menuButton: UIButton = {
+    lazy var actionButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "menu"), for: .normal)
+        button.setTitle("Some Action", for: .normal)
+        button.backgroundColor = .lightGray
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
         return button
     }()
     
@@ -98,18 +83,37 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(artistName)
             self.addSubview(artistCity)
             self.addSubview(artistBio)
+            self.addSubview(artistLink)
+            self.addSubview(actionButton)
+            self.addSubview(followerCount)
+            self.addSubview(followerCountLabel)
             
             artistImage.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(250)
-                make.top.equalTo(self)
-                make.left.equalTo(self)
-                make.right.equalTo(self)
-                make.bottom.equalTo(self)
+                make.height.width.equalTo(75)
+                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            /*artistName.snp.makeConstraints { (make) -> Void in
+            followerCount.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(artistImage)
+                make.left.equalTo(self.artistImage.snp.right).offset(uiElement.leftOffset)
+            }
+            followerCountLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(followerCount.snp.bottom)
+                make.left.equalTo(followerCount)
+            }
+            
+            actionButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(followerCountLabel.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(followerCount)
+                make.left.equalTo(followerCount)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            artistName.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistImage.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.left.equalTo(artistImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
@@ -123,10 +127,17 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(artistCity.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(artistName)
                 make.right.equalTo(artistName)
+            }
+            
+            artistLink.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(artistBio.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(artistName)
+                //make.right.equalTo(artistName)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }*/
+            }
     
             break
+            
             
         default:
             break
