@@ -83,7 +83,7 @@
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
             <objects>
-                <viewController id="rEM-qb-roe" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Eku-wh-htc">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -211,6 +211,6 @@
         <image name="mySounds_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="cJs-1X-ayw"/>
+        <segue reference="eW3-lv-tSJ"/>
     </inferredMetricsTieBreakers>
 </document>

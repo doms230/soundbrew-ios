@@ -175,7 +175,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: tableview
     var tableView: UITableView!
-    var cell: MySoundsTableViewCell!
+    var cell: SoundListTableViewCell!
     
     let reuse = "reuse"
     let playFilterReuse = "playFilterReuse"
@@ -185,9 +185,9 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
-        tableView.register(MySoundsTableViewCell.self, forCellReuseIdentifier: filterTagsReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterTagsReuse)
         self.tableView.separatorStyle = .singleLine
         //tableView.frame = view.bounds
         self.view.addSubview(tableView)
@@ -203,7 +203,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func changeArtistSongColor(_ cell: MySoundsTableViewCell, color: UIColor, playIconName: String) {
+    func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
         cell.soundArtist.textColor = color
         cell.soundPlays.textColor = color
@@ -232,7 +232,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: recentPopularReuse) as? MySoundsTableViewCell
+            cell = self.tableView.dequeueReusableCell(withIdentifier: recentPopularReuse) as? SoundListTableViewCell
             cell.mostRecentButton.addTarget(self, action: #selector(self.didPressRecentPopularButton(_:)), for: .touchUpInside)
             cell.mostRecentButton.tag = 0
             
@@ -250,7 +250,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             }
 
         } else if indexPath.section == 1 {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as? MySoundsTableViewCell
+            cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as? SoundListTableViewCell
             setUpSound(indexPath)
         }
         cell.selectionStyle = .none
@@ -357,7 +357,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                             soundPlays = plays
                         }
                         
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil)
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "")
                         let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
                         
                         self.sounds.append(sound)
@@ -382,7 +382,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func loadArtist(_ cell: MySoundsTableViewCell, userId: String, row: Int) {
+    func loadArtist(_ cell: SoundListTableViewCell, userId: String, row: Int) {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -399,7 +399,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 cell.soundArtist.text = artistName!
                 
-                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil, isVerified: isArtistVerified)
+                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil, isVerified: isArtistVerified, username: "", website: "", bio: "", email: "")
                 self.sounds[row].artist = artist
             }
         }

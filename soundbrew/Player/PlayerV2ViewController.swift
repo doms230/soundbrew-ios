@@ -13,6 +13,7 @@ import ShareInstagram
 import Parse
 import Kingfisher
 import SnapKit
+import DeckTransition
 
 class PlayerV2ViewController: UIViewController {
 
@@ -221,6 +222,29 @@ class PlayerV2ViewController: UIViewController {
         let image = UIImageView()
         return image
     }()
+    
+    lazy var tagButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "tag"), for: .normal)
+        return button
+    }()
+    @objc func didpressTagButton(_ sender: UIButton) {
+        //TODO: add tag action
+    }
+    
+    lazy var commentButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "comment"), for: .normal)
+        return button
+    }()
+    @objc func didPressCommentButton(_ sender: UIButton) {
+        let modal = CommentViewController()
+        //modal.player = self.player
+        let transitionDelegate = DeckTransitioningDelegate()
+        modal.transitioningDelegate = transitionDelegate
+        modal.modalPresentationStyle = .custom
+        present(modal, animated: true, completion: nil)
+    }
     
     let likeRedImage = "like_red"
     let likeImage = "like"
@@ -434,6 +458,14 @@ class PlayerV2ViewController: UIViewController {
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
+        /*tagButton.addTarget(self, action: #selector(didpressTagButton(_:)), for: .touchUpInside)
+        self.view.addSubview(tagButton)
+        tagButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.goBackButton).offset(uiElement.topOffset)
+            make.right.equalTo(self.goBackButton.snp.left).offset(uiElement.rightOffset)
+        }*/
+        
         self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
@@ -455,6 +487,15 @@ class PlayerV2ViewController: UIViewController {
             make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
+        
+        /*commentButton.addTarget(self, action: #selector(didPressCommentButton(_:)), for: .touchUpInside)
+        self.view.addSubview(commentButton)
+        commentButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
+            make.left.equalTo(self.skipButton.snp.right).offset(uiElement.leftOffset)
+            make.right.equalTo(self.likeButton.snp.left).offset(uiElement.rightOffset)
+        }*/
         
         setSound()
     }

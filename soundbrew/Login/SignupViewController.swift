@@ -104,12 +104,6 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
         emailText.becomeFirstResponder()
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: AddArtistNameViewController = segue.destination as! AddArtistNameViewController
-        viewController.email = emailText.text!
-        viewController.password = passwordText.text!
-    }
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
         super.touchesBegan(touches, with: event)

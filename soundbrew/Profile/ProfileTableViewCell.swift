@@ -33,7 +33,8 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var artistBio: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.text = "This is My Bio"
+        label.text = "hey I'm dom and I like all types of music. Mostly hip-hop, electronic, and alt-rock. Hit me up for fyeeeeeee beats!"
+        label.numberOfLines = 0
         return label
     }()
     
@@ -53,8 +54,9 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var followerCount: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.text = "100"
+        label.textAlignment = .center 
         return label
     }()
     
@@ -73,6 +75,114 @@ class ProfileTableViewCell: UITableViewCell {
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         return button
+    }()
+    
+    //EditProfile
+    lazy var editProfileImage: UIImageView = {
+        let image = UIImageView()
+        image.backgroundColor = .darkGray
+        image.layer.cornerRadius = 50
+        image.clipsToBounds = true
+        image.contentMode = .scaleAspectFill
+        return image
+    }()
+    
+    lazy var editProfileLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Change Profile Photo"
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var editNameTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Name"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        return label
+    }()
+    lazy var editNameText: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Name"
+        textField.borderStyle = .roundedRect
+        textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return textField
+    }()
+    
+    lazy var editUsernameTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Username"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        return label
+    }()
+    lazy var editUsernameText: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Username"
+        textField.borderStyle = .roundedRect
+        textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return textField
+    }()
+    
+    lazy var editCityTitle: UILabel = {
+        let label = UILabel()
+        label.text = "City"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        return label
+    }()
+    lazy var editCityText: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "City"
+        textField.borderStyle = .roundedRect
+        textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return textField
+    }()
+    
+    lazy var editBioTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Bio"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        return label
+    }()
+    lazy var editBioText: UILabel = {
+        let label = UILabel()
+        label.text = "Bio"
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return label
+    }()
+    
+    lazy var editWebsiteTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Website"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        return label
+    }()
+    lazy var editWebsiteText: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Website"
+        textField.borderStyle = .roundedRect
+        textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return textField
+    }()
+    
+    lazy var privateInformationLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Private Information"
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        return label
+    }()
+    
+    lazy var editEmailTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Email"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        return label
+    }()
+    lazy var editEmailText: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Email"
+        textField.borderStyle = .roundedRect
+        textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        return textField
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -97,15 +207,17 @@ class ProfileTableViewCell: UITableViewCell {
             followerCount.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistImage)
                 make.left.equalTo(self.artistImage.snp.right).offset(uiElement.leftOffset)
+                //make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             followerCountLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(followerCount.snp.bottom)
-                make.left.equalTo(followerCount)
+                make.top.equalTo(followerCount).offset(uiElement.elementOffset)
+                make.left.equalTo(followerCount.snp.right).offset(uiElement.elementOffset)
+                //make.right.equalTo(self)
             }
             
             actionButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(followerCountLabel.snp.bottom).offset(uiElement.elementOffset)
+                make.height.equalTo(30)
+                make.top.equalTo(followerCountLabel.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(followerCount)
                 make.left.equalTo(followerCount)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
@@ -113,31 +225,142 @@ class ProfileTableViewCell: UITableViewCell {
             
             artistName.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistImage.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(artistImage)
+                make.left.equalTo(artistImage).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             artistCity.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistName.snp.bottom).offset(uiElement.elementOffset)
+                make.top.equalTo(artistName.snp.bottom)
                 make.left.equalTo(artistName)
                 make.right.equalTo(artistName)
             }
             
             artistBio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistCity.snp.bottom).offset(uiElement.elementOffset)
+                make.top.equalTo(artistCity.snp.bottom)
                 make.left.equalTo(artistName)
                 make.right.equalTo(artistName)
             }
             
             artistLink.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistBio.snp.bottom).offset(uiElement.elementOffset)
+                make.top.equalTo(artistBio.snp.bottom)
                 make.left.equalTo(artistName)
                 //make.right.equalTo(artistName)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
     
             break
             
+        case "editProfileImageReuse":
+            self.addSubview(editProfileImage)
+            self.addSubview(editProfileLabel)
+            editProfileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(100)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self.frame.width / 2)
+            }
+            
+            editProfileLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editProfileImage.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
+            
+        case "editProfileInfoReuse":
+            self.addSubview(editNameTitle)
+            self.addSubview(editNameText)
+            self.addSubview(editUsernameTitle)
+            self.addSubview(editUsernameText)
+            self.addSubview(editCityTitle)
+            self.addSubview(editCityText)
+            self.addSubview(editWebsiteTitle)
+            self.addSubview(editWebsiteText)
+            self.addSubview(editBioTitle)
+            self.addSubview(editBioText)
+            
+            editNameTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            editNameText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editNameTitle)
+                //make.left.equalTo(editNameTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            editUsernameTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editNameText.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            editUsernameText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editUsernameTitle)
+                make.left.equalTo(editUsernameTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            editCityTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editUsernameText.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            editCityText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editCityTitle)
+                make.left.equalTo(editCityTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            editWebsiteTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editCityText.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            editWebsiteText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editWebsiteTitle)
+                make.left.equalTo(editWebsiteTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            editBioTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editWebsiteText.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            editBioText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editBioTitle)
+                make.left.equalTo(editBioTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            break
+            
+        case "editPrivateInfoReuse":
+            self.addSubview(privateInformationLabel)
+            self.addSubview(editEmailTitle)
+            self.addSubview(editEmailText)
+            
+            privateInformationLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            editEmailTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(privateInformationLabel.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            editEmailText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editEmailTitle)
+                make.left.equalTo(editEmailTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            break
             
         default:
             break
