@@ -47,13 +47,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: SoundListViewController = segue.destination as! SoundListViewController
-        viewController.userId = artist!.objectId
-        viewController.soundType = selectedViewAllSound
-        viewController.soundTitle = "\(artist!.name!)'s \(selectedViewAllSound.capitalized)"
-        
-       /* let viewController: EditProfileViewController = segue.destination as! EditProfileViewController
-        viewController.artist = artist*/
+        if segue.identifier == "showEditProfile" {
+            let navigationController = segue.destination as! UINavigationController
+            let editProfileController = navigationController.topViewController as! EditProfileViewController
+            editProfileController.artist = artist
+            
+        } else {
+            let viewController: SoundListViewController = segue.destination as! SoundListViewController
+            viewController.userId = artist!.objectId
+            viewController.soundType = selectedViewAllSound
+            viewController.soundTitle = "\(artist!.name!)'s \(selectedViewAllSound.capitalized)"
+        }
     }
     
     let reuse = "reuse"
@@ -84,15 +88,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-    
-    /*func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if  section == 2 {
-            let returnedView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 0)) //set these values as necessary
-            return returnedView
-        }
-        
-        return nil
-    }*/
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
@@ -193,11 +188,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //mark: button actions
     @objc func didPressActionButton(_ sender: UIButton) {
-        let modal = EditProfileViewController()
-        modal.modalPresentationStyle = .currentContext
+        /*let modal = EditProfileViewController()
+        modal.modalPresentationStyle = .fullScreen
         modal.artist = self.artist
-        present(modal, animated: true, completion: nil)
-        //self.performSegue(withIdentifier: "showEditProfile", sender: self)
+        present(modal, animated: true, completion: nil)*/
+        self.performSegue(withIdentifier: "showEditProfile", sender: self)
     }
     
     @objc func didPressMenuButton(_ sender: UIBarButtonItem) {

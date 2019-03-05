@@ -28,6 +28,7 @@
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
 		F28A985E2227CF5400C96EED /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A985D2227CF5400C96EED /* CommentViewController.swift */; };
+		F28A9860222F08D100C96EED /* DetailEditInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A985F222F08D100C96EED /* DetailEditInfoViewController.swift */; };
 		F2E5081C21FFC5A200985E34 /* SoundListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
 		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
@@ -95,6 +96,7 @@
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F28A985D2227CF5400C96EED /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
+		F28A985F222F08D100C96EED /* DetailEditInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailEditInfoViewController.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* SoundListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundListViewController.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
@@ -299,6 +301,7 @@
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
+				F28A985F222F08D100C96EED /* DetailEditInfoViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -567,6 +570,7 @@
 				F28A985E2227CF5400C96EED /* CommentViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
+				F28A9860222F08D100C96EED /* DetailEditInfoViewController.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
