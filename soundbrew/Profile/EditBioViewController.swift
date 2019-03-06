@@ -1,8 +1,8 @@
 //
-//  DetailEditInfoViewController.swift
+//  EditBioViewController.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 3/5/19.
+//  Created by Dominic  Smith on 3/6/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
@@ -135,15 +135,4 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
         }
         emailInput.becomeFirstResponder()
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

@@ -33,3 +33,9 @@ class Artist {
         self.email = email 
     }
 }
+
+protocol ArtistDelegate {
+    func changeBio(_ value: String?)
+    
+    func newArtistInfo(_ value: Artist?)
+}

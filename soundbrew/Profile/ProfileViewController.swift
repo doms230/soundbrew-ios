@@ -11,7 +11,7 @@ import Parse
 import Kingfisher
 import SnapKit
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate {
     
     let tableView = UITableView()
     let uiElement = UIElement()
@@ -51,6 +51,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let navigationController = segue.destination as! UINavigationController
             let editProfileController = navigationController.topViewController as! EditProfileViewController
             editProfileController.artist = artist
+            editProfileController.artistDelegate = self 
             
         } else {
             let viewController: SoundListViewController = segue.destination as! SoundListViewController
@@ -60,6 +61,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func changeBio(_ value: String?) {
+    }
+    
+    func newArtistInfo(_ value: Artist?) {
+        print("d")
+        if let artist = value {
+            self.artist = artist
+            self.tableView.reloadData()
+        }
+    }
+    
+    
+    //MARK: Tableview
     let reuse = "reuse"
     let profileReuse = "profileReuse"
     let profileSoundsReuse = "profileSoundsReuse"
@@ -105,25 +119,51 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             if let artist = artist {
                 if let artistImage = artist.image {
-                    profileCell.artistImage.kf.setImage(with: URL(string: artistImage))
+                    profileCell.profileImage.kf.setImage(with: URL(string: artistImage))
                 }
                 
                 if let name = artist.name {
-                    profileCell.artistName.text = name
+                    profileCell.displayName.text = name
                 }
                
                 if let city = artist.city {
-                     profileCell.artistCity.text = city
-                }
-                if let bio = artist.bio {
-                    profileCell.artistBio.text = bio
+                     profileCell.city.text = city
                 }
                 
+                if let bio = artist.bio {
+                    profileCell.bio.text = bio
+                }
+                
+                if let website = artist.website {
+                    profileCell.website.setTitle("\(website)", for: .normal)
+                    profileCell.website.addTarget(self, action: #selector(self.didPressWebsiteButton(_:)), for: .touchUpInside)
+                }
+                
+                if let currentUser = PFUser.current() {
+                    if currentUser.objectId == artist.objectId {
+                        profileCell.actionButton.setTitle("Edit Profile", for: .normal)
+                        profileCell.actionButton.backgroundColor = .white
+                        profileCell.actionButton.layer.borderWidth = 1
+                        profileCell.actionButton.layer.borderColor = color.black().cgColor
+                        profileCell.actionButton.setTitleColor(color.black(), for: .normal)
+                        
+                    } else {
+                        profileCell.actionButton.setTitle("Follow", for: .normal)
+                        profileCell.actionButton.backgroundColor = color.blue()
+                        profileCell.actionButton.layer.borderWidth = 0
+                        profileCell.actionButton.setTitleColor(.white, for: .normal)
+                    }
+                    
+                } else {
+                    profileCell.actionButton.setTitle("Follow", for: .normal)
+                    profileCell.actionButton.backgroundColor = color.blue()
+                    profileCell.actionButton.layer.borderWidth = 0
+                    profileCell.actionButton.setTitleColor(.white, for: .normal)
+                }
                 profileCell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
             }
             
             cell = profileCell
-            //self.tableView.separatorStyle = .singleLine
             break
             
         case 1:
@@ -187,11 +227,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: button actions
+    @objc func didPressWebsiteButton(_ sender: UIButton) {
+        if let website = self.artist?.website {
+            UIApplication.shared.open(URL(string: website)!, options: [:], completionHandler: nil)
+        }
+    }
+    
     @objc func didPressActionButton(_ sender: UIButton) {
-        /*let modal = EditProfileViewController()
-        modal.modalPresentationStyle = .fullScreen
-        modal.artist = self.artist
-        present(modal, animated: true, completion: nil)*/
         self.performSegue(withIdentifier: "showEditProfile", sender: self)
     }
     
@@ -243,6 +285,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     artist.name = name
                 }
                 
+                if let username = user["username"] as? String {
+                    artist.username = username
+                }
+                
                 if let city = user["city"] as? String {
                     artist.city = city
                 }
@@ -257,6 +303,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 if let artistVerification = user["artistVerification"] as? Bool {
                     artist.isVerified = artistVerification
+                }
+                
+                if let website = user["website"] as? String {
+                    artist.website = website
                 }
                 
                 self.artist = artist

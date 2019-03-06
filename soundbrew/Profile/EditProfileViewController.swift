@@ -12,16 +12,19 @@ import Parse
 import NVActivityIndicatorView
 import Kingfisher
 
-class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate  {
+class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate {
+    
+    func newArtistInfo(_ value: Artist?) {
+    }
     
     var artist: Artist?
-    
+    var artistDelegate: ArtistDelegate?
     var newProfileImageFile: PFFileObject?
     var profileImage: UIImageView!
     var nameText: UITextField!
     var usernameText: UITextField!
     var websiteText: UITextField!
-    var bioText: String!
+    var bioLabel: UILabel!
     var cityText: UITextField!
 
     var emailText: UITextField!
@@ -34,19 +37,17 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             setUpViews()
             setUpTableView()
             
+            
         } else {
             self.dismiss(animated: true, completion: nil)
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController = segue.destination as! DetailEditInfoViewController
-        if editDetailType == "email" {
-            viewController.email = emailText.text!
-            
-        } else {
-            viewController.bio = bioText
-        }
+        let navigationController = segue.destination as! UINavigationController
+        let viewController = navigationController.topViewController as! EditBioViewController
+        viewController.bio = bioLabel.text
+        viewController.artistDelegate = self
     }
     
     func setUpViews() {
@@ -64,7 +65,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.dismiss(animated: true, completion: nil)
     }
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        updateUserInfo()
+        if validateEmail() {
+            updateUserInfo()
+            
+        } else {
+            UIElement().showAlert("Oops", message: "Email is Required", target: self)
+        }
     }
     
     //MARK: TableView
@@ -73,6 +79,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     let editProfileInfoReuse = "editProfileInfoReuse"
     let editPrivateInfoReuse = "editPrivateInfoReuse"
     let editBioReuse = "editBioReuse"
+    let spaceReuse = "spaceReuse"
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -80,19 +87,22 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPrivateInfoReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editBioReuse)
-        tableView.keyboardDismissMode = .onDrag
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: spaceReuse)
         tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
             return 4
+            
+        } else if section == 4 {
+            return 6
         }
         
         return 1
@@ -100,17 +110,19 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: ProfileTableViewCell!
-                
+        let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
+        
         switch indexPath.section{
         case 0:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileImageReuse) as? ProfileTableViewCell
             cell.backgroundColor = Color().uicolorFromHex(0xe8e6df)
             tableView.separatorStyle = .singleLine
+            tableView.separatorInset = .zero
             cell.selectionStyle = .none
             
-            profileImage = cell.editProfileImage
+            profileImage = cell.profileImage
             if let image = artist?.image {
-                cell.editProfileImage.kf.setImage(with: URL(string: image))
+                cell.profileImage.kf.setImage(with: URL(string: image))
             }
             
             break
@@ -119,14 +131,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
-            tableView.separatorStyle = .none
+            tableView.separatorStyle = .singleLine
+            tableView.separatorInset = edgeInsets
             
             var inputTitle: String!
             var inputText: String!
             
             switch indexPath.row {
             case 0:
-                nameText = cell.editNameText
+                nameText = cell.editProfileInput
                 inputTitle = "Name"
                 if let name = artist?.name {
                     inputText = name
@@ -134,13 +147,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 break
                 
             case 1:
-                usernameText = cell.editUsernameText
+                usernameText = cell.editProfileInput
                 inputTitle = "Username"
                 inputText = artist!.username
                 break
                 
             case 2:
-                cityText = cell.editCityText
+                cityText = cell.editProfileInput
                 inputTitle = "City"
                 if let city = artist?.city {
                     inputText = city
@@ -148,53 +161,19 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 break
                 
             case 3:
-                websiteText = cell.editWebsiteText
+                websiteText = cell.editProfileInput
                 inputTitle = "Website"
                 if let website = artist?.website {
                     inputText = website
                 }
-                break
-                
-            /*case 4:
-                inputTitle = "bio"
-                if let bio = artist?.bio {
-                    inputText = bio
-                }
-                break*/
                 
             default:
                 break
             }
             
-            cell.editNameText.placeholder = inputTitle
-            cell.editNameTitle.text = inputTitle
-            cell.editNameText.text = inputText
-            
-            /*cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as? ProfileTableViewCell
-            cell.backgroundColor = .white
-            
-            nameText = cell.editNameText
-            if let name = artist?.name {
-                cell.editNameText.text = name
-            }
-            
-            usernameText = cell.editUsernameText
-            cell.editUsernameText.text = artist!.username
-            
-            cityText = cell.editCityText
-            if let city = artist?.city {
-                cell.editCityText.text = city
-            }
-            
-            websiteText = cell.editWebsiteText
-            if let website = artist?.website {
-                cell.editWebsiteText.text = website
-            }
-            
-            if let bio = artist?.bio {
-                cell.editBioText.text = bio
-            }*/
-            
+            //cell.editProfileInput.placeholder = inputTitle
+            cell.editProfileTitle.text = inputTitle
+            cell.editProfileInput.text = inputText
             break
             
         case 2:
@@ -202,15 +181,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell.backgroundColor = .white
             cell.selectionStyle = .gray
             tableView.separatorStyle = .singleLine
-            
+            tableView.separatorInset = .zero
+
+            bioLabel = cell.editBioText
+            cell.editBioTitle.text = "Bio"
             if let bio = artist?.bio {
-                if bio.isEmpty {
-                    cell.editBioText.text = "Add Bio"
-                    
-                } else {
-                    cell.editBioText.text = bio
-                     bioText = bio
-                }
+                cell.editBioText.text = bio
             }
             break
             
@@ -218,12 +194,20 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
+            tableView.separatorStyle = .singleLine
+            tableView.separatorInset = .zero
+            
+            //cell.editProfileInput.placeholder = "Email"
+            cell.editProfileTitle.text = "Email"
+            emailText = cell.editProfileInput
+            cell.editProfileInput.text = artist!.email
+            break
+            
+        case 4:
+            cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
+            cell.backgroundColor = .white
+            cell.selectionStyle = .none
             tableView.separatorStyle = .none
-            
-            emailText = cell.editEmailText
-            cell.editEmailText.text = artist!.email
-            cell.editEmailText.tag = 1
-            
             break
             
         default:
@@ -238,20 +222,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             showChangeProfilePhotoPicker()
             
         } else if indexPath.section == 2 {
-            editDetailType = "bio"
-            /*let modal = DetailEditInfoViewController()
-             modal.modalPresentationStyle = .fullScreen
-             modal.bio = bioText
-             present(modal, animated: true, completion: nil)*/
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            self.performSegue(withIdentifier: "showDetailEditInfo", sender: self)
-        }
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField.tag == 1 {
-            //self.resignFirstResponder()
-            editDetailType = "email"
             self.performSegue(withIdentifier: "showDetailEditInfo", sender: self)
         }
     }
@@ -311,19 +282,34 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         present(alertController, animated: true, completion: nil)
     }
     
+    //MARK: bio
+    func changeBio(_ value: String?) {
+        if let newBioText = value {
+            bioLabel.text = newBioText
+        }
+    }
+    
     //MARK: Data
     func updateUserInfo() {
         self.startAnimating()
         
-        let query = PFQuery(className:"_User")
+        let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
                 
             } else if let user = user {
-                //user["instagramHandle"] = self.instagramText.text!.lowercased()
-
+                user["artistName"] = self.nameText.text
+                
+                if self.usernameText.text != self.artist?.username {
+                    user["username"] = self.usernameText.text!.lowercased()
+                }
+                
+                user["city"] = self.cityText.text
+                user["website"] = self.websiteText.text
+                user["bio"] = self.bioLabel.text
+                user["email"] = self.emailText.text
                 
                 if let newUserImage = self.newProfileImageFile {
                     user["userImage"] = newUserImage
@@ -333,7 +319,32 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     (success: Bool, error: Error?) in
                     self.stopAnimating()
                     if (success) {
-                        //self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+                        if let artistDelegate = self.artistDelegate {
+                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String)
+                            
+                            if let name =  user["artistName"] as? String {
+                                artist.name = name
+                            }
+                            
+                            if let city = user["city"] as? String {
+                                artist.city = city
+                            }
+                            
+                            if let website = user["website"] as? String {
+                                artist.website = website
+                            }
+                            
+                            if let bio = user["bio"] as? String {
+                                artist.bio = bio
+                            }
+                            
+                            if let profileImage = user["userImage"] as? PFFileObject {
+                                artist.image = profileImage.url
+                            }
+                        
+                            artistDelegate.newArtistInfo(artist)
+                        }
+                        self.dismiss(animated: true, completion: nil)
                         
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
@@ -341,5 +352,17 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             }
         }
+    }
+    
+    func validateEmail() -> Bool {
+        let emailString : NSString = emailText.text! as NSString
+        if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
+            emailText.attributedPlaceholder = NSAttributedString(string: "Valid email required",
+                                                                 attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
+            emailText.text = ""
+            return false
+        }
+        
+        return true
     }
 }

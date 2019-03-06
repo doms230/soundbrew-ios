@@ -34,6 +34,8 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Soundbrew needs access to your camera, so you can take a picture for you profile.</string>
 	<key>SCSDKClientId</key>
 	<string>7530c9a7-b226-43ba-9c5e-082c14b6db3c</string>
 	<key>SCSDKRedirectUrl</key>
