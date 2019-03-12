@@ -35,8 +35,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.navigationItem.rightBarButtonItem = menuButton
         
         if artist != nil {
-            loadSounds("uploads")
             self.setUpTableView()
+            loadSounds("uploads")
             
         } else if let currentUserId = PFUser.current()?.objectId {
             loadUserInfoFromCloud(currentUserId)
@@ -72,18 +72,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    
     //MARK: Tableview
     let reuse = "reuse"
     let profileReuse = "profileReuse"
-    let profileSoundsReuse = "profileSoundsReuse"
+    let uploadsLikesReuse = "uploadsLikesReuse"
     let noSoundsReuse = "noSoundsReuse"
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: profileSoundsReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadsLikesReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         self.tableView.separatorStyle = .singleLine
         //tableView.frame = view.bounds
@@ -93,8 +92,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.top.equalTo(self.view)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            //make.bottom.equalTo(self.view).offset(-50)
-            make.bottom.equalTo(self.tabBarController!.view.subviews[0])
+            make.bottom.equalTo(self.view).offset(-50)
+            //make.bottom.equalTo(self.tabBarController!.view.subviews[0])
         }
     }
     
@@ -189,7 +188,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell = noSoundsCell
                 
             } else {
-                let mySoundsCell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundsReuse) as! SoundListTableViewCell
+                let mySoundsCell = self.tableView.dequeueReusableCell(withIdentifier: uploadsLikesReuse) as! SoundListTableViewCell
                 mySoundsCell.headerTitle.text = headerTitle
                 mySoundsCell.viewButton.isHidden = false
                 mySoundsCell.viewButton.addTarget(self, action: #selector(self.didPressViewAllButton(_:)), for: .touchUpInside)
@@ -333,7 +332,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func loadLikedSounds() {
         let query = PFQuery(className: "Like")
-        query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
+        query.whereKey("userId", equalTo: self.artist!.objectId)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {

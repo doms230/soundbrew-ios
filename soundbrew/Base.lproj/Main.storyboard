@@ -78,7 +78,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="302" y="-403"/>
+            <point key="canvasLocation" x="234" y="-403"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -134,10 +134,10 @@
             </objects>
             <point key="canvasLocation" x="-1319" y="-403"/>
         </scene>
-        <!--View Controller-->
+        <!--Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
             <objects>
-                <viewController id="EFp-6t-Bz1" sceneMemberID="viewController">
+                <viewController id="EFp-6t-Bz1" customClass="TagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HvH-Jy-vPO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -148,7 +148,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1465" y="-753"/>
+            <point key="canvasLocation" x="2209" y="-762"/>
         </scene>
         <!--Sound List View Controller-->
         <scene sceneID="PqT-ua-W6V">
@@ -161,10 +161,14 @@
                         <viewLayoutGuide key="safeArea" id="6fn-jt-ZCv"/>
                     </view>
                     <navigationItem key="navigationItem" id="4gr-jb-nT0"/>
+                    <connections>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ciq-Pd-2ja"/>
+                        <segue destination="xJe-f2-NxU" kind="presentation" identifier="showTags" id="tab-oD-y5E"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="329" y="-1084"/>
+            <point key="canvasLocation" x="233" y="-1141"/>
         </scene>
         <!--My Sounds-->
         <scene sceneID="XyK-yh-w2g">
@@ -259,6 +263,24 @@
             </objects>
             <point key="canvasLocation" x="3144.8000000000002" y="68.815592203898049"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="QWx-o2-5OE">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="xJe-f2-NxU" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="MiR-NM-xrq">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="EFp-6t-Bz1" kind="relationship" relationship="rootViewController" id="nmV-yk-cZH"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r21-k0-il0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1375" y="-743"/>
+        </scene>
     </scenes>
     <resources>
         <image name="add" width="34.5" height="34.5"/>
@@ -268,5 +290,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="eW3-lv-tSJ"/>
+        <segue reference="ciq-Pd-2ja"/>
     </inferredMetricsTieBreakers>
 </document>

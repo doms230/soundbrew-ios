@@ -16,29 +16,6 @@ import Alamofire
 
 class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate {
     
-    //MARK: views
-    let uiElement = UIElement()
-    let color = Color()
-    
-    lazy var exitButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "dismiss"), for: .normal)
-        return button
-    }()
-    @objc func didPressExitButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    func setUpExitButton() {
-        self.view.addSubview(self.exitButton)
-        exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
-        exitButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -51,28 +28,69 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 loadTagType(tagType)
                 
             } else {
-               /* if let chosenTags = self.uiElement.getUserDefault(moreTags) as? Array<String> {
-                    chosenTagsArray = chosenTags
-                }*/
                 loadTagType(nil)
             }
             
         } else {
-            /*if let chosenTags = self.uiElement.getUserDefault("tags") as? Array<String> {
-                chosenTagsArray = chosenTags
-            }*/
-            
             loadTagType("mood")
             loadTagType("activity")
             loadTagType("city")
             loadTagType("genre")
             loadTagType("artist")
             loadTagType(nil)
+            
+            setUpFilterButton()
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        handleTagsForDismissle()
+    //MARK: views
+    let uiElement = UIElement()
+    let color = Color()
+    var filterButton: UIBarButtonItem!
+    
+    func setUpExitButton() {
+        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+        self.navigationItem.rightBarButtonItem = doneButton
+    }
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+        handleTagsForDismissal()
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func setUpFilterButton() {
+        var filterBy: String!
+        if let filter = uiElement.getUserDefault("filter") as? String {
+            filterBy = filter
+            
+        } else {
+            filterBy = "recent"
+        }
+        
+        filterButton = UIBarButtonItem(image: UIImage(named: filterBy), style: .plain, target: self, action: #selector(self.didPressFilterButton(_:)))
+        self.navigationItem.leftBarButtonItem = filterButton
+    }
+    @objc func didPressFilterButton(_ sender: UIBarButtonItem) {
+        let alertController = UIAlertController (title: "Filter Sounds By" , message: nil, preferredStyle: .actionSheet)
+        
+        let recentAction = UIAlertAction(title: "Recent", style: .default) { (_) -> Void in
+            self.newFilterAction("recent")
+        }
+        alertController.addAction(recentAction)
+        
+        let popularAction = UIAlertAction(title: "Popular", style: .default) { (_) -> Void in
+            self.newFilterAction("popular")
+        }
+        alertController.addAction(popularAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func newFilterAction(_ value: String) {
+        self.uiElement.setUserDefault("filter", value: value)
+        self.filterButton.image = UIImage(named: value)
     }
     
     //MARK: Tableview
@@ -200,9 +218,18 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var chosenTagsArray = [String]()
     var xPositionForChosenTags = UIElement().leftOffset
     
+    lazy var selectedTagLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
+        label.textColor = color.black()
+        label.text = "Selected Tags"
+        label.numberOfLines = 0
+        return label
+    }()
+    
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Choose Tags"
+        label.text = "none"
         label.textColor = color.black()
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
@@ -254,11 +281,17 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
            addChooseTagsLabel()
         }
         
+        self.view.addSubview(self.selectedTagLabel)
+        selectedTagLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.selectedTagLabel.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -323,7 +356,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: uiElement.buttonHeight)
     }
     
-    func handleTagsForDismissle() {
+    func handleTagsForDismissal() {
         var tags: Array<String>?
         if chosenTagsArray.count != 0 {
             tags = chosenTagsArray
@@ -508,7 +541,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
         searchBar.frame = CGRect(x: 0, y: 0, width: 200, height: 30)
         let rightNavBarButton = UIBarButtonItem(customView: searchBar)
-        self.navigationItem.rightBarButtonItem = rightNavBarButton
+        self.navigationItem.leftBarButtonItems?.append(rightNavBarButton)
     }
     
     @objc func searchBarDidChange(_ textField: UITextField) {

@@ -23,6 +23,8 @@ class PlayerV2ViewController: UIViewController {
     var player: Player?
     var sound: Sound?
     
+    var playerDelegate: PlayerDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if self.player != nil {
@@ -210,12 +212,16 @@ class PlayerV2ViewController: UIViewController {
     lazy var artistName: UIButton = {
         let button = UIButton()
         button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
+        button.setTitleColor(.darkGray, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         return button
     }()
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        //TODO: segue to artist profile page
+        self.dismiss(animated: true, completion: {() in
+            if let playerDelegate = self.playerDelegate {
+                playerDelegate.selectedArtist(self.sound?.artist)
+            }
+        })
     }
     
     lazy var verifiedCheck: UIImageView = {

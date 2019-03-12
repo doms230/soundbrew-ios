@@ -339,3 +339,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
 }
+
+protocol PlayerDelegate {
+    func selectedArtist(_ artist: Artist?)
+}

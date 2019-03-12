@@ -33,17 +33,17 @@ class SoundListTableViewCell: UITableViewCell {
         return scrollView
     }()
     
-    lazy var mostRecentButton: UIButton = {
+    lazy var uploadsbutton: UIButton = {
         let button = UIButton()
-        button.setTitle("Recent", for: .normal)
+        button.setTitle("Uploads", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         button.setTitleColor(color.black(), for: .normal)
         return button
     }()
     
-    lazy var popularButton: UIButton = {
+    lazy var likesButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Popular", for: .normal)
+        button.setTitle("Likes", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         button.setTitleColor(.darkGray, for: .normal)
         return button
@@ -214,11 +214,11 @@ class SoundListTableViewCell: UITableViewCell {
             }
             break
             
-        case "recentPopularReuse":
-            self.addSubview(mostRecentButton)
-            self.addSubview(popularButton)
+        case "uploadsLikesReuse":
+            self.addSubview(uploadsbutton)
+            self.addSubview(likesButton)
             
-            mostRecentButton.snp.makeConstraints { (make) -> Void in
+            uploadsbutton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
@@ -226,7 +226,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
-            popularButton.snp.makeConstraints { (make) -> Void in
+            likesButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
