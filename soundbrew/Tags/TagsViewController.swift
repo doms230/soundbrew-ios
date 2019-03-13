@@ -4,7 +4,7 @@
 //
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//  search Mark: view, tableView, tags, featureTags, searchbar, data
+//  "cmd + f" -> Mark: view, tableView, tags, featureTags, searchbar, data, descending order, done button
 //
 
 import UIKit
@@ -21,7 +21,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.view.backgroundColor = .white
         
-        setUpExitButton()
+        setUpDoneButton()
         
         if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
@@ -38,59 +38,120 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             loadTagType("genre")
             loadTagType("artist")
             loadTagType(nil)
-            
-            setUpFilterButton()
         }
     }
     
-    //MARK: views
+    //MARK: done Button
     let uiElement = UIElement()
     let color = Color()
-    var filterButton: UIBarButtonItem!
     
-    func setUpExitButton() {
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-        self.navigationItem.rightBarButtonItem = doneButton
+    lazy var doneButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.setTitleColor(color.blue(), for: .normal)
+        button.setTitle("Done", for: .normal)
+        return button
+    }()
+    
+    func setUpDoneButton() {
+        view.addSubview(doneButton)
+        doneButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
+        doneButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
     }
-    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+    @objc func didPressDoneButton(_ sender: UIButton) {
         handleTagsForDismissal()
         self.dismiss(animated: true, completion: nil)
     }
     
-    func setUpFilterButton() {
-        var filterBy: String!
+    //MARK: descending order
+    lazy var filterSoundsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Filter Sounds By:"
+        label.textColor = color.black()
+        label.textAlignment = .center
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        return label
+    }()
+    
+    lazy var soundOrderSegment: UISegmentedControl = {
+        let segment = UISegmentedControl(items: ["Recent", "Popular"])
+        segment.tintColor = color.black()
+        return segment
+    }()
+    
+    func setUpSoundOrderSegment() {
         if let filter = uiElement.getUserDefault("filter") as? String {
-            filterBy = filter
+            if filter == "recent" {
+                soundOrderSegment.selectedSegmentIndex = 0
+                
+            } else {
+                soundOrderSegment.selectedSegmentIndex = 1
+            }
             
         } else {
-            filterBy = "recent"
+            soundOrderSegment.selectedSegmentIndex = 0
         }
         
-        filterButton = UIBarButtonItem(image: UIImage(named: filterBy), style: .plain, target: self, action: #selector(self.didPressFilterButton(_:)))
-        self.navigationItem.leftBarButtonItem = filterButton
+        
+        view.addSubview(filterSoundsLabel)
+        filterSoundsLabel.snp.makeConstraints { (make) -> Void in
+            //make.width.equalTo(200)
+            make.top.equalTo(searchBar.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        view.addSubview(soundOrderSegment)
+        soundOrderSegment.addTarget(self, action: #selector(didPressSoundOrderSegment(_:)), for: .valueChanged)
+        soundOrderSegment.snp.makeConstraints { (make) -> Void in
+            //make.width.equalTo(200)
+            make.top.equalTo(filterSoundsLabel)
+            make.left.equalTo(self.filterSoundsLabel.snp.right).offset(uiElement.elementOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
     }
-    @objc func didPressFilterButton(_ sender: UIBarButtonItem) {
-        let alertController = UIAlertController (title: "Filter Sounds By" , message: nil, preferredStyle: .actionSheet)
-        
-        let recentAction = UIAlertAction(title: "Recent", style: .default) { (_) -> Void in
-            self.newFilterAction("recent")
+    @objc func didPressSoundOrderSegment(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+            self.uiElement.setUserDefault("filter", value: "recent")
+            
+        } else {
+            self.uiElement.setUserDefault("filter", value: "popular")
         }
-        alertController.addAction(recentAction)
-        
-        let popularAction = UIAlertAction(title: "Popular", style: .default) { (_) -> Void in
-            self.newFilterAction("popular")
-        }
-        alertController.addAction(popularAction)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
-    func newFilterAction(_ value: String) {
-        self.uiElement.setUserDefault("filter", value: value)
-        self.filterButton.image = UIImage(named: value)
+    //MARK: SearchBar
+    lazy var searchBar: UITextField = {
+        let searchBar = UITextField()
+        searchBar.placeholder = "🔍 Tags"
+        searchBar.borderStyle = .roundedRect
+        searchBar.clearButtonMode = .always
+        return searchBar
+    }()
+    
+    func setUpSearchBar() {
+        self.view.addSubview(searchBar)
+        searchBar.snp.makeConstraints { (make) -> Void in
+            //make.height.equalTo(uiElement.buttonHeight)
+            make.top.equalTo(self.doneButton)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.doneButton.snp.left).offset(-(uiElement.elementOffset))
+        }
+        /*searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
+         searchBar.frame = CGRect(x: 0, y: 0, width: 200, height: 30)
+         let rightNavBarButton = UIBarButtonItem(customView: searchBar)
+         self.navigationItem.leftBarButtonItems?.append(rightNavBarButton)*/
+    }
+    
+    @objc func searchBarDidChange(_ textField: UITextField) {
+        if textField.text!.count == 0 {
+            self.filteredTags = self.tags
+            self.tableView.reloadData()
+            
+        } else {
+            searchTags(textField.text!, type: tagType)
+        }
     }
     
     //MARK: Tableview
@@ -207,7 +268,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var tagView: TagListView!
     
-    let featureTagTitles = ["mood", "activity", "genre", "city", "artist"]
+    let featureTagTitles = ["mood", "activity", "genre", "city"]
     
     var genreTags = [String]()
     var moodTags = [String]()
@@ -218,21 +279,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var chosenTagsArray = [String]()
     var xPositionForChosenTags = UIElement().leftOffset
     
-    lazy var selectedTagLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
-        label.textColor = color.black()
-        label.text = "Selected Tags"
-        label.numberOfLines = 0
-        return label
-    }()
-    
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
-        label.text = "none"
+        label.text = "Select Tags"
         label.textColor = color.black()
         label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         return label
     }()
     
@@ -281,17 +333,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
            addChooseTagsLabel()
         }
         
-        self.view.addSubview(self.selectedTagLabel)
-        selectedTagLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.selectedTagLabel.snp.bottom).offset(uiElement.elementOffset)
+            make.top.equalTo(self.soundOrderSegment.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -528,32 +573,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    //MARK: SearchBar
-    lazy var searchBar: UITextField = {
-        let searchBar = UITextField()
-        searchBar.placeholder = "🔍 Tags"
-        searchBar.borderStyle = .roundedRect
-        searchBar.clearButtonMode = .always
-        return searchBar
-    }()
-    
-    func setUpSearchBar() {
-        searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
-        searchBar.frame = CGRect(x: 0, y: 0, width: 200, height: 30)
-        let rightNavBarButton = UIBarButtonItem(customView: searchBar)
-        self.navigationItem.leftBarButtonItems?.append(rightNavBarButton)
-    }
-    
-    @objc func searchBarDidChange(_ textField: UITextField) {
-        if textField.text!.count == 0 {
-            self.filteredTags = self.tags
-            self.tableView.reloadData()
-            
-        } else {
-            searchTags(textField.text!, type: tagType)
-        }
-    }
-    
     //mark: Data
     func searchTags(_ text: String, type: String?) {
         self.filteredTags.removeAll()
@@ -634,6 +653,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
                 if self.tableView == nil {
                     self.setUpSearchBar()
+                    self.setUpSoundOrderSegment()
                     self.setupChooseTagsView()
                     
                 } else {

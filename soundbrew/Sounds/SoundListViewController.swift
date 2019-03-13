@@ -37,8 +37,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
             viewController.artist = selectedArtist
             
         } else if segue.identifier == "showTags" {
-            let navigationController = segue.destination as! UINavigationController
-            let viewController = navigationController.topViewController as! TagsViewController
+            let viewController = segue.destination as! TagsViewController
             viewController.tagDelegate = self 
             if let tags = self.tags {
                 viewController.chosenTagsArray = tags
