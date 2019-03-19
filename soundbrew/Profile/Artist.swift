@@ -20,8 +20,11 @@ class Artist {
     var isVerified: Bool?
     var bio: String?
     var email: String?
+    var instagramUsername: String?
+    var twitterUsername: String?
+    var snapchatUsername: String?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -30,7 +33,10 @@ class Artist {
         self.image = image
         self.isVerified = isVerified
         self.bio = bio
-        self.email = email 
+        self.email = email
+        self.instagramUsername = instagramUsername
+        self.twitterUsername = twitterUsername
+        self.snapchatUsername = snapchatUsername
     }
 }
 

@@ -203,7 +203,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func incrementPlayCount(sound: Sound) {
-        /*let query = PFQuery(className: "Post")
+        let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
@@ -220,7 +220,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 object.incrementKey("plays")
                 object.saveEventually()
             }
-        }*/
+        }
     }
     
     //mark: background controls

@@ -23,6 +23,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var profileImage: UIImageView!
     var nameText: UITextField!
     var usernameText: UITextField!
+    var instagramText: UITextField!
+    var twitterText: UITextField!
+    var snapchatText: UITextField!
     var websiteText: UITextField!
     var bioLabel: UILabel!
     var cityText: UITextField!
@@ -99,10 +102,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 4
+            return 7
             
         } else if section == 4 {
-            return 6
+            return 9
         }
         
         return 1
@@ -161,6 +164,30 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 break
                 
             case 3:
+                instagramText = cell.editProfileInput
+                inputTitle = "Instagram @"
+                if let instagram = artist?.instagramUsername {
+                    inputText = instagram
+                }
+                break
+                
+            case 4:
+                twitterText = cell.editProfileInput
+                inputTitle = "Twitter @"
+                if let twitter = artist?.twitterUsername {
+                    inputText = twitter
+                }
+                break
+                
+            case 5:
+                snapchatText = cell.editProfileInput
+                inputTitle = "Snapchat @"
+                if let snapchat = artist?.snapchatUsername {
+                    inputText = snapchat
+                }
+                break
+                
+            case 6:
                 websiteText = cell.editProfileInput
                 inputTitle = "Website"
                 if let website = artist?.website {
@@ -307,7 +334,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 
                 user["city"] = self.cityText.text
-                user["website"] = self.websiteText.text
+                
+                var igText = self.instagramText.text
+                if igText!.starts(with: "@") {
+                    igText?.removeFirst()
+                }
+                user["instagramHandle"] = igText
+                user["twitterHandle"] = self.twitterText.text
+                user["snapchatHandle"] = self.snapchatText.text!
+                user["otherLink"] = self.websiteText.text
                 user["bio"] = self.bioLabel.text
                 user["email"] = self.emailText.text
                 
@@ -320,7 +355,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.stopAnimating()
                     if (success) {
                         if let artistDelegate = self.artistDelegate {
-                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String)
+                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
                             
                             if let name =  user["artistName"] as? String {
                                 artist.name = name
@@ -330,7 +365,19 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                                 artist.city = city
                             }
                             
-                            if let website = user["website"] as? String {
+                            if let instagramUsername = user["instagramHandle"] as? String {
+                                artist.instagramUsername = instagramUsername
+                            }
+                            
+                            if let twitterUsername = user["twitterHandle"] as? String {
+                                artist.twitterUsername = twitterUsername
+                            }
+                            
+                            if let snapchatUsername = user["snapchatHandle"] as? String {
+                                artist.snapchatUsername = snapchatUsername
+                            }
+                            
+                            if let website = user["otherLink"] as? String {
                                 artist.website = website
                             }
                             

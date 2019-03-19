@@ -65,7 +65,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func newArtistInfo(_ value: Artist?) {
-        print("d")
         if let artist = value {
             self.artist = artist
             self.tableView.reloadData()
@@ -133,10 +132,35 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     profileCell.bio.text = bio
                 }
                 
-                if let website = artist.website {
+                //social buttons are recreated multiple times, so have to check whether not they've already been created.
+                if artist.instagramUsername != nil && instagramButton == nil {
+                    if artist.instagramUsername! != "" {
+                        addSocialButton(profileCell.socialScrollview, buttonImageName: "instagram_logo")
+                    }
+                }
+                
+                if artist.twitterUsername != nil && twitterButton == nil {
+                    if artist.twitterUsername! != "" {
+                        addSocialButton(profileCell.socialScrollview, buttonImageName: "twitter_logo")
+                    }
+                }
+                
+                if artist.snapchatUsername != nil && snapchatButton == nil {
+                   if artist.snapchatUsername! != "" {
+                        addSocialButton(profileCell.socialScrollview, buttonImageName: "snapchat_logo")
+                    }
+                }
+                
+                if artist.website != nil && websiteButton == nil {
+                    if artist.website! != "" {
+                         addSocialButton(profileCell.socialScrollview, buttonImageName: "website_logo")
+                    }
+                }
+                
+                /*if let website = artist.website {
                     profileCell.website.setTitle("\(website)", for: .normal)
                     profileCell.website.addTarget(self, action: #selector(self.didPressWebsiteButton(_:)), for: .touchUpInside)
-                }
+                }*/
                 
                 if let currentUser = PFUser.current() {
                     if currentUser.objectId == artist.objectId {
@@ -225,6 +249,82 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
+    //mark: social buttons
+    var xPositionForSocialButtons = UIElement().leftOffset
+    var instagramButton: UIButton?
+    var snapchatButton: UIButton?
+    var twitterButton: UIButton?
+    var websiteButton: UIButton?
+    
+    func addSocialButton(_ scrollview: UIScrollView, buttonImageName: String) {
+        let socialButton = UIButton()
+        socialButton.frame = CGRect(x: xPositionForSocialButtons, y: 0, width: 40, height: 40)
+        socialButton.setImage(UIImage(named: buttonImageName), for: .normal)
+        socialButton.layer.cornerRadius = 20
+        socialButton.clipsToBounds = true
+        socialButton.addTarget(self, action: #selector(self.didPressSocialButton(_:)), for: .touchUpInside)
+        scrollview.addSubview(socialButton)
+        
+        xPositionForSocialButtons = xPositionForSocialButtons + Int(socialButton.frame.width) + uiElement.leftOffset + 10
+        scrollview.contentSize = CGSize(width: xPositionForSocialButtons, height: uiElement.buttonHeight)
+        
+        switch buttonImageName {
+        case "instagram_logo":
+            socialButton.tag = 0
+            instagramButton = socialButton
+            break
+            
+        case "twitter_logo":
+            socialButton.tag = 1
+            twitterButton = socialButton
+            break
+            
+        case "snapchat_logo":
+            socialButton.tag = 2
+            snapchatButton = socialButton
+            break
+            
+        case "website_logo":
+            socialButton.tag = 3
+            websiteButton = socialButton
+            break 
+            
+        default:
+            break
+        }
+    }
+    
+    @objc func didPressSocialButton(_ sender: UIButton) {
+        switch sender.tag {
+        case 0:
+            if let username = artist?.instagramUsername {
+                UIApplication.shared.open(URL(string: "https://www.instagram.com/\(username)")!, options: [:], completionHandler: nil)
+            }
+            break
+            
+        case 1:
+            if let username = artist?.twitterUsername {
+                UIApplication.shared.open(URL(string: "https://www.twitter.com/\(username)")!, options: [:], completionHandler: nil)
+            }
+            break
+            
+        case 2:
+            if let username = artist?.snapchatUsername {
+                UIApplication.shared.open(URL(string: "https://www.snapchat.com/add/\(username)")!, options: [:], completionHandler: nil)
+            }
+            break
+            
+        case 3:
+            if let website = artist?.website {
+                UIApplication.shared.open(URL(string: "\(website)")!, options: [:], completionHandler: nil)
+            }
+            break
+            
+        default:
+            break
+        }
+    }
+    
     //mark: button actions
     @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.artist?.website {
@@ -278,7 +378,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
                 
                 if let name = user["artistName"] as? String {
                     artist.name = name
@@ -304,7 +404,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     artist.isVerified = artistVerification
                 }
                 
-                if let website = user["website"] as? String {
+                if let instagramUsername = user["instagramHandle"] as? String {
+                    artist.instagramUsername = instagramUsername
+                }
+                
+                if let twitterUsername = user["twitterHandle"] as? String {
+                    artist.twitterUsername = twitterUsername
+                }
+                
+                if let snapchatUsername = user["snapchatHandle"] as? String {
+                    artist.snapchatUsername = snapchatUsername
+                }
+                
+                if let website = user["otherLink"] as? String {
                     artist.website = website
                 }
                 
@@ -382,7 +494,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                             soundPlays = plays
                         }
                         
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "")
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
                         let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
                         
                         if soundType == "uploads" {

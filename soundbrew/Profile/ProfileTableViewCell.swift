@@ -47,17 +47,50 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var city: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.textColor = .darkGray 
         return label
     }()
     
     lazy var website: UIButton = {
         let button = UIButton()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
-        button.setTitleColor(color.blue(), for: .normal)
+        button.setImage(UIImage(named: "website"), for: .normal)
+        button.layer.cornerRadius = 25 / 2
+        button.clipsToBounds = true
         return button
     }()
     
-    lazy var followerCount: UILabel = {
+    lazy var instagramButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "instagram_logo"), for: .normal)
+        button.layer.cornerRadius = 25 / 2
+        button.clipsToBounds = true
+        return button
+    }()
+    
+    lazy var socialScrollview: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
+    /*lazy var twitterButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "twitter_logo"), for: .normal)
+        button.layer.cornerRadius = 25 / 2
+        button.clipsToBounds = true
+        return button
+    }()
+    
+    lazy var snapchatButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "snapchat_logo"), for: .normal)
+        button.layer.cornerRadius = 25 / 2
+        button.clipsToBounds = true
+        return button
+    }()*/
+    
+    
+    
+    /*lazy var followerCount: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.text = "100"
@@ -69,7 +102,7 @@ class ProfileTableViewCell: UITableViewCell {
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.text = "Followers"
         return label
-    }()
+    }()*/
     
     lazy var actionButton: UIButton = {
         let button = UIButton()
@@ -147,41 +180,51 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(displayName)
             self.addSubview(city)
             self.addSubview(bio)
-            self.addSubview(website)
+            self.addSubview(socialScrollview)
+            //self.addSubview(website)
             self.addSubview(actionButton)
-            self.addSubview(followerCount)
-            self.addSubview(followerCountLabel)
             
-            profileImage.layer.cornerRadius = 75/2
+            //self.addSubview(followerCount)
+            //self.addSubview(followerCountLabel)
+            
+            profileImage.layer.cornerRadius = 50
             profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(75)
+                make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            followerCount.snp.makeConstraints { (make) -> Void in
+            /*followerCount.snp.makeConstraints { (make) -> Void in
                 //make.top.equalTo(profileImage).offset(uiElement.topOffset)
                 make.centerY.equalTo(profileImage)
                 make.left.equalTo(self.profileImage.snp.right).offset(uiElement.leftOffset)
                 //make.right.equalTo(self).offset(uiElement.rightOffset)
+            }*/
+            
+            socialScrollview.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(40)
+                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                //make.centerY.equalTo(profileImage)
+                make.left.equalTo(profileImage.snp.right)
+                make.right.equalTo(self)
             }
             
             actionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(30)
-                make.width.equalTo(100)
-                make.top.equalTo(followerCount)
-                //make.left.equalTo(followerCount)
+                //make.width.equalTo(75)
+                make.top.equalTo(socialScrollview.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            followerCountLabel.snp.makeConstraints { (make) -> Void in
+            /*followerCountLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(followerCount).offset(5)
                 make.left.equalTo(followerCount.snp.right).offset(uiElement.elementOffset)
                 //make.right.equalTo(self.actionButton.snp.left).offset(-(uiElement.elementOffset))
-            }
+            }*/
             
             displayName.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.elementOffset)
+                make.top.equalTo(profileImage.snp.bottom)
                 make.left.equalTo(profileImage).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
@@ -196,13 +239,14 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(city.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
+                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
-            website.snp.makeConstraints { (make) -> Void in
+            /*website.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(bio.snp.bottom)
                 make.left.equalTo(displayName)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
-            }
+            }*/
     
             break
             
@@ -230,7 +274,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(editProfileInput)
             
             editProfileTitle.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(80)
+                make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
