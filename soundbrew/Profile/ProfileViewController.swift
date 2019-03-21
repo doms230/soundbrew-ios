@@ -83,7 +83,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadsLikesReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        self.tableView.separatorStyle = .singleLine
+        self.tableView.separatorStyle = .none
         //tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
@@ -98,11 +98,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //MARK: TableView
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        if section == 2 {
+            return likedSounds.count
+        }
+        
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -111,7 +115,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         var viewAllButtonTag = 0
         var sounds = [Sound]()
         
-        switch indexPath.row {
+        switch indexPath.section {
         case 0:
             let profileCell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
             
@@ -128,7 +132,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                      profileCell.city.text = city
                 }
                 
-                if let bio = artist.bio {
+                if let bio = artist.username {
                     profileCell.bio.text = bio
                 }
                 
@@ -190,38 +194,33 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case 1:
-            headerTitle = "Uploaded Sounds"
+            cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsLikesReuse) as! SoundListTableViewCell
+           /* headerTitle = "Uploaded Sounds"
             sounds = uploadedSounds
-            viewAllButtonTag = 0
+            viewAllButtonTag = 0*/
             break
             
         case 2:
-            headerTitle = "Liked Sounds"
             sounds = likedSounds
-            viewAllButtonTag = 1
-            break
-            
-        default:
-            break
-        }
-        
-        if indexPath.row != 0 {
+            /*headerTitle = "Liked Sounds"
+            sounds = likedSounds
+            viewAllButtonTag = 1*/
             if sounds.count == 0 {
                 let noSoundsCell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-                noSoundsCell.headerTitle.text = "No \(headerTitle!) Yet"
+                //noSoundsCell.headerTitle.text = "No \(headerTitle!) Yet"
                 cell = noSoundsCell
                 
             } else {
-                let mySoundsCell = self.tableView.dequeueReusableCell(withIdentifier: uploadsLikesReuse) as! SoundListTableViewCell
-                mySoundsCell.headerTitle.text = headerTitle
-                mySoundsCell.viewButton.isHidden = false
-                mySoundsCell.viewButton.addTarget(self, action: #selector(self.didPressViewAllButton(_:)), for: .touchUpInside)
-                mySoundsCell.viewButton.tag = viewAllButtonTag
+                let mySoundsCell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+                //mySoundsCell.headerTitle.text = headerTitle
+                //mySoundsCell.viewButton.isHidden = false
+                //mySoundsCell.viewButton.addTarget(self, action: #selector(self.didPressViewAllButton(_:)), for: .touchUpInside)
+                //mySoundsCell.viewButton.tag = viewAllButtonTag
                 
                 //self.tableView.separatorStyle = .none
                 
                 var sound: Sound!
-                sound = sounds[indexPath.row - 1]
+                sound = sounds[indexPath.row]
                 
                 mySoundsCell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
                 mySoundsCell.soundTitle.text = sound.title
@@ -242,6 +241,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 cell = mySoundsCell
             }
+            break
+            
+        default:
+            break
         }
         
         cell.selectionStyle = .none
@@ -477,7 +480,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             query.whereKey("objectId", containedIn: likedSoundsIds)
         }
 
-        query.limit = 3
+        query.limit = 50
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

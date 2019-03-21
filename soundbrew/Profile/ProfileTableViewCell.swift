@@ -203,18 +203,10 @@ class ProfileTableViewCell: UITableViewCell {
             
             socialScrollview.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(40)
-                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
-                //make.centerY.equalTo(profileImage)
+                //make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                make.centerY.equalTo(profileImage)
                 make.left.equalTo(profileImage.snp.right)
                 make.right.equalTo(self)
-            }
-            
-            actionButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
-                //make.width.equalTo(75)
-                make.top.equalTo(socialScrollview.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             /*followerCountLabel.snp.makeConstraints { (make) -> Void in
@@ -224,21 +216,29 @@ class ProfileTableViewCell: UITableViewCell {
             }*/
             
             displayName.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom)
+                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(profileImage).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
+            bio.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayName.snp.bottom)
+                make.left.equalTo(displayName)
+                make.right.equalTo(displayName)
+                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
             
             city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayName.snp.bottom)
+                make.top.equalTo(bio.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
             }
             
-            bio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(city.snp.bottom)
-                make.left.equalTo(displayName)
-                make.right.equalTo(displayName)
+            actionButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(30)
+                //make.width.equalTo(75)
+                make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(profileImage.snp.right)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             

@@ -227,7 +227,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterTagsReuse)
-        self.tableView.separatorStyle = .singleLine
+        self.tableView.separatorStyle = .none
         //tableView.frame = view.bounds
         self.view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) -> Void in
@@ -268,6 +268,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
         cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as? SoundListTableViewCell
         setUpSound(indexPath)
         cell.selectionStyle = .none
+        
         return cell
     }
     
