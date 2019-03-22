@@ -58,7 +58,7 @@ class MiniPlayerView: UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = .clear
+        self.backgroundColor = .white
         setupNotificationCenter()
     }
     
@@ -66,7 +66,7 @@ class MiniPlayerView: UIButton {
         super.init(coder: aDecoder)
     }
     
-    override func updateConstraints() {
+    override func updateConstraints() {        
         if(shouldSetupConstraints) {
             self.addSubview(playBackButton)
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)

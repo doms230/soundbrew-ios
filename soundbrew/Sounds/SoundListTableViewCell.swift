@@ -18,8 +18,6 @@ class SoundListTableViewCell: UITableViewCell {
         let line = UIView()
         line.layer.borderWidth = 1
         line.layer.borderColor = color.uicolorFromHex(0xcccccc).cgColor
-        //profileCell.actionButton.layer.borderWidth = 1
-        //profileCell.actionButton.layer.borderColor = color.black().cgColor
         return line
     }()
     
@@ -42,6 +40,12 @@ class SoundListTableViewCell: UITableViewCell {
         return scrollView
     }()
     
+    lazy var soundOrderSegment: UISegmentedControl = {
+        let segment = UISegmentedControl(items: ["New", "Popular"])
+        segment.tintColor = color.black()
+        return segment
+    }()
+    
     lazy var uploadsbutton: UIButton = {
         let button = UIButton()
         button.setTitle("Uploads", for: .normal)
@@ -52,9 +56,9 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var likesButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Likes", for: .normal)
+        button.setTitle("Collection", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 25)
-        button.setTitleColor(.darkGray, for: .normal)
+        button.setTitleColor(.lightGray, for: .normal)
         return button
     }()
     
@@ -110,67 +114,6 @@ class SoundListTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
-            break
-            
-        case "profileSoundsReuse":
-            self.addSubview(menuButton)
-            self.addSubview(soundArtImage)
-            self.addSubview(soundTitle)
-            self.addSubview(soundArtist)
-            self.addSubview(soundPlaysImage)
-            self.addSubview(soundPlays)
-            self.addSubview(headerTitle)
-            self.addSubview(viewButton)
-            
-            viewButton.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            headerTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(5)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                //make.right.equalTo(self.viewButton.snp.left).offset(-(uiElement.elementOffset))
-            }
-            
-            soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
-                make.top.equalTo(self.headerTitle.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(soundArtImage)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
-            }
-            
-            soundArtist.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTitle.snp.bottom)
-                make.left.equalTo(soundTitle)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            soundPlaysImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(soundTitle)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            soundPlays.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundPlaysImage).offset(2)
-                make.left.equalTo(soundPlaysImage.snp.right)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }            
             break
             
         case "reuse":
@@ -234,10 +177,9 @@ class SoundListTableViewCell: UITableViewCell {
         case "uploadsLikesReuse":
             self.addSubview(uploadsbutton)
             self.addSubview(likesButton)
-            
+    
             uploadsbutton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-               // make.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
@@ -245,7 +187,6 @@ class SoundListTableViewCell: UITableViewCell {
             
             likesButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                //make.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(uploadsbutton.snp.right).offset(uiElement.leftOffset + 10)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
@@ -253,12 +194,22 @@ class SoundListTableViewCell: UITableViewCell {
         
             break
             
-        case "filterTagsReuse":
+        case "filterSoundsReuse":
+            self.addSubview(soundOrderSegment)
             self.addSubview(tagsScrollview)
+            
+            soundOrderSegment.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(150)
+                make.height.equalTo(30)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
             tagsScrollview.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(40)
                 make.top.equalTo(self)
-                make.left.equalTo(self)
+                make.left.equalTo(self.soundOrderSegment.snp.right)
                 make.right.equalTo(self)
                 make.bottom.equalTo(self)
             }

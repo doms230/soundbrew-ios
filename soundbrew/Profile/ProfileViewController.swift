@@ -54,10 +54,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             editProfileController.artistDelegate = self 
             
         } else {
-            let viewController: SoundListViewController = segue.destination as! SoundListViewController
+            /*let viewController: SoundListViewController = segue.destination as! SoundListViewController
             viewController.userId = artist!.objectId
-            viewController.soundType = selectedViewAllSound
-            viewController.soundTitle = "\(artist!.name!)'s \(selectedViewAllSound.capitalized)"
+            //viewController.soundType = selectedViewAllSound
+            viewController.soundTitle = "\(artist!.name!)'s \(selectedViewAllSound.capitalized)"*/
         }
     }
     
