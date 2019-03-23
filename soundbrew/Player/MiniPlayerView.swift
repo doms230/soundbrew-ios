@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import SnapKit
 import Parse
-import DeckTransition
 
 class MiniPlayerView: UIButton {
     let color = Color()

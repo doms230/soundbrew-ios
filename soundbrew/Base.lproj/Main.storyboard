@@ -74,6 +74,7 @@
                     <connections>
                         <segue destination="k7A-1j-YbY" kind="presentation" identifier="showEditProfile" id="wBb-Ll-LfM"/>
                         <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="eW3-lv-tSJ"/>
+                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="uNc-Xt-ZBj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -148,7 +149,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1401" y="-1141"/>
+            <point key="canvasLocation" x="1401" y="-806"/>
         </scene>
         <!--Sound List View Controller-->
         <scene sceneID="PqT-ua-W6V">
@@ -272,6 +273,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="eW3-lv-tSJ"/>
-        <segue reference="clB-kw-cXy"/>
+        <segue reference="uNc-Xt-ZBj"/>
+        <segue reference="ciq-Pd-2ja"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -8,7 +8,7 @@
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
 //  SoundlistViewController.swift and ProfileViewController.swift utilize this class
 //
-// MARK: tableView, sounds, selected artist, tags, data,
+// MARK: tableView, sounds, selected artist, tags filter, data,
 
 
 import Foundation
@@ -27,33 +27,20 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var userId: String?
     var player: Player?
     var likedSoundIds = [String]()
+    var soundType: String!
     
-    init(target: UIViewController, tableView: UITableView?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
-        
-        determineTypeOfSoundToLoad()
+        self.soundType = soundType
+        self.userId = userId
+        determineTypeOfSoundToLoad(soundType)
     }
     
     //mark: tableView
-    let reuse = "reuse"
-    let recentPopularReuse = "recentPopularReuse"
     let filterSoundsReuse = "filterSoundsReuse"
     func setUpTableView() {
-        tableView?.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView?.register(SoundListTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
-        tableView?.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
-        self.tableView?.separatorStyle = .none
-        //tableView.frame = view.bounds
-        target.view.addSubview(tableView!)
-        tableView?.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(target.view)
-            make.right.equalTo(target.view)
-            make.left.equalTo(target.view)
-            make.bottom.equalTo(target.view)
-        }
-        
         if let player = self.player {
             player.tableview = self.tableView
         }
@@ -126,49 +113,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     }
     
     //mark: sounds
-    func soundFilterOptions(_ indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView?.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
-        cell.selectionStyle = .none
-        cell.soundOrderSegment.addTarget(self, action: #selector(didPressSoundOrderSegment(_:)), for: .valueChanged)
-        if let filter = uiElement.getUserDefault("filter") as? String {
-            if filter == "recent" {
-                cell.soundOrderSegment.selectedSegmentIndex = 0
-                
-            } else {
-                cell.soundOrderSegment.selectedSegmentIndex = 1
-            }
-            
-        } else {
-            cell.soundOrderSegment.selectedSegmentIndex = 0
-        }
-        
-        if let tags = self.tags {
-            if tags.count != 0 {
-                for tag in tags {
-                    self.addSelectedTags(cell.tagsScrollview, tagName: tag)
-                }
-                
-            } else {
-                self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
-            }
-            
-        } else {
-            self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
-        }
-        
-        return cell
-    }
-    @objc func didPressSoundOrderSegment(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 0 {
-            self.uiElement.setUserDefault("filter", value: "recent")
-            
-        } else {
-            self.uiElement.setUserDefault("filter", value: "popular")
-        }
-    }
-    
-    func sound(_ indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView?.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+    func sound(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
         let sound = sounds[indexPath.row]
         if let currentSoundPlaying = self.miniPlayerView?.sound {
@@ -242,22 +187,19 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         cell.soundPlaysImage.image = UIImage(named: playIconName)
     }
     
-    var soundType = "search"
-    func determineTypeOfSoundToLoad() {
+    func determineTypeOfSoundToLoad(_ soundType: String) {
+        self.sounds.removeAll()
         var descendingOrder: String!
         if let filter = self.uiElement.getUserDefault("filter") as? String {
             if filter == "recent" {
                 descendingOrder = "createdAt"
-                //self.soundFilter = "recent"
                 
             } else {
                 descendingOrder = "plays"
-                //self.soundFilter = "popular"
             }
             
         } else {
             descendingOrder = "createdAt"
-            //self.soundFilter = "recent"
         }
         
         switch soundType {
@@ -278,13 +220,55 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         }
     }
     
-    //mark: tags
+    //mark: tags filter
     var tags: Array<String>?
-    var filterButton: UIBarButtonItem!
     var soundFilter: String!
-    
     var xPositionForTags = UIElement().leftOffset
     
+    func soundFilterOptions(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
+        cell.selectionStyle = .none
+        cell.soundOrderSegment.addTarget(self, action: #selector(didPressSoundOrderSegment(_:)), for: .valueChanged)
+        if let filter = uiElement.getUserDefault("filter") as? String {
+            if filter == "recent" {
+                cell.soundOrderSegment.selectedSegmentIndex = 0
+                
+            } else {
+                cell.soundOrderSegment.selectedSegmentIndex = 1
+            }
+            
+        } else {
+            cell.soundOrderSegment.selectedSegmentIndex = 0
+        }
+        
+        cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
+        xPositionForTags = uiElement.leftOffset
+        if let tags = self.tags {
+            if tags.count != 0 {
+                for tag in tags {
+                    self.addSelectedTags(cell.tagsScrollview, tagName: tag)
+                }
+                
+            } else {
+                self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
+            }
+            
+        } else if cell.tagsScrollview.subviews.count == 0 {
+            self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
+        }
+        
+        return cell
+    }
+    @objc func didPressSoundOrderSegment(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+            self.uiElement.setUserDefault("filter", value: "recent")
+            
+        } else {
+            self.uiElement.setUserDefault("filter", value: "popular")
+        }
+        
+        determineTypeOfSoundToLoad(soundType)
+    }
+
     func prepareToShowTags(_ segue: UIStoryboardSegue) {
         let viewController = segue.destination as! TagsViewController
         viewController.tagDelegate = self
@@ -296,41 +280,35 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     func changeTags(_ value: Array<String>?) {
         if self.tags != value {
             self.tags = value
-            self.sounds.removeAll()
-            determineTypeOfSoundToLoad()
-            /*if let value = value {
-             if value.count > 1 {
-             filterButton.title! = "\(value.count) Filters"
-             
-             } else {
-             filterButton.title! = "\(value.count) Filter"
-             }
-             }*/
+            determineTypeOfSoundToLoad(soundType)
             
         } else {
-            filterButton.title! = "Filter"
             if let filter = self.uiElement.getUserDefault("filter") as? String {
                 if self.soundFilter != filter {
                     self.sounds.removeAll()
-                    determineTypeOfSoundToLoad()
+                    determineTypeOfSoundToLoad(soundType)
                 }
             }
         }
     }
     
     func addSelectedTags(_ scrollview: UIScrollView, tagName: String) {
-        //reset scrollview
-        scrollview.subviews.forEach({ $0.removeFromSuperview() })
-        xPositionForTags = UIElement().leftOffset
+        let buttonTitleWithX = "\(tagName)"
+        //not using snpakit to set button frame becuase not able to get button width from button title.
+        let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(buttonTitleWithX)
         
         let tagButton = UIButton()
-        tagButton.frame = CGRect(x: xPositionForTags, y: 0, width: 40, height: 40)
+        tagButton.frame = CGRect(x: xPositionForTags, y: uiElement.topOffset, width: buttonTitleWidth, height: 30)
         tagButton.setTitle(tagName, for: .normal)
         tagButton.setTitleColor(color.black(), for: .normal)
+        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        tagButton.layer.cornerRadius = 3
+        tagButton.layer.borderWidth = 1
+        tagButton.layer.borderColor = color.black().cgColor
         tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
         scrollview.addSubview(tagButton)
         
-        xPositionForTags = xPositionForTags + Int(tagButton.frame.width) + uiElement.leftOffset
+        xPositionForTags = xPositionForTags + Int(tagButton.frame.width) + uiElement.elementOffset
         scrollview.contentSize = CGSize(width: xPositionForTags, height: uiElement.buttonHeight)
     }
     
@@ -374,15 +352,20 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                if let player = self.player {
+                //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way it will do it automatically.
+                if self.soundType == "uploads" && self.sounds.count == 0 {
+                    self.soundType = "likes"
+                    self.determineTypeOfSoundToLoad(self.soundType)
+                    
+                } else if let player = self.player {
                     player.sounds = self.sounds
                     
                 } else {
                     self.player = Player(sounds: self.sounds)
-                    self.setUpMiniPlayer()
                 }
                 
                 self.tableView?.reloadData()
+            
                 
             } else {
                 print("Error: \(error!)")

@@ -95,7 +95,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             soundOrderSegment.selectedSegmentIndex = 0
         }
         
-        
         view.addSubview(filterSoundsLabel)
         filterSoundsLabel.snp.makeConstraints { (make) -> Void in
             //make.width.equalTo(200)
@@ -336,7 +335,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.soundOrderSegment.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.searchBar.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -653,7 +652,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
                 if self.tableView == nil {
                     self.setUpSearchBar()
-                    self.setUpSoundOrderSegment()
+                    //self.setUpSoundOrderSegment()
                     self.setupChooseTagsView()
                     
                 } else {

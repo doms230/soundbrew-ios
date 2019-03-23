@@ -118,7 +118,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         switch indexPath.section{
         case 0:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileImageReuse) as? ProfileTableViewCell
-            cell.backgroundColor = Color().uicolorFromHex(0xe8e6df)
+            cell.backgroundColor = Color().gray() 
             tableView.separatorStyle = .singleLine
             tableView.separatorInset = .zero
             cell.selectionStyle = .none

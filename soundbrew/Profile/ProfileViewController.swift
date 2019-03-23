@@ -17,14 +17,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let uiElement = UIElement()
     let color = Color()
     
-    var socialsAndStreamImages = [String]()
-    
     var artist: Artist?
     
-    var uploadedSounds = [Sound]()
-    var likedSounds = [Sound]()
-    var likedSoundsIds = [String]()
-    var selectedViewAllSound = "uploads"
+    var soundList: SoundList!
     
     var selectedIndex = 0
 
@@ -36,7 +31,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if artist != nil {
             self.setUpTableView()
-            loadSounds("uploads")
+            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: nil)
             
         } else if let currentUserId = PFUser.current()?.objectId {
             loadUserInfoFromCloud(currentUserId)
@@ -72,17 +67,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //MARK: Tableview
-    let reuse = "reuse"
+    let reuse = "soundReuse"
     let profileReuse = "profileReuse"
-    let uploadsLikesReuse = "uploadsLikesReuse"
+    let uploadsCollectionHeaderReuse = "uploadsCollectionsHeaderReuse"
     let noSoundsReuse = "noSoundsReuse"
+    let filterSoundsReuse = "filterSoundsReuse"
+    
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadsLikesReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadsCollectionHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         self.tableView.separatorStyle = .none
         //tableView.frame = view.bounds
         self.view.addSubview(tableView)
@@ -98,158 +96,156 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //MARK: TableView
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 {
-            return likedSounds.count
+        if section == 3 && soundList.sounds.count != 0 {
+            return soundList.sounds.count
         }
         
         return 1
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let player = soundList.player {
+            player.didSelectSoundAt(indexPath.row)
+            soundList.setUpMiniPlayer()
+            tableView.reloadData()
+        }
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = UITableViewCell()
-        var headerTitle: String!
-        var viewAllButtonTag = 0
-        var sounds = [Sound]()
-        
         switch indexPath.section {
         case 0:
-            let profileCell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
+            
+            cell.selectionStyle = .none
             
             if let artist = artist {
                 if let artistImage = artist.image {
-                    profileCell.profileImage.kf.setImage(with: URL(string: artistImage))
+                    cell.profileImage.kf.setImage(with: URL(string: artistImage))
                 }
                 
                 if let name = artist.name {
-                    profileCell.displayName.text = name
+                    cell.displayName.text = name
                 }
                
                 if let city = artist.city {
-                     profileCell.city.text = city
+                     cell.city.text = city
                 }
                 
                 if let bio = artist.username {
-                    profileCell.bio.text = bio
+                    cell.bio.text = bio
                 }
                 
                 //social buttons are recreated multiple times, so have to check whether not they've already been created.
                 if artist.instagramUsername != nil && instagramButton == nil {
                     if artist.instagramUsername! != "" {
-                        addSocialButton(profileCell.socialScrollview, buttonImageName: "instagram_logo")
+                        addSocialButton(cell.socialScrollview, buttonImageName: "instagram_logo")
                     }
                 }
                 
                 if artist.twitterUsername != nil && twitterButton == nil {
                     if artist.twitterUsername! != "" {
-                        addSocialButton(profileCell.socialScrollview, buttonImageName: "twitter_logo")
+                        addSocialButton(cell.socialScrollview, buttonImageName: "twitter_logo")
                     }
                 }
                 
                 if artist.snapchatUsername != nil && snapchatButton == nil {
                    if artist.snapchatUsername! != "" {
-                        addSocialButton(profileCell.socialScrollview, buttonImageName: "snapchat_logo")
+                        addSocialButton(cell.socialScrollview, buttonImageName: "snapchat_logo")
                     }
                 }
                 
                 if artist.website != nil && websiteButton == nil {
                     if artist.website! != "" {
-                         addSocialButton(profileCell.socialScrollview, buttonImageName: "website_logo")
+                         addSocialButton(cell.socialScrollview, buttonImageName: "website_logo")
                     }
                 }
-                
-                /*if let website = artist.website {
-                    profileCell.website.setTitle("\(website)", for: .normal)
-                    profileCell.website.addTarget(self, action: #selector(self.didPressWebsiteButton(_:)), for: .touchUpInside)
-                }*/
                 
                 if let currentUser = PFUser.current() {
                     if currentUser.objectId == artist.objectId {
-                        profileCell.actionButton.setTitle("Edit Profile", for: .normal)
-                        profileCell.actionButton.backgroundColor = .white
-                        profileCell.actionButton.layer.borderWidth = 1
-                        profileCell.actionButton.layer.borderColor = color.black().cgColor
-                        profileCell.actionButton.setTitleColor(color.black(), for: .normal)
+                        cell.actionButton.setTitle("Edit Profile", for: .normal)
+                        cell.actionButton.backgroundColor = .white
+                        cell.actionButton.layer.borderWidth = 1
+                        cell.actionButton.layer.borderColor = color.black().cgColor
+                        cell.actionButton.setTitleColor(color.black(), for: .normal)
                         
                     } else {
-                        profileCell.actionButton.setTitle("Follow", for: .normal)
-                        profileCell.actionButton.backgroundColor = color.blue()
-                        profileCell.actionButton.layer.borderWidth = 0
-                        profileCell.actionButton.setTitleColor(.white, for: .normal)
+                        cell.actionButton.setTitle("Follow", for: .normal)
+                        cell.actionButton.backgroundColor = color.blue()
+                        cell.actionButton.layer.borderWidth = 0
+                        cell.actionButton.setTitleColor(.white, for: .normal)
                     }
                     
                 } else {
-                    profileCell.actionButton.setTitle("Follow", for: .normal)
-                    profileCell.actionButton.backgroundColor = color.blue()
-                    profileCell.actionButton.layer.borderWidth = 0
-                    profileCell.actionButton.setTitleColor(.white, for: .normal)
+                    cell.actionButton.setTitle("Follow", for: .normal)
+                    cell.actionButton.backgroundColor = color.blue()
+                    cell.actionButton.layer.borderWidth = 0
+                    cell.actionButton.setTitleColor(.white, for: .normal)
                 }
-                profileCell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
+                cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
             }
             
-            cell = profileCell
-            break
+            return cell
             
         case 1:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsLikesReuse) as! SoundListTableViewCell
-           /* headerTitle = "Uploaded Sounds"
-            sounds = uploadedSounds
-            viewAllButtonTag = 0*/
-            break
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! SoundListTableViewCell
+            cell.selectionStyle = .none
+           
+            cell.uploadsButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+            cell.uploadsButton.tag = 0
             
-        case 2:
-            sounds = likedSounds
-            /*headerTitle = "Liked Sounds"
-            sounds = likedSounds
-            viewAllButtonTag = 1*/
-            if sounds.count == 0 {
-                let noSoundsCell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-                //noSoundsCell.headerTitle.text = "No \(headerTitle!) Yet"
-                cell = noSoundsCell
+            cell.collectionButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+            cell.collectionButton.tag = 1
+            
+            if soundList.soundType == "uploads" {
+                cell.uploadsButton.setTitleColor(color.black(), for: .normal)
+                cell.collectionButton.setTitleColor(color.gray(), for: .normal)
                 
             } else {
-                let mySoundsCell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
-                //mySoundsCell.headerTitle.text = headerTitle
-                //mySoundsCell.viewButton.isHidden = false
-                //mySoundsCell.viewButton.addTarget(self, action: #selector(self.didPressViewAllButton(_:)), for: .touchUpInside)
-                //mySoundsCell.viewButton.tag = viewAllButtonTag
-                
-                //self.tableView.separatorStyle = .none
-                
-                var sound: Sound!
-                sound = sounds[indexPath.row]
-                
-                mySoundsCell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-                mySoundsCell.soundTitle.text = sound.title
-                
-                if let plays = sound.plays {
-                    mySoundsCell.soundPlays.text = "\(plays)"
-                    
-                } else {
-                    mySoundsCell.soundPlays.text = "0"
-                }
-                
-                if let artistName = sound.artist?.name {
-                    mySoundsCell.soundArtist.text = artistName
-                    
-                } else {
-                    loadArtist(mySoundsCell, userId: sound.artist!.objectId, row: indexPath.row)
-                }
-                
-                cell = mySoundsCell
+                cell.uploadsButton.setTitleColor(color.gray(), for: .normal)
+                cell.collectionButton.setTitleColor(color.black(), for: .normal)
             }
-            break
+            
+            return cell
+            
+        case 2:
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
+            return soundList.soundFilterOptions(indexPath, cell: cell)
+            
+        case 3:
+            if soundList.sounds.count == 0 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+                if soundList.soundType == "uploads" {
+                    if artist!.objectId == PFUser.current()!.objectId {
+                        cell.headerTitle.text = "You haven't uploaded any sounds yet. Tap the new 'New Sound' tab to get started."
+                    
+                    } else {
+                        cell.headerTitle.text = "\(String(describing: artist?.name)) hasn't yet."
+                    }
+                    
+                    
+                } else {
+                    if artist!.objectId == PFUser.current()!.objectId {
+                        cell.headerTitle.text = "Sounds you like will appear here."
+                        
+                    } else {
+                        cell.headerTitle.text = "Nothing in \(String(describing: artist?.name))'s collection yet."
+                    }
+                }
+                
+                return cell
+                
+            } else {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+                return soundList.sound(indexPath, cell: cell)
+            }
             
         default:
-            break
+            return self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! SoundListTableViewCell
         }
-        
-        cell.selectionStyle = .none
-        
-        return cell
     }
     
     //mark: social buttons
@@ -261,9 +257,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func addSocialButton(_ scrollview: UIScrollView, buttonImageName: String) {
         let socialButton = UIButton()
-        socialButton.frame = CGRect(x: xPositionForSocialButtons, y: 0, width: 40, height: 40)
+        socialButton.frame = CGRect(x: xPositionForSocialButtons, y: 0, width: 30, height: 30)
         socialButton.setImage(UIImage(named: buttonImageName), for: .normal)
-        socialButton.layer.cornerRadius = 20
+        socialButton.layer.cornerRadius = 15
         socialButton.clipsToBounds = true
         socialButton.addTarget(self, action: #selector(self.didPressSocialButton(_:)), for: .touchUpInside)
         scrollview.addSubview(socialButton)
@@ -354,15 +350,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.present(menuAlert, animated: true, completion: nil)
     }
     
-    @objc func didPressViewAllButton(_ sender: UIButton) {
+    @objc func didPressMySoundType(_ sender: UIButton) {
         if sender.tag == 0 {
-            selectedViewAllSound = "uploads"
+            soundList.soundType = "uploads"
             
         } else {
-            selectedViewAllSound = "likes"
+            soundList.soundType = "likes"
         }
         
-        self.performSegue(withIdentifier: "showSounds", sender: self)
+        soundList.determineTypeOfSoundToLoad(soundList.soundType)
     }
     
     //Mark: Data
@@ -425,97 +421,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 self.artist = artist
                 
+                self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId)
                 self.setUpTableView()
-                self.loadSounds("uploads")
-            }
-        }
-    }
-    
-    func loadArtist(_ cell: SoundListTableViewCell, userId: String, row: Int) {
-        let query = PFQuery(className:"_User")
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
                 
-            } else if let user = user {
-                let artistName = user["artistName"] as? String
-                cell.soundArtist.text = artistName!
-            }
-        }
-    }
-    
-    func loadLikedSounds() {
-        let query = PFQuery(className: "Like")
-        query.whereKey("userId", equalTo: self.artist!.objectId)
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        self.likedSoundsIds.append(object["postId"] as! String)
-                    }
-                }
-                
-                if objects?.count == 0 {
-                    self.tableView.reloadData()
-                    
-                } else {
-                    self.loadSounds("likes")
-                }
-                
-            } else {
-                print("Error: \(error!)")
-            }
-        }
-    }
-    
-    func loadSounds(_ soundType: String) {
-        let query = PFQuery(className: "Post")
-        
-        if soundType == "uploads" {
-            query.whereKey("userId", equalTo: self.artist!.objectId)
-            
-        } else {
-            query.whereKey("objectId", containedIn: likedSoundsIds)
-        }
-
-        query.limit = 50
-        query.addDescendingOrder("createdAt")
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let title = object["title"] as! String
-                        let art = object["songArt"] as! PFFileObject
-                        let audio = object["audioFile"] as! PFFileObject
-                        let tags = object["tags"] as! Array<String>
-                        let userId = object["userId"] as! String
-                        var soundPlays: Int?
-                        if let plays = object["plays"] as? Int {
-                            soundPlays = plays
-                        }
-                        
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: nil, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
-                        
-                        if soundType == "uploads" {
-                            self.uploadedSounds.append(sound)
-                            
-                        } else {
-                            self.likedSounds.append(sound)
-                        }
-                    }
-                }
-                
-                self.tableView.reloadData()
-                if soundType == "uploads" {
-                    self.loadLikedSounds()
-                }
-                
-            } else {
-                print("Error: \(error!)")
             }
         }
     }

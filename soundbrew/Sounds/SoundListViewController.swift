@@ -13,11 +13,13 @@ import Kingfisher
 import SnapKit
 
 class SoundListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-        
+    
+    var soundList: SoundList!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil)
         setUpTableView()
-        soundList = SoundList(target: self, tableView: tableView)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -31,11 +33,26 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: tableview
     var tableView = UITableView()
+    let recentPopularReuse = "recentPopularReuse"
+    let soundReuse = "soundReuse"
+    let filterSoundsReuse = "filterSoundsReuse"
+    
     func setUpTableView() {
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
+        self.tableView.separatorStyle = .none
+        //tableView.frame = view.bounds
+        self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
     }
-    var soundList: SoundList!
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -52,17 +69,20 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
+            soundList.setUpMiniPlayer()
             tableView.reloadData()
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            return soundList.soundFilterOptions(indexPath)
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
+            return soundList.soundFilterOptions(indexPath, cell: cell)
             
         } else {
-            return soundList.sound(indexPath)
-        }        
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+            return soundList.sound(indexPath, cell: cell)
+        }
     }
 }
 

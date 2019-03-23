@@ -17,13 +17,14 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var dividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 1
-        line.layer.borderColor = color.uicolorFromHex(0xcccccc).cgColor
+        line.layer.borderColor = color.gray().cgColor
         return line
     }()
     
     lazy var headerTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.numberOfLines = 0
         return label
     }()
     
@@ -46,7 +47,7 @@ class SoundListTableViewCell: UITableViewCell {
         return segment
     }()
     
-    lazy var uploadsbutton: UIButton = {
+    lazy var uploadsButton: UIButton = {
         let button = UIButton()
         button.setTitle("Uploads", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 25)
@@ -54,7 +55,7 @@ class SoundListTableViewCell: UITableViewCell {
         return button
     }()
     
-    lazy var likesButton: UIButton = {
+    lazy var collectionButton: UIButton = {
         let button = UIButton()
         button.setTitle("Collection", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 25)
@@ -116,7 +117,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             break
             
-        case "reuse":
+        case "soundReuse":
             self.addSubview(menuButton)
             self.addSubview(soundArtImage)
             self.addSubview(soundTitle)
@@ -174,22 +175,22 @@ class SoundListTableViewCell: UITableViewCell {
             
             break
             
-        case "uploadsLikesReuse":
-            self.addSubview(uploadsbutton)
-            self.addSubview(likesButton)
+        case "uploadsCollectionsHeaderReuse":
+            self.addSubview(uploadsButton)
+            self.addSubview(collectionButton)
     
-            uploadsbutton.snp.makeConstraints { (make) -> Void in
+            uploadsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(self)
             }
             
-            likesButton.snp.makeConstraints { (make) -> Void in
+            collectionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
-                make.left.equalTo(uploadsbutton.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.left.equalTo(uploadsButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(self)
             }
         
             break
@@ -207,7 +208,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             tagsScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(40)
+                make.height.equalTo(30)
                 make.top.equalTo(self)
                 make.left.equalTo(self.soundOrderSegment.snp.right)
                 make.right.equalTo(self)
