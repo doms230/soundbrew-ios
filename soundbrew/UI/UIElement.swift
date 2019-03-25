@@ -11,10 +11,10 @@ import Foundation
 import Parse
 
 class UIElement {
-    let topOffset = 15
+    let topOffset = 10
     let leftOffset = 15
     let rightOffset = -15
-    let bottomOffset = -15
+    let bottomOffset = -10
     let arrowHeightWidth = 10
     let buttonHeight = 50
     let userImageHeightWidth = 40

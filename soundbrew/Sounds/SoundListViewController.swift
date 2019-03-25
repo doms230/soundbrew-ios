@@ -15,11 +15,19 @@ import SnapKit
 class SoundListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var soundList: SoundList!
+    var sounds = [Sound]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil)
         setUpTableView()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if soundList != nil {
+            soundList.sounds = sounds
+            soundList.player!.sounds = sounds
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -60,6 +68,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
+            sounds = soundList.sounds
             return soundList.sounds.count
         }
         

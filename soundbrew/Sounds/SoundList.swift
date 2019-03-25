@@ -35,6 +35,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         self.tableView = tableView
         self.soundType = soundType
         self.userId = userId
+        player = Player.sharedInstance
         determineTypeOfSoundToLoad(soundType)
     }
     
@@ -361,7 +362,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     player.sounds = self.sounds
                     
                 } else {
-                    self.player = Player(sounds: self.sounds)
+                    self.player = Player()
+                    self.player?.sounds = self.sounds
                 }
                 
                 self.tableView?.reloadData()

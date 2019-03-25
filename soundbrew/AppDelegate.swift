@@ -41,6 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         registerForRemoteNotification()
         
+        let _ = Player()
+        
         return true
     }
     

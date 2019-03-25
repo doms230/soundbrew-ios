@@ -32,14 +32,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var username: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-        return label
-    }()
-    
-    lazy var bio: UILabel = {
-        let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.text = "hey I'm dom and I like all types of music. Mostly hip-hop, electronic, and alt-rock. Hit me up for fyeeeeeee beats!"
         label.numberOfLines = 0
         return label
     }()
@@ -71,38 +64,6 @@ class ProfileTableViewCell: UITableViewCell {
         let scrollView = UIScrollView()
         return scrollView
     }()
-    
-    /*lazy var twitterButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "twitter_logo"), for: .normal)
-        button.layer.cornerRadius = 25 / 2
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var snapchatButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "snapchat_logo"), for: .normal)
-        button.layer.cornerRadius = 25 / 2
-        button.clipsToBounds = true
-        return button
-    }()*/
-    
-    
-    
-    /*lazy var followerCount: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-        label.text = "100"
-        return label
-    }()
-    
-    lazy var followerCountLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.text = "Followers"
-        return label
-    }()*/
     
     lazy var actionButton: UIButton = {
         let button = UIButton()
@@ -172,26 +133,20 @@ class ProfileTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let textFieldWidth = self.frame.width * CGFloat(0.4)
         
         switch reuseIdentifier {
         case "profileReuse":
             self.addSubview(profileImage)
             self.addSubview(displayName)
             self.addSubview(city)
-            self.addSubview(bio)
-            self.addSubview(socialScrollview)
-            //self.addSubview(website)
-            self.addSubview(actionButton)
-            
-            //self.addSubview(followerCount)
-            //self.addSubview(followerCountLabel)
+            self.addSubview(username)
             
             profileImage.layer.cornerRadius = 50
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             displayName.snp.makeConstraints { (make) -> Void in
@@ -199,7 +154,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            bio.snp.makeConstraints { (make) -> Void in
+            username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayName.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
@@ -207,51 +162,31 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(bio.snp.bottom)
+                make.top.equalTo(username.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
             }
+    
+            break
             
-            /*followerCount.snp.makeConstraints { (make) -> Void in
-                //make.top.equalTo(profileImage).offset(uiElement.topOffset)
-                make.centerY.equalTo(profileImage)
-                make.left.equalTo(self.profileImage.snp.right).offset(uiElement.leftOffset)
-                //make.right.equalTo(self).offset(uiElement.rightOffset)
-            }*/
-            
-
-            
-            /*followerCountLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(followerCount).offset(5)
-                make.left.equalTo(followerCount.snp.right).offset(uiElement.elementOffset)
-                //make.right.equalTo(self.actionButton.snp.left).offset(-(uiElement.elementOffset))
-            }*/
-            
+        case "actionProfileReuse":
+            self.addSubview(socialScrollview)
+            self.addSubview(actionButton)
             actionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(30)
-                //make.width.equalTo(75)
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                make.width.equalTo(100)
+                make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(profileImage.snp.right)
-                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+                //make.right.equalTo(profileImage.snp.right)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             socialScrollview.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(30)
-               // make.width.equalTo(150)
-                //make.top.equalTo(profileImage).offset(uiElement.elementOffset)
                 make.centerY.equalTo(actionButton)
-                make.left.equalTo(profileImage.snp.right)
-                //make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.left.equalTo(actionButton.snp.right)
                 make.right.equalTo(self)
             }
-            
-            /*website.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(bio.snp.bottom)
-                make.left.equalTo(displayName)
-                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
-            }*/
-    
             break
             
         case "editProfileImageReuse":

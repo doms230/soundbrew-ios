@@ -15,15 +15,17 @@ import Kingfisher
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
+    static let sharedInstance = Player()
+    
     var player: AVAudioPlayer?
     var currentSoundIndex = 0
     var sounds: Array<Sound>!
     var tags = [String]()
     var tableview: UITableView?
     
-    init(sounds: Array<Sound>) {
+    override init() {
         super.init()
-        self.sounds = sounds
+        //self.sounds = sounds
         
         //self.setUpNextSong(false, at: nil)
         setupRemoteTransportControls()

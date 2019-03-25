@@ -181,14 +181,14 @@ class SoundListTableViewCell: UITableViewCell {
     
             uploadsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self)
             }
             
             collectionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.top.equalTo(uploadsButton)
                 make.left.equalTo(uploadsButton.snp.right).offset(uiElement.leftOffset + 10)
                 make.bottom.equalTo(self)
             }

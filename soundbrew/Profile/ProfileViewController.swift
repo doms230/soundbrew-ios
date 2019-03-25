@@ -20,6 +20,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var artist: Artist?
     
     var soundList: SoundList!
+    var profileSounds = [Sound]()
     
     var selectedIndex = 0
 
@@ -38,6 +39,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         } else {
             self.uiElement.segueToView("Welcome", withIdentifier: "login", target: self)
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if soundList != nil {
+            soundList.sounds = profileSounds
+            soundList.player!.sounds = profileSounds
         }
     }
     
@@ -72,11 +80,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let uploadsCollectionHeaderReuse = "uploadsCollectionsHeaderReuse"
     let noSoundsReuse = "noSoundsReuse"
     let filterSoundsReuse = "filterSoundsReuse"
+    let actionProfileReuse = "actionProfileReuse"
     
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: actionProfileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadsCollectionHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
@@ -96,11 +106,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //MARK: TableView
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 3 && soundList.sounds.count != 0 {
+        if section == 4 && soundList.sounds.count != 0 {
             return soundList.sounds.count
         }
         
@@ -135,10 +145,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                      cell.city.text = city
                 }
                 
-                if let bio = artist.username {
-                    cell.bio.text = bio
+                if let username = artist.username {
+                    cell.username.text = username
                 }
-                
+            }
+            
+            return cell
+            
+        case 1:
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: actionProfileReuse) as! ProfileTableViewCell
+            
+            if let artist = self.artist {
                 //social buttons are recreated multiple times, so have to check whether not they've already been created.
                 if artist.instagramUsername != nil && instagramButton == nil {
                     if artist.instagramUsername! != "" {
@@ -153,17 +170,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
                 if artist.snapchatUsername != nil && snapchatButton == nil {
-                   if artist.snapchatUsername! != "" {
+                    if artist.snapchatUsername! != "" {
                         addSocialButton(cell.socialScrollview, buttonImageName: "snapchat_logo")
                     }
                 }
                 
                 if artist.website != nil && websiteButton == nil {
                     if artist.website! != "" {
-                         addSocialButton(cell.socialScrollview, buttonImageName: "website_logo")
+                        addSocialButton(cell.socialScrollview, buttonImageName: "website_logo")
                     }
                 }
                 
+                cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
                 if let currentUser = PFUser.current() {
                     if currentUser.objectId == artist.objectId {
                         cell.actionButton.setTitle("Edit Profile", for: .normal)
@@ -185,12 +203,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.actionButton.layer.borderWidth = 0
                     cell.actionButton.setTitleColor(.white, for: .normal)
                 }
-                cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
             }
-            
+
             return cell
             
-        case 1:
+        case 2:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! SoundListTableViewCell
             cell.selectionStyle = .none
            
@@ -211,11 +228,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             return cell
             
-        case 2:
+        case 3:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
             return soundList.soundFilterOptions(indexPath, cell: cell)
             
-        case 3:
+        case 4:
             if soundList.sounds.count == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
                 if soundList.soundType == "uploads" {
