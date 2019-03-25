@@ -12,10 +12,10 @@ import Parse
 import Kingfisher
 import SnapKit
 
-class SoundListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var soundList: SoundList!
-    var sounds = [Sound]()
+    var searchSounds = [Sound]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,8 +25,9 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-            soundList.sounds = sounds
-            soundList.player!.sounds = sounds
+            soundList.sounds = searchSounds
+            soundList.player!.sounds = searchSounds
+            self.tableView.reloadData()
         }
     }
     
@@ -68,7 +69,7 @@ class SoundListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            sounds = soundList.sounds
+            searchSounds = soundList.sounds
             return soundList.sounds.count
         }
         

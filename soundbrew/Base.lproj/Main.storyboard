@@ -151,10 +151,10 @@
             </objects>
             <point key="canvasLocation" x="1401" y="-806"/>
         </scene>
-        <!--Sound List View Controller-->
+        <!--Search View Controller-->
         <scene sceneID="PqT-ua-W6V">
             <objects>
-                <viewController id="o5t-RR-tBo" customClass="SoundListViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="o5t-RR-tBo" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aLf-9i-MQn">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -273,7 +273,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="eW3-lv-tSJ"/>
-        <segue reference="uNc-Xt-ZBj"/>
+        <segue reference="mqd-ax-H7Q"/>
         <segue reference="ciq-Pd-2ja"/>
     </inferredMetricsTieBreakers>
 </document>

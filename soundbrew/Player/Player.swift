@@ -20,6 +20,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var player: AVAudioPlayer?
     var currentSoundIndex = 0
     var sounds: Array<Sound>!
+    var currentSound: Sound?
     var tags = [String]()
     var tableview: UITableView?
     
@@ -190,7 +191,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if soundPlayable {
             player?.play()
             let sound = sounds[currentSoundIndex]
-            
+            currentSound = sound
             setBackgroundAudioViews()
             incrementPlayCount(sound: sound)
             

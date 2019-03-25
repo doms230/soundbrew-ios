@@ -28,6 +28,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var player: Player?
     var likedSoundIds = [String]()
     var soundType: String!
+    var didLoadLikedSounds = false
     
     init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?) {
         super.init()
@@ -101,6 +102,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var selectedArtist: Artist!
     
     func prepareToShowSelectedArtist(_ segue: UIStoryboardSegue) {
+        print("prepare in soundlist \(String(describing: selectedArtist.name))")
         let viewController = segue.destination as! ProfileViewController
         viewController.artist = selectedArtist
     }
@@ -117,7 +119,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     func sound(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
         let sound = sounds[indexPath.row]
-        if let currentSoundPlaying = self.miniPlayerView?.sound {
+        if let currentSoundPlaying = self.player?.currentSound {
             if currentSoundPlaying.objectId == sound.objectId {
                 changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
                 
@@ -354,17 +356,17 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 }
                 
                 //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way it will do it automatically.
-                if self.soundType == "uploads" && self.sounds.count == 0 {
+                if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
                     self.soundType = "likes"
                     self.determineTypeOfSoundToLoad(self.soundType)
                     
                 } else if let player = self.player {
                     player.sounds = self.sounds
                     
-                } else {
+                } /*else {
                     self.player = Player()
                     self.player?.sounds = self.sounds
-                }
+                }*/
                 
                 self.tableView?.reloadData()
             
@@ -380,6 +382,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         query.whereKey("userId", equalTo: userId!)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
+            self.didLoadLikedSounds = true 
             if error == nil {
                 if let objects = objects {
                     for object in objects {

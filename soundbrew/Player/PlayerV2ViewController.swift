@@ -27,16 +27,17 @@ class PlayerV2ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if self.player != nil {
-            self.sound = self.player!.sounds[self.player!.currentSoundIndex]
+        if let sound = self.player?.currentSound {
+            self.sound = sound 
             setupNotificationCenter()
             setUpView()
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if let player = self.player?.player {
-            if player.isPlaying {
+        if let player = self.player {
+            self.sound = player.currentSound
+            if player.player!.isPlaying {
                 self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
                 
             } else {
@@ -219,6 +220,7 @@ class PlayerV2ViewController: UIViewController {
     @objc func didPressArtistNameButton(_ sender: UIButton) {
         self.dismiss(animated: true, completion: {() in
             if let playerDelegate = self.playerDelegate {
+                print("player view delegeate \(String(describing: self.sound?.artist?.name))")
                 playerDelegate.selectedArtist(self.sound?.artist)
             }
         })

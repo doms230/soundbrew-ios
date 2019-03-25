@@ -32,7 +32,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if artist != nil {
             self.setUpTableView()
-            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId)
             
         } else if let currentUserId = PFUser.current()?.objectId {
             loadUserInfoFromCloud(currentUserId)
@@ -46,6 +46,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if soundList != nil {
             soundList.sounds = profileSounds
             soundList.player!.sounds = profileSounds
+            self.tableView.reloadData()
         }
     }
     
@@ -249,7 +250,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         cell.headerTitle.text = "Sounds you like will appear here."
                         
                     } else {
-                        cell.headerTitle.text = "Nothing in \(String(describing: artist?.name))'s collection yet."
+                        cell.headerTitle.text = "Nothing in \(artist!.name!)'s collection yet."
                     }
                 }
                 
@@ -257,6 +258,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
             } else {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+                profileSounds = soundList.sounds
                 return soundList.sound(indexPath, cell: cell)
             }
             
