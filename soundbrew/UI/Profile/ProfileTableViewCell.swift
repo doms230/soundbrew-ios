@@ -67,7 +67,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var actionButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Some Action", for: .normal)
+        button.setTitle("Loading", for: .normal)
         button.backgroundColor = .lightGray
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.layer.cornerRadius = 3

@@ -23,6 +23,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var profileSounds = [Sound]()
     
     var selectedIndex = 0
+    
+    var currentUser: PFUser?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,15 +32,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let menuButton = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(self.didPressMenuButton(_:)))
         self.navigationItem.rightBarButtonItem = menuButton
         
+        if let currentUser = PFUser.current(){
+            self.currentUser = currentUser
+        }
+        
         if artist != nil {
             self.setUpTableView()
             soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId)
             
-        } else if let currentUserId = PFUser.current()?.objectId {
-            loadUserInfoFromCloud(currentUserId)
+            if currentUser != nil {
+                checkFollowStatus(self.currentUser!)
+            }
             
         } else {
-            self.uiElement.segueToView("Welcome", withIdentifier: "login", target: self)
+            if currentUser != nil {
+                loadUserInfoFromCloud(currentUser!.objectId!)
+                
+            } else {
+                //show login view
+            }
         }
     }
     
@@ -351,7 +363,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressActionButton(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "showEditProfile", sender: self)
+        if let currentUser = self.currentUser {
+            if currentUser.objectId == artist!.objectId {
+                self.performSegue(withIdentifier: "editProfile", sender: self)
+                
+            } else if let isFollowedByCurrentUser = artist?.isFollowedByCurrentUser {
+                if isFollowedByCurrentUser {
+                    unFollowerUser(currentUser)
+                    
+                } else {
+                    followUser(currentUser)
+                }
+                
+            } else {
+                followUser(currentUser)
+            }
+            
+        } else {
+            //show login view
+        }
     }
     
     @objc func didPressMenuButton(_ sender: UIBarButtonItem) {
@@ -396,7 +426,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
                 
                 if let name = user["artistName"] as? String {
                     artist.name = name
@@ -443,6 +473,53 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId)
                 self.setUpTableView()
                 
+            }
+        }
+    }
+    
+    func followUser(_ currentUser: PFUser) {
+        let newFollow = PFObject(className: "Follow")
+        newFollow["fromUserId"] = currentUser.objectId
+        newFollow["toUserId"] = artist!.objectId
+        newFollow["isRemoved"] = false
+        newFollow.saveEventually {
+            (success: Bool, error: Error?) in
+            if (success) {
+
+                
+            } else if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func unFollowerUser(_ currentUser: PFUser) {
+        let query = PFQuery(className: "Follow")
+        query.whereKey("fromUserId", equalTo: currentUser.objectId!)
+        query.whereKey("toUserId", equalTo: artist!.objectId)
+        query.whereKey("isRemoved", equalTo: false)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if error != nil {
+                
+                
+            } else if let object = object {
+                object["isRemoved"] = true
+                object.saveEventually()
+            }
+        }
+    }
+    
+    func checkFollowStatus(_ currentUser: PFUser) {
+        let query = PFQuery(className: "Follow")
+        query.whereKey("fromUserId", equalTo: currentUser)
+        query.whereKey("toUserId", equalTo: artist!.objectId)
+        query.whereKey("isRemoved", equalTo: false)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object != nil && error == nil {
+                self.artist?.isFollowedByCurrentUser = true
+                self.tableView.reloadData()
             }
         }
     }

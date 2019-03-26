@@ -23,8 +23,9 @@ class Artist {
     var instagramUsername: String?
     var twitterUsername: String?
     var snapchatUsername: String?
+    var isFollowedByCurrentUser: Bool?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?, isFollowedByCurrentUser: Bool?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -37,6 +38,7 @@ class Artist {
         self.instagramUsername = instagramUsername
         self.twitterUsername = twitterUsername
         self.snapchatUsername = snapchatUsername
+        self.isFollowedByCurrentUser = isFollowedByCurrentUser
     }
 }
 

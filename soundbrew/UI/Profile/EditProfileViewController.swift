@@ -97,14 +97,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
             return 7
             
-        } else if section == 4 {
+        } else if section == 3 {
             return 9
         }
         
@@ -203,7 +203,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell.editProfileInput.text = inputText
             break
             
-        case 2:
+        /*case 2:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .gray
@@ -215,9 +215,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if let bio = artist?.bio {
                 cell.editBioText.text = bio
             }
-            break
+            break*/
             
-        case 3:
+        case 2:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
@@ -230,7 +230,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell.editProfileInput.text = artist!.email
             break
             
-        case 4:
+        case 3:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
@@ -355,7 +355,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.stopAnimating()
                     if (success) {
                         if let artistDelegate = self.artistDelegate {
-                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
+                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
                             
                             if let name =  user["artistName"] as? String {
                                 artist.name = name

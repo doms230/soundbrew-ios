@@ -21,7 +21,7 @@ class MiniPlayerView: UIButton {
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
-        //label.text = "Sound Title"
+        label.text = "Soundbrew"
         label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         label.textAlignment = .center
@@ -112,7 +112,6 @@ class MiniPlayerView: UIButton {
     func setSound() {
         if let player = self.player {
             if let currentSound = player.currentSound {
-            //self.sound = player.sounds[player.currentSoundIndex]
             self.sound = currentSound
             setCurrentSoundView(self.sound!)
             self.playBackButton.isEnabled = true

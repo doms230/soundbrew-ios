@@ -57,7 +57,6 @@ class PlayerV2ViewController: UIViewController {
     
     func setSound() {
         if let player = self.player {
-            //self.sound = player.sounds[player.currentSoundIndex]
             self.sound = player.currentSound
             setCurrentSoundView(self.sound!)
             self.shouldEnableSoundView(true)

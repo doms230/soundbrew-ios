@@ -349,7 +349,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                             soundPlays = plays
                         }
                         
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil)
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
                         let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
                         
                         self.sounds.append(sound)
@@ -431,14 +431,14 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     snapchatUsername = snapUsername
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil, isVerified: isArtistVerified, username: "", website: "", bio: "", email: "", instagramUsername: instagramUsername, twitterUsername: twitterUsername, snapchatUsername: snapchatUsername)
+                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil, isVerified: isArtistVerified, username: "", website: "", bio: "", email: "", instagramUsername: instagramUsername, twitterUsername: twitterUsername, snapchatUsername: snapchatUsername, isFollowedByCurrentUser: nil)
                 self.sounds[row].artist = artist
             }
         }
     }
     
     func deleteSong(_ objectId: String, row: Int) {
-        let query = PFQuery(className:"Post")
+        let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (post: PFObject?, error: Error?) -> Void in
             if let error = error {
