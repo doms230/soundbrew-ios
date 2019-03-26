@@ -21,7 +21,7 @@ class MiniPlayerView: UIButton {
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
-        label.text = "Sound Title"
+        //label.text = "Sound Title"
         label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         label.textAlignment = .center
@@ -30,7 +30,7 @@ class MiniPlayerView: UIButton {
     
     lazy var artistName: UIButton = {
         let button = UIButton()
-        button.setTitle("Artist Name", for: .normal)
+        //button.setTitle("Artist Name", for: .normal)
         button.setTitleColor(color.black(), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 10)
         return button
@@ -38,7 +38,7 @@ class MiniPlayerView: UIButton {
     
     lazy var playBackButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "pause"), for: .normal)
+        button.setImage(UIImage(named: "play"), for: .normal)
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
@@ -111,21 +111,20 @@ class MiniPlayerView: UIButton {
     
     func setSound() {
         if let player = self.player {
-            self.sound = player.sounds[player.currentSoundIndex]
+            if let currentSound = player.currentSound {
+            //self.sound = player.sounds[player.currentSoundIndex]
+            self.sound = currentSound
             setCurrentSoundView(self.sound!)
             self.playBackButton.isEnabled = true
+            }
             
-            //if audio is paused when mini isn't showing ... won't go back to pause logo without below code.
-            if let player = player.player {
-                if player.isPlaying {
+            if let audioPlayer = player.player {
+                if audioPlayer.isPlaying {
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
                     
                 } else {
                     self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                 }
-                
-            } else {
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
             }
         }
     }

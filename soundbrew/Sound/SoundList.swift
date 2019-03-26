@@ -8,7 +8,7 @@
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
 //  SoundlistViewController.swift and ProfileViewController.swift utilize this class
 //
-// MARK: tableView, sounds, selected artist, tags filter, data,
+// MARK: tableView, sounds, selected artist, tags filter, data, miniplayer
 
 
 import Foundation
@@ -37,6 +37,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         self.soundType = soundType
         self.userId = userId
         player = Player.sharedInstance
+        setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
     }
     

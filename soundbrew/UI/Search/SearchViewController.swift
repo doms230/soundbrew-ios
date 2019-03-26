@@ -79,7 +79,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            soundList.setUpMiniPlayer()
+            //soundList.setUpMiniPlayer()
             tableView.reloadData()
         }
     }

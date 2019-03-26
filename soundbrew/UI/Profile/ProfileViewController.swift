@@ -121,7 +121,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            soundList.setUpMiniPlayer()
+            //soundList.setUpMiniPlayer()
             tableView.reloadData()
         }
     }
@@ -238,7 +238,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
                 if soundList.soundType == "uploads" {
                     if artist!.objectId == PFUser.current()!.objectId {
-                        cell.headerTitle.text = "You haven't uploaded any sounds yet. Tap the new 'New Sound' tab to get started."
+                        cell.headerTitle.text = "You haven't uploaded any sounds yet. Tap the 'New Sound' tab to get started."
                     
                     } else {
                         cell.headerTitle.text = "\(String(describing: artist?.name)) hasn't yet."

@@ -23,6 +23,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var currentSound: Sound?
     var tags = [String]()
     var tableview: UITableView?
+    var miniPlayerView: MiniPlayerView!
+    var target: UIViewController!
     
     override init() {
         super.init()
