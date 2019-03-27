@@ -24,16 +24,23 @@ class MiniPlayerView: UIButton {
         label.text = "Soundbrew"
         label.textColor = color.black()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
-        label.textAlignment = .center
         return label
     }()
     
-    lazy var artistName: UIButton = {
-        let button = UIButton()
-        //button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(color.black(), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 10)
-        return button
+    lazy var artistName: UILabel = {
+        let label = UILabel()
+        label.text = "Welcome"
+        label.textColor = color.black()
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 10)
+        return label
+    }()
+    
+    lazy var songArt: UIImageView = {
+        let image = UIImageView()
+        image.contentMode = .scaleAspectFit
+        image.backgroundColor = .white
+        image.image = UIImage(named: "appy")
+        return image
     }()
     
     lazy var playBackButton: UIButton = {
@@ -57,7 +64,7 @@ class MiniPlayerView: UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = .white
+        self.backgroundColor = color.gray()
         setupNotificationCenter()
     }
     
@@ -70,23 +77,30 @@ class MiniPlayerView: UIButton {
             self.addSubview(playBackButton)
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
             playBackButton.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(40)
+                make.width.height.equalTo(30)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
+            self.addSubview(songArt)
+            songArt.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(30)
+                make.centerY.equalTo(self)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
             self.addSubview(songTitle)
             songTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.top.equalTo(songArt)
+                make.left.equalTo(songArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
             }
             
             self.addSubview(artistName)
             artistName.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.songTitle.snp.bottom)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.left.equalTo(songTitle)
                 make.right.equalTo(songTitle)
             }
             
@@ -131,12 +145,13 @@ class MiniPlayerView: UIButton {
     func setCurrentSoundView(_ sound: Sound) {
         self.songTitle.text = sound.title
         
+        self.songArt.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "appy"))
+        
         if let artistName = sound.artist?.name {
-            self.artistName.setTitle(artistName, for: .normal)
+            self.artistName.text = artistName
             
         } else {
-            let placeHolder = ""
-            self.artistName.setTitle(placeHolder, for: .normal)
+            self.artistName.text = ""
             loadUserInfoFromCloud(sound.artist!.objectId)
         }
     }
@@ -150,7 +165,7 @@ class MiniPlayerView: UIButton {
                 
             } else if let user = user {
                 let artistName = user["artistName"] as? String
-                self.artistName.setTitle(artistName, for: .normal)
+                self.artistName.text = artistName
                 self.sound!.artist?.name = artistName
             }
         }

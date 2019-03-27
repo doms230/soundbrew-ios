@@ -58,7 +58,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if soundList != nil {
             soundList.sounds = profileSounds
             soundList.player!.sounds = profileSounds
+            soundList.target = self
             self.tableView.reloadData()
+            //soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil)
         }
     }
     
@@ -117,7 +119,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    //MARK: TableView
     func numberOfSections(in tableView: UITableView) -> Int {
         return 5
     }
@@ -204,10 +205,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         cell.actionButton.setTitleColor(color.black(), for: .normal)
                         
                     } else {
-                        cell.actionButton.setTitle("Follow", for: .normal)
-                        cell.actionButton.backgroundColor = color.blue()
+                        if let isFollowedByCurrentUser = artist.isFollowedByCurrentUser {
+                            if isFollowedByCurrentUser {
+                                cell.actionButton.setTitle("Following", for: .normal)
+                                cell.actionButton.backgroundColor = color.gray()
+                                cell.actionButton.setTitleColor(color.black(), for: .normal)
+                                
+                            } else {
+                                cell.actionButton.setTitle("Follow", for: .normal)
+                                cell.actionButton.backgroundColor = color.blue()
+                                cell.actionButton.setTitleColor(.white, for: .normal)
+                            }
+                            
+                        } else {
+                            cell.actionButton.setTitle("Follow", for: .normal)
+                            cell.actionButton.backgroundColor = color.blue()
+                            cell.actionButton.setTitleColor(.white, for: .normal)
+                        }
+                        
                         cell.actionButton.layer.borderWidth = 0
-                        cell.actionButton.setTitleColor(.white, for: .normal)
                     }
                     
                 } else {
@@ -478,22 +494,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func followUser(_ currentUser: PFUser) {
+        self.artist!.isFollowedByCurrentUser = true
+        self.tableView.reloadData()
         let newFollow = PFObject(className: "Follow")
         newFollow["fromUserId"] = currentUser.objectId
         newFollow["toUserId"] = artist!.objectId
         newFollow["isRemoved"] = false
         newFollow.saveEventually {
             (success: Bool, error: Error?) in
-            if (success) {
-
-                
-            } else if let error = error {
-                print(error.localizedDescription)
+            if error != nil {
+                self.artist!.isFollowedByCurrentUser = false
+                self.tableView.reloadData()
             }
         }
     }
     
     func unFollowerUser(_ currentUser: PFUser) {
+        self.artist!.isFollowedByCurrentUser = false
+        self.tableView.reloadData()
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: currentUser.objectId!)
         query.whereKey("toUserId", equalTo: artist!.objectId)
@@ -501,7 +519,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if error != nil {
-                
+                self.artist!.isFollowedByCurrentUser = true
+                self.tableView.reloadData()
                 
             } else if let object = object {
                 object["isRemoved"] = true
@@ -512,15 +531,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func checkFollowStatus(_ currentUser: PFUser) {
         let query = PFQuery(className: "Follow")
-        query.whereKey("fromUserId", equalTo: currentUser)
+        query.whereKey("fromUserId", equalTo: currentUser.objectId!)
         query.whereKey("toUserId", equalTo: artist!.objectId)
         query.whereKey("isRemoved", equalTo: false)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
+                print("follwoing")
                 self.artist?.isFollowedByCurrentUser = true
-                self.tableView.reloadData()
+                
+            } else {
+                print("not following")
+                self.artist?.isFollowedByCurrentUser = false
             }
+            
+            self.tableView.reloadData()
         }
     }
 }

@@ -236,33 +236,52 @@ class Player: NSObject, AVAudioPlayerDelegate {
         let commandCenter = MPRemoteCommandCenter.shared()
         
         // Add handler for Play Command
-        commandCenter.playCommand.addTarget { [unowned self] event in
-            if !self.player!.isPlaying {
-                self.player!.play()
+        commandCenter.playCommand.addTarget { [weak self] event in
+            if let playSelf = self {
+                playSelf.play()
                 return .success
             }
+            
+            
+            /*if !self.player!.isPlaying {
+                self.player!.play()
+                return .success
+            }*/
             
             return .commandFailed
         }
         
         // Add handler for Pause Command
-        commandCenter.pauseCommand.addTarget { [unowned self] event in
-            if self.player!.isPlaying {
-                self.player!.pause()
+        commandCenter.pauseCommand.addTarget { [weak self] event in
+            if let pauseSelf = self {
+                pauseSelf.pause()
                 return .success
             }
+            
+            /*if self.player!.isPlaying {
+                self.player!.pause()
+                return .success
+            }*/
             
             return .commandFailed
         }
         
-        commandCenter.nextTrackCommand.addTarget { [unowned self] event in
-            self.next()
-            return .success
+        commandCenter.nextTrackCommand.addTarget { [weak self] event in
+            if let nextSelf = self {
+                nextSelf.next()
+                return .success
+            }
+
+            return .commandFailed
         }
         
-        commandCenter.previousTrackCommand.addTarget { [unowned self] event in
-            self.previous()
-            return .success
+        commandCenter.previousTrackCommand.addTarget { [weak self] event in
+            if let previousSelf = self {
+                previousSelf.previous()
+                return .success
+            }
+
+            return .commandFailed
         }
     }
     

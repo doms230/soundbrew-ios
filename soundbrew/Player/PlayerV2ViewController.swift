@@ -220,7 +220,6 @@ class PlayerV2ViewController: UIViewController {
     @objc func didPressArtistNameButton(_ sender: UIButton) {
         self.dismiss(animated: true, completion: {() in
             if let playerDelegate = self.playerDelegate {
-                print("player view delegeate \(String(describing: self.sound?.artist?.name))")
                 playerDelegate.selectedArtist(self.sound?.artist)
             }
         })

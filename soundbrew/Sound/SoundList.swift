@@ -27,6 +27,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var userId: String?
     var player: Player?
     var likedSoundIds = [String]()
+    var followUserIds = [String]()
     var soundType: String!
     var didLoadLikedSounds = false
     
@@ -62,10 +63,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             miniPlayerView?.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
             
             miniPlayerView?.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(55)
+                make.height.equalTo(45)
                 make.right.equalTo(tabBarView)
                 make.left.equalTo(tabBarView)
-                make.bottom.equalTo(tabBarView).offset(-48)
+                make.bottom.equalTo(tabBarView).offset(-49)
             }
             
             if let player = self.player?.player  {
@@ -103,7 +104,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var selectedArtist: Artist!
     
     func prepareToShowSelectedArtist(_ segue: UIStoryboardSegue) {
-        print("prepare in soundlist \(String(describing: selectedArtist.name))")
         let viewController = segue.destination as! ProfileViewController
         viewController.artist = selectedArtist
     }
@@ -208,15 +208,19 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         
         switch soundType {
         case "search":
-            loadSounds(descendingOrder, containedIn: nil, userId: nil, tags: tags)
+            loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: tags, followIds: nil)
             break
             
         case "uploads":
-            loadSounds(descendingOrder, containedIn: nil, userId: userId!, tags: tags)
+            loadSounds(descendingOrder, likeIds: nil, userId: userId!, tags: tags, followIds: nil)
             break
             
         case "likes":
             self.loadLikes(descendingOrder)
+            break
+            
+        case "follows":
+            self.loadFollows(descendingOrder)
             break
             
         default:
@@ -321,10 +325,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     }
     
     //mark: data
-    func loadSounds(_ descendingOrder: String, containedIn: Array<String>?, userId: String?, tags: Array<String>?) {
+    func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<String>?, followIds: Array<String>?) {
         let query = PFQuery(className: "Post")
-        if let containedIn = containedIn {
-            query.whereKey("objectId", containedIn: containedIn)
+        if let likeIds = likeIds {
+            query.whereKey("objectId", containedIn: likeIds)
         }
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
@@ -332,6 +336,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         if let tags = tags {
             query.whereKey("tags", containedIn: tags)
         }
+        if let followIds = followIds {
+            query.whereKey("userId", containedIn: followIds)
+        }
+        
         query.addDescendingOrder(descendingOrder)
         query.limit = 100
         query.findObjectsInBackground {
@@ -363,14 +371,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     
                 } else if let player = self.player {
                     player.sounds = self.sounds
-                    
-                } /*else {
-                    self.player = Player()
-                    self.player?.sounds = self.sounds
-                }*/
+                }
                 
                 self.tableView?.reloadData()
-            
                 
             } else {
                 print("Error: \(error!)")
@@ -391,7 +394,28 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, containedIn: self.likedSoundIds, userId: nil, tags: nil)
+                self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: nil, followIds: nil)
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
+    func loadFollows(_ descendingOrder: String) {
+        let query = PFQuery(className: "Follow")
+        query.whereKey("fromUserId", equalTo: userId!)
+        query.whereKey("isRemoved", equalTo: false)
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        self.followUserIds.append(object["toUserId"] as! String)
+                    }
+                }
+                
+                self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: self.followUserIds)
                 
             } else {
                 print("Error: \(error!)")
