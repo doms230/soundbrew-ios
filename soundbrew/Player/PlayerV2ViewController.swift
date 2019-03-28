@@ -260,7 +260,9 @@ class PlayerV2ViewController: UIViewController {
         return button
     }()
     @objc func didPressLikeButton(_ sender: UIButton) {
-        manageLikeForCurrentSound()
+        if PFUser.current() != nil {
+            manageLikeForCurrentSound()
+        }
     }
     
     lazy var shareButton: UIButton = {

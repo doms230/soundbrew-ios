@@ -47,22 +47,6 @@ class SoundListTableViewCell: UITableViewCell {
         return segment
     }()
     
-    lazy var uploadsButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Uploads", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 25)
-        button.setTitleColor(color.black(), for: .normal)
-        return button
-    }()
-    
-    lazy var collectionButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Collection", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 25)
-        button.setTitleColor(.lightGray, for: .normal)
-        return button
-    }()
-    
     lazy var playFilterScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         return scrollView
@@ -173,26 +157,6 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
-            break
-            
-        case "uploadsCollectionsHeaderReuse":
-            self.addSubview(uploadsButton)
-            self.addSubview(collectionButton)
-    
-            uploadsButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self)
-            }
-            
-            collectionButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(uploadsButton)
-                make.left.equalTo(uploadsButton.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(self)
-            }
-        
             break
             
         case "filterSoundsReuse":

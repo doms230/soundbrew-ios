@@ -38,7 +38,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if artist != nil {
             self.setUpTableView()
-            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId, tags: nil)
             
             if currentUser != nil {
                 checkFollowStatus(self.currentUser!)
@@ -56,11 +56,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-            soundList.sounds = profileSounds
+            /*soundList.sounds = profileSounds
             soundList.player!.sounds = profileSounds
             soundList.target = self
-            self.tableView.reloadData()
-            //soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil)
+            self.tableView.reloadData()*/
+            
+            var tags: Array<String>?
+            if let soundListTags = soundList.tags {
+                tags = soundListTags
+            }
+            
+            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: self.artist?.objectId, tags: tags)
         }
     }
     
@@ -102,8 +108,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: actionProfileReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: uploadsCollectionHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadsCollectionHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         self.tableView.separatorStyle = .none
@@ -237,7 +243,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             return cell
             
         case 2:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! SoundListTableViewCell
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! ProfileTableViewCell
             cell.selectionStyle = .none
            
             cell.uploadsButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
@@ -344,31 +350,46 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch sender.tag {
         case 0:
             if let username = artist?.instagramUsername {
-                UIApplication.shared.open(URL(string: "https://www.instagram.com/\(username)")!, options: [:], completionHandler: nil)
+                let instagramURL = "https://www.instagram.com/\(username)"
+                if isURLVerified(instagramURL) {
+                    UIApplication.shared.open(URL(string: instagramURL)!, options: [:], completionHandler: nil)
+                }
             }
             break
             
         case 1:
             if let username = artist?.twitterUsername {
-                UIApplication.shared.open(URL(string: "https://www.twitter.com/\(username)")!, options: [:], completionHandler: nil)
+                let twitterURL = "https://www.twitter.com/\(username)"
+                if isURLVerified(twitterURL) {
+                    UIApplication.shared.open(URL(string: twitterURL)!, options: [:], completionHandler: nil)
+                }
             }
             break
             
         case 2:
             if let username = artist?.snapchatUsername {
-                UIApplication.shared.open(URL(string: "https://www.snapchat.com/add/\(username)")!, options: [:], completionHandler: nil)
+                let snapchatURL = "https://www.snapchat.com/add/\(username)"
+                if isURLVerified(snapchatURL) {
+                    UIApplication.shared.open(URL(string: snapchatURL)!, options: [:], completionHandler: nil)
+                }
             }
             break
             
         case 3:
             if let website = artist?.website {
-                UIApplication.shared.open(URL(string: "\(website)")!, options: [:], completionHandler: nil)
+                if isURLVerified(website) {
+                    UIApplication.shared.open(URL(string: "\(website)")!, options: [:], completionHandler: nil)
+                }
             }
             break
             
         default:
             break
         }
+    }
+    
+    func isURLVerified(_ url: String) -> Bool {
+        return UIApplication.shared.canOpenURL(URL(string: url)!)
     }
     
     //mark: button actions
@@ -486,7 +507,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 self.artist = artist
                 
-                self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId)
+                self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId, tags: nil)
                 self.setUpTableView()
                 
             }

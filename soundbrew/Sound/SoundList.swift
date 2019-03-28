@@ -31,12 +31,13 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var soundType: String!
     var didLoadLikedSounds = false
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<String>?) {
         super.init()
         self.target = target
         self.tableView = tableView
         self.soundType = soundType
         self.userId = userId
+        self.tags = tags
         player = Player.sharedInstance
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
@@ -324,6 +325,12 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         target.performSegue(withIdentifier: "showTags", sender: self)
     }
     
+    func weighTag() -> Int {
+        
+        
+        return 0
+    }
+    
     //mark: data
     func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<String>?, followIds: Array<String>?) {
         let query = PFQuery(className: "Post")
@@ -364,7 +371,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way it will do it automatically.
+                //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way app will load collection automatically.
                 if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
                     self.soundType = "likes"
                     self.determineTypeOfSoundToLoad(self.soundType)
@@ -374,6 +381,14 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 }
                 
                 self.tableView?.reloadData()
+                
+                if self.soundType == "uploads" || self.soundType == "likes" && self.sounds.count != 0 {
+                    if let currentUser = PFUser.current() {
+                        if currentUser.objectId == self.userId! && self.userId! != "AWKPPDI4CB" {
+                            SKStoreReviewController.requestReview()
+                        }
+                    }
+                }
                 
             } else {
                 print("Error: \(error!)")

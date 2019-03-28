@@ -66,7 +66,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let player = self.player {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
-                setBackgroundAudioNowPlaying(player, sound: self.sounds[currentSoundIndex])
+                setBackgroundAudioNowPlaying(player, sound: self.currentSound!)
+                incrementPlayCount(sound: self.currentSound!)
                 
             } else {
                 self.setUpNextSong(true, at: nil)

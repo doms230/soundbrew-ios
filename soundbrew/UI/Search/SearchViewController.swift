@@ -19,16 +19,22 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil)
         setUpTableView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-           /* soundList.sounds = searchSounds
+            /*soundList.sounds = searchSounds
             soundList.player!.sounds = searchSounds
-            soundList.target = self*/
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil)
+            soundList.target = self
+            soundList.tableView = self.tableView
+            soundList.soundType = "search"*/
+            var tags: Array<String>?
+            if let soundListTags = soundList.tags {
+                tags = soundListTags
+            }
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: tags)
             //self.tableView.reloadData()
         }
     }
