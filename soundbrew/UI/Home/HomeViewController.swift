@@ -38,8 +38,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
              soundList.player!.sounds = searchSounds
              soundList.target = self*/
             
-            var tags: Array<String>?
-            if let soundListTags = soundList.tags {
+            var tags: Array<Tag>?
+            if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
             }
             

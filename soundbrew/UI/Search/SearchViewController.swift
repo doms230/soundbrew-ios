@@ -30,8 +30,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             soundList.target = self
             soundList.tableView = self.tableView
             soundList.soundType = "search"*/
-            var tags: Array<String>?
-            if let soundListTags = soundList.tags {
+            var tags: Array<Tag>?
+            if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
             }
             soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: tags)

@@ -61,8 +61,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.target = self
             self.tableView.reloadData()*/
             
-            var tags: Array<String>?
-            if let soundListTags = soundList.tags {
+            var tags: Array<Tag>?
+            if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
             }
             

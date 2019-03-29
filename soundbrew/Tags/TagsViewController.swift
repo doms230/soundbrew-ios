@@ -234,7 +234,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         //remove tag from chosen Tags
         for i in 0..<self.chosenTagsArray.count {
-            if self.chosenTagsArray[i] == title  {
+            if self.chosenTagsArray[i].name == title  {
                 self.chosenTagsArray.remove(at: i)
                 break
             }
@@ -246,7 +246,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         //add back chosen tags to chosen tag scrollview
         for title in chosenTagsArray {
-            self.addChosenTagButton(title)
+            self.addChosenTagButton(title.name)
         }
         
         //show tags label if no more chosen tags
@@ -275,7 +275,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var cityTags = [String]()
     var artistTags = [String]()
     
-    var chosenTagsArray = [String]()
+    var chosenTagsArray = [Tag]()
     var xPositionForChosenTags = UIElement().leftOffset
     
     lazy var chooseTagsLabel: UILabel = {
@@ -309,7 +309,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             tags = filterTags
             
         } else {
-            tags = self.filteredTags.filter {$0.tagType == nil}.map {$0.name}
+            tags = self.filteredTags.filter {$0.type == nil}.map {$0.name}
         }
         cell.tagLabel.addTags(tags)
         
@@ -325,7 +325,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func setupChooseTagsView() {
         if self.chosenTagsArray.count != 0 {
             for tag in self.chosenTagsArray {
-                addChosenTagButton(tag)
+                addChosenTagButton(tag.name)
             }
             
         } else {
@@ -355,18 +355,19 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
         if isChoosingTagsForSoundUpload && tagType != nil {
-            self.chosenTagsArray.append(title)
+            //self.chosenTagsArray.append(title)
             self.dismiss(animated: true, completion: nil)
             //self.uiElement.goBackToPreviousViewController(self)
             
         } else if !tagView.isSelected {
             sender.removeTag(title)
-            self.chosenTagsArray.append(title)
             self.addChosenTagButton(title)
+            
             var positionToRemoveTag: Int?
             for i in 0..<self.filteredTags.count {
                 if self.filteredTags[i].name == title {
                     positionToRemoveTag = i
+                    self.chosenTagsArray.append(self.filteredTags[i])
                 }
             }
             
@@ -401,7 +402,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func handleTagsForDismissal() {
-        var tags: Array<String>?
+        var tags: Array<Tag>?
         if chosenTagsArray.count != 0 {
             tags = chosenTagsArray
         }
@@ -410,9 +411,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             tagDelegate.changeTags(tags)
         }
         
-        if tagType == "city" && chosenTagsArray.count != 0 {
+        /*if tagType == "city" && chosenTagsArray.count != 0 {
             uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
-        }
+        }*/
         
         /*if isChoosingTagsForSoundUpload {
             if let tagType = tagType {
@@ -469,7 +470,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         if let tagType = tagType {
-            let tags: Array<Tag> = self.filteredTags.filter {$0.tagType == tagType}
+            let tags: Array<Tag> = self.filteredTags.filter {$0.type == tagType}
             addFeatureTagButton(tags, cell: cell, color: color)
         }
         
@@ -513,12 +514,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc func didPressFeatureTag(_ sender: UIButton) {
         let tagName = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
-        self.chosenTagsArray.append(tagName)
         self.addChosenTagButton(tagName)
         
         for i in 0..<self.filteredTags.count {
             if tagName == self.filteredTags[i].name {
                 self.filteredTags[i].isSelected = true
+                self.chosenTagsArray.append(self.filteredTags[i])
                 self.tableView.reloadData()
                 break
             }
@@ -593,11 +594,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
                         
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, tagType: nil)
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil)
                         
                         if let tagType = object["type"] as? String {
                             if !tagType.isEmpty {
-                                newTag.tagType = tagType
+                                newTag.type = tagType
                             }
                         }
                         self.filteredTags.append(newTag)
@@ -629,16 +630,17 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
                         
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, tagType: nil)
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil)
                         
                         if let tagType = object["type"] as? String {
                             if !tagType.isEmpty {
-                                newTag.tagType = tagType
+                                newTag.type = tagType
                             }
                         }
                         
                         if self.chosenTagsArray.count != 0 {
-                            if !self.chosenTagsArray.contains(newTag.name) {
+                            let chosenTagObjectIds = self.chosenTagsArray.map {$0.objectId}
+                            if !chosenTagObjectIds.contains(newTag.objectId) {
                                 self.tags.append(newTag)
                             }
                             

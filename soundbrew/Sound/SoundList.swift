@@ -31,13 +31,13 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var soundType: String!
     var didLoadLikedSounds = false
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<String>?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?) {
         super.init()
         self.target = target
         self.tableView = tableView
         self.soundType = soundType
         self.userId = userId
-        self.tags = tags
+        self.selectedTagsForFiltering = tags
         player = Player.sharedInstance
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
@@ -209,11 +209,11 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         
         switch soundType {
         case "search":
-            loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: tags, followIds: nil)
+            loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: selectedTagsForFiltering, followIds: nil)
             break
             
         case "uploads":
-            loadSounds(descendingOrder, likeIds: nil, userId: userId!, tags: tags, followIds: nil)
+            loadSounds(descendingOrder, likeIds: nil, userId: userId!, tags: selectedTagsForFiltering, followIds: nil)
             break
             
         case "likes":
@@ -229,8 +229,80 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         }
     }
     
+    func sortSounds(_ selectedTags: Array<Tag>) {
+        for i in 0..<self.sounds.count {
+            let tags = self.sounds[i].tags
+            let selectedTagNames = selectedTags.map {$0.name!}
+            var relevancyScore = 0
+            
+            for tag in tags! {
+                if selectedTagNames.contains(tag) {
+                    var type: String?
+                    let query = PFQuery(className: "Tag")
+                    query.whereKey("tag", equalTo: tag)
+                    query.getFirstObjectInBackground {
+                        (object: PFObject?, error: Error?) -> Void in
+                        if object != nil && error == nil {
+                            type = object?["type"] as? String
+                            if let type = type {
+                                switch type {
+                                case "genre":
+                                    relevancyScore = relevancyScore +  4
+                                    break
+                                    
+                                case "city":
+                                    relevancyScore = relevancyScore + 3
+                                    break
+                                    
+                                case "activity":
+                                    relevancyScore = relevancyScore + 2
+                                    break
+                                    
+                                case "mood":
+                                    relevancyScore = relevancyScore + 2
+                                    break
+                                    
+                                default:
+                                    relevancyScore = relevancyScore + 1
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            print("\(self.sounds[i].title!): \(relevancyScore)")
+            self.sounds[i].relevancyScore = relevancyScore
+
+        }
+        
+        self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+        updateSounds()
+    }
+    
+    func updateSounds() {
+        //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way app will load collection automatically.
+        if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
+            self.soundType = "likes"
+            self.determineTypeOfSoundToLoad(self.soundType)
+            
+        } else if let player = self.player {
+            player.sounds = self.sounds
+        }
+        
+        self.tableView?.reloadData()
+        
+        if self.soundType == "uploads" || self.soundType == "likes" && self.sounds.count != 0 {
+            if let currentUser = PFUser.current() {
+                if currentUser.objectId == self.userId! && self.userId! != "AWKPPDI4CB" {
+                    SKStoreReviewController.requestReview()
+                }
+            }
+        }
+    }
+    
     //mark: tags filter
-    var tags: Array<String>?
+    var selectedTagsForFiltering: Array<Tag>?
     var soundFilter: String!
     var xPositionForTags = UIElement().leftOffset
     
@@ -251,10 +323,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         
         cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
         xPositionForTags = uiElement.leftOffset
-        if let tags = self.tags {
+        if let tags = self.selectedTagsForFiltering {
             if tags.count != 0 {
                 for tag in tags {
-                    self.addSelectedTags(cell.tagsScrollview, tagName: tag)
+                    self.addSelectedTags(cell.tagsScrollview, tagName: tag.name)
                 }
                 
             } else {
@@ -281,16 +353,28 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     func prepareToShowTags(_ segue: UIStoryboardSegue) {
         let viewController = segue.destination as! TagsViewController
         viewController.tagDelegate = self
-        if let tags = self.tags {
+        if let tags = self.selectedTagsForFiltering {
             viewController.chosenTagsArray = tags
         }
     }
     
-    func changeTags(_ value: Array<String>?) {
-        if self.tags != value {
-            self.tags = value
-            determineTypeOfSoundToLoad(soundType)
-            
+    func changeTags(_ value: Array<Tag>?) {
+        //Only want to reload data if tags changed
+        //if let currentTags
+        var currentTagObjectIds = [String]()
+        if let selectedTagsForFiltering = self.selectedTagsForFiltering {
+            currentTagObjectIds = selectedTagsForFiltering.map {$0.objectId}
+        }
+        if let newTags = value {
+            let newTagObjectIds = newTags.map {$0.objectId}
+            if currentTagObjectIds != newTagObjectIds {
+                self.selectedTagsForFiltering = value
+                determineTypeOfSoundToLoad(soundType)
+            }
+        }
+        
+        /*if self.tags != value {
+
         } else {
             if let filter = self.uiElement.getUserDefault("filter") as? String {
                 if self.soundFilter != filter {
@@ -298,7 +382,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     determineTypeOfSoundToLoad(soundType)
                 }
             }
-        }
+        }*/
     }
     
     func addSelectedTags(_ scrollview: UIScrollView, tagName: String) {
@@ -325,14 +409,50 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         target.performSegue(withIdentifier: "showTags", sender: self)
     }
     
-    func weighTag() -> Int {
+    /*func weighTag(_ tag: String, selectedTags: Array<Tag>) -> Int {
+        var type: String?
+        let selectedTagNames = selectedTags.map {$0.name!}
+        var relevancyScore = 0
         
-        
-        return 0
-    }
+        if selectedTagNames.contains(tag) {
+            let query = PFQuery(className: "Tag")
+            query.whereKey("tag", equalTo: tag)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    type = object?["type"] as? String
+                    if let type = type {
+                        switch type {
+                        case "genre":
+                            relevancyScore = 4
+                            break
+                            
+                        case "city":
+                            relevancyScore = 3
+                            break
+                            
+                        case "activity":
+                            relevancyScore = 2
+                            break
+                            
+                        case "mood":
+                            relevancyScore = 2
+                            break
+                            
+                        default:
+                            relevancyScore = 1
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        //print("\(tag): \(relevancyScore)")
+        return relevancyScore
+    }*/
     
     //mark: data
-    func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<String>?, followIds: Array<String>?) {
+    func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<Tag>?, followIds: Array<String>?) {
         let query = PFQuery(className: "Post")
         if let likeIds = likeIds {
             query.whereKey("objectId", containedIn: likeIds)
@@ -341,7 +461,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             query.whereKey("userId", equalTo: userId)
         }
         if let tags = tags {
-            query.whereKey("tags", containedIn: tags)
+            let tagNames = tags.map {$0.name!}
+            //query.whereKey("tags", containedIn: tagNames)
+            query.whereKey("tags", containsAllObjectsIn: tagNames)
         }
         if let followIds = followIds {
             query.whereKey("userId", containedIn: followIds)
@@ -365,29 +487,29 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                         }
                         
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
+                        
+                        /*var relevancyScore = 0
+                        if let selectedTagsForFiltering = self.selectedTagsForFiltering {
+                            for tag in tags {
+                                relevancyScore = relevancyScore + self.weighTag(tag, selectedTags: selectedTagsForFiltering)
+                            }
+                        }*/
+                        
                         let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
                         
                         self.sounds.append(sound)
                     }
-                }
-                
-                //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way app will load collection automatically.
-                if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
-                    self.soundType = "likes"
-                    self.determineTypeOfSoundToLoad(self.soundType)
                     
-                } else if let player = self.player {
-                    player.sounds = self.sounds
-                }
-                
-                self.tableView?.reloadData()
-                
-                if self.soundType == "uploads" || self.soundType == "likes" && self.sounds.count != 0 {
-                    if let currentUser = PFUser.current() {
-                        if currentUser.objectId == self.userId! && self.userId! != "AWKPPDI4CB" {
-                            SKStoreReviewController.requestReview()
-                        }
-                    }
+                    self.updateSounds()
+                    
+                    /*if let selectedTagsForFiltering = self.selectedTagsForFiltering {
+                        self.sortSounds(selectedTagsForFiltering)
+                        
+                    } else {
+                        self.updateSounds()
+                    }*/
+                    
+                    //self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                 }
                 
             } else {

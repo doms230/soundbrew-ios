@@ -73,10 +73,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var genreTag: String?
     var moodTag: String?
     var activityTag: String?
-    var moreTags: Array<String>?
-    var cityTag: String?
+    var moreTags: Array<Tag>?
+    var cityTag: Tag?
     
-    func showTagsViewController(_ tags: Array<String>?, tagType: String?) {
+    func showTagsViewController(_ tags: Array<Tag>?, tagType: String?) {
         let modal = TagsViewController()
         let transitionDelegate = DeckTransitioningDelegate()
         modal.transitioningDelegate = transitionDelegate
@@ -94,7 +94,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         present(modal, animated: true, completion: nil)
     }
     
-    func changeTags(_ value: Array<String>?) {
+    func changeTags(_ value: Array<Tag>?) {
         if tagType != nil {
             if tagType! == "city" {
                 if let tag = value {
@@ -166,7 +166,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 1:
                 cell.soundTagLabel.text = "City Tag"
                 if let cityTag = self.cityTag {
-                    cell.chosenSoundTagLabel.text = cityTag
+                    cell.chosenSoundTagLabel.text = cityTag.name
                     cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
@@ -228,7 +228,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 1:
                 tagType = "city"
                 //self.performSegue(withIdentifier: "showTags", sender: self)
-                var cityTags: Array<String>?
+                var cityTags: Array<Tag>?
                 if let cityTag = self.cityTag {
                     cityTags?.append(cityTag)
                 }
@@ -443,12 +443,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         //var tags = soundTags.text!.split{$0 == " "}.map(String.init)
         var tags = [String]()
         if let moreTags = self.moreTags {
-            tags = moreTags
+            let moreTagNames = moreTags.map {$0.name!}
+            tags = moreTagNames
         }
         tags.append(genreTag!.lowercased())
         tags.append(activityTag!.lowercased())
         tags.append(moodTag!.lowercased())
-        tags.append(cityTag!.lowercased())
+        tags.append(cityTag!.name.lowercased())
     
         return tags
     }
