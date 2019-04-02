@@ -14,7 +14,7 @@ class ProfileTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var uploadsButton: UIButton = {
+    lazy var releasesButton: UIButton = {
         let button = UIButton()
         button.setTitle("Releases", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
@@ -339,22 +339,22 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
-        case "uploadsCollectionsHeaderReuse":
-            self.addSubview(uploadsButton)
+        case "releasesCollectionsHeaderReuse":
+            self.addSubview(releasesButton)
             self.addSubview(collectionButton)
             
-            uploadsButton.snp.makeConstraints { (make) -> Void in
+            releasesButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             collectionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                make.top.equalTo(uploadsButton)
-                make.left.equalTo(uploadsButton.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(self)
+                make.top.equalTo(releasesButton)
+                make.left.equalTo(releasesButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             break

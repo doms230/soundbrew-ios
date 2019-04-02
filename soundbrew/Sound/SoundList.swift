@@ -41,6 +41,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         self.selectedTagsForFiltering = tags
         self.searchText = searchText
         player = Player.sharedInstance
+        
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
     }
@@ -196,17 +197,11 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.sounds.removeAll()
-        var descendingOrder: String!
+        var descendingOrder = "createdAt"
         if let filter = self.uiElement.getUserDefault("filter") as? String {
-            if filter == "recent" {
-                descendingOrder = "createdAt"
-                
-            } else {
-                descendingOrder = "plays"
+            if filter == "popular" {
+                descendingOrder = "playse"
             }
-            
-        } else {
-            descendingOrder = "createdAt"
         }
         
         switch soundType {

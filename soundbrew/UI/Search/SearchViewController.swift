@@ -23,6 +23,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil, searchText: nil)
+        
         setupSearchBar()
         setUpTableView()
     }
@@ -59,7 +62,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let filterSoundsReuse = "filterSoundsReuse"
     let searchProfileReuse = "searchProfileReuse"
     //in this case, will be changed to Artists and Sounds ... Doing this to avoid repetion in code
-    let uploadsCollectionsHeaderReuse = "uploadsCollectionsHeaderReuse"
+    let uploadsCollectionsHeaderReuse = "releasesCollectionsHeaderReuse"
     
     func setUpTableView() {
         tableView.dataSource = self
@@ -78,8 +81,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
-        
-        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil, searchText: nil)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -88,7 +89,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            if searchType == profileSearch {
+            if searchIsActive && searchType == profileSearch {
                 return searchUsers.count
                 
             } else {
@@ -174,7 +175,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = true
+        //searchBar.showsCancelButton = true
+        searchBar.setShowsCancelButton(true, animated: true)
         searchIsActive = true
         self.tableView.reloadData()
     }
@@ -194,7 +196,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = false
+        //searchBar.showsCancelButton = false
+        searchBar.setShowsCancelButton(false, animated: true)
         self.searchBar.resignFirstResponder()
         soundList.soundType = "discover"
         searchIsActive = false
@@ -238,21 +241,21 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func searchTypeCell() -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionsHeaderReuse) as! ProfileTableViewCell
         
-        cell.uploadsButton.setTitle("Accounts", for: .normal)
-        cell.uploadsButton.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
-        cell.uploadsButton.tag = 0
+        cell.releasesButton.setTitle("Accounts", for: .normal)
+        cell.releasesButton.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
+        cell.releasesButton.tag = 0
         
         cell.collectionButton.setTitle("Sounds", for: .normal)
         cell.collectionButton.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
         cell.collectionButton.tag = 1
         
         if searchType == profileSearch {
-            cell.uploadsButton.setTitleColor(color.black(), for: .normal)
+            cell.releasesButton.setTitleColor(color.black(), for: .normal)
             cell.collectionButton.setTitleColor(color.darkGray(), for: .normal)
             
         } else {
             cell.collectionButton.setTitleColor(color.black(), for: .normal)
-            cell.uploadsButton.setTitleColor(color.darkGray(), for: .normal)
+            cell.releasesButton.setTitleColor(color.darkGray(), for: .normal)
         }
         
         return cell

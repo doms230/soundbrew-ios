@@ -76,12 +76,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let editProfileController = navigationController.topViewController as! EditProfileViewController
             editProfileController.artist = artist
             editProfileController.artistDelegate = self 
-            
-        } else {
-            /*let viewController: SoundListViewController = segue.destination as! SoundListViewController
-            viewController.userId = artist!.objectId
-            //viewController.soundType = selectedViewAllSound
-            viewController.soundTitle = "\(artist!.name!)'s \(selectedViewAllSound.capitalized)"*/
         }
     }
     
@@ -98,7 +92,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //MARK: Tableview
     let reuse = "soundReuse"
     let profileReuse = "profileReuse"
-    let uploadsCollectionHeaderReuse = "uploadsCollectionsHeaderReuse"
+    let uploadsCollectionHeaderReuse = "releasesCollectionsHeaderReuse"
     let noSoundsReuse = "noSoundsReuse"
     let filterSoundsReuse = "filterSoundsReuse"
     let actionProfileReuse = "actionProfileReuse"
@@ -239,18 +233,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! ProfileTableViewCell
             cell.selectionStyle = .none
            
-            cell.uploadsButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-            cell.uploadsButton.tag = 0
+            cell.releasesButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+            cell.releasesButton.tag = 0
             
             cell.collectionButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
             cell.collectionButton.tag = 1
             
             if soundList.soundType == "uploads" {
-                cell.uploadsButton.setTitleColor(color.black(), for: .normal)
+                cell.releasesButton.setTitleColor(color.black(), for: .normal)
                 cell.collectionButton.setTitleColor(color.darkGray(), for: .normal)
                 
             } else {
-                cell.uploadsButton.setTitleColor(color.darkGray(), for: .normal)
+                cell.releasesButton.setTitleColor(color.darkGray(), for: .normal)
                 cell.collectionButton.setTitleColor(color.black(), for: .normal)
             }
             
