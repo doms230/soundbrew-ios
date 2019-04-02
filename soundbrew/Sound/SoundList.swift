@@ -30,14 +30,16 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var followUserIds = [String]()
     var soundType: String!
     var didLoadLikedSounds = false
+    var searchText: String?
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?, searchText: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
         self.soundType = soundType
         self.userId = userId
         self.selectedTagsForFiltering = tags
+        self.searchText = searchText
         player = Player.sharedInstance
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
@@ -209,11 +211,11 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         
         switch soundType {
         case "discover":
-            loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: selectedTagsForFiltering, followIds: nil)
+            loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: selectedTagsForFiltering, followIds: nil, searchText: nil)
             break
             
         case "uploads":
-            loadSounds(descendingOrder, likeIds: nil, userId: userId!, tags: selectedTagsForFiltering, followIds: nil)
+            loadSounds(descendingOrder, likeIds: nil, userId: userId!, tags: selectedTagsForFiltering, followIds: nil, searchText: nil)
             break
             
         case "likes":
@@ -225,6 +227,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             break
             
         case "search":
+            loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: nil, searchText: self.searchText)
             break 
             
         default:
@@ -467,21 +470,28 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     }*/
     
     //mark: data
-    func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<Tag>?, followIds: Array<String>?) {
+    func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<Tag>?, followIds: Array<String>?, searchText: String?) {
         let query = PFQuery(className: "Post")
         if let likeIds = likeIds {
             query.whereKey("objectId", containedIn: likeIds)
         }
+        
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
         }
+        
         if let tags = tags {
             let tagNames = tags.map {$0.name!}
             //query.whereKey("tags", containedIn: tagNames)
             query.whereKey("tags", containsAllObjectsIn: tagNames)
         }
+
         if let followIds = followIds {
             query.whereKey("userId", containedIn: followIds)
+        }
+        
+        if let searchText = searchText {
+            query.whereKey("title", hasPrefix: searchText)
         }
         
         query.addDescendingOrder(descendingOrder)
@@ -546,7 +556,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: nil, followIds: nil)
+                self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: nil, followIds: nil, searchText: nil)
                 
             } else {
                 print("Error: \(error!)")
@@ -567,7 +577,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: self.followUserIds)
+                self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: self.followUserIds, searchText: nil)
                 
             } else {
                 print("Error: \(error!)")

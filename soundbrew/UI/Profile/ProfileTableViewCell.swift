@@ -16,7 +16,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var uploadsButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Uploads", for: .normal)
+        button.setTitle("Releases", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         button.setTitleColor(color.black(), for: .normal)
         return button
@@ -157,18 +157,35 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(displayName)
             self.addSubview(city)
             self.addSubview(username)
+            //self.addSubview(socialScrollview)
+            self.addSubview(actionButton)
             
-            profileImage.layer.cornerRadius = 50
+            profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
+                make.height.width.equalTo(75)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            /*socialScrollview.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(30)
+                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                //make.centerY.equalTo(actionButton)
+                make.left.equalTo(profileImage.snp.right)
+                make.right.equalTo(self)
+            }*/
+            
+            actionButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(30)
+                make.width.equalTo(100)
+                make.centerY.equalTo(profileImage)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             displayName.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage).offset(uiElement.topOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
+                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(profileImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             username.snp.makeConstraints { (make) -> Void in
@@ -182,6 +199,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(username.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
+                make.bottom.equalTo(self)
             }
     
             break

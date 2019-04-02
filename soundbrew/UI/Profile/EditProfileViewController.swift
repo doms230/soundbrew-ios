@@ -343,7 +343,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 user["twitterHandle"] = self.twitterText.text
                 user["snapchatHandle"] = self.snapchatText.text!
                 user["otherLink"] = self.websiteText.text
-                user["bio"] = self.bioLabel.text
+                //user["bio"] = self.bioLabel.text
                 user["email"] = self.emailText.text
                 
                 if let newUserImage = self.newProfileImageFile {

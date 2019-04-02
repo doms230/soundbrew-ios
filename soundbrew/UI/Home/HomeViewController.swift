@@ -25,7 +25,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
-            soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil, searchText: nil)
         }
     
         setUpTableView()
@@ -44,7 +44,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if let currentUserId = self.currentUser?.objectId {
-                soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUserId, tags: tags)
+                soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUserId, tags: tags, searchText: nil)
             }
             
             //self.tableView.reloadData()

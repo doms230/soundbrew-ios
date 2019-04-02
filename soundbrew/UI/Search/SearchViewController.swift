@@ -24,7 +24,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSearchBar()
-        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil)
         setUpTableView()
     }
     
@@ -39,7 +38,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
             }
-            soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
             //self.tableView.reloadData()
         }
     }
@@ -79,6 +78,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
+        
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil, searchText: nil)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -87,7 +88,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            if searchType == profileSearchType {
+            if searchType == profileSearch {
                 return searchUsers.count
                 
             } else {
@@ -101,10 +102,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if searchIsActive {
             if indexPath.section == 0 {
-                tableView.separatorStyle = .none
                 return searchTypeCell()
                 
-            } else if searchType == profileSearchType {
+            } else if searchType == profileSearch {
                 return searchProfileCell(indexPath)
                 
             } else {
@@ -115,7 +115,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else {
             if indexPath.section == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
-                
                 return soundList.soundFilterOptions(indexPath, cell: cell)
                 
             } else {
@@ -127,8 +126,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            if soundSearchType == profileSearchType {
+            if searchType == profileSearch {
                 tableView.cellForRow(at: indexPath)?.isSelected = false
+                soundList.selectedArtist = searchUsers[indexPath.row]
+                self.performSegue(withIdentifier: "showProfile", sender: self)
                 
             } else {
                 if let player = soundList.player {
@@ -143,8 +144,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: Search
     var searchIsActive = false
     var searchType = "profile"
-    let profileSearchType = "profile"
-    let soundSearchType = "search"
+    let profileSearch = "profile"
+    let soundSearch = "search"
     
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 10, height: 10))
@@ -163,10 +164,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func didPressProfileSoundsButton(_ sender: UIButton) {
         if sender.tag == 0 {
-            searchType = profileSearchType
+            searchType = profileSearch
             
         } else {
-            searchType = soundSearchType
+            searchType = soundSearch
         }
         
         self.tableView.reloadData()
@@ -181,21 +182,23 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         soundList.soundType = "search"
         searchIsActive = true
-        if searchType == profileSearchType {
+        if searchType == profileSearch {
             if !searchBar.text!.isEmpty {
                 searchUsers(searchBar.text!)
             }
             
         } else {
-            
+            //soundList.loadSounds("plays", likeIds: nil, userId: nil, tags: nil, followIds: nil, searchText: searchText)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchText)
         }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = false
         self.searchBar.resignFirstResponder()
+        soundList.soundType = "discover"
         searchIsActive = false
-        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil, searchText: nil)
     }
     
     func searchProfileCell(_ indexPath: IndexPath) -> UITableViewCell {
@@ -207,18 +210,26 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         if let artistImage = artist.image {
             cell.profileImage.kf.setImage(with: URL(string: artistImage))
+            
+        } else {
+            cell.profileImage.image = UIImage(named: "profile_icon")
         }
         
         if let name = artist.name {
             cell.displayName.text = name
+            
+        } else {
+            cell.displayName.text = ""
         }
         
-        /*if let city = artist.city {
-            cell.city.text = city
-        }*/
-        
         if let username = artist.username {
-            cell.username.text = username
+            //email was set as username in prior version of Soundbrew and email is private.
+            if username.contains("@") {
+                cell.username.text = ""
+                
+            } else {
+                cell.username.text = username
+            }
         }
         
         return cell
@@ -235,7 +246,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.collectionButton.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
         cell.collectionButton.tag = 1
         
-        if searchType == profileSearchType {
+        if searchType == profileSearch {
             cell.uploadsButton.setTitleColor(color.black(), for: .normal)
             cell.collectionButton.setTitleColor(color.darkGray(), for: .normal)
             
@@ -277,13 +288,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         }
                         
                         if let username = user["username"] as? String {
-                            //email was set as username in prior version of Soundbrew and email is private.
-                            if username.contains("@") {
-                                artist.username = "username"
-                                
-                            } else {
-                                artist.username = username
-                            }
+                            artist.username = username
                         }
                         
                         if let city = user["city"] as? String {
