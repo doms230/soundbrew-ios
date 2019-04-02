@@ -27,7 +27,7 @@ class UIElement {
         let uiFont = UIFont(name: "\(mainFont)-bold", size: 17)!
         let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
         let buttonTitleWidth = Int(buttonTitleSize.width)
-        let buttonImageWidth = 50
+        let buttonImageWidth = 35
         let totalButtonWidth = buttonTitleWidth + buttonImageWidth
         return totalButtonWidth
     }

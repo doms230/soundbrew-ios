@@ -214,7 +214,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         if let isFollowedByCurrentUser = artist.isFollowedByCurrentUser {
                             if isFollowedByCurrentUser {
                                 cell.actionButton.setTitle("Following", for: .normal)
-                                cell.actionButton.backgroundColor = color.gray()
+                                cell.actionButton.backgroundColor = color.darkGray()
                                 cell.actionButton.setTitleColor(color.black(), for: .normal)
                                 
                             } else {
@@ -254,10 +254,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             if soundList.soundType == "uploads" {
                 cell.uploadsButton.setTitleColor(color.black(), for: .normal)
-                cell.collectionButton.setTitleColor(color.gray(), for: .normal)
+                cell.collectionButton.setTitleColor(color.darkGray(), for: .normal)
                 
             } else {
-                cell.uploadsButton.setTitleColor(color.gray(), for: .normal)
+                cell.uploadsButton.setTitleColor(color.darkGray(), for: .normal)
                 cell.collectionButton.setTitleColor(color.black(), for: .normal)
             }
             

@@ -208,7 +208,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         }
         
         switch soundType {
-        case "search":
+        case "discover":
             loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: selectedTagsForFiltering, followIds: nil)
             break
             
@@ -223,6 +223,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         case "follows":
             self.loadFollows(descendingOrder)
             break
+            
+        case "search":
+            break 
             
         default:
             break
@@ -247,7 +250,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                             if let type = type {
                                 switch type {
                                 case "genre":
-                                    relevancyScore = relevancyScore +  4
+                                    relevancyScore = relevancyScore + 4
                                     break
                                     
                                 case "city":
@@ -260,6 +263,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                                     
                                 case "mood":
                                     relevancyScore = relevancyScore + 2
+                                    print("tea")
                                     break
                                     
                                 default:
@@ -267,16 +271,17 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                                     break
                                 }
                             }
+                            self.sounds[i].relevancyScore = relevancyScore
                         }
                     }
                 }
             }
-            print("\(self.sounds[i].title!): \(relevancyScore)")
-            self.sounds[i].relevancyScore = relevancyScore
-
+            
+            //print("\(self.sounds[i].title!): \(self.sounds[i].relevancyScore)")
         }
         
         self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+        print("updating SOunds")
         updateSounds()
     }
     
@@ -305,20 +310,28 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     var selectedTagsForFiltering: Array<Tag>?
     var soundFilter: String!
     var xPositionForTags = UIElement().leftOffset
+    var soundOrder: String!
     
     func soundFilterOptions(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
-        cell.soundOrderSegment.addTarget(self, action: #selector(didPressSoundOrderSegment(_:)), for: .valueChanged)
+        cell.newButton.addTarget(self, action: #selector(self.didPressSoundOrderButton(_:)), for: .touchUpInside)
+        cell.newButton.tag = 0
+        cell.popularButton.addTarget(self, action: #selector(self.didPressSoundOrderButton(_:)), for: .touchUpInside)
+        cell.popularButton.tag = 1
         if let filter = uiElement.getUserDefault("filter") as? String {
             if filter == "recent" {
-                cell.soundOrderSegment.selectedSegmentIndex = 0
+                soundOrder = "recent"
+                cell.newButton.setTitleColor(color.black(), for: .normal)
+                cell.popularButton.setTitleColor(color.darkGray(), for: .normal)
                 
             } else {
-                cell.soundOrderSegment.selectedSegmentIndex = 1
+                soundOrder = "popular"
+                cell.popularButton.setTitleColor(color.black(), for: .normal)
+                cell.newButton.setTitleColor(color.darkGray(), for: .normal)
             }
             
         } else {
-            cell.soundOrderSegment.selectedSegmentIndex = 0
+            soundOrder = "recent"
         }
         
         cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
@@ -339,11 +352,13 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         
         return cell
     }
-    @objc func didPressSoundOrderSegment(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 0 {
+    @objc func didPressSoundOrderButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            soundOrder = "recent"
             self.uiElement.setUserDefault("filter", value: "recent")
             
         } else {
+            soundOrder = "popular"
             self.uiElement.setUserDefault("filter", value: "popular")
         }
         
@@ -391,18 +406,18 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(buttonTitleWithX)
         
         let tagButton = UIButton()
-        tagButton.frame = CGRect(x: xPositionForTags, y: uiElement.topOffset, width: buttonTitleWidth, height: 30)
+        tagButton.frame = CGRect(x: xPositionForTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: 30)
         tagButton.setTitle(tagName, for: .normal)
         tagButton.setTitleColor(color.black(), for: .normal)
-        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        tagButton.layer.cornerRadius = 3
+        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        tagButton.layer.cornerRadius = 5
         tagButton.layer.borderWidth = 1
-        tagButton.layer.borderColor = color.black().cgColor
+        tagButton.layer.borderColor = color.darkGray().cgColor
         tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
         scrollview.addSubview(tagButton)
         
         xPositionForTags = xPositionForTags + Int(tagButton.frame.width) + uiElement.elementOffset
-        scrollview.contentSize = CGSize(width: xPositionForTags, height: uiElement.buttonHeight)
+        scrollview.contentSize = CGSize(width: xPositionForTags, height: 35)
     }
     
     @objc func didPressTagButton(_ sender: UIButton) {

@@ -14,6 +14,8 @@ import Parse
 import Kingfisher
 import SnapKit
 import DeckTransition
+import SwiftVideoGenerator
+import Photos
 
 class PlayerV2ViewController: UIViewController {
 
@@ -37,7 +39,7 @@ class PlayerV2ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         if let player = self.player {
             self.sound = player.currentSound
-            if player.player!.isPlaying {
+            if player.player!.isPlaying && player.currentSound != nil {
                 self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
                 
             } else {
@@ -271,7 +273,9 @@ class PlayerV2ViewController: UIViewController {
         return button
     }()
     @objc func didPressShareButton(_ sender: UIButton) {
-        let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
+        shareMusicVideo()
+        
+        /*let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
         
         let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
             self.shareToSnapchat()
@@ -286,7 +290,7 @@ class PlayerV2ViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
-        self.present(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)*/
     }
     
     lazy var playBackSlider: UISlider = {
@@ -510,6 +514,48 @@ class PlayerV2ViewController: UIViewController {
     }
     
     //mark: share
+    func shareMusicVideo() {
+        do {
+            let audioURL = URL(string: sound!.audioURL)
+            let audioData = sound!.audioData
+            
+            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
+            try audioData?.write(to: audioFileURL, options: .atomic)
+            
+            VideoGenerator.current.fileName = "SingleMovieFileName"
+            VideoGenerator.current.shouldOptimiseImageForVideo = true
+            
+            VideoGenerator.current.generate(withImages: [sound!.artImage!], andAudios: [audioFileURL], andType: .single, { (progress) in
+                print(progress)
+                
+            }, success: { (url) in
+                print(url)
+                
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+                    
+                }) { saved, error in
+                    if saved {
+                        let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
+                        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                        alertController.addAction(defaultAction)
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                }
+
+                
+                
+            }, failure: { (error) in
+                print(error)
+            })
+            
+        } catch let error {
+            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
+        }
+        
+    }
+
+    
     let shareAppURL = "https://www.soundbrew.app/ios"
     
     func shareToSnapchat() {

@@ -9,8 +9,12 @@
 import UIKit
 
 class Color {
-    func gray() -> UIColor {
+    func darkGray() -> UIColor {
         return uicolorFromHex(0xcccccc)
+    }
+    
+    func lightGray() -> UIColor {
+        return uicolorFromHex(0xececec)
     }
     
     func red() -> UIColor {

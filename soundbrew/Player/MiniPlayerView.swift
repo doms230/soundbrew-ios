@@ -64,7 +64,9 @@ class MiniPlayerView: UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = color.gray()
+        self.backgroundColor = .white
+        self.layer.borderWidth = 1
+        self.layer.borderColor = color.darkGray().cgColor
         setupNotificationCenter()
     }
     
@@ -78,7 +80,8 @@ class MiniPlayerView: UIButton {
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
             playBackButton.snp.makeConstraints { (make) -> Void in
                 make.width.height.equalTo(30)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.centerY.equalTo(self)
+               // make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }

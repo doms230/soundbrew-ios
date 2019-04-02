@@ -14,13 +14,7 @@ class SoundListTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var dividerLine: UIView = {
-        let line = UIView()
-        line.layer.borderWidth = 1
-        line.layer.borderColor = color.gray().cgColor
-        return line
-    }()
-    
+    //mark: no sounds
     lazy var headerTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
@@ -28,11 +22,20 @@ class SoundListTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var viewButton: UIButton = {
+    //filter new/popular
+    lazy var newButton: UIButton = {
         let button = UIButton()
-        button.setTitle("View All", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        button.setTitleColor(color.blue(), for: .normal)
+        button.setTitle("New", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        button.setTitleColor(color.black(), for: .normal)
+        return button
+    }()
+    
+    lazy var popularButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Popular", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        button.setTitleColor(.lightGray, for: .normal)
         return button
     }()
     
@@ -41,16 +44,20 @@ class SoundListTableViewCell: UITableViewCell {
         return scrollView
     }()
     
-    lazy var soundOrderSegment: UISegmentedControl = {
+    
+    //mark: sounds
+    lazy var dividerLine: UIView = {
+        let line = UIView()
+        line.layer.borderWidth = 1
+        line.layer.borderColor = color.darkGray().cgColor
+        return line
+    }()
+    
+    /*lazy var soundOrderSegment: UISegmentedControl = {
         let segment = UISegmentedControl(items: ["New", "Popular"])
         segment.tintColor = color.black()
         return segment
-    }()
-    
-    lazy var playFilterScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        return scrollView
-    }()
+    }()*/
     
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
@@ -160,23 +167,39 @@ class SoundListTableViewCell: UITableViewCell {
             break
             
         case "filterSoundsReuse":
-            self.addSubview(soundOrderSegment)
+            //self.addSubview(soundOrderSegment)
             self.addSubview(tagsScrollview)
+            self.addSubview(newButton)
+            self.addSubview(popularButton)
             
-            soundOrderSegment.snp.makeConstraints { (make) -> Void in
+            /*soundOrderSegment.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(150)
                 make.height.equalTo(30)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }*/
+            
+            newButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            popularButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(newButton)
+                make.left.equalTo(newButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(newButton)
             }
             
             tagsScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
+                make.height.equalTo(35)
                 make.top.equalTo(self)
-                make.left.equalTo(self.soundOrderSegment.snp.right)
+                make.left.equalTo(self.popularButton.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self)
-                make.bottom.equalTo(self)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             break
             

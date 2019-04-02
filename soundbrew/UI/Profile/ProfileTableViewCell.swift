@@ -37,6 +37,7 @@ class ProfileTableViewCell: UITableViewCell {
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
+        image.backgroundColor = color.darkGray()
         return image
     }()
     
@@ -185,6 +186,34 @@ class ProfileTableViewCell: UITableViewCell {
     
             break
             
+        case "searchProfileReuse":
+            self.addSubview(profileImage)
+            self.addSubview(displayName)
+            self.addSubview(city)
+            self.addSubview(username)
+            
+            profileImage.layer.cornerRadius = 25
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(50)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            displayName.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayName.snp.bottom)
+                make.left.equalTo(displayName)
+                make.right.equalTo(displayName)
+                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            
+            break
+            
         case "actionProfileReuse":
             self.addSubview(socialScrollview)
             self.addSubview(actionButton)
@@ -313,7 +342,7 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "spaceReuse":
-            break 
+            break
             
         default:
             break

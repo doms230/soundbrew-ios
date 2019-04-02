@@ -30,4 +30,5 @@ target 'soundbrew' do
   pod 'DeckTransition'
   pod 'ComplimentaryGradientView'
   pod 'AppCenter'
+  pod 'SwiftVideoGenerator'
 end

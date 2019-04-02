@@ -6,25 +6,30 @@
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //  MARK: Data, tableview, player, tags, button actions
 //TODO: Automatic loading of more sounds as the user scrolls
+//mark: tableview, Search
 
 import UIKit
 import Parse
 import Kingfisher
 import SnapKit
 
-class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     var soundList: SoundList!
     var searchSounds = [Sound]()
+    var searchUsers = [Artist]()
+    let uiElement = UIElement()
+    let color = Color()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil)
+        setupSearchBar()
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil)
         setUpTableView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if soundList != nil {
+        if soundList != nil && !searchIsActive {
             /*soundList.sounds = searchSounds
             soundList.player!.sounds = searchSounds
             soundList.target = self
@@ -34,7 +39,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
             }
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: tags)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags)
             //self.tableView.reloadData()
         }
     }
@@ -53,6 +58,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let recentPopularReuse = "recentPopularReuse"
     let soundReuse = "soundReuse"
     let filterSoundsReuse = "filterSoundsReuse"
+    let searchProfileReuse = "searchProfileReuse"
+    //in this case, will be changed to Artists and Sounds ... Doing this to avoid repetion in code
+    let uploadsCollectionsHeaderReuse = "uploadsCollectionsHeaderReuse"
     
     func setUpTableView() {
         tableView.dataSource = self
@@ -60,8 +68,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: uploadsCollectionsHeaderReuse)
         self.tableView.separatorStyle = .none
-        //tableView.frame = view.bounds
+        self.tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view)
@@ -77,29 +87,246 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            searchSounds = soundList.sounds
-            return soundList.sounds.count
+            if searchType == profileSearchType {
+                return searchUsers.count
+                
+            } else {
+                return soundList.sounds.count
+            }
         }
-        
+
         return 1
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let player = soundList.player {
-            player.didSelectSoundAt(indexPath.row)
-            //soundList.setUpMiniPlayer()
-            tableView.reloadData()
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if searchIsActive {
+            if indexPath.section == 0 {
+                tableView.separatorStyle = .none
+                return searchTypeCell()
+                
+            } else if searchType == profileSearchType {
+                return searchProfileCell(indexPath)
+                
+            } else {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+                return soundList.sound(indexPath, cell: cell)
+            }
+            
+        } else {
+            if indexPath.section == 0 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
+                
+                return soundList.soundFilterOptions(indexPath, cell: cell)
+                
+            } else {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+                return soundList.sound(indexPath, cell: cell)
+            }
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
-            return soundList.soundFilterOptions(indexPath, cell: cell)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 1 {
+            if soundSearchType == profileSearchType {
+                tableView.cellForRow(at: indexPath)?.isSelected = false
+                
+            } else {
+                if let player = soundList.player {
+                    player.didSelectSoundAt(indexPath.row)
+                    //soundList.setUpMiniPlayer()
+                    tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    //mark: Search
+    var searchIsActive = false
+    var searchType = "profile"
+    let profileSearchType = "profile"
+    let soundSearchType = "search"
+    
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 10, height: 10))
+        searchBar.placeholder = "Search"
+        
+        let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
+        searchTextField?.backgroundColor = color.lightGray()
+        searchBar.delegate = self
+        return searchBar
+    }()
+    
+    func setupSearchBar() {
+        let leftNavBarButton = UIBarButtonItem(customView: searchBar)
+        self.navigationItem.leftBarButtonItem = leftNavBarButton
+    }
+    
+    @objc func didPressProfileSoundsButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            searchType = profileSearchType
             
         } else {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-            return soundList.sound(indexPath, cell: cell)
+            searchType = soundSearchType
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+        searchIsActive = true
+        self.tableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        soundList.soundType = "search"
+        searchIsActive = true
+        if searchType == profileSearchType {
+            if !searchBar.text!.isEmpty {
+                searchUsers(searchBar.text!)
+            }
+            
+        } else {
+            
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        self.searchBar.resignFirstResponder()
+        searchIsActive = false
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil)
+    }
+    
+    func searchProfileCell(_ indexPath: IndexPath) -> UITableViewCell {
+        let artist = searchUsers[indexPath.row]
+        
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
+        
+        cell.selectionStyle = .gray
+        
+        if let artistImage = artist.image {
+            cell.profileImage.kf.setImage(with: URL(string: artistImage))
+        }
+        
+        if let name = artist.name {
+            cell.displayName.text = name
+        }
+        
+        /*if let city = artist.city {
+            cell.city.text = city
+        }*/
+        
+        if let username = artist.username {
+            cell.username.text = username
+        }
+        
+        return cell
+    }
+    
+    func searchTypeCell() -> UITableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionsHeaderReuse) as! ProfileTableViewCell
+        
+        cell.uploadsButton.setTitle("Accounts", for: .normal)
+        cell.uploadsButton.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
+        cell.uploadsButton.tag = 0
+        
+        cell.collectionButton.setTitle("Sounds", for: .normal)
+        cell.collectionButton.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
+        cell.collectionButton.tag = 1
+        
+        if searchType == profileSearchType {
+            cell.uploadsButton.setTitleColor(color.black(), for: .normal)
+            cell.collectionButton.setTitleColor(color.darkGray(), for: .normal)
+            
+        } else {
+            cell.collectionButton.setTitleColor(color.black(), for: .normal)
+            cell.uploadsButton.setTitleColor(color.darkGray(), for: .normal)
+        }
+        
+        return cell
+    }
+    
+    func searchUsers(_ text: String) {
+        self.searchUsers.removeAll()
+        
+        let nameQuery = PFQuery(className: "_User")
+        nameQuery.whereKey("artistName", hasPrefix: text)
+        
+        let usernameQuery = PFQuery(className: "_User")
+        usernameQuery.whereKey("username", hasPrefix: text.lowercased())
+        
+        let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
+        query.limit = 100
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for user in objects {
+                        let username = user["username"] as? String
+                        
+                        var email: String?
+                        if user.objectId! == PFUser.current()!.objectId {
+                            email = user["email"] as? String
+                        }
+                        
+                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
+                        
+                        if let name = user["artistName"] as? String {
+                            artist.name = name
+                        }
+                        
+                        if let username = user["username"] as? String {
+                            //email was set as username in prior version of Soundbrew and email is private.
+                            if username.contains("@") {
+                                artist.username = "username"
+                                
+                            } else {
+                                artist.username = username
+                            }
+                        }
+                        
+                        if let city = user["city"] as? String {
+                            artist.city = city
+                        }
+                        
+                        if let userImageFile = user["userImage"] as? PFFileObject {
+                            artist.image = userImageFile.url!
+                        }
+                        
+                        if let bio = user["bio"] as? String {
+                            artist.bio = bio
+                        }
+                        
+                        if let artistVerification = user["artistVerification"] as? Bool {
+                            artist.isVerified = artistVerification
+                        }
+                        
+                        if let instagramUsername = user["instagramHandle"] as? String {
+                            artist.instagramUsername = instagramUsername
+                        }
+                        
+                        if let twitterUsername = user["twitterHandle"] as? String {
+                            artist.twitterUsername = twitterUsername
+                        }
+                        
+                        if let snapchatUsername = user["snapchatHandle"] as? String {
+                            artist.snapchatUsername = snapchatUsername
+                        }
+                        
+                        if let website = user["otherLink"] as? String {
+                            artist.website = website
+                        }
+                        
+                        self.searchUsers.append(artist)
+                    }
+                }
+                
+                self.tableView.reloadData()
+                
+            } else {
+                print("Error: \(error!)")
+            }
         }
     }
 }

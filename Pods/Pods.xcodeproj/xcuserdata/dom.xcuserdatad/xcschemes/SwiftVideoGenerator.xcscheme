@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4BD384662E7D4D206954734A17CC8118"
-               BlueprintName = "ShareInstagram"
+               BlueprintIdentifier = "BA17194DC8ACF15295F0F86376A19074"
+               BlueprintName = "SwiftVideoGenerator"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "ShareInstagram.framework">
+               BuildableName = "SwiftVideoGenerator.framework">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
