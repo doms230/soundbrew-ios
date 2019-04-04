@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
+		F203C76822544E730050F113 /* Payment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76722544E720050F113 /* Payment.swift */; };
+		F203C76A225467A80050F113 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F203C769225467A80050F113 /* StoreKit.framework */; };
 		F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */; };
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* SignupViewController.swift */; };
@@ -72,6 +74,8 @@
 		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F203C76722544E720050F113 /* Payment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payment.swift; sourceTree = "<group>"; };
+		F203C769225467A80050F113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
@@ -122,6 +126,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */,
+				F203C76A225467A80050F113 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,6 +165,7 @@
 		42B7F2BA59BF3DD0971C4C4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F203C769225467A80050F113 /* StoreKit.framework */,
 				921914671D6205F63B619F10 /* Pods_soundbrew.framework */,
 				A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */,
 				6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */,
@@ -211,6 +217,7 @@
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
+				F203C76722544E720050F113 /* Payment.swift */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2E5081821F95D0700985E34 /* Tags */,
 				F2689899215AF7FB00C21663 /* Sound */,
@@ -404,6 +411,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 0;
 							};
@@ -593,6 +603,7 @@
 			files = (
 				F28A985E2227CF5400C96EED /* CommentViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
+				F203C76822544E730050F113 /* Payment.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
@@ -799,8 +810,11 @@
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrew/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrew;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-artists";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -818,8 +832,11 @@
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrew/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrew;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-artists";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -835,7 +852,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -853,7 +874,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -870,7 +895,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -887,7 +916,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrewUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;

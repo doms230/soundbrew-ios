@@ -36,6 +36,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Soundbrew needs access to your camera, so you can take a picture for you profile.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Download Music Video</string>
 	<key>SCSDKClientId</key>
 	<string>7530c9a7-b226-43ba-9c5e-082c14b6db3c</string>
 	<key>SCSDKRedirectUrl</key>
@@ -66,7 +68,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Download Music Video</string>
 </dict>
 </plist>

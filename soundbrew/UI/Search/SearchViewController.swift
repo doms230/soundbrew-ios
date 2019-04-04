@@ -32,6 +32,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil && !searchIsActive {
+            
             /*soundList.sounds = searchSounds
             soundList.player!.sounds = searchSounds
             soundList.target = self
@@ -127,7 +128,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            if searchType == profileSearch {
+            if searchType == profileSearch && searchIsActive {
                 tableView.cellForRow(at: indexPath)?.isSelected = false
                 soundList.selectedArtist = searchUsers[indexPath.row]
                 self.performSegue(withIdentifier: "showProfile", sender: self)
@@ -175,7 +176,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        //searchBar.showsCancelButton = true
         searchBar.setShowsCancelButton(true, animated: true)
         searchIsActive = true
         self.tableView.reloadData()
@@ -196,7 +196,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //searchBar.showsCancelButton = false
         searchBar.setShowsCancelButton(false, animated: true)
         self.searchBar.resignFirstResponder()
         soundList.soundType = "discover"

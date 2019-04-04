@@ -66,7 +66,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 tags = soundListTags
             }
             
-            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: self.artist?.objectId, tags: tags, searchText: nil)
+            let soundType = soundList.soundType!
+            //print(tags!.count)
+            soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: self.artist?.objectId, tags: tags, searchText: nil)
         }
     }
     
@@ -160,7 +162,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
                 if let username = artist.username {
-                    cell.username.text = username
+                    if username.contains("@") {
+                        cell.username.text = ""
+                        
+                    } else {
+                        cell.username.text = username
+                    }
                 }
                 
                 //social buttons are recreated multiple times, so have to check whether not they've already been created.
@@ -278,7 +285,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
             } else {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
-                profileSounds = soundList.sounds
+                //profileSounds = soundList.sounds
                 return soundList.sound(indexPath, cell: cell)
             }
             

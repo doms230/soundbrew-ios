@@ -4,7 +4,7 @@
 //
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//  "cmd + f" -> Mark: view, tableView, tags, featureTags, searchbar, data, descending order, done button
+//  "cmd + f" -> Mark: view, tableView, tags, featureTags, searchbar, data, done button
 //
 
 import UIKit
@@ -14,7 +14,10 @@ import Parse
 import AVFoundation
 import Alamofire
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate {
+class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagListViewDelegate, UISearchBarDelegate {
+    
+    let uiElement = UIElement()
+    let color = Color()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,12 +45,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: done Button
-    let uiElement = UIElement()
-    let color = Color()
-    
     lazy var doneButton: UIButton = {
         let button = UIButton()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         button.setTitleColor(color.blue(), for: .normal)
         button.setTitle("Done", for: .normal)
         return button
@@ -57,93 +57,92 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         view.addSubview(doneButton)
         doneButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
         doneButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.topOffset + 10)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
+        
+        setUpSearchBar()
     }
     @objc func didPressDoneButton(_ sender: UIButton) {
         handleTagsForDismissal()
         self.dismiss(animated: true, completion: nil)
     }
     
-    //MARK: descending order
-    lazy var filterSoundsLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Filter Sounds By:"
-        label.textColor = color.black()
-        label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        return label
-    }()
-    
-    lazy var soundOrderSegment: UISegmentedControl = {
-        let segment = UISegmentedControl(items: ["Recent", "Popular"])
-        segment.tintColor = color.black()
-        return segment
-    }()
-    
-    func setUpSoundOrderSegment() {
-        if let filter = uiElement.getUserDefault("filter") as? String {
-            if filter == "recent" {
-                soundOrderSegment.selectedSegmentIndex = 0
-                
-            } else {
-                soundOrderSegment.selectedSegmentIndex = 1
-            }
-            
-        } else {
-            soundOrderSegment.selectedSegmentIndex = 0
-        }
-        
-        view.addSubview(filterSoundsLabel)
-        filterSoundsLabel.snp.makeConstraints { (make) -> Void in
-            //make.width.equalTo(200)
-            make.top.equalTo(searchBar.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        view.addSubview(soundOrderSegment)
-        soundOrderSegment.addTarget(self, action: #selector(didPressSoundOrderSegment(_:)), for: .valueChanged)
-        soundOrderSegment.snp.makeConstraints { (make) -> Void in
-            //make.width.equalTo(200)
-            make.top.equalTo(filterSoundsLabel)
-            make.left.equalTo(self.filterSoundsLabel.snp.right).offset(uiElement.elementOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-    }
-    @objc func didPressSoundOrderSegment(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 0 {
-            self.uiElement.setUserDefault("filter", value: "recent")
-            
-        } else {
-            self.uiElement.setUserDefault("filter", value: "popular")
-        }
-    }
-    
     //MARK: SearchBar
-    lazy var searchBar: UITextField = {
-        let searchBar = UITextField()
-        searchBar.placeholder = "🔍 Tags"
-        searchBar.borderStyle = .roundedRect
-        searchBar.clearButtonMode = .always
+    var searchIsActive = false
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search"
+        searchBar.barTintColor = .white
+        searchBar.backgroundImage = UIImage()
+        let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
+        searchTextField?.backgroundColor = color.lightGray()
+        searchBar.delegate = self
         return searchBar
     }()
     
     func setUpSearchBar() {
         self.view.addSubview(searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
-            //make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(self.doneButton)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.doneButton.snp.left).offset(-(uiElement.elementOffset))
+            make.centerY.equalTo(doneButton)
+            make.left.equalTo(self.view).offset(uiElement.elementOffset)
+            make.right.equalTo(doneButton.snp.left).offset(-(uiElement.elementOffset))
         }
-        /*searchBar.addTarget(self, action: #selector(searchBarDidChange(_:)), for: .editingChanged)
-         searchBar.frame = CGRect(x: 0, y: 0, width: 200, height: 30)
-         let rightNavBarButton = UIBarButtonItem(customView: searchBar)
-         self.navigationItem.leftBarButtonItems?.append(rightNavBarButton)*/
     }
     
-    @objc func searchBarDidChange(_ textField: UITextField) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text!.count == 0 {
+            searchIsActive = false
+            self.filteredTags = self.tags
+            self.tableView.reloadData()
+            
+        } else {
+            searchIsActive = true
+            searchTags(searchBar.text!, type: tagType)
+        }
+    }
+    
+    func searchTags(_ text: String, type: String?) {
+        self.filteredTags.removeAll()
+        let query = PFQuery(className: "Tag")
+        query.whereKey("tag", hasPrefix: text.lowercased())
+        if !self.searchIsActive {
+            if let type = type {
+                query.whereKey("type", equalTo: type)
+                
+            } else {
+                query.whereKey("type", notContainedIn: featureTagTitles)
+            }
+        }
+        query.addDescendingOrder("count")
+        query.limit = 50
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let tagName = object["tag"] as! String
+                        let tagCount = object["count"] as! Int
+                        
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil)
+                        
+                        if let tagType = object["type"] as? String {
+                            if !tagType.isEmpty {
+                                newTag.type = tagType
+                            }
+                        }
+                        self.filteredTags.append(newTag)
+                    }
+                    self.tableView.reloadData()
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
+    /*@objc func searchBarDidChange(_ textField: UITextField) {
         if textField.text!.count == 0 {
             self.filteredTags = self.tags
             self.tableView.reloadData()
@@ -151,7 +150,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             searchTags(textField.text!, type: tagType)
         }
-    }
+    }*/
     
     //MARK: Tableview
     var tableView: UITableView!
@@ -178,7 +177,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if isChoosingTagsForSoundUpload {
+        /*if searchIsActive || isChoosingTagsForSoundUpload {
+            return 1
+        }*/
+        
+        if searchIsActive {
             return 1
         }
         
@@ -186,7 +189,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !isChoosingTagsForSoundUpload && section == 0 {
+        /*if section == 0 && !searchIsActive || section == 0 &&  !isChoosingTagsForSoundUpload  {
+            return featureTagTitles.count
+        }*/
+        
+        if section == 0 && !searchIsActive {
             return featureTagTitles.count
         }
         
@@ -196,7 +203,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: TagTableViewCell!
         
-        if indexPath.section == 0 && !isChoosingTagsForSoundUpload {
+        if indexPath.section == 0 && !searchIsActive { //||
+            //indexPath.section == 0 && !isChoosingTagsForSoundUpload {
             cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? TagTableViewCell
             setUpFeatureTagCellView(cell, row: indexPath.row)
             
@@ -300,7 +308,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if isChoosingTagsForSoundUpload {
             var filterTags: Array<String> = self.filteredTags.map{$0.name}
             //if tag doesn't exist yet, add tag with search results so user can choose tag if they want.
-            if searchBar.isEditing {
+            if searchIsActive {
                 let searchText = searchBar.text!.lowercased()
                 if !filterTags.contains(searchText) && searchText != "" {
                     filterTags.insert(searchText, at: 0)
@@ -308,12 +316,16 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             tags = filterTags
             
+        } else if searchIsActive {
+            tags = self.filteredTags.map {$0.name}
+            
         } else {
             tags = self.filteredTags.filter {$0.type == nil}.map {$0.name}
         }
         cell.tagLabel.addTags(tags)
         
         self.tagView = cell.tagLabel
+        
         if isChoosingTagsForSoundUpload {
             cell.tagLabel.tagBackgroundColor = color.primary()
             
@@ -574,44 +586,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //mark: Data
-    func searchTags(_ text: String, type: String?) {
-        self.filteredTags.removeAll()
-        let query = PFQuery(className: "Tag")
-        query.whereKey("tag", hasPrefix: text.lowercased())
-        if let type = type {
-            query.whereKey("type", equalTo: type)
-            
-        } else {
-            query.whereKey("type", notContainedIn: featureTagTitles)
-        }
-        query.addDescendingOrder("count")
-        query.limit = 50
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let tagName = object["tag"] as! String
-                        let tagCount = object["count"] as! Int
-                        
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil)
-                        
-                        if let tagType = object["type"] as? String {
-                            if !tagType.isEmpty {
-                                newTag.type = tagType
-                            }
-                        }
-                        self.filteredTags.append(newTag)
-                    }
-                    self.tableView.reloadData()
-                }
-                
-            } else {
-                print("Error: \(error!)")
-            }
-        }
-    }
-    
     func loadTagType(_ type: String?) {
         let query = PFQuery(className: "Tag")
         if let type = type {

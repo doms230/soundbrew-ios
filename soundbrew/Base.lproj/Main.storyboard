@@ -66,7 +66,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="182" y="-403"/>
+            <point key="canvasLocation" x="182" y="-414"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -140,11 +140,13 @@
             </objects>
             <point key="canvasLocation" x="182" y="-1067"/>
         </scene>
-        <!--Profile-->
+        <!--Navigation Controller-->
         <scene sceneID="XyK-yh-w2g">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vdK-at-bld" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Profile" image="profile" selectedImage="profile_filled" id="Bi3-tx-5zH"/>
+                    <tabBarItem key="tabBarItem" title="" image="profile" selectedImage="profile_filled" id="Bi3-tx-5zH">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6h4-M5-0GO">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -159,11 +161,13 @@
             </objects>
             <point key="canvasLocation" x="-599" y="-403"/>
         </scene>
-        <!--New Sound-->
+        <!--Navigation Controller-->
         <scene sceneID="jPz-0A-X5Q">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="PB4-PS-JEx" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="New Sound" image="add" selectedImage="add_filled" id="fDt-xO-zFs"/>
+                    <tabBarItem key="tabBarItem" title="" image="add" selectedImage="add_filled" id="fDt-xO-zFs">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7OY-0B-bIE">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -188,7 +192,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="fFL-ma-LwI"/>
                     </view>
-                    <navigationItem key="navigationItem" id="DQE-st-WjY"/>
+                    <navigationItem key="navigationItem" title="Soundbrew" id="DQE-st-WjY"/>
                     <connections>
                         <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="Tm4-fE-iLf"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
@@ -202,7 +206,9 @@
         <scene sceneID="gi0-ci-PE6">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eYP-Ly-uEt" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" systemItem="search" id="auU-Rp-fxl"/>
+                    <tabBarItem key="tabBarItem" image="search" selectedImage="search_filled" id="auU-Rp-fxl">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="RJw-UZ-yLi">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -235,11 +241,13 @@
             </objects>
             <point key="canvasLocation" x="1134" y="-403"/>
         </scene>
-        <!--Home-->
+        <!--Navigation Controller-->
         <scene sceneID="Z8X-5O-BsK">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Mmx-mj-t6z" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Home" image="home" selectedImage="home_filled" id="mCR-tk-OIL"/>
+                    <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="mCR-tk-OIL">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Qsl-YE-fca">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -262,10 +270,12 @@
         <image name="home_filled" width="34.5" height="34.5"/>
         <image name="profile" width="42" height="42"/>
         <image name="profile_filled" width="42" height="42"/>
+        <image name="search" width="42" height="42"/>
+        <image name="search_filled" width="42" height="42"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="cJs-1X-ayw"/>
-        <segue reference="Tm4-fE-iLf"/>
+        <segue reference="eW3-lv-tSJ"/>
+        <segue reference="uNc-Xt-ZBj"/>
         <segue reference="3jW-Fd-CA3"/>
     </inferredMetricsTieBreakers>
 </document>

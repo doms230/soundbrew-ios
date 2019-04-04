@@ -373,17 +373,22 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     
     func changeTags(_ value: Array<Tag>?) {
         //Only want to reload data if tags changed
-        //if let currentTags
         var currentTagObjectIds = [String]()
         if let selectedTagsForFiltering = self.selectedTagsForFiltering {
             currentTagObjectIds = selectedTagsForFiltering.map {$0.objectId}
         }
         if let newTags = value {
+            print(newTags)
             let newTagObjectIds = newTags.map {$0.objectId}
             if currentTagObjectIds != newTagObjectIds {
-                self.selectedTagsForFiltering = value
+                self.selectedTagsForFiltering = newTags
                 determineTypeOfSoundToLoad(soundType)
+                
             }
+            
+        } else {
+            self.selectedTagsForFiltering = nil
+            determineTypeOfSoundToLoad(soundType)
         }
         
         /*if self.tags != value {
@@ -551,7 +556,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: nil, followIds: nil, searchText: nil)
+                self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: self.selectedTagsForFiltering, followIds: nil, searchText: nil)
                 
             } else {
                 print("Error: \(error!)")
@@ -572,7 +577,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: self.followUserIds, searchText: nil)
+                self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: self.selectedTagsForFiltering, followIds: self.followUserIds, searchText: nil)
                 
             } else {
                 print("Error: \(error!)")

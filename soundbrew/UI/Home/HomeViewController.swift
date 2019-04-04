@@ -21,8 +21,16 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Home"
+        /*if Payment.shared.canMakePurchases() {
+            Payment.shared.purchase()
+        }*/
         
+        /*guard SubscriptionService.shared.currentSessionId != nil,
+            SubscriptionService.shared.hasReceiptData else {
+                //
+                return
+        }*/
+                
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
             soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil, searchText: nil)
@@ -31,8 +39,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         setUpTableView()
     }
     
-    
     override func viewDidAppear(_ animated: Bool) {
+        
+        
         if soundList != nil {
             /* soundList.sounds = searchSounds
              soundList.player!.sounds = searchSounds
@@ -50,7 +59,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             //self.tableView.reloadData()
         }
     }
-
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showProfile" {
@@ -113,7 +121,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         } else if soundList.sounds.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            
             cell.headerTitle.text = "Welcome to Soundbrew! The latest releases from artists you follow will appear here."
             return cell
             
