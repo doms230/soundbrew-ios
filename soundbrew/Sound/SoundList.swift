@@ -200,7 +200,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         var descendingOrder = "createdAt"
         if let filter = self.uiElement.getUserDefault("filter") as? String {
             if filter == "popular" {
-                descendingOrder = "playse"
+                descendingOrder = "plays"
             }
         }
         
@@ -367,7 +367,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         let viewController = segue.destination as! TagsViewController
         viewController.tagDelegate = self
         if let tags = self.selectedTagsForFiltering {
-            viewController.chosenTagsArray = tags
+            viewController.chosenTags = tags
         }
     }
     
@@ -378,29 +378,16 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             currentTagObjectIds = selectedTagsForFiltering.map {$0.objectId}
         }
         if let newTags = value {
-            print(newTags)
             let newTagObjectIds = newTags.map {$0.objectId}
             if currentTagObjectIds != newTagObjectIds {
                 self.selectedTagsForFiltering = newTags
                 determineTypeOfSoundToLoad(soundType)
-                
             }
             
         } else {
             self.selectedTagsForFiltering = nil
             determineTypeOfSoundToLoad(soundType)
         }
-        
-        /*if self.tags != value {
-
-        } else {
-            if let filter = self.uiElement.getUserDefault("filter") as? String {
-                if self.soundFilter != filter {
-                    self.sounds.removeAll()
-                    determineTypeOfSoundToLoad(soundType)
-                }
-            }
-        }*/
     }
     
     func addSelectedTags(_ scrollview: UIScrollView, tagName: String) {

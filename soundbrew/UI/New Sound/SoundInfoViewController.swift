@@ -10,7 +10,6 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
-import DeckTransition
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable, TagDelegate {
 
@@ -39,23 +38,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         setUpTableView()
     }
     
-    /*override func viewDidAppear(_ animated: Bool) {
-        if let soundCityTag = uiElement.getUserDefault("cityTag") as? String {
-            self.cityTag = soundCityTag
-        }
-        
-        if let soundMoreTags = uiElement.getUserDefault("moreTags") as? Array<String> {
-            self.moreTags = soundMoreTags
-        }
-        
-        self.tableView.reloadData()
-    }*/
-    
-    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: TagsViewController = segue.destination as! TagsViewController
         viewController.isChoosingTagsForSoundUpload = true
-        viewController.tagType = addTagsType
-    }*/
+        viewController.tagDelegate = self
+        if let tags = tagsToEdit {
+            viewController.chosenTags = tags
+        }
+        
+        if let tagType = tagType {
+            viewController.tagType = tagType
+        }
+    }
     
     func setUpViews() {
         let uploadButton = UIBarButtonItem(title: "UPLOAD", style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
@@ -63,6 +57,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //MARK: tags
+    var showTags = "showTags"
     var tagType: String?
     //var addTagsType: String?
     let genres = ["Hip-Hop/Rap", "Electronic Dance Music(EDM)", "Pop", "Alternative Rock", "Americana", "Blues", "Christian & Gospal", "Classic Rock", "Classical", "Country", "Dance", "Hard Rock", "Indie", "Jazz", "Latino", "Metal", "Reggae", "R&B", "Soul", "Funk"]
@@ -70,35 +65,21 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let moods = ["Happy", "Sad", "Angry", "Chill", "High-Energy", "Netflix-And-Chill"]
     
     let activities = ["Creative", "Workout", "Party", "Work", "Sleep", "Gaming"]
-    var genreTag: String?
+    var genreTag: Tag?
     var moodTag: String?
     var activityTag: String?
     var moreTags: Array<Tag>?
     var cityTag: Tag?
-    
-    func showTagsViewController(_ tags: Array<Tag>?, tagType: String?) {
-        let modal = TagsViewController()
-        let transitionDelegate = DeckTransitioningDelegate()
-        modal.transitioningDelegate = transitionDelegate
-        modal.modalPresentationStyle = .custom
-        modal.tagDelegate = self
-        modal.isChoosingTagsForSoundUpload = true 
-        if let tags = tags {
-            modal.chosenTagsArray = tags
-        }
-        
-        if let tagType = tagType {
-            modal.tagType = tagType
-        }
-        
-        present(modal, animated: true, completion: nil)
-    }
+    var tagsToEdit: Array<Tag>?
     
     func changeTags(_ value: Array<Tag>?) {
-        if tagType != nil {
-            if tagType! == "city" {
-                if let tag = value {
+        if let tagType = self.tagType {
+            if let tag = value {
+                if tagType == "city" {
                     self.cityTag = tag[0]
+                    
+                } else if tagType == "genre" {
+                    self.genreTag = tag[0]
                 }
             }
             
@@ -157,7 +138,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 0:
                 cell.soundTagLabel.text = "Genre Tag"
                 if let genreTag = self.genreTag {
-                    cell.chosenSoundTagLabel.text = genreTag
+                    cell.chosenSoundTagLabel.text = genreTag.name
                     cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
@@ -221,18 +202,24 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
-                self.showPickerView("Genre")
-                self.genreTag = "Hip-Hop/Rap"
+                //self.showPickerView("Genre")
+                //self.genreTag = "Hip-Hop/Rap"
+                tagType = "genre"
+                if let genreTag = self.genreTag {
+                    tagsToEdit?.append(genreTag)
+                }
+                self.performSegue(withIdentifier: "showTags", sender: self)
+                
                 break
                 
             case 1:
                 tagType = "city"
-                //self.performSegue(withIdentifier: "showTags", sender: self)
-                var cityTags: Array<Tag>?
                 if let cityTag = self.cityTag {
-                    cityTags?.append(cityTag)
+                    tagsToEdit?.append(cityTag)
                 }
-                self.showTagsViewController(cityTags, tagType: "city")
+                self.performSegue(withIdentifier: showTags, sender: self)
+                //var cityTags: Array<Tag>?
+                //self.showTagsViewController(cityTags, tagType: "city")
                 break
                 
             case 2:
@@ -247,8 +234,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             case 4:
                 tagType = nil
-                //self.performSegue(withIdentifier: "showTags", sender: self)
-                self.showTagsViewController(moreTags, tagType: nil)
+                tagsToEdit = moreTags
+                self.performSegue(withIdentifier: showTags, sender: self)
+                //self.showTagsViewController(moreTags, tagType: nil)
                 break
                 
             default:
@@ -334,7 +322,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         switch pickerView.tag {
         case 0:
-            self.genreTag = genres[row]
+            //self.genreTag = genres[row]
             break
             
         case 1:
@@ -446,7 +434,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             let moreTagNames = moreTags.map {$0.name!}
             tags = moreTagNames
         }
-        tags.append(genreTag!.lowercased())
+        tags.append(genreTag!.name.lowercased())
         tags.append(activityTag!.lowercased())
         tags.append(moodTag!.lowercased())
         tags.append(cityTag!.name.lowercased())

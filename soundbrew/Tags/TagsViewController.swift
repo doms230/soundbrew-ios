@@ -65,7 +65,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     @objc func didPressDoneButton(_ sender: UIButton) {
         handleTagsForDismissal()
-        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: SearchBar
@@ -106,11 +105,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.filteredTags.removeAll()
         let query = PFQuery(className: "Tag")
         query.whereKey("tag", hasPrefix: text.lowercased())
-        if !self.searchIsActive {
-            if let type = type {
-                query.whereKey("type", equalTo: type)
-                
-            } else {
+        if let type = type {
+            query.whereKey("type", equalTo: type)
+            
+        } else {
+            if self.isChoosingTagsForSoundUpload {
                 query.whereKey("type", notContainedIn: featureTagTitles)
             }
         }
@@ -181,6 +180,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             return 1
         }*/
         
+        if isChoosingTagsForSoundUpload {
+            return 1
+        }
+        
         if searchIsActive {
             return 1
         }
@@ -193,7 +196,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             return featureTagTitles.count
         }*/
         
-        if section == 0 && !searchIsActive {
+        if section == 0 && !isChoosingTagsForSoundUpload && !searchIsActive  {
             return featureTagTitles.count
         }
         
@@ -203,15 +206,30 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: TagTableViewCell!
         
-        if indexPath.section == 0 && !searchIsActive { //||
-            //indexPath.section == 0 && !isChoosingTagsForSoundUpload {
+        if indexPath.section == 0 {
+            if !searchIsActive && !isChoosingTagsForSoundUpload {
+                cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? TagTableViewCell
+                setUpFeatureTagCellView(cell, row: indexPath.row)
+                
+            } else {
+                cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? TagTableViewCell
+                setUpTagListCellView(cell)
+            }
+            
+        } else {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? TagTableViewCell
+            setUpTagListCellView(cell)
+        }
+        
+        /*if indexPath.section == 0 && !searchIsActive ||
+            indexPath.section == 0 && !isChoosingTagsForSoundUpload {
             cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? TagTableViewCell
             setUpFeatureTagCellView(cell, row: indexPath.row)
             
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? TagTableViewCell
             setUpTagListCellView(cell)
-        }
+        }*/
         
         cell.backgroundColor = backgroundColor()
         cell.selectionStyle = .none
@@ -240,26 +258,28 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func removeChosenTag(_ sender: UIButton) {
         let title = sender.titleLabel!.text!.trimmingCharacters(in: .whitespaces)
         
-        //remove tag from chosen Tags
-        for i in 0..<self.chosenTagsArray.count {
-            if self.chosenTagsArray[i].name == title  {
-                self.chosenTagsArray.remove(at: i)
-                break
+        if chosenTags.count != 0 {
+            //remove tag from chosen Tags
+            for i in 0..<chosenTags.count {
+                if chosenTags[i].name == title  {
+                    self.chosenTags.remove(at: i)
+                    break
+                }
             }
-        }
-        
-        //reset scrollview
-        self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
-        xPositionForChosenTags = UIElement().leftOffset
-        
-        //add back chosen tags to chosen tag scrollview
-        for title in chosenTagsArray {
-            self.addChosenTagButton(title.name)
-        }
-        
-        //show tags label if no more chosen tags
-        if self.chosenTagsArray.count == 0 {
-            addChooseTagsLabel()
+            
+            //reset scrollview
+            self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
+            xPositionForChosenTags = UIElement().leftOffset
+            
+            //add back chosen tags to chosen tag scrollview
+            for title in chosenTags {
+                self.addChosenTagButton(title.name)
+            }
+            
+            //show tags label if no more chosen tags
+            if chosenTags.count == 0 {
+                addChooseTagsLabel()
+            }
         }
     }
     
@@ -283,7 +303,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var cityTags = [String]()
     var artistTags = [String]()
     
-    var chosenTagsArray = [Tag]()
+    var chosenTags = [Tag]()
     var xPositionForChosenTags = UIElement().leftOffset
     
     lazy var chooseTagsLabel: UILabel = {
@@ -335,8 +355,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setupChooseTagsView() {
-        if self.chosenTagsArray.count != 0 {
-            for tag in self.chosenTagsArray {
+        if self.chosenTags.count != 0 {
+            for tag in chosenTags {
                 addChosenTagButton(tag.name)
             }
             
@@ -367,25 +387,27 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
         if isChoosingTagsForSoundUpload && tagType != nil {
-            //self.chosenTagsArray.append(title)
-            self.dismiss(animated: true, completion: nil)
-            //self.uiElement.goBackToPreviousViewController(self)
+            appendTag(title)
+            handleTagsForDismissal()
             
         } else if !tagView.isSelected {
             sender.removeTag(title)
             self.addChosenTagButton(title)
-            
-            var positionToRemoveTag: Int?
-            for i in 0..<self.filteredTags.count {
-                if self.filteredTags[i].name == title {
-                    positionToRemoveTag = i
-                    self.chosenTagsArray.append(self.filteredTags[i])
-                }
+            appendTag(title)
+        }
+    }
+    
+    func appendTag(_ title: String) {
+        var positionToRemoveTag: Int?
+        for i in 0..<self.filteredTags.count {
+            if self.filteredTags[i].name == title {
+                positionToRemoveTag = i
+                self.chosenTags.append(self.filteredTags[i])
             }
-            
-            if let p = positionToRemoveTag {
-                self.filteredTags.remove(at: p)
-            }
+        }
+        
+        if let p = positionToRemoveTag {
+            self.filteredTags.remove(at: p)
         }
     }
     
@@ -414,35 +436,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func handleTagsForDismissal() {
-        var tags: Array<Tag>?
-        if chosenTagsArray.count != 0 {
-            tags = chosenTagsArray
-        }
-        
         if let tagDelegate = self.tagDelegate {
-            tagDelegate.changeTags(tags)
+            var chosenTags: Array<Tag>?
+            if self.chosenTags.count != 0 {
+                chosenTags = self.chosenTags
+            }
+            tagDelegate.changeTags(chosenTags)
         }
         
-        /*if tagType == "city" && chosenTagsArray.count != 0 {
-            uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
-        }*/
-        
-        /*if isChoosingTagsForSoundUpload {
-            if let tagType = tagType {
-                if tagType == "city" && chosenTagsArray.count != 0 {
-                    uiElement.setUserDefault("cityTag", value: chosenTagsArray[0])
-                    
-                } else if tagType == "genre" && chosenTagsArray.count != 0 {
-                    //TODO: add genre selected tag
-                }
-                
-            } else {
-                uiElement.setUserDefault(moreTags, value: chosenTagsArray)
-            }
-            
-        } else {
-            uiElement.setUserDefault("tags", value: chosenTagsArray)
-        }*/
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: featured tags
@@ -531,7 +533,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         for i in 0..<self.filteredTags.count {
             if tagName == self.filteredTags[i].name {
                 self.filteredTags[i].isSelected = true
-                self.chosenTagsArray.append(self.filteredTags[i])
+                self.chosenTags.append(self.filteredTags[i])
                 self.tableView.reloadData()
                 break
             }
@@ -612,8 +614,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                         }
                         
-                        if self.chosenTagsArray.count != 0 {
-                            let chosenTagObjectIds = self.chosenTagsArray.map {$0.objectId}
+                        if self.chosenTags.count != 0 {
+                            let chosenTagObjectIds = self.chosenTags.map {$0.objectId}
                             if !chosenTagObjectIds.contains(newTag.objectId) {
                                 self.tags.append(newTag)
                             }

@@ -150,7 +150,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let soundSearch = "search"
     
     lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 10, height: 10))
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 5, height: 10))
         searchBar.placeholder = "Search"
         
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
