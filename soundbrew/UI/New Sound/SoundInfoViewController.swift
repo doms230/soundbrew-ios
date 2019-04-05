@@ -413,7 +413,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["title"] = soundTitle.text
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
-        newSound["genre"] = genreTag
+        newSound["genre"] = genreTag!.name
+        newSound["city"] = cityTag!.name
         newSound["tags"] = tags
         newSound.saveEventually {
             (success: Bool, error: Error?) in
