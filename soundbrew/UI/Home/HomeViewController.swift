@@ -34,14 +34,19 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
             soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil, searchText: nil)
-        }
-    
-        setUpTableView()
+            
+            setUpTableView()
+            
+        } else {
+            let storyboard = UIStoryboard(name: "Login", bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            //show window
+            appDelegate.window?.rootViewController = controller
+        }        
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
-        
         if soundList != nil {
             /* soundList.sounds = searchSounds
              soundList.player!.sounds = searchSounds

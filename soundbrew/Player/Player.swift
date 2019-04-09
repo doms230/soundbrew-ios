@@ -157,6 +157,26 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 self.sounds[position].audioData = audioData
             }
         }
+        
+        
+        /*
+         let downloadTask = URLSession.shared.downloadTask(with: audioURL, completionHandler: {url, response, error -> Void in
+         
+         if let error = error {
+         print("fetchUdioData: \(error)")
+         
+         } else if let url = url {
+         if prepareAndPlay {
+         self.prepareAndPlay(url)
+         }
+         self.sounds[position].audioData = url
+         }
+         })
+         
+         downloadTask.resume()
+ 
+ 
+         */
     }
     
     func prepareAndPlay(_ audioData: Data) {
@@ -170,7 +190,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         let session = AVAudioSession.sharedInstance()
         
         do {
-            //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise.
+            //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
             let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
             try audioData.write(to: audioFileURL, options: .atomic)
             

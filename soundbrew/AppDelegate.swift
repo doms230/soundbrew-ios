@@ -44,11 +44,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let _ = Player()
         
-        SKPaymentQueue.default().add(self)
-       Payment.shared.loadSubscriptionOptions()
+        /*SKPaymentQueue.default().add(self)
+       Payment.shared.loadSubscriptionOptions()*/
+        
+        /*let fileManager = FileManager.default
+        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL //"\(documentsUrl)"
+        
+        do {
+            let filePaths = try fileManager.contentsOfDirectory(atPath: documentsUrl.path!)
+            for filePath in filePaths {
+                print("document directory file: \(filePath)")
+               // try fileManager.removeItem(atPath: NSDirec + filePath)
+            }
+        } catch {
+            print("Could not clear temp folder: \(error)")
+        }*/
         
         return true
     }
+    
+    /*func applicationWillTerminate(_ application: UIApplication) {
+        let fileManager = FileManager.default
+        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL //"\(documentsUrl)"
+        
+        do {
+            let filePaths = try fileManager.contentsOfDirectory(atPath: documentsUrl.path!)
+            for filePath in filePaths {
+                //print("document directory file: \(filePath)")
+                try fileManager.removeItem(atPath: filePath)
+            }
+        } catch {
+            print("Could not clear temp folder: \(error)")
+        }
+    }*/
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let installation = PFInstallation.current()

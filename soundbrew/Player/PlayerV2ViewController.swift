@@ -542,8 +542,6 @@ class PlayerV2ViewController: UIViewController {
                         self.present(alertController, animated: true, completion: nil)
                     }
                 }
-
-                
                 
             }, failure: { (error) in
                 print(error)
@@ -552,9 +550,7 @@ class PlayerV2ViewController: UIViewController {
         } catch let error {
             fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
-        
     }
-
     
     let shareAppURL = "https://www.soundbrew.app/ios"
     

@@ -180,8 +180,12 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             }))
             
         } else {
-            menuAlert.addAction(UIAlertAction(title: "Unlike Sound", style: .default, handler: { action in
+           /* menuAlert.addAction(UIAlertAction(title: "Unlike Sound", style: .default, handler: { action in
                 self.unlikeSound(sound.objectId, row: row)
+            }))*/
+            
+            menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
+                //TODO
             }))
         }
         
@@ -480,7 +484,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         if let searchText = searchText {
             query.whereKey("title", hasPrefix: searchText)
         }
-        
+        query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder(descendingOrder)
         query.limit = 100
         query.findObjectsInBackground {
@@ -618,7 +622,11 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 print(error)
                 
             } else if let post = post {
-                post.deleteInBackground {
+                post["isRemoved"] = true
+                post.saveEventually()
+                self.sounds.remove(at: row)
+                self.tableView?.reloadData()
+                /*post.deleteInBackground {
                     (success: Bool, error: Error?) in
                     if (success) {
                         self.sounds.remove(at: row)
@@ -627,7 +635,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self.target)
                     }
-                }
+                }*/
             }
         }
     }
