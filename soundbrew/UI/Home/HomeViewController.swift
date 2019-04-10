@@ -71,6 +71,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         } else if segue.identifier == "showTags" {
             soundList.prepareToShowTags(segue)
+            
+        } else if segue.identifier == "showEditSoundInfo" {
+            soundList.prepareToShowSoundInfo(segue)
+            
+        } else if segue.identifier == "showUploadSound" {
+            soundList.prepareToShowSoundAudioUpload(segue)
         }
     }
     

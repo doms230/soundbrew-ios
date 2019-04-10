@@ -29,8 +29,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let menuButton = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(self.didPressMenuButton(_:)))
-        self.navigationItem.rightBarButtonItem = menuButton
+        let settingsButton = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
+        self.navigationItem.rightBarButtonItem = settingsButton
         
         if let currentUser = PFUser.current(){
             self.currentUser = currentUser
@@ -77,7 +77,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let navigationController = segue.destination as! UINavigationController
             let editProfileController = navigationController.topViewController as! EditProfileViewController
             editProfileController.artist = artist
-            editProfileController.artistDelegate = self 
+            editProfileController.artistDelegate = self
+            
+        } else if segue.identifier == "showEditSoundInfo" {
+            soundList.prepareToShowSoundInfo(segue)
+            
+        } else if segue.identifier == "showUploadSound" {
+            soundList.prepareToShowSoundAudioUpload(segue)
         }
     }
     
@@ -414,7 +420,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressMenuButton(_ sender: UIBarButtonItem) {
+    @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
         let menuAlert = UIAlertController(title: nil , message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in

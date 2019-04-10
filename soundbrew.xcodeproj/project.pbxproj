@@ -11,6 +11,7 @@
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
 		F203C76822544E730050F113 /* Payment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76722544E720050F113 /* Payment.swift */; };
 		F203C76A225467A80050F113 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F203C769225467A80050F113 /* StoreKit.framework */; };
+		F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* SoundArtImage.swift */; };
 		F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */; };
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* SignupViewController.swift */; };
@@ -40,7 +41,7 @@
 		F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
 		F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */; };
-		F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */; };
+		F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */; };
 		F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */; };
 		F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */; };
 		F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */; };
@@ -76,6 +77,7 @@
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F203C76722544E720050F113 /* Payment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payment.swift; sourceTree = "<group>"; };
 		F203C769225467A80050F113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		F203C76B225D7ED80050F113 /* SoundArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundArtImage.swift; sourceTree = "<group>"; };
 		F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
@@ -112,7 +114,7 @@
 		F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundListTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
 		F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoTableViewCell.swift; sourceTree = "<group>"; };
-		F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewSoundViewController.swift; sourceTree = "<group>"; };
+		F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadSoundAudioViewController.swift; sourceTree = "<group>"; };
 		F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 				F2EA6F4D220B630B007FA614 /* Player.swift */,
 				F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */,
 				F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */,
+				F203C76B225D7ED80050F113 /* SoundArtImage.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -317,7 +320,7 @@
 			isa = PBXGroup;
 			children = (
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
-				F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */,
+				F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
 			);
 			path = "New Sound";
@@ -601,6 +604,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */,
 				F28A985E2227CF5400C96EED /* CommentViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F203C76822544E730050F113 /* Payment.swift in Sources */,
@@ -628,7 +632,7 @@
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* SignupViewController.swift in Sources */,
-				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,
+				F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

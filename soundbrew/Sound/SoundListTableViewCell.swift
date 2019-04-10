@@ -44,7 +44,6 @@ class SoundListTableViewCell: UITableViewCell {
         return scrollView
     }()
     
-    
     //mark: sounds
     lazy var dividerLine: UIView = {
         let line = UIView()
@@ -90,7 +89,7 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var menuButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "menu"), for: .normal)
+        button.setImage(UIImage(named: "more"), for: .normal)
         return button 
     }()
     
@@ -125,7 +124,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
+                make.height.width.equalTo(15)
                 make.top.equalTo(soundArtImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }

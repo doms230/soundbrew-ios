@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--New Sound View Controller-->
+        <!--Upload Sound Audio View Controller-->
         <scene sceneID="54r-NH-38P">
             <objects>
-                <viewController id="NMN-7Y-7rd" customClass="NewSoundViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="NMN-7Y-7rd" customClass="UploadSoundAudioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="A3F-jb-vka">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -62,6 +62,8 @@
                         <segue destination="k7A-1j-YbY" kind="presentation" identifier="showEditProfile" id="wBb-Ll-LfM"/>
                         <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="eW3-lv-tSJ"/>
                         <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="uNc-Xt-ZBj"/>
+                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="Lzr-CP-43Y"/>
+                        <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -134,6 +136,8 @@
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ciq-Pd-2ja"/>
                         <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="mqd-ax-H7Q"/>
+                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="6q5-Hq-145"/>
+                        <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="b9t-dY-jAL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -196,6 +200,8 @@
                     <connections>
                         <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="Tm4-fE-iLf"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
+                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="SpB-6h-026"/>
+                        <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="hAI-d0-wwO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -275,7 +281,9 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="eW3-lv-tSJ"/>
-        <segue reference="7xJ-zD-c6d"/>
+        <segue reference="Tm4-fE-iLf"/>
         <segue reference="3jW-Fd-CA3"/>
+        <segue reference="SpB-6h-026"/>
+        <segue reference="hAI-d0-wwO"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -10,6 +10,7 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
+import Kingfisher
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable, TagDelegate {
 
@@ -28,12 +29,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundFileName: String!
     var soundParseFile: PFFileObject!
     var soundParseFileDidFinishProcessing = false
-    
     var didPressUploadButton = false
+    
+    var soundThatIsBeingEdited: Sound?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        saveAudioFile()
+        if soundThatIsBeingEdited == nil {
+            saveAudioFile()
+            soundParseFileDidFinishProcessing = true
+            soundArtDidFinishProcessing = true
+        }
+        
         setUpViews()
         setUpTableView()
     }
@@ -42,7 +49,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let viewController: TagsViewController = segue.destination as! TagsViewController
         viewController.isChoosingTagsForSoundUpload = true
         viewController.tagDelegate = self
-        if let tags = tagsToEdit {
+        if let tags = tagsToUpdateInTagsViewController {
             viewController.chosenTags = tags
         }
         
@@ -52,8 +59,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func setUpViews() {
-        let uploadButton = UIBarButtonItem(title: "UPLOAD", style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
+        var title = "UPLOAD"
+        if soundThatIsBeingEdited != nil {
+            title = "UPDATE"
+            
+            /*let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
+            self.navigationItem.leftBarButtonItem = cancelButton*/
+        }
+        
+        let uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
+    }
+    
+    @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: tags
@@ -70,7 +89,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var activityTag: String?
     var moreTags: Array<Tag>?
     var cityTag: Tag?
-    var tagsToEdit: Array<Tag>?
+    var tagsToUpdateInTagsViewController: Array<Tag>?
     
     func changeTags(_ value: Array<Tag>?) {
         if let tagType = self.tagType {
@@ -108,7 +127,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        if soundThatIsBeingEdited == nil {
+            return 2
+        }
+        
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -124,6 +147,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if indexPath.section == 0 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as? SoundInfoTableViewCell
+            
+            if let sound = soundThatIsBeingEdited {
+                //cell.soundArt.kf.setImage(with: URL(string: sound.artURL))
+                cell.soundArt.kf.setImage(with: URL(string: sound.artURL), for: .normal)
+                cell.soundTitle.text = sound.title
+            }
             
             soundArtButton = cell.soundArt
             cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
@@ -206,7 +235,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 //self.genreTag = "Hip-Hop/Rap"
                 tagType = "genre"
                 if let genreTag = self.genreTag {
-                    tagsToEdit?.append(genreTag)
+                    tagsToUpdateInTagsViewController?.append(genreTag)
                 }
                 self.performSegue(withIdentifier: "showTags", sender: self)
                 
@@ -215,7 +244,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 1:
                 tagType = "city"
                 if let cityTag = self.cityTag {
-                    tagsToEdit?.append(cityTag)
+                    tagsToUpdateInTagsViewController?.append(cityTag)
                 }
                 self.performSegue(withIdentifier: showTags, sender: self)
                 //var cityTags: Array<Tag>?
@@ -234,7 +263,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             case 4:
                 tagType = nil
-                tagsToEdit = moreTags
+                tagsToUpdateInTagsViewController = moreTags
                 self.performSegue(withIdentifier: showTags, sender: self)
                 //self.showTagsViewController(moreTags, tagType: nil)
                 break
@@ -396,11 +425,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func didPressUpload(_ sender: UIBarButtonItem) {
         if soundInfoIsVerified() {
             self.startAnimating()
-            if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
-                saveSound()
+            
+            if let sound = soundThatIsBeingEdited {
+                updateSound(sound.objectId)
                 
             } else {
-                didPressUploadButton = true 
+                if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
+                    saveSound()
+                    
+                } else {
+                    didPressUploadButton = true
+                }
             }
         }
     }
@@ -424,6 +459,34 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if let error = error {
                 self.stopAnimating()
                 self.uiElement.showAlert("We Couldn't Post Your Sound", message: error.localizedDescription, target: self)
+            }
+        }
+    }
+    
+    func updateSound(_ objectId: String) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                if let soundArt = self.soundArt {
+                    object["songArt"] = soundArt
+                }
+                object["title"] = self.soundTitle.text
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if (success) {
+                        self.stopAnimating()
+                        //self.dismiss(animated: true, completion: nil)
+                        self.uiElement.goBackToPreviousViewController(self)
+                        
+                    } else if let error = error {
+                        self.stopAnimating()
+                        self.uiElement.showAlert("We Couldn't Update Your Sound", message: error.localizedDescription, target: self)
+                    }
+                }
             }
         }
     }
@@ -472,7 +535,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 self.stopAnimating()
-                self.uiElement.setUserDefault("moreTags", value: [])
+                //self.uiElement.setUserDefault("moreTags", value: [])
                 self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
                 
             } else {
@@ -527,20 +590,25 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if soundTitle.text!.isEmpty {
             showAttributedPlaceholder(soundTitle, text: "Title Required")
             
-        } else if soundArt == nil {
-            uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
-            
-        } else if genreTag == nil {
-            uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
-            
-        } else if activityTag == nil {
-            uiElement.showAlert("Sound Activity is Required", message: "Tap the 'add activity tag' button to choose", target: self)
-            
-        } else if moodTag == nil {
-            uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
-            
-        } else if cityTag == nil {
-            uiElement.showAlert("Sound City is Required", message: "Tap the 'add mood tag' button to choose", target: self)
+        } else if soundThatIsBeingEdited == nil {
+            if soundArt == nil {
+                uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
+                
+            } else if genreTag == nil {
+                uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
+                
+            } else if activityTag == nil {
+                uiElement.showAlert("Sound Activity is Required", message: "Tap the 'add activity tag' button to choose", target: self)
+                
+            } else if moodTag == nil {
+                uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
+                
+            } else if cityTag == nil {
+                uiElement.showAlert("Sound City is Required", message: "Tap the 'add mood tag' button to choose", target: self)
+                
+            } else {
+                return true
+            }
             
         } else {
             return true

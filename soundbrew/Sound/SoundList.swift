@@ -121,6 +121,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     }
     
     //mark: sounds
+    var selectedSound: Sound!
+    
     func sound(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
         let sound = sounds[indexPath.row]
@@ -172,20 +174,19 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             }))
             
             menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
-                //TODO
+                self.selectedSound = sound
+                self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
             }))
             
             menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
-                //TODO
+                self.selectedSound = sound
+                self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
             }))
             
         } else {
-           /* menuAlert.addAction(UIAlertAction(title: "Unlike Sound", style: .default, handler: { action in
-                self.unlikeSound(sound.objectId, row: row)
-            }))*/
-            
             menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
-                //TODO
+                self.selectedArtist = sound.artist
+                self.target.performSegue(withIdentifier: "showProfile", sender: self)
             }))
         }
         
@@ -283,7 +284,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         }
         
         self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-        print("updating SOunds")
         updateSounds()
     }
     
@@ -306,6 +306,16 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 }
             }
         }
+    }
+    
+    func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {
+        let viewController = segue.destination as! SoundInfoViewController
+        viewController.soundThatIsBeingEdited = selectedSound
+    }
+    
+    func prepareToShowSoundAudioUpload(_ segue: UIStoryboardSegue) {
+        let viewController = segue.destination as! UploadSoundAudioViewController
+        viewController.soundThatIsBeingEdited = selectedSound
     }
     
     //mark: tags filter
@@ -626,39 +636,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 post.saveEventually()
                 self.sounds.remove(at: row)
                 self.tableView?.reloadData()
-                /*post.deleteInBackground {
-                    (success: Bool, error: Error?) in
-                    if (success) {
-                        self.sounds.remove(at: row)
-                        self.tableView?.reloadData()
-                        
-                    } else if let error = error {
-                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self.target)
-                    }
-                }*/
-            }
-        }
-    }
-    
-    func unlikeSound(_ objectId: String, row: Int) {
-        let query = PFQuery(className: "Like")
-        query.whereKey("postId", equalTo: objectId)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let object = object {
-                object.deleteInBackground {
-                    (success: Bool, error: Error?) in
-                    if (success) {
-                        self.sounds.remove(at: row)
-                        self.tableView?.reloadData()
-                        
-                    } else if let error = error {
-                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self.target)
-                    }
-                }
             }
         }
     }

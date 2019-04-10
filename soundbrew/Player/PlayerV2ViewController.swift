@@ -16,8 +16,9 @@ import SnapKit
 import DeckTransition
 import SwiftVideoGenerator
 import Photos
+import NVActivityIndicatorView
 
-class PlayerV2ViewController: UIViewController {
+class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
 
     let color = Color()
     let uiElement = UIElement()
@@ -273,9 +274,7 @@ class PlayerV2ViewController: UIViewController {
         return button
     }()
     @objc func didPressShareButton(_ sender: UIButton) {
-        shareMusicVideo()
-        
-        /*let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
+        let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
         
         let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
             self.shareToSnapchat()
@@ -287,10 +286,15 @@ class PlayerV2ViewController: UIViewController {
         }
         alertController.addAction(instagramAction)
         
+        let musicVideoAction = UIAlertAction(title: "Save Music Snippet", style: .default) { (_) -> Void in
+            self.checkAccessToPhotoLibrary()
+        }
+        alertController.addAction(musicVideoAction)
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
-        self.present(alertController, animated: true, completion: nil)*/
+        self.present(alertController, animated: true, completion: nil)
     }
     
     lazy var playBackSlider: UISlider = {
@@ -514,7 +518,18 @@ class PlayerV2ViewController: UIViewController {
     }
     
     //mark: share
-    func shareMusicVideo() {
+    let shareAppURL = "https://www.soundbrew.app/ios"
+    
+    func imageForSharing() -> UIImage {
+        let soundArtImage = SoundArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
+        soundArtImage.songArt.image = sound?.artImage
+        soundArtImage.updateConstraints()
+        return soundArtImage.asImage()
+    }
+    
+    func prepareAudioFileForSharing() {
+        self.startAnimating()
+        
         do {
             let audioURL = URL(string: sound!.audioURL)
             let audioData = sound!.audioData
@@ -522,101 +537,97 @@ class PlayerV2ViewController: UIViewController {
             let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
             try audioData?.write(to: audioFileURL, options: .atomic)
             
-            VideoGenerator.current.fileName = "SingleMovieFileName"
-            VideoGenerator.current.shouldOptimiseImageForVideo = true
-            
-            VideoGenerator.current.generate(withImages: [sound!.artImage!], andAudios: [audioFileURL], andType: .single, { (progress) in
-                print(progress)
-                
-            }, success: { (url) in
-                print(url)
-                
-                PHPhotoLibrary.shared().performChanges({
-                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-                    
-                }) { saved, error in
-                    if saved {
-                        let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
-                        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                        alertController.addAction(defaultAction)
-                        self.present(alertController, animated: true, completion: nil)
-                    }
-                }
-                
-            }, failure: { (error) in
-                print(error)
-            })
+            generateVideoFromAudioAndArtFile(audioFileURL)
             
         } catch let error {
+            self.stopAnimating()
             fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
     }
     
-    let shareAppURL = "https://www.soundbrew.app/ios"
-    
-    func shareToSnapchat() {
-        if let stickerImage = createShareableSticker() {
-            let sticker = SCSDKSnapSticker(stickerImage: stickerImage)
+    func generateVideoFromAudioAndArtFile(_ audioFileURL: URL) {
+        let musicVideoImage = imageForSharing()
+        VideoGenerator.current.fileName = "SingleMovieFileName"
+        VideoGenerator.current.shouldOptimiseImageForVideo = true
+        VideoGenerator.current.maxVideoLengthInSeconds = 30
+        VideoGenerator.current.videoBackgroundColor = .black
+        VideoGenerator.current.generate(withImages: [musicVideoImage], andAudios: [audioFileURL], andType: .single, { (progress) in
+            print(progress)
             
-            let snap = SCSDKNoSnapContent()
-            snap.sticker = sticker
-            snap.attachmentUrl = shareAppURL
-            let api = SCSDKSnapAPI(content: snap)
-            api.startSnapping(completionHandler: { (error: Error?) in
-                if let error = error {
-                    print("Snapchat error: \(error)")
+        }, success: { (url) in
+            print(url)
+            self.stopAnimating()
+            self.saveVideoToUserPhotoLibrary(url)
+            
+        }, failure: { (error) in
+            print(error)
+            self.stopAnimating()
+            self.uiElement.showAlert("Oops", message: "There was an issue creating the music video snippet", target: self)
+        })
+    }
+    
+    func saveVideoToUserPhotoLibrary(_ url: URL) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+            
+        }) { saved, error in
+            if saved {
+                let alertController = UIAlertController(title: "Your video was successfully saved to your photos library.", message: nil, preferredStyle: .alert)
+                let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alertController.addAction(defaultAction)
+                self.present(alertController, animated: true, completion: nil)
+                self.stopAnimating()
+            }
+        }
+    }
+    
+    func checkAccessToPhotoLibrary() {
+        switch PHPhotoLibrary.authorizationStatus() {
+        case .authorized:
+            self.prepareAudioFileForSharing()
+            break
+            
+        case .denied:
+            self.uiElement.permissionDenied("You Denied Access", message: "Soundbrew needs access to your photo library to create a music video snippet. ", target: self)
+            break
+            
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({ (newStatus) in
+                if newStatus == PHAuthorizationStatus.authorized {
+                    self.prepareAudioFileForSharing()
+                    
+                } else {
+                    self.uiElement.permissionDenied("You Denied Access", message: "Soundbrew needs access to your photo library to create a music video snippet. ", target: self)
                 }
             })
+            break
             
-        } else {
-            print("didn't work")
+        case .restricted:
+            break
+            
+        default:
+            break
         }
+    }
+    
+    func shareToSnapchat() {
+        let snapchatImage = imageForSharing()
+        
+        let snap = SCSDKNoSnapContent()
+        snap.sticker = SCSDKSnapSticker(stickerImage: snapchatImage)
+        snap.attachmentUrl = shareAppURL
+        let api = SCSDKSnapAPI(content: snap)
+        api.startSnapping(completionHandler: { (error: Error?) in
+            if let error = error {
+                print("Snapchat error: \(error)")
+            }
+        })
     }
     
     func shareToInstagram() {
-        if let stickerImage = createShareableSticker() {
-            let share = ShareImageInstagram()
-            
-            share.postToInstagramStories(image: stickerImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
-        }
-    }
-    
-    func createShareableSticker() -> UIImage? {
-        // let image: UIImage?
-        
-        let stickerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
-        stickerView.backgroundColor = .white
-        
-        let songArt = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        songArt.image = self.songArt.image!
-        songArt.backgroundColor = .white
-        
-        let songTitle = UILabel(frame: CGRect(x: 55, y: 0, width: 140, height: 20))
-        songTitle.text = self.songTitle.text!
-        songTitle.textColor = color.black()
-        songTitle.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 12)
-        
-        let artistName = UILabel(frame: CGRect(x: 55, y: 15, width: 140, height: 20))
-        artistName.text = self.artistName.titleLabel!.text!
-        artistName.textColor = color.black()
-        artistName.font = UIFont(name: uiElement.mainFont, size: 11)
-        
-        let listenOnLabel = UILabel(frame: CGRect(x: 55, y: 30, width: 140, height: 20))
-        listenOnLabel.text = "Listening on Soundbrew"
-        listenOnLabel.textColor = color.black()
-        listenOnLabel.font = UIFont(name: uiElement.mainFont, size: 9)
-        
-        stickerView.addSubview(songArt)
-        stickerView.addSubview(listenOnLabel)
-        stickerView.addSubview(songTitle)
-        stickerView.addSubview(artistName)
-        
-        UIGraphicsBeginImageContextWithOptions(stickerView.bounds.size, false, 0.0)
-        stickerView.drawHierarchy(in: stickerView.bounds, afterScreenUpdates: true)
-        let snapshotImageFromMyView = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        //snapshotImageFromMyView
-        return snapshotImageFromMyView
+        let share = ShareImageInstagram()
+        let igImage = imageForSharing()
+        share.postToInstagramStories(image: igImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
     }
     
     func loadUserInfoFromCloud(_ userId: String) {
@@ -645,44 +656,6 @@ class PlayerV2ViewController: UIViewController {
                 } else {
                     self.verifiedCheck.image = nil
                 }
-                
-                //Don't want to add blank space to social and streams... that's why we're checking.
-                
-                /*if let instagramHandle = user["instagramHandle"] as? String {
-                 if !instagramHandle.isEmpty {
-                 self.sounds[i].instagramHandle = "https://www.instagram.com/\(instagramHandle)"
-                 }
-                 }
-                 
-                 if let twitterHandle = user["twitterHandle"] as? String {
-                 if !twitterHandle.isEmpty {
-                 self.sounds[i].twitterHandle = "https://www.twitter.com/\(twitterHandle)"
-                 }
-                 }
-                 
-                 if let soundCloudLink = user["soundCloudLink"] as? String {
-                 if !soundCloudLink.isEmpty {
-                 self.sounds[i].soundcloudLink = soundCloudLink
-                 }
-                 }
-                 
-                 if let appleMusicLink = user["appleMusicLink"] as? String {
-                 if !appleMusicLink.isEmpty {
-                 self.sounds[i].appleMusicLink = appleMusicLink
-                 }
-                 }
-                 
-                 if let spotifyLink = user["spotifyLink"] as? String {
-                 if !spotifyLink.isEmpty {
-                 self.sounds[i].spotifyLink = spotifyLink
-                 }
-                 }
-                 
-                 if let otherLlink = user["otherLink"] as? String {
-                 if !otherLlink.isEmpty {
-                 self.sounds[i].otherLink = otherLlink
-                 }
-                 }*/
             }
         }
     }
