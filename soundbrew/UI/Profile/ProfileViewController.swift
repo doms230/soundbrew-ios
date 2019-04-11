@@ -56,11 +56,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-            /*soundList.sounds = profileSounds
-            soundList.player!.sounds = profileSounds
-            soundList.target = self
-            self.tableView.reloadData()*/
-            
             var tags: Array<Tag>?
             if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
@@ -142,7 +137,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            //soundList.setUpMiniPlayer()
+            if soundList.miniPlayerView == nil {
+                soundList.setUpMiniPlayer()
+            }
             tableView.reloadData()
         }
     }
@@ -297,6 +294,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         default:
             return self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! SoundListTableViewCell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
+            if soundList.soundType == "uploads" {
+                soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: artist?.objectId, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+                
+            } else {
+                soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.likedSoundIds, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+            }
         }
     }
     
@@ -462,7 +471,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                
+                if let followerCount = user["followerCount"] as? Int {
+                    artist.followerCount = followerCount
+                }
                 
                 if let name = user["artistName"] as? String {
                     artist.name = name
@@ -522,7 +535,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         newFollow["isRemoved"] = false
         newFollow.saveEventually {
             (success: Bool, error: Error?) in
-            if error != nil {
+            if success && error == nil {
+                self.incrementFollowerCount(artist: self.artist!, incrementFollows: true, decrementFollows: false)
+                
+            } else {
                 self.artist!.isFollowedByCurrentUser = false
                 self.tableView.reloadData()
             }
@@ -544,7 +560,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
             } else if let object = object {
                 object["isRemoved"] = true
-                object.saveEventually()
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if success && error == nil {
+                        self.incrementFollowerCount(artist: self.artist!, incrementFollows: false, decrementFollows: true)
+                    }
+                }
             }
         }
     }
@@ -567,5 +588,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             self.tableView.reloadData()
         }
+    }
+    
+    func incrementFollowerCount(artist: Artist, incrementFollows: Bool, decrementFollows: Bool) {
+       /* let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: artist.objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                if incrementFollows {
+                    object.incrementKey("followerCount")
+                    
+                } else if decrementFollows {
+                    object.incrementKey("followerCount", byAmount: -1)
+                }
+                
+                object.saveEventually()
+            }
+        }*/
     }
 }

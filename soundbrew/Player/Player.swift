@@ -28,9 +28,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     override init() {
         super.init()
-        //self.sounds = sounds
-        
-        //self.setUpNextSong(false, at: nil)
         setupRemoteTransportControls()
     }
     
@@ -157,26 +154,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 self.sounds[position].audioData = audioData
             }
         }
-        
-        
-        /*
-         let downloadTask = URLSession.shared.downloadTask(with: audioURL, completionHandler: {url, response, error -> Void in
-         
-         if let error = error {
-         print("fetchUdioData: \(error)")
-         
-         } else if let url = url {
-         if prepareAndPlay {
-         self.prepareAndPlay(url)
-         }
-         self.sounds[position].audioData = url
-         }
-         })
-         
-         downloadTask.resume()
- 
- 
-         */
     }
     
     func prepareAndPlay(_ audioData: Data) {
@@ -263,12 +240,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 return .success
             }
             
-            
-            /*if !self.player!.isPlaying {
-                self.player!.play()
-                return .success
-            }*/
-            
             return .commandFailed
         }
         
@@ -278,11 +249,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 pauseSelf.pause()
                 return .success
             }
-            
-            /*if self.player!.isPlaying {
-                self.player!.pause()
-                return .success
-            }*/
             
             return .commandFailed
         }
@@ -390,3 +356,5 @@ class Player: NSObject, AVAudioPlayerDelegate {
 protocol PlayerDelegate {
     func selectedArtist(_ artist: Artist?)
 }
+
+

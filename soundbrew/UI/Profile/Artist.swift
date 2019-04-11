@@ -24,8 +24,9 @@ class Artist {
     var twitterUsername: String?
     var snapchatUsername: String?
     var isFollowedByCurrentUser: Bool?
+    var followerCount: Int?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?, isFollowedByCurrentUser: Bool?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -39,6 +40,7 @@ class Artist {
         self.twitterUsername = twitterUsername
         self.snapchatUsername = snapchatUsername
         self.isFollowedByCurrentUser = isFollowedByCurrentUser
+        self.followerCount = followerCount
     }
 }
 

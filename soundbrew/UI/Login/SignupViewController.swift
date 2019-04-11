@@ -47,7 +47,7 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
     
     lazy var signupButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Save", for: .normal)
+        button.setTitle("Sign Up", for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
@@ -60,7 +60,7 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad(){
         super.viewDidLoad()
         
-        self.title = "Account Info (1/4)"
+        self.title = "Welcome"
         
         let exitItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(SignupViewController.exitAction(_:)))
         self.navigationItem.leftBarButtonItem = exitItem
@@ -115,25 +115,32 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
         
         if validateEmail() && validatePassword(){
             startAnimating()
-            
-            validateEmailPasswordAvailability()
+            signup()
         }
     }
     
     //MARK: Validate jaunts
-    func validateEmailPasswordAvailability() {
+    func signup() {
         let lowercasedEmail = emailText.text!.lowercased()
         
-        let query = PFQuery(className: "_User")
-        query.whereKey("email", equalTo: lowercasedEmail)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
+        let user = PFUser()
+        //user.username = lowercasedEmail
+        user.password = passwordText.text!
+        user.email = lowercasedEmail
+        user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
             self.stopAnimating()
-            if error != nil || object == nil {
-                self.performSegue(withIdentifier: "showAddArtistName", sender: self)
+            if let error = error {
+                UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
                 
             } else {
-                self.uiElement.showAlert("Email Taken", message: "There's already an account associated with \(self.emailText.text!)", target: self)
+                let installation = PFInstallation.current()
+                installation?["user"] = PFUser.current()
+                installation?["userId"] = PFUser.current()?.objectId
+                installation?.saveEventually()
+                
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
+                self.present(initialViewController, animated: true, completion: nil)
             }
         }
     }

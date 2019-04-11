@@ -42,7 +42,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         self.searchText = searchText
         player = Player.sharedInstance
         
-        setUpMiniPlayer()
+        //setUpMiniPlayer()
+        setUpTableView()
         determineTypeOfSoundToLoad(soundType)
     }
     
@@ -122,6 +123,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     
     //mark: sounds
     var selectedSound: Sound!
+    var descendingOrder = "createdAt"
     
     func sound(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
@@ -202,10 +204,12 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.sounds.removeAll()
-        var descendingOrder = "createdAt"
         if let filter = self.uiElement.getUserDefault("filter") as? String {
             if filter == "popular" {
                 descendingOrder = "plays"
+                
+            } else {
+                descendingOrder = "createdAt"
             }
         }
         
@@ -471,7 +475,14 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     }*/
     
     //mark: data
+    //To insure that data isn't loaded again when user is at bottom of screen
+    var isUpdatingData = false
+    var thereIsNoMoreDataToLoad = false
+    
     func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<Tag>?, followIds: Array<String>?, searchText: String?) {
+        
+        isUpdatingData = true
+        print(descendingOrder)
         let query = PFQuery(className: "Post")
         if let likeIds = likeIds {
             query.whereKey("objectId", containedIn: likeIds)
@@ -494,6 +505,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         if let searchText = searchText {
             query.whereKey("title", hasPrefix: searchText)
         }
+        if sounds.count != 0 {
+            query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId})
+            print("cha")
+        }
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder(descendingOrder)
         query.limit = 100
@@ -507,12 +522,17 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                         let audio = object["audioFile"] as! PFFileObject
                         let tags = object["tags"] as! Array<String>
                         let userId = object["userId"] as! String
-                        var soundPlays: Int?
-                        if let plays = object["plays"] as? Int {
-                            soundPlays = plays
+                        var plays: Int?
+                        if let soundPlays = object["plays"] as? Int {
+                            plays = soundPlays
                         }
                         
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
+                        var likes: Int?
+                        if let soundPlays = object["likes"] as? Int {
+                            likes = soundPlays
+                        }
+                        
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
                         
                         /*var relevancyScore = 0
                         if let selectedTagsForFiltering = self.selectedTagsForFiltering {
@@ -521,13 +541,13 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                             }
                         }*/
                         
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: soundPlays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes)
                         
                         self.sounds.append(sound)
                     }
                     
                     self.updateSounds()
-                    
+                    self.isUpdatingData = false
                     /*if let selectedTagsForFiltering = self.selectedTagsForFiltering {
                         self.sortSounds(selectedTagsForFiltering)
                         
@@ -536,6 +556,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     }*/
                     
                     //self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+                } else {
+                    self.thereIsNoMoreDataToLoad = true
                 }
                 
             } else {
@@ -594,31 +616,31 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 print(error)
                 
             } else if let user = user {
-                let artistName = user["artistName"] as? String
-                let artistCity = user["city"] as? String
+                let artistUsername = user["username"] as? String
                 
-                var isArtistVerified: Bool?
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                
+                if let name = user["DisplayName"] as? String {
+                    cell.soundArtist.text = name
+                    artist.name = name
+                }
+                
                 if let verified = user["artistVerified"] as? Bool {
-                    isArtistVerified = verified
-                }
-                cell.soundArtist.text = artistName!
-                
-                var instagramUsername: String?
-                if let igUsername = user["instagramHandle"] as? String {
-                    instagramUsername = igUsername
+                    artist.isVerified = verified
                 }
                 
-                var twitterUsername: String?
-                if let twtrUsername = user["twitterHandle"] as? String {
-                    twitterUsername = twtrUsername
+                if let count = user["followerCount"] as? Int {
+                    artist.followerCount = count
                 }
                 
-                var snapchatUsername: String?
-                if let snapUsername = user["snapchatHandle"] as? String {
-                    snapchatUsername = snapUsername
+                if let city = user["city"] as? String {
+                    artist.city = city
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: artistName, city: artistCity, image: nil, isVerified: isArtistVerified, username: "", website: "", bio: "", email: "", instagramUsername: instagramUsername, twitterUsername: twitterUsername, snapchatUsername: snapchatUsername, isFollowedByCurrentUser: nil)
+                if let image = user["userImage"] as? PFFileObject {
+                    artist.image = image.url
+                }
+                
                 self.sounds[row].artist = artist
             }
         }

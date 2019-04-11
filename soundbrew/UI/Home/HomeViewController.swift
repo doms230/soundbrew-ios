@@ -36,14 +36,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil, searchText: nil)
             
             setUpTableView()
-            
-        } else {
-            let storyboard = UIStoryboard(name: "Login", bundle: nil)
-            let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            //show window
-            appDelegate.window?.rootViewController = controller
-        }        
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -121,6 +114,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
+            if soundList.miniPlayerView == nil {
+                soundList.setUpMiniPlayer()
+            }
             tableView.reloadData()
         }
     }
@@ -138,6 +134,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
             return soundList.sound(indexPath, cell: cell)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
+            soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: soundList.followUserIds, searchText: nil)
         }
     }
 }

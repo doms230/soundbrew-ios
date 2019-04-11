@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().barTintColor = .white
         UITabBar.appearance().tintColor = Color().black()
         
-        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[ MSAnalytics.self, MSCrashes.self ])
+        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[ MSAnalytics.self, MSCrashes.self])
 
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
@@ -42,7 +42,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         registerForRemoteNotification()
         
-        let _ = Player()
+        if PFUser.current() == nil {
+            let storyboard = UIStoryboard(name: "Login", bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
+            window?.rootViewController = controller
+        }
+        
+       // let _ = Player()
         
         /*SKPaymentQueue.default().add(self)
        Payment.shared.loadSubscriptionOptions()*/

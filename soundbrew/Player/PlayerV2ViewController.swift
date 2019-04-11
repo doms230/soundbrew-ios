@@ -131,6 +131,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                     if isLiked {
                         unlikeSound(currentUser.objectId!, postId: sound.objectId)
                         
+                        
                     } else {
                         newLike(currentUser.objectId!, postId: sound.objectId)
                     }
@@ -157,6 +158,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             if (success) {
                 self.player!.sounds[self.player!.currentSoundIndex].isLiked = true
                 self.sound!.isLiked = true
+                self.incrementLikeCount(sound: self.sound!, incrementLikes: true, decrementLikes: false)
                 
             } else if let error = error {
                 self.likeButton.setImage(UIImage(named: self.likeImage), for: .normal)
@@ -180,7 +182,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 
             } else if let object = object {
                 object["isRemoved"] = true
-                object.saveEventually()
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if success && error == nil {
+                        self.incrementLikeCount(sound: self.sound!, incrementLikes: false, decrementLikes: true)
+                    }
+                }
                 self.player!.sounds[self.player!.currentSoundIndex].isLiked = false
                 self.sound!.isLiked = false
             }
@@ -557,7 +564,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }, success: { (url) in
             print(url)
             self.stopAnimating()
-            self.saveVideoToUserPhotoLibrary(url)
+            print("absolute String: \(url.absoluteString)")
+            //self.saveVideoToUserPhotoLibrary(url)
             
         }, failure: { (error) in
             print(error)
@@ -612,7 +620,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     
     func shareToSnapchat() {
         let snapchatImage = imageForSharing()
-        
         let snap = SCSDKNoSnapContent()
         snap.sticker = SCSDKSnapSticker(stickerImage: snapchatImage)
         snap.attachmentUrl = shareAppURL
@@ -656,6 +663,26 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 } else {
                     self.verifiedCheck.image = nil
                 }
+            }
+        }
+    }
+    
+    func incrementLikeCount(sound: Sound, incrementLikes: Bool, decrementLikes: Bool) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: sound.objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                if incrementLikes {
+                    object.incrementKey("likes")
+                    
+                } else if decrementLikes {
+                    object.incrementKey("likes", byAmount: -1)
+                }
+                
+                object.saveEventually()
             }
         }
     }

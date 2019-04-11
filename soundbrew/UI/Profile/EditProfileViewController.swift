@@ -355,7 +355,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.stopAnimating()
                     if (success) {
                         if let artistDelegate = self.artistDelegate {
-                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
+                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                            
+                            if let followerCount = user["followerCount"] as? Int {
+                                artist.followerCount = followerCount
+                            }
                             
                             if let name =  user["artistName"] as? String {
                                 artist.name = name

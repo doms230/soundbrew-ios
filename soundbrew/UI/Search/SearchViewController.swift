@@ -142,10 +142,19 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 if let player = soundList.player {
                     player.didSelectSoundAt(indexPath.row)
-                    //soundList.setUpMiniPlayer()
+                    if soundList.miniPlayerView == nil {
+                        soundList.setUpMiniPlayer()
+                    }
                     tableView.reloadData()
                 }
             }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
+            soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
         }
     }
     
@@ -289,7 +298,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             email = user["email"] as? String
                         }
                         
-                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil)
+                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                        
+                        if let followerCount = user["followerCount"] as? Int {
+                            artist.followerCount = followerCount
+                        }
                         
                         if let name = user["artistName"] as? String {
                             artist.name = name
