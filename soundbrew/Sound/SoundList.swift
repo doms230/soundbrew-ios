@@ -42,8 +42,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         self.searchText = searchText
         player = Player.sharedInstance
         
-        //setUpMiniPlayer()
-        setUpTableView()
+        setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
     }
     
@@ -620,7 +619,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                 
                 let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
                 
-                if let name = user["DisplayName"] as? String {
+                if let name = user["artistName"] as? String {
                     cell.soundArtist.text = name
                     artist.name = name
                 }

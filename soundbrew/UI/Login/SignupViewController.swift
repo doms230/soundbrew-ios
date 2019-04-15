@@ -11,14 +11,14 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 
-class SignupViewController: UIViewController, NVActivityIndicatorViewable {
+class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     let color = Color()
     let uiElement = UIElement()
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
-        label.text = "Signup"
+        label.text = "What's Your Email?"
         label.numberOfLines = 0
         return label
     }()
@@ -34,20 +34,9 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
         return label
     }()
     
-    lazy var passwordText: UITextField = {
-        let label = UITextField()
-        label.placeholder = "Password"
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.backgroundColor = .white
-        label.borderStyle = .roundedRect
-        label.clearButtonMode = .whileEditing
-        label.isSecureTextEntry = true
-        return label
-    }()
-    
-    lazy var signupButton: UIButton = {
+    lazy var nextButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Sign Up", for: .normal)
+        button.setTitle("Next", for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
@@ -60,16 +49,16 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad(){
         super.viewDidLoad()
         
-        self.title = "Welcome"
+        self.title = "Email | 1/3"
         
-        let exitItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(SignupViewController.exitAction(_:)))
+        let exitItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(NewEmailViewController.exitAction(_:)))
         self.navigationItem.leftBarButtonItem = exitItem
         
         self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
-        self.view.addSubview(passwordText)
-        self.view.addSubview(signupButton)
-        signupButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
+        //self.view.addSubview(passwordText)
+        self.view.addSubview(nextButton)
+        nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         
         titleLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
@@ -83,25 +72,25 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        passwordText.snp.makeConstraints { (make) -> Void in
+        nextButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(uiElement.buttonHeight)
             make.top.equalTo(emailText.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        signupButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(passwordText.snp.bottom).offset(10)
+        /*passwordText.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(emailText.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        NVActivityIndicatorView.DEFAULT_TYPE = .ballScaleMultiple
-        NVActivityIndicatorView.DEFAULT_COLOR = color.blue()
-        NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE = CGSize(width: 60, height: 60)
-        NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        }*/
         
         emailText.becomeFirstResponder()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController = segue.destination as! NewUsernameViewController
+        viewController.emailString = emailText.text!
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -111,11 +100,10 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
     
     @objc func next(_ sender: UIButton){
         emailText.resignFirstResponder()
-        passwordText.resignFirstResponder()
+        //passwordText.resignFirstResponder()
         
-        if validateEmail() && validatePassword(){
-            startAnimating()
-            signup()
+        if validateEmail() { //&& validatePassword(){
+            checkIfEmailExistsThenMoveForward()
         }
     }
     
@@ -125,7 +113,7 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
         
         let user = PFUser()
         //user.username = lowercasedEmail
-        user.password = passwordText.text!
+        //user.password = passwordText.text!
         user.email = lowercasedEmail
         user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
             self.stopAnimating()
@@ -145,7 +133,7 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
     
-    func validatePassword() -> Bool {
+    /*func validatePassword() -> Bool {
         if passwordText.text!.isEmpty {
             passwordText.attributedPlaceholder = NSAttributedString(string: "Password required",
                                                                     attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
@@ -153,23 +141,37 @@ class SignupViewController: UIViewController, NVActivityIndicatorViewable {
         }
         
         return true 
-    }
+    }*/
     
     func validateEmail() -> Bool {
         let emailString : NSString = emailText.text! as NSString
         if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
-            emailText.attributedPlaceholder = NSAttributedString(string: "Valid email required",
-                                                                 attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-            emailText.text = ""
+            self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Valid email required.")
             return false
         }
         
         return true
     }
     
+    func checkIfEmailExistsThenMoveForward() {
+        startAnimating()
+        let query = PFQuery(className: "_User")
+        query.whereKey("email", equalTo: emailText.text!)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            self.stopAnimating()
+            if object != nil && error == nil {
+                self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Email already in use.")
+                
+            } else {
+                self.performSegue(withIdentifier: "showUsername", sender: self)
+            }
+        }
+    }
+    
     @objc func exitAction(_ sender: UIButton) {
         emailText.resignFirstResponder()
-        passwordText.resignFirstResponder()
+        //passwordText.resignFirstResponder()
         let storyboard = UIStoryboard(name: "Login", bundle: nil)
         let controller = storyboard.instantiateViewController(withIdentifier: "welcome") as UIViewController
         let appDelegate = UIApplication.shared.delegate as! AppDelegate

@@ -63,10 +63,10 @@
             </objects>
             <point key="canvasLocation" x="2666" y="163"/>
         </scene>
-        <!--Signup View Controller-->
+        <!--New Email View Controller-->
         <scene sceneID="xeC-Em-dXo">
             <objects>
-                <viewController id="Fu5-Ee-m7F" customClass="SignupViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Fu5-Ee-m7F" customClass="NewEmailViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gmS-hJ-ued">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -82,20 +82,38 @@
             </objects>
             <point key="canvasLocation" x="1844" y="926.98650674662679"/>
         </scene>
-        <!--Username View Controller-->
+        <!--New Username View Controller-->
         <scene sceneID="0U8-IL-062">
             <objects>
-                <viewController id="eZx-3t-13L" customClass="UsernameViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="eZx-3t-13L" customClass="NewUsernameViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7Ex-VV-3eB">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="DkI-SB-l6R"/>
                     </view>
+                    <connections>
+                        <segue destination="qzP-Id-cKZ" kind="show" identifier="showPassword" id="f7r-Gc-5oi"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dlx-vM-8BN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2681" y="928"/>
+        </scene>
+        <!--New Password View Controller-->
+        <scene sceneID="9oq-hj-cwq">
+            <objects>
+                <viewController id="qzP-Id-cKZ" customClass="NewPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ud2-B2-LaP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="uK2-9h-2sX"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2AA-Ff-8kZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3542" y="920"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="OCa-5d-WHM">

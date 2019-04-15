@@ -7,10 +7,15 @@
 //
 
 import UIKit
+import Parse
+import SnapKit
+import NVActivityIndicatorView
 
-class UsernameViewController: UIViewController {
+class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     let uiElement = UIElement()
     let color = Color()
+    
+    var emailString: String!
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -31,9 +36,9 @@ class UsernameViewController: UIViewController {
         return label
     }()
     
-    lazy var signupButton: UIButton = {
+    lazy var nextButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Sign Up", for: .normal)
+        button.setTitle("next", for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
@@ -46,10 +51,12 @@ class UsernameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.title = "Username | 2/3"
+        
         self.view.addSubview(titleLabel)
         self.view.addSubview(usernameText)
-        self.view.addSubview(signupButton)
-        signupButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
+        self.view.addSubview(nextButton)
+        nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         
         titleLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
@@ -63,7 +70,7 @@ class UsernameViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        signupButton.snp.makeConstraints { (make) -> Void in
+        nextButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
             make.top.equalTo(usernameText.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
@@ -78,12 +85,42 @@ class UsernameViewController: UIViewController {
     
     @objc func next(_ sender: UIButton){
         usernameText.resignFirstResponder()
+        if validateUsername() {
+            checkIfUsernameExistsThenMoveForward()
+        }
+        
         /*passwordText.resignFirstResponder()
         
         if validateEmail() && validatePassword(){
             startAnimating()
             signup()
         }*/
+    }
+    
+    func validateUsername() -> Bool {
+        let usernameString : NSString = usernameText.text! as NSString
+        if usernameText.text!.isEmpty || usernameString.contains("@") {
+            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Invalid username.")
+            return false
+        }
+        
+        return true
+    }
+    
+    func checkIfUsernameExistsThenMoveForward() {
+        startAnimating()
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: usernameText.text!)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            self.stopAnimating()
+            if object != nil && error == nil {
+                self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username already in use.")
+                
+            } else {
+                self.performSegue(withIdentifier: "showPassword", sender: self)
+            }
+        }
     }
     
 

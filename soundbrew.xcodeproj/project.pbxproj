@@ -18,6 +18,7 @@
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
 		F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */; };
 		F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23C621E21DC38E6005C9FF0 /* Login.storyboard */; };
+		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
 		F2689871215AEF9000C21663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2689870215AEF9000C21663 /* Assets.xcassets */; };
@@ -80,11 +81,12 @@
 		F203C769225467A80050F113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F203C76B225D7ED80050F113 /* SoundArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundArtImage.swift; sourceTree = "<group>"; };
 		F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		F23C621221DC34FA005C9FF0 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
-		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
+		F23C621221DC34FA005C9FF0 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignupViewController.swift; path = ../SignupViewController.swift; sourceTree = "<group>"; };
+		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		F23C621E21DC38E6005C9FF0 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
+		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986E215AEF8F00C21663 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -106,7 +108,7 @@
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F28A985D2227CF5400C96EED /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		F28A9861222FA5F200C96EED /* EditBioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBioViewController.swift; sourceTree = "<group>"; };
-		F2CB7C8E225F3F5200A1BC9A /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
+		F2CB7C8E225F3F5200A1BC9A /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UsernameViewController.swift; path = ../UsernameViewController.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
@@ -182,12 +184,29 @@
 			children = (
 				F23C621E21DC38E6005C9FF0 /* Login.storyboard */,
 				F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */,
+				F2480B5722652A31005231FD /* New Group1 */,
+				F2480B5622652A19005231FD /* New Group */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		F2480B5622652A19005231FD /* New Group */ = {
+			isa = PBXGroup;
+			children = (
 				F23C621221DC34FA005C9FF0 /* SignupViewController.swift */,
 				F2CB7C8E225F3F5200A1BC9A /* UsernameViewController.swift */,
+				F2480B5422652375005231FD /* NewPasswordViewController.swift */,
+			);
+			path = "New Group";
+			sourceTree = "<group>";
+		};
+		F2480B5722652A31005231FD /* New Group1 */ = {
+			isa = PBXGroup;
+			children = (
 				F23C621021DC34EC005C9FF0 /* LoginViewController.swift */,
 				F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */,
 			);
-			path = Login;
+			path = "New Group1";
 			sourceTree = "<group>";
 		};
 		F268985D215AEF8F00C21663 = {
@@ -619,6 +638,7 @@
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* UsernameViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
+				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SearchViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,

@@ -85,4 +85,10 @@ class UIElement {
     func goBackToPreviousViewController(_ target: UIViewController) {
         target.navigationController?.popViewController(animated: true)
     }
+    
+    func showTextFieldErrorMessage(_ UITextField: UITextField, text: String) {
+        UITextField.attributedPlaceholder = NSAttributedString(string: text,
+                                                             attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
+        UITextField.text = ""
+    }
 }
