@@ -22,12 +22,14 @@ class WelcomeViewController: UIViewController {
     lazy var appImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "appy")
+        image.layer.cornerRadius = 10
+        image.clipsToBounds = true 
         return image
     }()
     
     lazy var appName: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 40)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 40)
         label.text = "Soundbrew"
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -38,11 +40,10 @@ class WelcomeViewController: UIViewController {
     lazy var signinButton: UIButton = {
         let button = UIButton()
         button.setTitle("Sign in", for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = color.lightGray()
         button.layer.cornerRadius = 3
-        button.layer.borderWidth = 1
-        button.layer.borderColor = color.black().cgColor
         button.clipsToBounds = true
         return button
     }()
@@ -50,7 +51,7 @@ class WelcomeViewController: UIViewController {
     lazy var signupButton: UIButton = {
         let button = UIButton()
         button.setTitle("Sign up", for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = color.blue()
         button.layer.cornerRadius = 3
@@ -102,7 +103,7 @@ class WelcomeViewController: UIViewController {
         }
         
         appName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.appImage.snp.bottom)
+            make.top.equalTo(self.appImage.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
