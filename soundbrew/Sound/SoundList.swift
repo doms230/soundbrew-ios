@@ -8,7 +8,7 @@
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
 //  SoundlistViewController.swift and ProfileViewController.swift utilize this class
 //
-// MARK: tableView, sounds, selected artist, tags filter, data, miniplayer
+// MARK: tableView, sounds, artist, tags filter, data, miniplayer
 
 
 import Foundation
@@ -104,7 +104,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         target.present(modal, animated: true, completion: nil)
     }
     
-    //mark: selected artist
+    //mark: artist
     var selectedArtist: Artist!
     
     func prepareToShowSelectedArtist(_ segue: UIStoryboardSegue) {
@@ -113,10 +113,17 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     }
     
     func selectedArtist(_ artist: Artist?) {
-        //TODO: if selected artist is already on artist page, don't segue
         if let selectedArtist = artist {
-            self.selectedArtist = selectedArtist
-            target.performSegue(withIdentifier: "showProfile", sender: self)
+            if let userId = self.userId {
+                if userId != selectedArtist.objectId {
+                    self.selectedArtist = selectedArtist
+                    target.performSegue(withIdentifier: "showProfile", sender: self)
+                }
+                
+            } else {
+                self.selectedArtist = selectedArtist
+                target.performSegue(withIdentifier: "showProfile", sender: self)
+            }
         }
     }
     
@@ -186,8 +193,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             
         } else {
             menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
-                self.selectedArtist = sound.artist
-                self.target.performSegue(withIdentifier: "showProfile", sender: self)
+                self.selectedArtist(sound.artist)
+                print(sound.artist!.name ?? "d")
+               // self.selectedArtist = sound.artist
+                //self.target.performSegue(withIdentifier: "showProfile", sender: self)
             }))
         }
         
@@ -302,13 +311,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         
         self.tableView?.reloadData()
         
-        if self.soundType == "uploads" || self.soundType == "likes" && self.sounds.count != 0 {
-            if let currentUser = PFUser.current() {
-                if currentUser.objectId == self.userId! && self.userId! != "AWKPPDI4CB" {
-                    SKStoreReviewController.requestReview()
-                }
-            }
-        }
+        determineIfRateTheAppPopUpShouldShow()
     }
     
     func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {
@@ -319,6 +322,18 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     func prepareToShowSoundAudioUpload(_ segue: UIStoryboardSegue) {
         let viewController = segue.destination as! UploadSoundAudioViewController
         viewController.soundThatIsBeingEdited = selectedSound
+    }
+    
+    func determineIfRateTheAppPopUpShouldShow() {
+        if let currentUser = PFUser.current() {
+            if sounds.count != 0 {
+                if self.soundType == "uploads" || self.soundType == "likes" {
+                    if currentUser.objectId == self.userId! && self.userId! != "AWKPPDI4CB" {
+                        SKStoreReviewController.requestReview()
+                    }
+                }
+            }
+        }
     }
     
     //mark: tags filter
@@ -390,13 +405,18 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     
     func changeTags(_ value: Array<Tag>?) {
         //Only want to reload data if tags changed
+    
         var currentTagObjectIds = [String]()
         if let selectedTagsForFiltering = self.selectedTagsForFiltering {
             currentTagObjectIds = selectedTagsForFiltering.map {$0.objectId}
         }
         if let newTags = value {
+            print(newTags.count)
+            print(soundType)
+            
             let newTagObjectIds = newTags.map {$0.objectId}
             if currentTagObjectIds != newTagObjectIds {
+
                 self.selectedTagsForFiltering = newTags
                 determineTypeOfSoundToLoad(soundType)
             }

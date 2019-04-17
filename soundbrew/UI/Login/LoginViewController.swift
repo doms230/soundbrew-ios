@@ -34,7 +34,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     lazy var emailText: UITextField = {
         let label = UITextField()
-        label.placeholder = "Email"
+        label.placeholder = "Username or Email"
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.backgroundColor = .white
         label.borderStyle = .roundedRect
@@ -169,7 +169,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 
             } else {
                 self.stopAnimating()
-                UIElement().showAlert("Oops", message: "Incorrect Email/Password combo.", target: self)
+                UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)
             }
         }
     }

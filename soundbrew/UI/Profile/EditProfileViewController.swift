@@ -14,6 +14,8 @@ import Kingfisher
 
 class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate {
     
+    let uiElement = UIElement()
+    
     func newArtistInfo(_ value: Artist?) {
     }
     
@@ -36,13 +38,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setUpViews()
+        
         if artist != nil {
-            setUpViews()
             setUpTableView()
             
-            
         } else {
-            self.dismiss(animated: true, completion: nil)
+            loadUserInfoFromCloud(PFUser.current()!.objectId!)
         }
     }
     
@@ -56,9 +59,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     func setUpViews() {
         self.title = "Edit Profile"
         
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
-        self.navigationItem.leftBarButtonItem = cancelButton
-        
         let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
     }
@@ -68,11 +68,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.dismiss(animated: true, completion: nil)
     }
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        if validateEmail() {
+        if validateEmail() && validateUsername() {
             updateUserInfo()
-            
-        } else {
-            UIElement().showAlert("Oops", message: "Email is Required", target: self)
         }
     }
     
@@ -152,7 +149,16 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             case 1:
                 usernameText = cell.editProfileInput
                 inputTitle = "Username"
-                inputText = artist!.username
+                if let username = artist?.username {
+                    inputText = username
+                    //username is required, so only want to allow user to cancel if they already have username
+                    let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
+                    self.navigationItem.leftBarButtonItem = cancelButton
+                    
+                } else {
+                    self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
+                }
+                
                 break
                 
             case 2:
@@ -330,7 +336,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 user["artistName"] = self.nameText.text
                 
                 if self.usernameText.text != self.artist?.username {
-                    user["username"] = self.usernameText.text!.lowercased()
+                    self.usernameText.text = self.uiElement.cleanUpTextField(self.usernameText.text!)
+                    user["username"] = self.usernameText.text!
                 }
                 
                 user["city"] = self.cityText.text
@@ -405,12 +412,96 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    func loadUserInfoFromCloud(_ userId: String) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                let username = user["username"] as? String
+                
+                var email: String?
+                if user.objectId! == PFUser.current()!.objectId {
+                    email = user["email"] as? String
+                }
+                
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                
+                if let followerCount = user["followerCount"] as? Int {
+                    artist.followerCount = followerCount
+                }
+                
+                if let name = user["artistName"] as? String {
+                    artist.name = name
+                }
+                
+                if let username = user["username"] as? String {
+                    if username.contains("@") {
+                        artist.username = nil
+                        
+                    } else {
+                        artist.username = username
+                    }
+                }
+                
+                if let city = user["city"] as? String {
+                    artist.city = city
+                }
+                
+                if let userImageFile = user["userImage"] as? PFFileObject {
+                    artist.image = userImageFile.url!
+                }
+                
+                if let bio = user["bio"] as? String {
+                    artist.bio = bio
+                }
+                
+                if let artistVerification = user["artistVerification"] as? Bool {
+                    artist.isVerified = artistVerification
+                }
+                
+                if let instagramUsername = user["instagramHandle"] as? String {
+                    artist.instagramUsername = instagramUsername
+                }
+                
+                if let twitterUsername = user["twitterHandle"] as? String {
+                    artist.twitterUsername = twitterUsername
+                }
+                
+                if let snapchatUsername = user["snapchatHandle"] as? String {
+                    artist.snapchatUsername = snapchatUsername
+                }
+                
+                if let website = user["otherLink"] as? String {
+                    artist.website = website
+                }
+                
+                self.artist = artist
+
+                self.setUpTableView()
+                
+            }
+        }
+    }
+    
     func validateEmail() -> Bool {
-        let emailString : NSString = emailText.text! as NSString
-        if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
-            emailText.attributedPlaceholder = NSAttributedString(string: "Valid email required",
-                                                                 attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-            emailText.text = ""
+        if emailText.text!.isEmpty || !emailText.text!.contains("@") || !emailText.text!.contains(".") {
+            self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Valid email required.")
+            return false
+        }
+        
+        return true
+    }
+    
+    func validateUsername() -> Bool {
+        if  usernameText.text!.contains("@") {
+            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Invalid username.")
+            return false
+            
+        } else if usernameText.text!.isEmpty {
+            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
             return false
         }
         

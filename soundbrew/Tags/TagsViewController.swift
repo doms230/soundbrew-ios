@@ -436,12 +436,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func handleTagsForDismissal() {
+        print("handle Tags for dismisall called")
         if let tagDelegate = self.tagDelegate {
             var chosenTags: Array<Tag>?
             if self.chosenTags.count != 0 {
                 chosenTags = self.chosenTags
             }
             tagDelegate.changeTags(chosenTags)
+            //print("tagsViewController: \(String(describing: chosenTags?.count))")
         }
         
         self.dismiss(animated: true, completion: nil)

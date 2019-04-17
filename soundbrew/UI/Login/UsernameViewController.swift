@@ -78,23 +78,17 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
-        super.touchesBegan(touches, with: event)
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController = segue.destination as! NewPasswordViewController
+        viewController.emailString = emailString
+        viewController.usernameString = usernameText.text!
     }
     
     @objc func next(_ sender: UIButton){
-        usernameText.resignFirstResponder()
+        usernameText.text = self.uiElement.cleanUpTextField(usernameText.text!)
         if validateUsername() {
             checkIfUsernameExistsThenMoveForward()
         }
-        
-        /*passwordText.resignFirstResponder()
-        
-        if validateEmail() && validatePassword(){
-            startAnimating()
-            signup()
-        }*/
     }
     
     func validateUsername() -> Bool {
@@ -122,16 +116,4 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             }
         }
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

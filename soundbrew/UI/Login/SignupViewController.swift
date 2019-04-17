@@ -23,6 +23,14 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         return label
     }()
     
+    lazy var subTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.text = "A valid email is required to get paid from your streams."
+        label.numberOfLines = 0
+        return label
+    }()
+    
     lazy var emailText: UITextField = {
         let label = UITextField()
         label.placeholder = "Email"
@@ -56,7 +64,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
-        //self.view.addSubview(passwordText)
+        self.view.addSubview(subTitleLabel)
         self.view.addSubview(nextButton)
         nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         
@@ -66,8 +74,14 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        emailText.snp.makeConstraints { (make) -> Void in
+        subTitleLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        emailText.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(subTitleLabel.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -79,12 +93,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        /*passwordText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(emailText.snp.bottom).offset(10)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }*/
-        
         emailText.becomeFirstResponder()
     }
     
@@ -93,56 +101,14 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         viewController.emailString = emailText.text!
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
-        super.touchesBegan(touches, with: event)
-    }
-    
     @objc func next(_ sender: UIButton){
-        emailText.resignFirstResponder()
-        //passwordText.resignFirstResponder()
-        
-        if validateEmail() { //&& validatePassword(){
+        emailText.text = self.uiElement.cleanUpTextField(emailText.text!)
+        if validateEmail() {
             checkIfEmailExistsThenMoveForward()
         }
     }
     
     //MARK: Validate jaunts
-    func signup() {
-        let lowercasedEmail = emailText.text!.lowercased()
-        
-        let user = PFUser()
-        //user.username = lowercasedEmail
-        //user.password = passwordText.text!
-        user.email = lowercasedEmail
-        user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
-            self.stopAnimating()
-            if let error = error {
-                UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
-                
-            } else {
-                let installation = PFInstallation.current()
-                installation?["user"] = PFUser.current()
-                installation?["userId"] = PFUser.current()?.objectId
-                installation?.saveEventually()
-                
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
-                self.present(initialViewController, animated: true, completion: nil)
-            }
-        }
-    }
-    
-    /*func validatePassword() -> Bool {
-        if passwordText.text!.isEmpty {
-            passwordText.attributedPlaceholder = NSAttributedString(string: "Password required",
-                                                                    attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-            return false
-        }
-        
-        return true 
-    }*/
-    
     func validateEmail() -> Bool {
         let emailString : NSString = emailText.text! as NSString
         if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
@@ -162,8 +128,8 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
             self.stopAnimating()
             if object != nil && error == nil {
                 self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Email already in use.")
-                
-            } else {
+            
+            } else if object == nil {
                 self.performSegue(withIdentifier: "showUsername", sender: self)
             }
         }

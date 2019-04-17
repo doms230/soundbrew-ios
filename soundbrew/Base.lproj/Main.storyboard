@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ha3-HT-aMH">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ha3-HT-aMH">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -64,11 +64,12 @@
                         <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="uNc-Xt-ZBj"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="Lzr-CP-43Y"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="XjQ-ls-dhp"/>
+                        <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="182" y="-414"/>
+            <point key="canvasLocation" x="182" y="-403"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -84,7 +85,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2036" y="-403"/>
+            <point key="canvasLocation" x="2575" y="-887"/>
+        </scene>
+        <!--Profile View Controller-->
+        <scene sceneID="kGU-t6-6qU">
+            <objects>
+                <viewController id="Rq2-Vz-me1" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DF7-HU-3aG">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="ns0-Kr-3GI"/>
+                    </view>
+                    <connections>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="vKf-hT-VHa"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jvL-th-QNN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="929" y="-403"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ini-3B-14d">
@@ -202,6 +221,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="SpB-6h-026"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="hAI-d0-wwO"/>
+                        <segue destination="k7A-1j-YbY" kind="presentation" identifier="showEditProfile" id="ETQ-eW-HKD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -245,7 +265,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nXJ-NO-8er" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1134" y="-403"/>
+            <point key="canvasLocation" x="1794" y="-887"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Z8X-5O-BsK">
@@ -270,20 +290,21 @@
         </scene>
     </scenes>
     <resources>
-        <image name="add" width="34.5" height="34.5"/>
-        <image name="add_filled" width="34.5" height="34.5"/>
-        <image name="home" width="34.5" height="34.5"/>
-        <image name="home_filled" width="34.5" height="34.5"/>
-        <image name="profile" width="42" height="42"/>
-        <image name="profile_filled" width="42" height="42"/>
-        <image name="search" width="42" height="42"/>
-        <image name="search_filled" width="42" height="42"/>
+        <image name="add" width="23" height="23"/>
+        <image name="add_filled" width="23" height="23"/>
+        <image name="home" width="23" height="23"/>
+        <image name="home_filled" width="23" height="23"/>
+        <image name="profile" width="28" height="28"/>
+        <image name="profile_filled" width="28" height="28"/>
+        <image name="search" width="28" height="28"/>
+        <image name="search_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="wBb-Ll-LfM"/>
         <segue reference="eW3-lv-tSJ"/>
-        <segue reference="Tm4-fE-iLf"/>
-        <segue reference="3jW-Fd-CA3"/>
-        <segue reference="SpB-6h-026"/>
-        <segue reference="hAI-d0-wwO"/>
+        <segue reference="uNc-Xt-ZBj"/>
+        <segue reference="vKf-hT-VHa"/>
+        <segue reference="Lzr-CP-43Y"/>
+        <segue reference="XjQ-ls-dhp"/>
     </inferredMetricsTieBreakers>
 </document>

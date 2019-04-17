@@ -32,6 +32,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }*/
                 
         if let currentUser = PFUser.current() {
+            loadUserInfoFromCloud(currentUser.objectId!)
             self.currentUser = currentUser
             soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil, searchText: nil)
             
@@ -141,6 +142,22 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
             soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: soundList.followUserIds, searchText: nil)
+        }
+    }
+    
+    func loadUserInfoFromCloud(_ userId: String) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                let username = user["username"] as? String
+                if username == nil || username!.contains("@") || username!.isEmpty {
+                    self.performSegue(withIdentifier: "showEditProfile", sender: self)
+                }
+            }
         }
     }
 }

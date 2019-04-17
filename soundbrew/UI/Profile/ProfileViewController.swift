@@ -47,9 +47,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else {
             if currentUser != nil {
                 loadUserInfoFromCloud(currentUser!.objectId!)
-                
-            } else {
-                //show login view
             }
         }
     }
@@ -58,6 +55,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if soundList != nil {
             var tags: Array<Tag>?
             if let soundListTags = soundList.selectedTagsForFiltering {
+                print(soundListTags.count)
                 tags = soundListTags
             }
             
@@ -79,6 +77,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         } else if segue.identifier == "showUploadSound" {
             soundList.prepareToShowSoundAudioUpload(segue)
+            
+        } else if segue.identifier == "showTags" {
+            soundList.prepareToShowTags(segue)
+            
+        } else if segue.identifier == "showProfile" {
+            soundList.prepareToShowSelectedArtist(segue)
         }
     }
     
@@ -288,7 +292,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
             } else {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
-                //profileSounds = soundList.sounds
+                profileSounds = soundList.sounds
                 return soundList.sound(indexPath, cell: cell)
             }
             
@@ -521,7 +525,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId, tags: nil, searchText: nil)
                 self.setUpTableView()
-                
             }
         }
     }
@@ -591,7 +594,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func incrementFollowerCount(artist: Artist, incrementFollows: Bool, decrementFollows: Bool) {
-       /* let query = PFQuery(className: "_User")
+        let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: artist.objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
@@ -607,6 +610,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 object.saveEventually()
             }
-        }*/
+        }
     }
 }

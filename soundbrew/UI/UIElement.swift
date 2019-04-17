@@ -91,4 +91,12 @@ class UIElement {
                                                              attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
         UITextField.text = ""
     }
+    
+    func cleanUpTextField(_ text: String) -> String {
+        let cleanText = text.trimmingCharacters(
+            in: NSCharacterSet.whitespacesAndNewlines
+        )
+                
+        return cleanText.lowercased()
+    }
 }

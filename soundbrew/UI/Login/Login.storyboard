@@ -75,7 +75,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="i9r-Nw-fBa"/>
                     <connections>
-                        <segue destination="eZx-3t-13L" kind="show" identifier="showAddUsername" id="S3y-eI-dbT"/>
+                        <segue destination="eZx-3t-13L" kind="show" identifier="showUsername" id="S3y-eI-dbT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XmY-FJ-EOo" userLabel="First Responder" sceneMemberID="firstResponder"/>
