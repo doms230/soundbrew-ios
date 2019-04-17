@@ -12,6 +12,7 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
+import AppCenterCrashes
 
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
@@ -142,9 +143,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 if let player = soundList.player {
                     player.didSelectSoundAt(indexPath.row)
-                    if soundList.miniPlayerView == nil {
-                        soundList.setUpMiniPlayer()
-                    }
+                    soundList.miniPlayerView?.isHidden = false
                     tableView.reloadData()
                 }
             }

@@ -81,6 +81,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
                     miniPlayerView?.playBackButton.setImage(UIImage(named: "play_white"), for: .normal)
                 }
                 miniPlayerView?.playBackButton.isEnabled = true
+                
+            } else {
+                miniPlayerView?.isHidden = true 
             }
             setUpTableView()
         }

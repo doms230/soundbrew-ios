@@ -10,6 +10,7 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
+import AppCenterCrashes
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -38,6 +39,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             setUpTableView()
         }
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -115,9 +118,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            if soundList.miniPlayerView == nil {
-                soundList.setUpMiniPlayer()
-            }
+            soundList.miniPlayerView?.isHidden = false
             tableView.reloadData()
         }
     }

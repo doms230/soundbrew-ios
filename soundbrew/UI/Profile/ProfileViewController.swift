@@ -141,9 +141,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            if soundList.miniPlayerView == nil {
-                soundList.setUpMiniPlayer()
-            }
+            soundList.miniPlayerView?.isHidden = false
             tableView.reloadData()
         }
     }
