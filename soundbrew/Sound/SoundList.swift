@@ -591,6 +591,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     func loadLikes(_ descendingOrder: String) {
         let query = PFQuery(className: "Like")
         query.whereKey("userId", equalTo: userId!)
+        query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadLikedSounds = true 
