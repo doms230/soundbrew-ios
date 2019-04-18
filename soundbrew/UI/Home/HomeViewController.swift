@@ -63,17 +63,29 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showProfile" {
+        switch segue.identifier {
+        case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
+            break
             
-        } else if segue.identifier == "showTags" {
+        case "showTags":
             soundList.prepareToShowTags(segue)
+            break
             
-        } else if segue.identifier == "showEditSoundInfo" {
+        case "showEditSoundInfo":
             soundList.prepareToShowSoundInfo(segue)
+            break
             
-        } else if segue.identifier == "showUploadSound" {
+        case "showUploadSound":
             soundList.prepareToShowSoundAudioUpload(segue)
+            break
+            
+        case "showComments":
+            soundList.prepareToShowComments(segue)
+            break 
+            
+        default:
+            break
         }
     }
     

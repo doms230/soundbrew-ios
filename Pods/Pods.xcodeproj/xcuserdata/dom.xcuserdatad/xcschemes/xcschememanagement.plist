@@ -18,21 +18,21 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>ComplimentaryGradientView.xcscheme</key>
+		<key>DeckTransition.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
-		<key>DeckTransition.xcscheme</key>
+		<key>Kingfisher.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
-		<key>Kingfisher.xcscheme</key>
+		<key>MessageViewController.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

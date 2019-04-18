@@ -9,9 +9,9 @@ PODS:
   - AppCenter/Crashes (1.14.0):
     - AppCenter/Core
   - Bolts/Tasks (1.9.0)
-  - ComplimentaryGradientView (0.3.0)
   - DeckTransition (2.1.0)
   - Kingfisher (5.3.1)
+  - MessageViewController (0.2.1)
   - NVActivityIndicatorView (4.7.0):
     - NVActivityIndicatorView/Presenter (= 4.7.0)
   - NVActivityIndicatorView/Presenter (4.7.0)
@@ -39,9 +39,9 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - AppCenter
-  - ComplimentaryGradientView
   - DeckTransition
   - Kingfisher
+  - MessageViewController
   - NVActivityIndicatorView
   - Parse
   - ShareInstagram
@@ -56,9 +56,9 @@ SPEC REPOS:
     - Alamofire
     - AppCenter
     - Bolts
-    - ComplimentaryGradientView
     - DeckTransition
     - Kingfisher
+    - MessageViewController
     - NVActivityIndicatorView
     - Parse
     - PINCache
@@ -74,9 +74,9 @@ SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   AppCenter: 02c5efe08d3bbab5421ae41d5f7aa7238906b817
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
-  ComplimentaryGradientView: d874186ea4c37bd08ebd1f2d229698416cacaa39
   DeckTransition: ca707456e3d83928c895fed6f458cbf68c5cac84
   Kingfisher: d9e7e0b209b59b8f9873aa2f37654e81a7beea51
+  MessageViewController: 63ef2719d82c91d949ad52e101f049028a5a0611
   NVActivityIndicatorView: b19ddab2576f805cbe0fb2306cba3476e09a1dea
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
@@ -88,6 +88,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
   TagListView: 0c7e9c26b9aff858224ee6b155f5fcacd9e27c83
 
-PODFILE CHECKSUM: e1dc809092601f7a757225bb72fa02dc12967c91
+PODFILE CHECKSUM: ce5dc7ceddd0f4ca768c0d5137ebe1f3670a4b93
 
 COCOAPODS: 1.5.3

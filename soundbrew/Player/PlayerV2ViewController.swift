@@ -27,6 +27,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     var sound: Sound?
     
     var playerDelegate: PlayerDelegate?
+    var commentDelegate: CommentDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +41,13 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidAppear(_ animated: Bool) {
         if let player = self.player {
             self.sound = player.currentSound
-            if player.player!.isPlaying && player.currentSound != nil {
-                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                
-            } else {
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            if let currentPlayer = player.player {
+                if currentPlayer.isPlaying && player.currentSound != nil {
+                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    
+                } else {
+                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                }
             }
         }
     }
@@ -71,10 +74,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.songArt.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "appy"))
         
-        self.playBackTotalTime.text = formatTime(Double(self.player!.player!.duration))
-        
-        playBackSlider.maximumValue = Float(self.player!.player!.duration)
-        self.startTimer()
+        if let duration = self.player?.player?.duration {
+            self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
+            
+            playBackSlider.maximumValue = Float(duration)
+            self.startTimer()
+        }
         
         if let isLiked = sound.isLiked {
             if isLiked {
@@ -255,12 +260,11 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         return button
     }()
     @objc func didPressCommentButton(_ sender: UIButton) {
-        let modal = CommentViewController()
-        //modal.player = self.player
-        let transitionDelegate = DeckTransitioningDelegate()
-        modal.transitioningDelegate = transitionDelegate
-        modal.modalPresentationStyle = .custom
-        present(modal, animated: true, completion: nil)
+        self.dismiss(animated: true, completion: {() in
+            if let commentDelegate = self.commentDelegate {
+                commentDelegate.selectedComments(self.sound?.objectId, atTime: self.playBackSlider.value)
+            }
+        })
     }
     
     let likeRedImage = "like_red"
@@ -314,14 +318,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     @objc func sliderValueDidChange(_ sender: UISlider) {
         if let player = self.player?.player {
             player.currentTime = TimeInterval(sender.value)
-            playBackCurrentTime.text = formatTime(Double(sender.value))
+            playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
         }
     }
     
     var timer = Timer()
     @objc func UpdateTimer(_ timer: Timer) {
         if let player = self.player?.player {
-            playBackCurrentTime.text = "\(formatTime(Double(player.currentTime)))"
+            playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(player.currentTime)))"
             playBackSlider.value = Float(player.currentTime)
         }
     }
@@ -470,7 +474,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         goBackButton.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
-            make.top.equalTo(playBackButton).offset(3)
+            //make.top.equalTo(playBackButton).offset(3)
+            make.centerY.equalTo(playBackButton)
             make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
         }
         
@@ -478,7 +483,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(shareButton)
         shareButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
-            make.top.equalTo(self.goBackButton).offset(uiElement.topOffset)
+            //make.top.equalTo(self.goBackButton).offset(uiElement.topOffset)
+            make.centerY.equalTo(self.goBackButton)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
@@ -494,7 +500,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
-            make.top.equalTo(playBackButton).offset(3)
+            //make.top.equalTo(playBackButton).offset(3)
+            make.centerY.equalTo(playBackButton)
             make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }
         
@@ -508,18 +515,19 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(likeButton)
         likeButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
-            make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
+           //make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
+            make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        /*commentButton.addTarget(self, action: #selector(didPressCommentButton(_:)), for: .touchUpInside)
+        commentButton.addTarget(self, action: #selector(didPressCommentButton(_:)), for: .touchUpInside)
         self.view.addSubview(commentButton)
         commentButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
-            make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
+            make.top.equalTo(self.likeButton)
             make.left.equalTo(self.skipButton.snp.right).offset(uiElement.leftOffset)
             make.right.equalTo(self.likeButton.snp.left).offset(uiElement.rightOffset)
-        }*/
+        }
         
         setSound()
     }
@@ -685,16 +693,5 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 object.saveEventually()
             }
         }
-    }
-    
-    //mark: mich
-    func formatTime(_ durationInSeconds: Double ) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute, .second]
-        formatter.unitsStyle = .abbreviated
-        
-        let formattedString = formatter.string(from: durationInSeconds)!
-        
-        return formattedString
     }
 }

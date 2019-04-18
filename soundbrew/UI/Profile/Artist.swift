@@ -13,7 +13,7 @@ import Parse
 class Artist {
     var objectId: String!
     var name: String?
-    var username: String!
+    var username: String?
     var city: String?
     var image: String?
     var website: String?
@@ -26,7 +26,7 @@ class Artist {
     var isFollowedByCurrentUser: Bool?
     var followerCount: Int?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String!, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?) {
         self.objectId = objectId
         self.name = name
         self.username = username

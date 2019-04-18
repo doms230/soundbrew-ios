@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E78EC8867E2ACC5A8F9635EC66C1155E"
-               BlueprintName = "ComplimentaryGradientView"
+               BlueprintIdentifier = "47EDC1A36C990546A95696AD98450635"
+               BlueprintName = "MessageViewController"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "ComplimentaryGradientView.framework">
+               BuildableName = "MessageViewController.framework">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

@@ -201,9 +201,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             } else {
                 self.sendSoundUpdateToUI()
             }
-            
-        } else {
-            //setUpNextSong(false, at: nil)
         }
     }
     

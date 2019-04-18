@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BA17194DC8ACF15295F0F86376A19074"
+               BlueprintIdentifier = "C4AEB304BF84A45DB6E6FF6A8F3B4A69"
                BlueprintName = "SwiftVideoGenerator"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "SwiftVideoGenerator.framework">

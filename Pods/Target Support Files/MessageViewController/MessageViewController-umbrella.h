@@ -10,8 +10,7 @@
 #endif
 #endif
 
-#import "ComplimentaryGradientView.h"
 
-FOUNDATION_EXPORT double ComplimentaryGradientViewVersionNumber;
-FOUNDATION_EXPORT const unsigned char ComplimentaryGradientViewVersionString[];
+FOUNDATION_EXPORT double MessageViewControllerVersionNumber;
+FOUNDATION_EXPORT const unsigned char MessageViewControllerVersionString[];
 

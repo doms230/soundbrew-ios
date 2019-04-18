@@ -99,4 +99,14 @@ class UIElement {
                 
         return cleanText.lowercased()
     }
+    
+    func formatTime(_ durationInSeconds: Double ) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .abbreviated
+        
+        let formattedString = formatter.string(from: durationInSeconds)!
+        
+        return formattedString
+    }
 }

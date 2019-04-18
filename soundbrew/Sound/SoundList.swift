@@ -8,7 +8,7 @@
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
 //  SoundlistViewController.swift and ProfileViewController.swift utilize this class
 //
-// MARK: tableView, sounds, artist, tags filter, data, miniplayer
+// MARK: tableView, sounds, artist, tags filter, data, miniplayer, comment
 
 
 import Foundation
@@ -16,7 +16,7 @@ import UIKit
 import Parse
 import DeckTransition
 
-class SoundList: NSObject, PlayerDelegate, TagDelegate {
+class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     var target: UIViewController!
     var tableView: UITableView?
@@ -56,21 +56,19 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
     
     //mark: miniPlayer
     func setUpMiniPlayer() {
-        if let tabBarView = target.tabBarController?.view {
+        if let tabBarView = target.tabBarController {
             miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
             miniPlayerView?.player = self.player
-            //miniPlayerView.player = soundList.player
-            tabBarView.addSubview(miniPlayerView!)
+            tabBarView.view.addSubview(miniPlayerView!)
             let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
             slide.direction = .up
             miniPlayerView?.addGestureRecognizer(slide)
             miniPlayerView?.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            
             miniPlayerView?.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(45)
-                make.right.equalTo(tabBarView)
-                make.left.equalTo(tabBarView)
-                make.bottom.equalTo(tabBarView).offset(-49)
+                make.right.equalTo(tabBarView.view)
+                make.left.equalTo(tabBarView.view)
+                make.bottom.equalTo(tabBarView.tabBar).offset(-(tabBarView.tabBar.frame.height))
             }
             
             if let player = self.player?.player  {
@@ -85,6 +83,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
             } else {
                 miniPlayerView?.isHidden = true 
             }
+            
             setUpTableView()
         }
     }
@@ -101,10 +100,29 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate {
         let modal = PlayerV2ViewController()
         modal.player = self.player
         modal.playerDelegate = self
+        modal.commentDelegate = self 
         let transitionDelegate = DeckTransitioningDelegate()
         modal.transitioningDelegate = transitionDelegate
         modal.modalPresentationStyle = .custom
         target.present(modal, animated: true, completion: nil)
+    }
+    
+    //mark: comment
+    var commentPostId: String!
+    var commentAtTime: Float!
+    
+    func prepareToShowComments(_ segue: UIStoryboardSegue) {
+        let viewController = segue.destination as! CommentViewController
+        viewController.postId = commentPostId
+        viewController.atTime = commentAtTime
+    }
+    func selectedComments(_ postId: String?, atTime: Float?) {
+        if let postId = postId {
+            commentPostId = postId
+            commentAtTime = atTime!
+            self.miniPlayerView?.isHidden = true 
+            target.performSegue(withIdentifier: "showComments", sender: self)
+        }
     }
     
     //mark: artist

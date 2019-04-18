@@ -28,7 +28,7 @@ target 'soundbrew' do
   pod 'SnapSDK'
   pod 'ShareInstagram'
   pod 'DeckTransition'
-  pod 'ComplimentaryGradientView'
   pod 'AppCenter'
   pod 'SwiftVideoGenerator'
+  pod 'MessageViewController'
 end

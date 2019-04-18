@@ -31,6 +31,8 @@
 		F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A1215B2C9100C21663 /* TagsViewController.swift */; };
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
+		F272C2C22267D81F006CDF27 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272C2C12267D81F006CDF27 /* Comment.swift */; };
+		F272C2C42267DB46006CDF27 /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272C2C32267DB46006CDF27 /* CommentTableViewCell.swift */; };
 		F28A985E2227CF5400C96EED /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A985D2227CF5400C96EED /* CommentViewController.swift */; };
 		F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A9861222FA5F200C96EED /* EditBioViewController.swift */; };
 		F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */; };
@@ -106,6 +108,8 @@
 		F26898A5215B527900C21663 /* Sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		F272C2C12267D81F006CDF27 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		F272C2C32267DB46006CDF27 /* CommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
 		F28A985D2227CF5400C96EED /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		F28A9861222FA5F200C96EED /* EditBioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBioViewController.swift; sourceTree = "<group>"; };
 		F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewUsernameViewController.swift; path = ../NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -296,6 +300,8 @@
 		F28A985C2227CF2E00C96EED /* Comment */ = {
 			isa = PBXGroup;
 			children = (
+				F272C2C12267D81F006CDF27 /* Comment.swift */,
+				F272C2C32267DB46006CDF27 /* CommentTableViewCell.swift */,
 				F28A985D2227CF5400C96EED /* CommentViewController.swift */,
 			);
 			path = Comment;
@@ -540,9 +546,9 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-soundbrew/Pods-soundbrew-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
-				"${BUILT_PRODUCTS_DIR}/ComplimentaryGradientView/ComplimentaryGradientView.framework",
 				"${BUILT_PRODUCTS_DIR}/DeckTransition/DeckTransition.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
+				"${BUILT_PRODUCTS_DIR}/MessageViewController/MessageViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework",
 				"${BUILT_PRODUCTS_DIR}/PINOperation/PINOperation.framework",
@@ -561,9 +567,9 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ComplimentaryGradientView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DeckTransition.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINCache.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINOperation.framework",
@@ -648,11 +654,13 @@
 				F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
+				F272C2C42267DB46006CDF27 /* CommentTableViewCell.swift in Sources */,
 				F26898A0215AFF8200C21663 /* TagTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
+				F272C2C22267D81F006CDF27 /* Comment.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */,

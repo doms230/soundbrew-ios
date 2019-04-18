@@ -33,7 +33,8 @@ class ProfileTableViewCell: UITableViewCell {
     //profile
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
-        //image.layer.cornerRadius = 75/2
+        image.layer.borderWidth = 1
+        image.layer.borderColor = color.lightGray().cgColor
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
