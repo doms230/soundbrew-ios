@@ -66,23 +66,36 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showEditProfile" {
+        switch segue.identifier {
+        case "showEditProfile":
             let navigationController = segue.destination as! UINavigationController
             let editProfileController = navigationController.topViewController as! EditProfileViewController
             editProfileController.artist = artist
             editProfileController.artistDelegate = self
+            break
             
-        } else if segue.identifier == "showEditSoundInfo" {
+        case "showEditSoundInfo":
             soundList.prepareToShowSoundInfo(segue)
+            break
             
-        } else if segue.identifier == "showUploadSound" {
+        case "showUploadSound":
             soundList.prepareToShowSoundAudioUpload(segue)
+            break
             
-        } else if segue.identifier == "showTags" {
+        case "showTags":
             soundList.prepareToShowTags(segue)
+            break
             
-        } else if segue.identifier == "showProfile" {
+        case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
+            break
+            
+        case "showComments":
+            soundList.prepareToShowComments(segue)
+            break
+            
+        default:
+            break
         }
     }
     
@@ -99,7 +112,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //MARK: Tableview
     let reuse = "soundReuse"
     let profileReuse = "profileReuse"
-    let uploadsCollectionHeaderReuse = "releasesCollectionsHeaderReuse"
+    let listTypeHeaderReuse = "listTypeHeaderReuse"
     let noSoundsReuse = "noSoundsReuse"
     let filterSoundsReuse = "filterSoundsReuse"
     let actionProfileReuse = "actionProfileReuse"
@@ -109,7 +122,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: actionProfileReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: uploadsCollectionHeaderReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: listTypeHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
@@ -242,22 +255,22 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             return cell
             
         case 1:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! ProfileTableViewCell
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: listTypeHeaderReuse) as! ProfileTableViewCell
             cell.selectionStyle = .none
            
-            cell.releasesButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-            cell.releasesButton.tag = 0
+            cell.firstListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+            cell.firstListType.tag = 0
             
-            cell.collectionButton.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-            cell.collectionButton.tag = 1
+            cell.secondListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+            cell.secondListType.tag = 1
             
             if soundList.soundType == "uploads" {
-                cell.releasesButton.setTitleColor(color.black(), for: .normal)
-                cell.collectionButton.setTitleColor(color.darkGray(), for: .normal)
+                cell.firstListType.setTitleColor(color.black(), for: .normal)
+                cell.secondListType.setTitleColor(color.darkGray(), for: .normal)
                 
             } else {
-                cell.releasesButton.setTitleColor(color.darkGray(), for: .normal)
-                cell.collectionButton.setTitleColor(color.black(), for: .normal)
+                cell.firstListType.setTitleColor(color.darkGray(), for: .normal)
+                cell.secondListType.setTitleColor(color.black(), for: .normal)
             }
             
             return cell
@@ -295,7 +308,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
         default:
-            return self.tableView.dequeueReusableCell(withIdentifier: uploadsCollectionHeaderReuse) as! SoundListTableViewCell
+            return self.tableView.dequeueReusableCell(withIdentifier: listTypeHeaderReuse) as! SoundListTableViewCell
         }
     }
     

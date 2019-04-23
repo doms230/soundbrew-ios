@@ -11,6 +11,7 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
+import AppCenterAnalytics
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable, TagDelegate {
 
@@ -455,6 +456,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (success: Bool, error: Error?) in
             if (success) {
                 self.saveTags(tags)
+                MSAnalytics.trackEvent("sound uploaded")
                 
             } else if let error = error {
                 self.stopAnimating()

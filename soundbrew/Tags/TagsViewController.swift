@@ -123,7 +123,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
                         
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil)
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, image: nil)
                         
                         if let tagType = object["type"] as? String {
                             if !tagType.isEmpty {
@@ -608,7 +608,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
                         
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil)
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, image: nil)
                         
                         if let tagType = object["type"] as? String {
                             if !tagType.isEmpty {

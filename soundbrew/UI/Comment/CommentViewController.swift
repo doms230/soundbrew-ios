@@ -11,6 +11,7 @@ import UIKit
 import MessageViewController
 import Parse
 import Kingfisher
+import AppCenterAnalytics
 
 class CommentViewController: MessageViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -24,7 +25,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(postId ?? "nil")
+        
         if let postId = self.postId {
             loadComments(postId)
         }
@@ -47,7 +48,6 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
         messageAutocompleteController.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         messageAutocompleteController.tableView.dataSource = self
         messageAutocompleteController.tableView.delegate = self
-        
         setup(scrollView: tableView)
     }
     
@@ -135,6 +135,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             (success: Bool, error: Error?) in
             if success && error == nil {
                 self.comments[self.comments.count - 1].objectId = newComment.objectId
+                MSAnalytics.trackEvent("comment added")
                 
             } else {
                 self.comments.removeLast()

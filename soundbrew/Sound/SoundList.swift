@@ -120,7 +120,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         if let postId = postId {
             commentPostId = postId
             commentAtTime = atTime!
-            self.miniPlayerView?.isHidden = true 
+            miniPlayerView!.isHidden = true
             target.performSegue(withIdentifier: "showComments", sender: self)
         }
     }
@@ -215,9 +215,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         } else {
             menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
                 self.selectedArtist(sound.artist)
-                print(sound.artist!.name ?? "d")
-               // self.selectedArtist = sound.artist
-                //self.target.performSegue(withIdentifier: "showProfile", sender: self)
             }))
         }
         
@@ -256,7 +253,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             break
             
         case "follows":
-            self.loadFollows(descendingOrder)
+            self.loadFollows("createdAt")
             break
             
         case "search":

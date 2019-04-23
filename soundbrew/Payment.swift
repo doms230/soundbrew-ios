@@ -47,7 +47,4 @@ class Payment: NSObject, SKProductsRequestDelegate {
             SKPaymentQueue.default().add(payment)
         }
     }
-    
-    
-
 }

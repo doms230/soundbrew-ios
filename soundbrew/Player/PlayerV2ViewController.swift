@@ -17,6 +17,7 @@ import DeckTransition
 import SwiftVideoGenerator
 import Photos
 import NVActivityIndicatorView
+import AppCenterAnalytics
 
 class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
 
@@ -136,13 +137,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                     if isLiked {
                         unlikeSound(currentUser.objectId!, postId: sound.objectId)
                         
-                        
                     } else {
                         newLike(currentUser.objectId!, postId: sound.objectId)
+                        MSAnalytics.trackEvent("New Like")
                     }
                     
                 } else {
                     newLike(currentUser.objectId!, postId: sound.objectId)
+                    MSAnalytics.trackEvent("New Like")
                 }
             }
             
@@ -467,7 +469,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         playBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(65)
             make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo((self.view.frame.width / 2) - (65 / 2))
+            make.centerX.equalTo(self.view)
+           // make.left.equalTo((self.view.frame.width / 2) - (65 / 2))
         }
         
         self.view.addSubview(goBackButton)
@@ -476,7 +479,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.height.width.equalTo(55)
             //make.top.equalTo(playBackButton).offset(3)
             make.centerY.equalTo(playBackButton)
-            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
+            make.centerX.equalTo(self.view).offset(-(55 + uiElement.leftOffset))
+           // make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
         }
         
         shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
@@ -502,7 +506,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.height.width.equalTo(55)
             //make.top.equalTo(playBackButton).offset(3)
             make.centerY.equalTo(playBackButton)
-            make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
+            make.centerX.equalTo(self.view).offset(55 + uiElement.leftOffset)
+            //make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }
         
         if isSoundLiked() {
@@ -525,7 +530,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         commentButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
             make.top.equalTo(self.likeButton)
-            make.left.equalTo(self.skipButton.snp.right).offset(uiElement.leftOffset)
+            //make.left.equalTo(self.skipButton.snp.right).offset(uiElement.leftOffset)
             make.right.equalTo(self.likeButton.snp.left).offset(uiElement.rightOffset)
         }
         
@@ -573,7 +578,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             print(url)
             self.stopAnimating()
             print("absolute String: \(url.absoluteString)")
-            //self.saveVideoToUserPhotoLibrary(url)
+            self.saveVideoToUserPhotoLibrary(url)
             
         }, failure: { (error) in
             print(error)

@@ -16,13 +16,15 @@ class Tag {
     var count: Int!
     var type: String?
     var isSelected: Bool!
+    var image: String?
     
-    init(objectId: String?, name: String!, count: Int!, isSelected: Bool!, type: String?) {
+    init(objectId: String?, name: String!, count: Int!, isSelected: Bool!, type: String?, image: String?) {
         self.objectId = objectId
         self.name = name
         self.count = count
         self.isSelected = isSelected
         self.type = type
+        self.image = image 
     }
 }
 

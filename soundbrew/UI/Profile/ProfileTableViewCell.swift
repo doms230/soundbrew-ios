@@ -14,7 +14,9 @@ class ProfileTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var releasesButton: UIButton = {
+    var isSearchActive = false
+    
+    lazy var firstListType: UIButton = {
         let button = UIButton()
         button.setTitle("Releases", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
@@ -22,7 +24,15 @@ class ProfileTableViewCell: UITableViewCell {
         return button
     }()
     
-    lazy var collectionButton: UIButton = {
+    lazy var secondListType: UIButton = {
+        let button = UIButton()
+        button.setTitle("Collection", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.setTitleColor(.lightGray, for: .normal)
+        return button
+    }()
+    
+    lazy var thirdListType: UIButton = {
         let button = UIButton()
         button.setTitle("Collection", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
@@ -38,7 +48,7 @@ class ProfileTableViewCell: UITableViewCell {
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
-        image.backgroundColor = color.darkGray()
+        image.backgroundColor = .white
         return image
     }()
     
@@ -233,6 +243,27 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
+        case "searchTagViewReuse":
+            self.addSubview(profileImage)
+            self.addSubview(displayName)
+            
+            profileImage.layer.cornerRadius = 25
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(50)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            displayName.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
+            displayName.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(profileImage)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            break
+            
         case "actionProfileReuse":
             self.addSubview(socialScrollview)
             self.addSubview(actionButton)
@@ -340,22 +371,49 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
-        case "releasesCollectionsHeaderReuse":
-            self.addSubview(releasesButton)
-            self.addSubview(collectionButton)
+        case "listTypeHeaderReuse":
+            self.addSubview(firstListType)
+            self.addSubview(secondListType)
             
-            releasesButton.snp.makeConstraints { (make) -> Void in
+            firstListType.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            collectionButton.snp.makeConstraints { (make) -> Void in
+            secondListType.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                make.top.equalTo(releasesButton)
-                make.left.equalTo(releasesButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.top.equalTo(firstListType)
+                make.left.equalTo(firstListType.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(firstListType)
+            }
+            break
+            
+        case "SearchListTypeHeaderReuse":
+            self.addSubview(firstListType)
+            self.addSubview(secondListType)
+            self.addSubview(thirdListType)
+            
+            firstListType.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            secondListType.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(firstListType)
+                make.left.equalTo(firstListType.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(firstListType)
+            }
+            
+            thirdListType.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(firstListType)
+                make.left.equalTo(secondListType.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(firstListType)
             }
             
             break

@@ -48,14 +48,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = controller
         }
         
-        /*SKPaymentQueue.default().add(self)
-       Payment.shared.loadSubscriptionOptions()*/
+       // SKPaymentQueue.default().add(self)
+       //Payment.shared.loadSubscriptionOptions()
         
         return true
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        MSAnalytics.trackEvent("retention")
+        MSAnalytics.trackEvent("app opened")
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
