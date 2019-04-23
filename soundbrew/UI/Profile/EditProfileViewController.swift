@@ -336,7 +336,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 user["artistName"] = self.nameText.text
                 
                 if self.usernameText.text != self.artist?.username {
-                    self.usernameText.text = self.uiElement.cleanUpTextField(self.usernameText.text!)
+                    self.usernameText.text = self.uiElement.cleanUpText(self.usernameText.text!)
                     user["username"] = self.usernameText.text!
                 }
                 

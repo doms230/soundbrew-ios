@@ -92,7 +92,7 @@ class UIElement {
         UITextField.text = ""
     }
     
-    func cleanUpTextField(_ text: String) -> String {
+    func cleanUpText(_ text: String) -> String {
         let cleanText = text.trimmingCharacters(
             in: NSCharacterSet.whitespacesAndNewlines
         )

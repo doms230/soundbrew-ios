@@ -13,7 +13,7 @@ import SnapKit
 import Kingfisher
 import AppCenterAnalytics
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable, TagDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate {
 
     let uiElement = UIElement()
     
@@ -48,7 +48,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: TagsViewController = segue.destination as! TagsViewController
-        viewController.isChoosingTagsForSoundUpload = true
         viewController.tagDelegate = self
         if let tags = tagsToUpdateInTagsViewController {
             viewController.chosenTags = tags
@@ -63,9 +62,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var title = "UPLOAD"
         if soundThatIsBeingEdited != nil {
             title = "UPDATE"
-            
-            /*let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
-            self.navigationItem.leftBarButtonItem = cancelButton*/
         }
         
         let uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
@@ -79,15 +75,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: tags
     var showTags = "showTags"
     var tagType: String?
-    //var addTagsType: String?
-    let genres = ["Hip-Hop/Rap", "Electronic Dance Music(EDM)", "Pop", "Alternative Rock", "Americana", "Blues", "Christian & Gospal", "Classic Rock", "Classical", "Country", "Dance", "Hard Rock", "Indie", "Jazz", "Latino", "Metal", "Reggae", "R&B", "Soul", "Funk"]
-    
-    let moods = ["Happy", "Sad", "Angry", "Chill", "High-Energy", "Netflix-And-Chill"]
-    
-    let activities = ["Creative", "Workout", "Party", "Work", "Sleep", "Gaming"]
     var genreTag: Tag?
-    var moodTag: String?
-    var activityTag: String?
+    var moodTag: Tag?
+    var activityTag: Tag?
     var moreTags: Array<Tag>?
     var cityTag: Tag?
     var tagsToUpdateInTagsViewController: Array<Tag>?
@@ -95,11 +85,25 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func changeTags(_ value: Array<Tag>?) {
         if let tagType = self.tagType {
             if let tag = value {
-                if tagType == "city" {
+                switch tagType {
+                case "city":
                     self.cityTag = tag[0]
+                    break
                     
-                } else if tagType == "genre" {
+                case "genre":
                     self.genreTag = tag[0]
+                    break
+                    
+                case "mood":
+                    self.moodTag = tag[0]
+                    break
+                    
+                case "activity":
+                    self.activityTag = tag[0]
+                    break
+
+                default:
+                    break
                 }
             }
             
@@ -150,7 +154,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as? SoundInfoTableViewCell
             
             if let sound = soundThatIsBeingEdited {
-                //cell.soundArt.kf.setImage(with: URL(string: sound.artURL))
                 cell.soundArt.kf.setImage(with: URL(string: sound.artURL), for: .normal)
                 cell.soundTitle.text = sound.title
             }
@@ -186,7 +189,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 2:
                 cell.soundTagLabel.text = "Mood Tag"
                 if let moodTag = self.moodTag {
-                    cell.chosenSoundTagLabel.text = moodTag
+                    cell.chosenSoundTagLabel.text = moodTag.name
                     cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
@@ -195,7 +198,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 3:
                 cell.soundTagLabel.text = "Activity Tag"
                 if let activityTag = self.activityTag {
-                    cell.chosenSoundTagLabel.text = activityTag
+                    cell.chosenSoundTagLabel.text = activityTag.name
                     cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 tableView.separatorStyle = .singleLine
@@ -232,140 +235,36 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
-                //self.showPickerView("Genre")
-                //self.genreTag = "Hip-Hop/Rap"
-                tagType = "genre"
-                if let genreTag = self.genreTag {
-                    tagsToUpdateInTagsViewController?.append(genreTag)
-                }
-                self.performSegue(withIdentifier: "showTags", sender: self)
-                
+                self.tagType = "genre"
+                tagsToUpdateInTagsViewController = [self.genreTag] as? Array<Tag>
                 break
                 
             case 1:
-                tagType = "city"
-                if let cityTag = self.cityTag {
-                    tagsToUpdateInTagsViewController?.append(cityTag)
-                }
-                self.performSegue(withIdentifier: showTags, sender: self)
-                //var cityTags: Array<Tag>?
-                //self.showTagsViewController(cityTags, tagType: "city")
+                self.tagType = "city"
+                tagsToUpdateInTagsViewController = [self.cityTag] as? Array<Tag>
                 break
                 
             case 2:
-                self.showPickerView("Mood")
-                self.moodTag = "Happy"
+                self.tagType = "mood"
+                tagsToUpdateInTagsViewController = [self.moodTag] as? Array<Tag>
                 break
                 
             case 3:
-                self.showPickerView("Activity")
-                self.activityTag = "Creative"
+                self.tagType = "activity"
+                tagsToUpdateInTagsViewController = [self.activityTag] as? Array<Tag>
                 break
                 
             case 4:
-                tagType = nil
+                self.tagType = nil
                 tagsToUpdateInTagsViewController = moreTags
-                self.performSegue(withIdentifier: showTags, sender: self)
-                //self.showTagsViewController(moreTags, tagType: nil)
                 break
                 
             default:
                 break
             }
+            
+            self.performSegue(withIdentifier: showTags, sender: self)
         }
-    }
-    
-    //MARK: PickerView
-    func showPickerView(_ title: String) {
-        let alert = UIAlertController(title: "Choose \(title) Tag", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Done", style: .cancel, handler: { action in
-            self.tableView.reloadData()
-        }))
-        alert.isModalInPopover = true
-        
-        //  Create a frame (placeholder/wrapper) for the picker and then create the picker
-        let pickerFrame = CGRect(x: 0, y: 0, width: self.view.frame.width - 20, height: self.view.frame.height * (1/3)) // CGRectMake(left), top, width, height) - left and top are like margins
-        let picker = UIPickerView(frame: pickerFrame)
-        
-        //  set the pickers datasource and delegate
-        picker.delegate = self
-        picker.dataSource = self
-        switch title {
-        case "Genre":
-            picker.tag = 0
-            break
-            
-        case "Mood":
-            picker.tag = 1
-            break
-            
-        case "Activity":
-            picker.tag = 2
-            break
-            
-        default:
-            break
-        }
-        
-        //  Add the picker to the alert controller
-        alert.view.addSubview(picker)
-        
-        self.present(alert, animated: true, completion: nil);
-    }
-    
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        switch pickerView.tag {
-        case 0:
-            return genres.count
-            
-        case 1:
-            return moods.count
-            
-        case 2:
-            return activities.count
-            
-        default:
-            return 0
-        }
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        switch pickerView.tag {
-        case 0:
-            return genres[row]
-            
-        case 1:
-            return moods[row]
-            
-        case 2:
-            return activities[row]
-            
-        default:
-            return "default"
-        }
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        switch pickerView.tag {
-        case 0:
-            //self.genreTag = genres[row]
-            break
-            
-        case 1:
-            self.moodTag = self.moods[row]
-            break
-            
-        case 2:
-            self.activityTag = self.activities[row]
-            break
-            
-        default:
-            break
-        }        
     }
     
     //mark: media upload
@@ -443,7 +342,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func saveSound() {
         let tags = getTags()
-                
         let newSound = PFObject(className: "Post")
         newSound["userId"] = PFUser.current()!.objectId!
         newSound["title"] = soundTitle.text
@@ -451,7 +349,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["songArt"] = soundArt
         newSound["genre"] = genreTag!.name
         newSound["city"] = cityTag!.name
-        newSound["tags"] = tags
+        newSound["tags"] = tags.map {$0.name}
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
@@ -493,58 +391,48 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func getTags() -> Array<String> {
+    func getTags() -> Array<Tag> {
         //var tags = soundTags.text!.split{$0 == " "}.map(String.init)
-        var tags = [String]()
+        var tags = [Tag]()
         if let moreTags = self.moreTags {
-            let moreTagNames = moreTags.map {$0.name!}
-            tags = moreTagNames
+            tags = moreTags
         }
-        tags.append(genreTag!.name.lowercased())
-        tags.append(activityTag!.lowercased())
-        tags.append(moodTag!.lowercased())
-        tags.append(cityTag!.name.lowercased())
+        tags.append(genreTag!)
+        tags.append(activityTag!)
+        tags.append(moodTag!)
+        tags.append(cityTag!)
     
         return tags
     }
     
-    func saveTags(_ tags: Array<String>) {
-        let query = PFQuery(className: "Tag")
-        query.whereKey("tag", containedIn: tags)
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for tag in tags {
-                        var didFindTagMatch = false
-                        for object in objects {
-                            if tag == object["tag"] as! String {
-                                let currentTagCount = object["count"] as! Int
-                                object["count"] = currentTagCount + 1
-                                object.saveEventually()
-                                didFindTagMatch = true
-                                break
-                            }
-                        }
+    func saveTags(_ tags: Array<Tag>) {
+        for tag in tags {
+            if let tagId = tag.objectId {
+                let query = PFQuery(className: "Tag")
+                query.getObjectInBackground(withId: tagId) {
+                    (object: PFObject?, error: Error?) -> Void in
+                    if let error = error {
+                        print(error)
                         
-                        if !didFindTagMatch {
-                            let newTag = PFObject(className: "Tag")
-                            newTag["tag"] = tag
-                            newTag["count"] = 1
-                            newTag.saveEventually()
-                        }
+                    } else if let object = object {
+                        object.incrementKey("count")
+                        object.saveEventually()
                     }
                 }
                 
-                self.stopAnimating()
-                //self.uiElement.setUserDefault("moreTags", value: [])
-                self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
-                
             } else {
-                self.stopAnimating()
-                print("Error: \(error!)")
+                let newTag = PFObject(className: "Tag")
+                newTag["tag"] = tag.name
+                newTag["count"] = 1
+                if let type = tag.type {
+                    newTag["type"] = type
+                }
+                newTag.saveEventually()
             }
         }
+        
+        self.stopAnimating()
+        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
     }
     
     func saveAudioFile() {

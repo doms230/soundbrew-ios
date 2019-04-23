@@ -102,7 +102,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     @objc func next(_ sender: UIButton){
-        emailText.text = self.uiElement.cleanUpTextField(emailText.text!)
+        emailText.text = self.uiElement.cleanUpText(emailText.text!)
         if validateEmail() {
             checkIfEmailExistsThenMoveForward()
         }

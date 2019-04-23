@@ -305,7 +305,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         }
         
         self.tableView?.reloadData()
-        self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+        //self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
         
         determineIfRateTheAppPopUpShouldShow()
     }

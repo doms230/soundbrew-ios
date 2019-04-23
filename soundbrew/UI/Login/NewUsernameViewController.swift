@@ -85,7 +85,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     @objc func next(_ sender: UIButton){
-        usernameText.text = self.uiElement.cleanUpTextField(usernameText.text!)
+        usernameText.text = self.uiElement.cleanUpText(usernameText.text!)
         if validateUsername() {
             checkIfUsernameExistsThenMoveForward()
         }
