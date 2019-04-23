@@ -139,7 +139,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: tagReuse)
-        //tableView.register(TagTableViewCell.self, forCellReuseIdentifier: featureTagReuse)
         tableView.backgroundColor = backgroundColor()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
@@ -223,7 +222,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var tags = [Tag]()
     var filteredTags = [Tag]()
-    let featureTagTitles = ["mood", "activity", "city", "genre"]
+    let featureTagTitles = ["mood", "activity", "city", "genre", "similar artist"]
     var tagView: TagListView!
     
     var chosenTags = [Tag]()
@@ -260,14 +259,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         } else {
             tags = self.filteredTags.map{$0.name}
-            //tags = self.filteredTags.filter {$0.type == nil}.map {$0.name}
         }
         
         cell.tagLabel.addTags(tags)
         
-        self.tagView = cell.tagLabel
-        
-        cell.tagLabel.tagBackgroundColor = color.primary()
+        self.tagView = cell.tagLabel        
     }
     
     func setupChooseTagsView() {
@@ -412,7 +408,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.filteredTags = self.tags
                 
                 if self.tableView == nil {
-                    //self.setUpSearchBar()
                     self.setupChooseTagsView()
                     
                 } else {

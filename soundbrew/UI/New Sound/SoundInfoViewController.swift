@@ -80,6 +80,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var activityTag: Tag?
     var moreTags: Array<Tag>?
     var cityTag: Tag?
+    var similarArtistTag: Tag?
     var tagsToUpdateInTagsViewController: Array<Tag>?
     
     func changeTags(_ value: Array<Tag>?) {
@@ -101,6 +102,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 case "activity":
                     self.activityTag = tag[0]
                     break
+                    
+                case "similar artist":
+                    self.similarArtistTag = tag[0]
 
                 default:
                     break
@@ -141,7 +145,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 5
+            return 6
         }
         
         return 1
@@ -204,6 +208,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 tableView.separatorStyle = .singleLine
                 
             case 4:
+                cell.soundTagLabel.text = "Similar Artist"
+                if let similarArtistTag = self.similarArtistTag {
+                    cell.chosenSoundTagLabel.text = similarArtistTag.name
+                    cell.chosenSoundTagLabel.textColor = color.blue()
+                }
+                
+            case 5:
                 cell.soundTagLabel.text = "More Tags"
                 if let moreTags = self.moreTags {
                     if moreTags.count == 1 {
@@ -255,6 +266,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 4:
+                self.tagType = "similar artist"
+                tagsToUpdateInTagsViewController = [self.similarArtistTag] as? Array<Tag>
+                break
+                
+            case 5:
                 self.tagType = nil
                 tagsToUpdateInTagsViewController = moreTags
                 break
@@ -392,7 +408,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func getTags() -> Array<Tag> {
-        //var tags = soundTags.text!.split{$0 == " "}.map(String.init)
         var tags = [Tag]()
         if let moreTags = self.moreTags {
             tags = moreTags
@@ -401,6 +416,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tags.append(activityTag!)
         tags.append(moodTag!)
         tags.append(cityTag!)
+        tags.append(similarArtistTag!)
     
         return tags
     }
