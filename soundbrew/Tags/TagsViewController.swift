@@ -104,7 +104,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func searchTags(_ text: String, type: String?) {
         self.filteredTags.removeAll()
         let query = PFQuery(className: "Tag")
-        query.whereKey("tag", hasPrefix: text.lowercased())
+        query.whereKey("tag", matchesRegex: text.lowercased())
         if let type = type {
             query.whereKey("type", equalTo: type)
             
@@ -140,17 +140,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
-    
-    /*@objc func searchBarDidChange(_ textField: UITextField) {
-        if textField.text!.count == 0 {
-            self.filteredTags = self.tags
-            self.tableView.reloadData()
-            
-        } else {
-            searchTags(textField.text!, type: tagType)
-        }
-    }*/
-    
+
     //MARK: Tableview
     var tableView: UITableView!
     let tagReuse = "tagReuse"
@@ -176,10 +166,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        /*if searchIsActive || isChoosingTagsForSoundUpload {
-            return 1
-        }*/
-        
         if isChoosingTagsForSoundUpload {
             return 1
         }
@@ -192,10 +178,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        /*if section == 0 && !searchIsActive || section == 0 &&  !isChoosingTagsForSoundUpload  {
-            return featureTagTitles.count
-        }*/
-        
         if section == 0 && !isChoosingTagsForSoundUpload && !searchIsActive  {
             return featureTagTitles.count
         }
@@ -220,16 +202,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? TagTableViewCell
             setUpTagListCellView(cell)
         }
-        
-        /*if indexPath.section == 0 && !searchIsActive ||
-            indexPath.section == 0 && !isChoosingTagsForSoundUpload {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: featureTagReuse) as? TagTableViewCell
-            setUpFeatureTagCellView(cell, row: indexPath.row)
-            
-        } else {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: tagReuse) as? TagTableViewCell
-            setUpTagListCellView(cell)
-        }*/
         
         cell.backgroundColor = backgroundColor()
         cell.selectionStyle = .none
@@ -436,14 +408,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func handleTagsForDismissal() {
-        print("handle Tags for dismisall called")
         if let tagDelegate = self.tagDelegate {
             var chosenTags: Array<Tag>?
             if self.chosenTags.count != 0 {
                 chosenTags = self.chosenTags
             }
             tagDelegate.changeTags(chosenTags)
-            //print("tagsViewController: \(String(describing: chosenTags?.count))")
         }
         
         self.dismiss(animated: true, completion: nil)

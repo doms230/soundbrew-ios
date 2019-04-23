@@ -46,6 +46,24 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         determineTypeOfSoundToLoad(soundType)
     }
     
+    lazy var noResultsLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        label.text = "Welcome to Soundbrew! The latest releases from artists you follow will appear here."
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    func showNoResultsLabel() {
+        self.tableView?.isHidden = true
+        target.view.addSubview(noResultsLabel)
+        noResultsLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(target.view).offset(uiElement.uiViewTopOffset(target))
+            make.left.equalTo(target.view).offset(uiElement.leftOffset)
+            make.right.equalTo(target.view).offset(uiElement.rightOffset)
+        }
+    }
+    
     //mark: tableView
     let filterSoundsReuse = "filterSoundsReuse"
     func setUpTableView() {
@@ -154,37 +172,40 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func sound(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
-        let sound = sounds[indexPath.row]
-        if let currentSoundPlaying = self.player?.currentSound {
-            if currentSoundPlaying.objectId == sound.objectId {
-                changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
+        
+        if sounds.indices.contains(indexPath.row) {
+            let sound = sounds[indexPath.row]
+            if let currentSoundPlaying = self.player?.currentSound {
+                if currentSoundPlaying.objectId == sound.objectId {
+                    changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
+                    
+                } else {
+                    changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
+                }
                 
             } else {
                 changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
             }
             
-        } else {
-            changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
-        }
-        
-        cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-        cell.menuButton.tag = indexPath.row
-        
-        cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-        cell.soundTitle.text = sound.title
-        
-        if let plays = sound.plays {
-            cell.soundPlays.text = "\(plays)"
+            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+            cell.menuButton.tag = indexPath.row
             
-        } else {
-            cell.soundPlays.text = "0"
-        }
-        
-        if let artist = sound.artist?.name {
-            cell.soundArtist.text = artist
+            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
+            cell.soundTitle.text = sound.title
             
-        } else {
-            loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
+            if let plays = sound.plays {
+                cell.soundPlays.text = "\(plays)"
+                
+            } else {
+                cell.soundPlays.text = "0"
+            }
+            
+            if let artist = sound.artist?.name {
+                cell.soundArtist.text = artist
+                
+            } else {
+                loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
+            }
         }
         
         return cell
@@ -230,6 +251,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.sounds.removeAll()
+        
         if let filter = self.uiElement.getUserDefault("filter") as? String {
             if filter == "popular" {
                 descendingOrder = "plays"
@@ -265,69 +287,25 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         }
     }
     
-    func sortSounds(_ selectedTags: Array<Tag>) {
-        for i in 0..<self.sounds.count {
-            let tags = self.sounds[i].tags
-            let selectedTagNames = selectedTags.map {$0.name!}
-            var relevancyScore = 0
-            
-            for tag in tags! {
-                if selectedTagNames.contains(tag) {
-                    var type: String?
-                    let query = PFQuery(className: "Tag")
-                    query.whereKey("tag", equalTo: tag)
-                    query.getFirstObjectInBackground {
-                        (object: PFObject?, error: Error?) -> Void in
-                        if object != nil && error == nil {
-                            type = object?["type"] as? String
-                            if let type = type {
-                                switch type {
-                                case "genre":
-                                    relevancyScore = relevancyScore + 4
-                                    break
-                                    
-                                case "city":
-                                    relevancyScore = relevancyScore + 3
-                                    break
-                                    
-                                case "activity":
-                                    relevancyScore = relevancyScore + 2
-                                    break
-                                    
-                                case "mood":
-                                    relevancyScore = relevancyScore + 2
-                                    print("tea")
-                                    break
-                                    
-                                default:
-                                    relevancyScore = relevancyScore + 1
-                                    break
-                                }
-                            }
-                            self.sounds[i].relevancyScore = relevancyScore
-                        }
-                    }
-                }
-            }
-            
-            //print("\(self.sounds[i].title!): \(self.sounds[i].relevancyScore)")
-        }
-        
-        self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-        updateSounds()
-    }
-    
     func updateSounds() {
+        self.isUpdatingData = false
+        
         //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way app will load collection automatically.
         if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
             self.soundType = "likes"
             self.determineTypeOfSoundToLoad(self.soundType)
             
+        } else if soundType == "follows" && self.sounds.count == 0 {
+            showNoResultsLabel()
+            
         } else if let player = self.player {
+            self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             player.sounds = self.sounds
+            self.tableView?.isHidden = false
         }
         
         self.tableView?.reloadData()
+        self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
         
         determineIfRateTheAppPopUpShouldShow()
     }
@@ -401,6 +379,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         return cell
     }
     @objc func didPressSoundOrderButton(_ sender: UIButton) {
+        let currentSoundOrder = soundOrder
         if sender.tag == 0 {
             soundOrder = "recent"
             self.uiElement.setUserDefault("filter", value: "recent")
@@ -410,7 +389,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             self.uiElement.setUserDefault("filter", value: "popular")
         }
         
-        determineTypeOfSoundToLoad(soundType)
+        if currentSoundOrder != soundOrder {
+            determineTypeOfSoundToLoad(soundType)
+        }
     }
 
     func prepareToShowTags(_ segue: UIStoryboardSegue) {
@@ -434,7 +415,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             
             let newTagObjectIds = newTags.map {$0.objectId}
             if currentTagObjectIds != newTagObjectIds {
-
                 self.selectedTagsForFiltering = newTags
                 determineTypeOfSoundToLoad(soundType)
             }
@@ -469,48 +449,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         target.performSegue(withIdentifier: "showTags", sender: self)
     }
     
-    /*func weighTag(_ tag: String, selectedTags: Array<Tag>) -> Int {
-        var type: String?
-        let selectedTagNames = selectedTags.map {$0.name!}
-        var relevancyScore = 0
-        
-        if selectedTagNames.contains(tag) {
-            let query = PFQuery(className: "Tag")
-            query.whereKey("tag", equalTo: tag)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
-                    type = object?["type"] as? String
-                    if let type = type {
-                        switch type {
-                        case "genre":
-                            relevancyScore = 4
-                            break
-                            
-                        case "city":
-                            relevancyScore = 3
-                            break
-                            
-                        case "activity":
-                            relevancyScore = 2
-                            break
-                            
-                        case "mood":
-                            relevancyScore = 2
-                            break
-                            
-                        default:
-                            relevancyScore = 1
-                            break
-                        }
-                    }
-                }
-            }
-        }
-        //print("\(tag): \(relevancyScore)")
-        return relevancyScore
-    }*/
-    
     //mark: data
     //To insure that data isn't loaded again when user is at bottom of screen
     var isUpdatingData = false
@@ -519,7 +457,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<Tag>?, followIds: Array<String>?, searchText: String?) {
         
         isUpdatingData = true
-        print(descendingOrder)
         let query = PFQuery(className: "Post")
         if let likeIds = likeIds {
             query.whereKey("objectId", containedIn: likeIds)
@@ -531,8 +468,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         
         if let tags = tags {
             let tagNames = tags.map {$0.name!}
-            //query.whereKey("tags", containedIn: tagNames)
-            query.whereKey("tags", containsAllObjectsIn: tagNames)
+            query.whereKey("tags", containedIn: tagNames)
+            //query.whereKey("tags", containsAllObjectsIn: tagNames)
         }
 
         if let followIds = followIds {
@@ -571,28 +508,23 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                         
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
                         
-                        /*var relevancyScore = 0
+                        var relevancyScore = 0
                         if let selectedTagsForFiltering = self.selectedTagsForFiltering {
                             for tag in tags {
-                                relevancyScore = relevancyScore + self.weighTag(tag, selectedTags: selectedTagsForFiltering)
+                                let selectedTagNames = selectedTagsForFiltering.map {$0.name!}
+                                if selectedTagNames.contains(tag) {
+                                    relevancyScore += 1
+                                }
                             }
-                        }*/
+                        }
                         
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes)
+                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes)
                         
                         self.sounds.append(sound)
                     }
                     
                     self.updateSounds()
-                    self.isUpdatingData = false
-                    /*if let selectedTagsForFiltering = self.selectedTagsForFiltering {
-                        self.sortSounds(selectedTagsForFiltering)
-                        
-                    } else {
-                        self.updateSounds()
-                    }*/
                     
-                    //self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                 } else {
                     self.thereIsNoMoreDataToLoad = true
                 }
@@ -679,7 +611,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                     artist.image = image.url
                 }
                 
-                self.sounds[row].artist = artist
+                //issue with crashing between loads
+                if self.sounds.indices.contains(row) {
+                    self.sounds[row].artist = artist
+                }
             }
         }
     }

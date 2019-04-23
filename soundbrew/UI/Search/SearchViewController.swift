@@ -25,28 +25,18 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil, searchText: nil)
-        
         setupSearchBar()
         setUpTableView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil && !searchIsActive {
-            
-            /*soundList.sounds = searchSounds
-            soundList.player!.sounds = searchSounds
-            soundList.target = self
-            soundList.tableView = self.tableView
-            soundList.soundType = "search"*/
             var tags: Array<Tag>?
             if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
             }
             soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
-            
-            //self.tableView.reloadData()
         }
     }
     
@@ -77,22 +67,29 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    func didSelectSoundAt(row: Int) {
+        if let player = soundList.player {
+            player.didSelectSoundAt(row)
+            soundList.miniPlayerView?.isHidden = false
+            tableView.reloadData()
+        }
+    }
+    
     func showDiscoverSounds() {
         searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.text = ""
+        searchBar.placeholder = "Search"
+        searchTags.removeAll()
+        self.searchBar.resignFirstResponder()
+        searchIsActive = false
         
         var tags: Array<Tag>?
         if selectedTagsForFiltering.count != 0 {
             tags = selectedTagsForFiltering
         }
-        self.searchBar.resignFirstResponder()
-        soundList.soundType = "discover"
-        searchIsActive = false
-        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
         
-        searchBar.text = ""
-        searchBar.placeholder = "Search"
-        searchTags.removeAll()
-        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+        soundList.soundType = "discover"
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)        
     }
     
     //mark: tableview
@@ -213,7 +210,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.isSelected = false
-        if indexPath.section == 1 {
+        if indexPath.section == 1 && searchIsActive {
             switch searchType {
             case tagSearch:
                 selectedTagsForFiltering.append(searchTags[indexPath.row])
@@ -226,16 +223,18 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 break
                 
             case soundSearch:
-                if let player = soundList.player {
-                    player.didSelectSoundAt(indexPath.row)
-                    soundList.miniPlayerView?.isHidden = false
-                    tableView.reloadData()
-                }
+                didSelectSoundAt(row: indexPath.row)
                 break
                 
             default:
                 break
             }
+            
+        } else if selectedTagsForFiltering.count != 0 && indexPath.section == 2 && !searchIsActive {
+            didSelectSoundAt(row: indexPath.row)
+            
+        } else if selectedTagsForFiltering.count == 0 && indexPath.section == 1  && !searchIsActive {
+            didSelectSoundAt(row: indexPath.row)
         }
     }
     
@@ -245,7 +244,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
         }
     }
-    
     
     //mark: tags
     var selectedTagsForFiltering = [Tag]()
@@ -258,22 +256,22 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         xPositionForTags = uiElement.leftOffset
         if selectedTagsForFiltering.count != 0 {
             for i in 0..<selectedTagsForFiltering.count {
-                let tagName = selectedTagsForFiltering[i].name
-                self.addSelectedTags(cell.tagsScrollview, tagName: "X | \(tagName!)", index: i)
+                let tag = selectedTagsForFiltering[i]
+                self.addSelectedTags(cell.tagsScrollview, tag: tag, index: i)
             }
         }
         
         return cell
     }
     
-    func addSelectedTags(_ scrollview: UIScrollView, tagName: String, index: Int) {
-        let buttonTitleWithX = "\(tagName)"
+    func addSelectedTags(_ scrollview: UIScrollView, tag: Tag, index: Int) {
+        let name = "X | \(tag.name!)"
         //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(buttonTitleWithX)
+        let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(name)
         
         let tagButton = UIButton()
         tagButton.frame = CGRect(x: xPositionForTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: 30)
-        tagButton.setTitle(tagName, for: .normal)
+        tagButton.setTitle( name, for: .normal)
         tagButton.setTitleColor(color.black(), for: .normal)
         tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         tagButton.layer.cornerRadius = 5
@@ -315,7 +313,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.displayName.text = tag.name            
         }
         
-        
         return cell
     }
     
@@ -336,7 +333,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         let image = object["image"] as? PFFileObject
                         
                         let tag = Tag(objectId: object.objectId, name: name, count: count, isSelected: false, type: type, image: image?.url)
-                        self.searchTags.append(tag)
+                        let tagObjectId = self.searchTags.map{$0.objectId}
+                        if !tagObjectId.contains(tag.objectId) {
+                            self.searchTags.append(tag)
+                        }
                     }
                 }
                 self.tableView.reloadData()
@@ -369,6 +369,27 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.navigationItem.leftBarButtonItem = leftNavBarButton
     }
     
+    func search() {
+        if !searchBar.text!.isEmpty {
+            switch searchType {
+            case tagSearch:
+                searchTags(searchBar.text!)
+                break
+                
+            case profileSearch:
+                searchUsers(searchBar.text!)
+                break
+                
+            case soundSearch:
+                soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!)
+                break
+                
+            default:
+                break
+            }
+        }
+    }
+    
     @objc func didPressProfileSoundsButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
@@ -389,6 +410,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         default:
             break
         }
+        
+        search()
         
         self.tableView.reloadData()
     }
@@ -413,32 +436,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         default:
             break
-            
         }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         soundList.soundType = "search"
         searchIsActive = true
-        
-        if !searchBar.text!.isEmpty {
-            switch searchType {
-            case tagSearch:
-                searchTags(searchBar.text!)
-                break
-                
-            case profileSearch:
-                searchUsers(searchBar.text!)
-                break
-                
-            case soundSearch:
-                soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchText)
-                break
-                
-            default:
-                break
-            }
-        }
+        search()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -526,14 +530,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.searchUsers.removeAll()
         
         let nameQuery = PFQuery(className: "_User")
-        //nameQuery.whereKey("artistName", hasPrefix: text)
-        //nameQuery.whereKey("artistName", hasPrefix: text.lowercased())
         nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
         nameQuery.whereKey("artistName", matchesRegex: text)
         
         let usernameQuery = PFQuery(className: "_User")
         usernameQuery.whereKey("artistName", matchesRegex: text.lowercased())
-        //usernameQuery.whereKey("username", hasPrefix: text.lowercased())
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.limit = 100

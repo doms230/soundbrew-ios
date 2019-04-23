@@ -43,10 +43,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-            /* soundList.sounds = searchSounds
-             soundList.player!.sounds = searchSounds
-             soundList.target = self*/
-            
             var tags: Array<Tag>?
             if let soundListTags = soundList.selectedTagsForFiltering {
                 tags = soundListTags
@@ -54,9 +50,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             if let currentUserId = self.currentUser?.objectId {
                 soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUserId, tags: tags, searchText: nil)
-            }
-            
-            //self.tableView.reloadData()
+            }            
         }
     }
     
@@ -110,17 +104,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if soundList.sounds.count != 0 {
-            homeSounds = soundList.sounds
-            return soundList.sounds.count
-        }
-        
-        return 1
+        return soundList.sounds.count
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -132,15 +117,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if soundList.sounds.count == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            cell.headerTitle.text = "Welcome to Soundbrew! The latest releases from artists you follow will appear here."
-            return cell
-            
-        } else {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-            return soundList.sound(indexPath, cell: cell)
-        }
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+        return soundList.sound(indexPath, cell: cell)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
