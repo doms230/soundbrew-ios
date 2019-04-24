@@ -42,6 +42,38 @@ class Artist {
         self.isFollowedByCurrentUser = isFollowedByCurrentUser
         self.followerCount = followerCount
     }
+    
+    func cell(_ tableView: UITableView, reuse: String) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
+        
+        cell.selectionStyle = .gray
+        
+        if let artistImage = self.image {
+            cell.profileImage.kf.setImage(with: URL(string: artistImage))
+            
+        } else {
+            cell.profileImage.image = UIImage(named: "profile_icon")
+        }
+        
+        if let name = self.name {
+            cell.displayName.text = name
+            
+        } else {
+            cell.displayName.text = ""
+        }
+        
+        if let username = self.username {
+            //email was set as username in prior version of Soundbrew and email is private.
+            if username.contains("@") {
+                cell.username.text = ""
+                
+            } else {
+                cell.username.text = username
+            }
+        }
+        
+        return cell
+    }
 }
 
 protocol ArtistDelegate {

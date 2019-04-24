@@ -438,9 +438,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else {
                 followUser(currentUser)
             }
-            
-        } else {
-            //show login view
         }
     }
     

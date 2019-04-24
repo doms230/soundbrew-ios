@@ -168,17 +168,17 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 switch searchType {
                 case tagSearch:
-                    return searchTagCell(indexPath)
+                    return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
                     
                 case profileSearch:
-                    return searchProfileCell(indexPath)
+                    return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
                     
                 case soundSearch:
                     let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
                     return soundList.sound(indexPath, cell: cell)
                     
                 default:
-                    return searchTagCell(indexPath)
+                    return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
                 }
             }
             
@@ -294,26 +294,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         soundList.soundType = "discover"
         soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
-    }
-    
-    func searchTagCell(_ indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: searchTagViewReuse) as! ProfileTableViewCell
-        if searchTags.indices.contains(indexPath.row) {
-            let tag = searchTags[indexPath.row]
-            
-            cell.selectionStyle = .gray
-            
-            if let image = tag.image {
-                cell.profileImage.kf.setImage(with: URL(string: image))
-                
-            } else {
-                cell.profileImage.image = UIImage(named: "hashtag")
-            }
-            
-            cell.displayName.text = tag.name            
-        }
-        
-        return cell
     }
     
     func searchTags(_ text: String) {
@@ -447,40 +427,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         showDiscoverSounds()
-    }
-    
-    func searchProfileCell(_ indexPath: IndexPath) -> UITableViewCell {
-        let artist = searchUsers[indexPath.row]
-        
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
-        
-        cell.selectionStyle = .gray
-        
-        if let artistImage = artist.image {
-            cell.profileImage.kf.setImage(with: URL(string: artistImage))
-            
-        } else {
-            cell.profileImage.image = UIImage(named: "profile_icon")
-        }
-        
-        if let name = artist.name {
-            cell.displayName.text = name
-            
-        } else {
-            cell.displayName.text = ""
-        }
-        
-        if let username = artist.username {
-            //email was set as username in prior version of Soundbrew and email is private.
-            if username.contains("@") {
-                cell.username.text = ""
-                
-            } else {
-                cell.username.text = username
-            }
-        }
-        
-        return cell
     }
     
     func searchTypeCell() -> UITableViewCell {

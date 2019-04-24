@@ -26,6 +26,22 @@ class Tag {
         self.type = type
         self.image = image 
     }
+    
+    func cell(_ tableView: UITableView, reuse: String) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
+        cell.selectionStyle = .gray
+        
+        if let image = self.image {
+            cell.profileImage.kf.setImage(with: URL(string: image))
+            
+        } else {
+            cell.profileImage.image = UIImage(named: "hashtag")
+        }
+        
+        cell.displayName.text = self.name 
+        
+        return cell
+    }
 }
 
 protocol TagDelegate {
