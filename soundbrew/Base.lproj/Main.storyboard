@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ha3-HT-aMH">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -15,7 +15,7 @@
             <objects>
                 <viewController id="NMN-7Y-7rd" customClass="UploadSoundAudioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="A3F-jb-vka">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="MNz-pC-Gnl"/>
@@ -34,7 +34,7 @@
             <objects>
                 <viewController id="dwr-Yl-wEr" customClass="SoundInfoViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hnj-xW-x0E">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
@@ -52,7 +52,7 @@
             <objects>
                 <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gtO-iq-VKq">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="oar-jn-SDV"/>
@@ -61,7 +61,6 @@
                     <connections>
                         <segue destination="k7A-1j-YbY" kind="presentation" identifier="showEditProfile" id="wBb-Ll-LfM"/>
                         <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="eW3-lv-tSJ"/>
-                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="uNc-Xt-ZBj"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="Lzr-CP-43Y"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                         <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
@@ -77,7 +76,7 @@
             <objects>
                 <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Eku-wh-htc">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="NaE-LY-JE5"/>
@@ -93,7 +92,7 @@
             <objects>
                 <viewController id="Rq2-Vz-me1" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="DF7-HU-3aG">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="ns0-Kr-3GI"/>
@@ -132,7 +131,7 @@
             <objects>
                 <viewController id="0eG-FI-KSj" customClass="CommentViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hRZ-gk-U03">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="NOl-8k-UcN"/>
@@ -140,14 +139,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sFd-n7-GQQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5001" y="-1489"/>
+            <point key="canvasLocation" x="3299" y="-1339"/>
         </scene>
-        <!--Tags View Controller-->
+        <!--Choose Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
             <objects>
-                <viewController id="EFp-6t-Bz1" customClass="TagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="EFp-6t-Bz1" customClass="ChooseTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HvH-Jy-vPO">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="ppU-zV-2lC"/>
@@ -156,14 +155,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5002" y="-625"/>
+            <point key="canvasLocation" x="1675" y="305"/>
         </scene>
         <!--Search View Controller-->
         <scene sceneID="PqT-ua-W6V">
             <objects>
                 <viewController id="o5t-RR-tBo" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aLf-9i-MQn">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="6fn-jt-ZCv"/>
@@ -171,7 +170,6 @@
                     <navigationItem key="navigationItem" id="4gr-jb-nT0"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ciq-Pd-2ja"/>
-                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="mqd-ax-H7Q"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="6q5-Hq-145"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="b9t-dY-jAL"/>
                         <segue destination="0eG-FI-KSj" kind="show" identifier="showComments" id="czo-Nq-UiO"/>
@@ -190,7 +188,7 @@
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6h4-M5-0GO">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -211,7 +209,7 @@
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7OY-0B-bIE">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -228,14 +226,13 @@
             <objects>
                 <viewController title="Home" id="PaH-jC-wog" customClass="HomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vNu-jc-DsV">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="fFL-ma-LwI"/>
                     </view>
                     <navigationItem key="navigationItem" title="Soundbrew" id="DQE-st-WjY"/>
                     <connections>
-                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="Tm4-fE-iLf"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="SpB-6h-026"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="hAI-d0-wwO"/>
@@ -256,7 +253,7 @@
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="RJw-UZ-yLi">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -274,7 +271,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="k7A-1j-YbY" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="bWL-nF-ajR">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -295,7 +292,7 @@
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Qsl-YE-fca">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -319,10 +316,8 @@
         <image name="search_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZJ9-R5-Hqk"/>
         <segue reference="wBb-Ll-LfM"/>
         <segue reference="eW3-lv-tSJ"/>
-        <segue reference="uNc-Xt-ZBj"/>
         <segue reference="Mz5-gw-jR1"/>
         <segue reference="vKf-hT-VHa"/>
         <segue reference="Lzr-CP-43Y"/>

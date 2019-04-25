@@ -12,13 +12,14 @@
 		F203C76822544E730050F113 /* Payment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76722544E720050F113 /* Payment.swift */; };
 		F203C76A225467A80050F113 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F203C769225467A80050F113 /* StoreKit.framework */; };
 		F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* SoundArtImage.swift */; };
-		F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */; };
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
 		F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */; };
 		F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23C621E21DC38E6005C9FF0 /* Login.storyboard */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
+		F24F2B722271496A006D1CB7 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B712271496A006D1CB7 /* ShareViewController.swift */; };
+		F24F2B74227156DC006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B73227156DB006D1CB7 /* GoogleService-Info.plist */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
 		F2689871215AEF9000C21663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2689870215AEF9000C21663 /* Assets.xcassets */; };
@@ -27,8 +28,7 @@
 		F268988A215AEF9000C21663 /* soundbrewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689889215AEF9000C21663 /* soundbrewUITests.swift */; };
 		F268989C215AF88200C21663 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989B215AF88200C21663 /* Color.swift */; };
 		F268989E215AF8F100C21663 /* UIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989D215AF8F100C21663 /* UIElement.swift */; };
-		F26898A0215AFF8200C21663 /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268989F215AFF8200C21663 /* TagTableViewCell.swift */; };
-		F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A1215B2C9100C21663 /* TagsViewController.swift */; };
+		F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */; };
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
 		F272C2C22267D81F006CDF27 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272C2C12267D81F006CDF27 /* Comment.swift */; };
@@ -82,13 +82,14 @@
 		F203C76722544E720050F113 /* Payment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payment.swift; sourceTree = "<group>"; };
 		F203C769225467A80050F113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F203C76B225D7ED80050F113 /* SoundArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundArtImage.swift; sourceTree = "<group>"; };
-		F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
 		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		F23C621E21DC38E6005C9FF0 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
 		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
+		F24F2B712271496A006D1CB7 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		F24F2B73227156DB006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986E215AEF8F00C21663 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -103,8 +104,7 @@
 		F268988B215AEF9000C21663 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F268989B215AF88200C21663 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		F268989D215AF8F100C21663 /* UIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIElement.swift; sourceTree = "<group>"; };
-		F268989F215AFF8200C21663 /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
-		F26898A1215B2C9100C21663 /* TagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
+		F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ChooseTagsViewController.swift; path = ../../Tags/ChooseTagsViewController.swift; sourceTree = "<group>"; };
 		F26898A5215B527900C21663 /* Sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
 		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
@@ -238,16 +238,17 @@
 		F2689868215AEF8F00C21663 /* soundbrew */ = {
 			isa = PBXGroup;
 			children = (
+				F24F2B73227156DB006D1CB7 /* GoogleService-Info.plist */,
 				F26898F0216B874C00C21663 /* soundbrew.entitlements */,
 				F2689875215AEF9000C21663 /* Info.plist */,
-				F20E70B4217EE26C00D70D22 /* GoogleService-Info.plist */,
 				F2689870215AEF9000C21663 /* Assets.xcassets */,
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F203C76722544E720050F113 /* Payment.swift */,
+				F268992A21753A3B00C21663 /* Tag.swift */,
+				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2EA6F51220BDE89007FA614 /* Player */,
-				F2E5081821F95D0700985E34 /* Tags */,
 				F2689899215AF7FB00C21663 /* Sound */,
 				F268989A215AF87200C21663 /* UI */,
 			);
@@ -287,8 +288,9 @@
 			children = (
 				F268989B215AF88200C21663 /* Color.swift */,
 				F268989D215AF8F100C21663 /* UIElement.swift */,
-				F2EA8579224C0621005D6153 /* Home */,
-				F2EA8576224963AA005D6153 /* Search */,
+				F24F2B712271496A006D1CB7 /* ShareViewController.swift */,
+				F2EA8577224BFE4A005D6153 /* HomeViewController.swift */,
+				F2E5081B21FFC5A200985E34 /* SearchViewController.swift */,
 				F28A985C2227CF2E00C96EED /* Comment */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
@@ -307,16 +309,6 @@
 			path = Comment;
 			sourceTree = "<group>";
 		};
-		F2E5081821F95D0700985E34 /* Tags */ = {
-			isa = PBXGroup;
-			children = (
-				F268992A21753A3B00C21663 /* Tag.swift */,
-				F268989F215AFF8200C21663 /* TagTableViewCell.swift */,
-				F26898A1215B2C9100C21663 /* TagsViewController.swift */,
-			);
-			path = Tags;
-			sourceTree = "<group>";
-		};
 		F2EA6F51220BDE89007FA614 /* Player */ = {
 			isa = PBXGroup;
 			children = (
@@ -328,28 +320,13 @@
 			path = Player;
 			sourceTree = "<group>";
 		};
-		F2EA8576224963AA005D6153 /* Search */ = {
-			isa = PBXGroup;
-			children = (
-				F2E5081B21FFC5A200985E34 /* SearchViewController.swift */,
-			);
-			path = Search;
-			sourceTree = "<group>";
-		};
-		F2EA8579224C0621005D6153 /* Home */ = {
-			isa = PBXGroup;
-			children = (
-				F2EA8577224BFE4A005D6153 /* HomeViewController.swift */,
-			);
-			path = Home;
-			sourceTree = "<group>";
-		};
 		F2F8B99421DBEF2D0024AFB6 /* New Sound */ = {
 			isa = PBXGroup;
 			children = (
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
 				F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
+				F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";
@@ -357,7 +334,6 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
@@ -454,6 +430,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
 							com.apple.iCloud = {
 								enabled = 0;
 							};
@@ -494,9 +473,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F20E70B5217EE26C00D70D22 /* GoogleService-Info.plist in Resources */,
 				F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */,
 				F2689871215AEF9000C21663 /* Assets.xcassets in Resources */,
+				F24F2B74227156DC006D1CB7 /* GoogleService-Info.plist in Resources */,
 				F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */,
 				F268986F215AEF8F00C21663 /* Main.storyboard in Resources */,
 			);
@@ -547,6 +526,7 @@
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/DeckTransition/DeckTransition.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/MessageViewController/MessageViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
@@ -561,13 +541,14 @@
 				"${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftVideoGenerator/SwiftVideoGenerator.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
-				"${BUILT_PRODUCTS_DIR}/TagListView/TagListView.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DeckTransition.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
@@ -582,7 +563,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftVideoGenerator.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TagListView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -644,6 +625,7 @@
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
+				F24F2B722271496A006D1CB7 /* ShareViewController.swift in Sources */,
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SearchViewController.swift in Sources */,
@@ -655,10 +637,9 @@
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F272C2C42267DB46006CDF27 /* CommentTableViewCell.swift in Sources */,
-				F26898A0215AFF8200C21663 /* TagTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
-				F26898A2215B2C9100C21663 /* TagsViewController.swift in Sources */,
+				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				F272C2C22267D81F006CDF27 /* Comment.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,

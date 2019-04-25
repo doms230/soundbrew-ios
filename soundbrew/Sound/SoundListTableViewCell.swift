@@ -52,12 +52,6 @@ class SoundListTableViewCell: UITableViewCell {
         return line
     }()
     
-    /*lazy var soundOrderSegment: UISegmentedControl = {
-        let segment = UISegmentedControl(items: ["New", "Popular"])
-        segment.tintColor = color.black()
-        return segment
-    }()*/
-    
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
         return image
@@ -120,7 +114,6 @@ class SoundListTableViewCell: UITableViewCell {
                 make.height.width.equalTo(100)
                 make.top.equalTo(self)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-               // make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
@@ -145,14 +138,12 @@ class SoundListTableViewCell: UITableViewCell {
                 make.height.width.equalTo(25)
                 make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(soundTitle)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             soundPlays.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundPlaysImage).offset(2)
                 make.left.equalTo(soundPlaysImage.snp.right)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             dividerLine.snp.makeConstraints { (make) -> Void in
@@ -161,6 +152,31 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            
+            break
+            
+        case "shareReuse":
+            self.addSubview(menuButton)
+            self.addSubview(soundArtImage)
+            self.addSubview(soundTitle)
+            
+            soundArtImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(25)
+                make.top.equalTo(self)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            menuButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.top.equalTo(soundArtImage)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            soundTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
             }
             
             break
@@ -177,17 +193,8 @@ class SoundListTableViewCell: UITableViewCell {
             break
             
         case "filterSoundsReuse":
-            //self.addSubview(soundOrderSegment)
             self.addSubview(newButton)
             self.addSubview(popularButton)
-            
-            /*soundOrderSegment.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(150)
-                make.height.equalTo(30)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }*/
             
             newButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)

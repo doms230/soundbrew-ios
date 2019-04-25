@@ -10,8 +10,66 @@ PODS:
     - AppCenter/Core
   - Bolts/Tasks (1.9.0)
   - DeckTransition (2.1.0)
+  - Firebase/Core (5.20.1):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.8.0)
+  - Firebase/CoreOnly (5.20.1):
+    - FirebaseCore (= 5.4.1)
+  - Firebase/DynamicLinks (5.20.1):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (= 3.4.3)
+  - FirebaseAnalytics (5.8.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseInstanceID (~> 3.8)
+    - GoogleAppMeasurement (= 5.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - FirebaseAnalyticsInterop (1.2.0)
+  - FirebaseCore (5.4.1):
+    - GoogleUtilities/Environment (~> 5.2)
+    - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseDynamicLinks (3.4.3):
+    - FirebaseAnalytics (~> 5.1)
+    - FirebaseAnalyticsInterop (~> 1.0)
+    - FirebaseCore (~> 5.2)
+  - FirebaseInstanceID (3.8.1):
+    - FirebaseCore (~> 5.2)
+    - GoogleUtilities/Environment (~> 5.2)
+    - GoogleUtilities/UserDefaults (~> 5.2)
+  - GoogleAppMeasurement (5.8.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - GoogleUtilities/AppDelegateSwizzler (5.5.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.5.0)
+  - GoogleUtilities/Logger (5.5.0):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.5.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.5.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (5.5.0)"
+  - GoogleUtilities/Reachability (5.5.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (5.5.0):
+    - GoogleUtilities/Logger
   - Kingfisher (5.3.1)
   - MessageViewController (0.2.1)
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
   - NVActivityIndicatorView (4.7.0):
     - NVActivityIndicatorView/Presenter (= 4.7.0)
   - NVActivityIndicatorView/Presenter (4.7.0)
@@ -34,12 +92,13 @@ PODS:
   - SnapSDK/SCSDKLoginKit (1.2.2)
   - SwiftVideoGenerator (1.2.6)
   - SwiftyJSON (4.3.0)
-  - TagListView (1.3.2)
 
 DEPENDENCIES:
   - Alamofire
   - AppCenter
   - DeckTransition
+  - Firebase/Core
+  - Firebase/DynamicLinks
   - Kingfisher
   - MessageViewController
   - NVActivityIndicatorView
@@ -49,7 +108,6 @@ DEPENDENCIES:
   - SnapSDK
   - SwiftVideoGenerator
   - SwiftyJSON
-  - TagListView
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -57,8 +115,17 @@ SPEC REPOS:
     - AppCenter
     - Bolts
     - DeckTransition
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseAnalyticsInterop
+    - FirebaseCore
+    - FirebaseDynamicLinks
+    - FirebaseInstanceID
+    - GoogleAppMeasurement
+    - GoogleUtilities
     - Kingfisher
     - MessageViewController
+    - nanopb
     - NVActivityIndicatorView
     - Parse
     - PINCache
@@ -68,15 +135,23 @@ SPEC REPOS:
     - SnapSDK
     - SwiftVideoGenerator
     - SwiftyJSON
-    - TagListView
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   AppCenter: 02c5efe08d3bbab5421ae41d5f7aa7238906b817
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   DeckTransition: ca707456e3d83928c895fed6f458cbf68c5cac84
+  Firebase: 2f5235e62f141cb86181c3af0dfe4509706351ac
+  FirebaseAnalytics: fd72a26bf8dac84cefba2f0864366f718555a5b0
+  FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
+  FirebaseCore: f1a9a8be1aee4bf71a2fc0f4096df6788bdfda61
+  FirebaseDynamicLinks: f7a8717e2c7ea652923882a2d60b0045d6fd99d5
+  FirebaseInstanceID: a122b0c258720cf250551bb2bedf48c699f80d90
+  GoogleAppMeasurement: 1624046ab1bcc5e170061a56ef5679000b079c8e
+  GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   Kingfisher: d9e7e0b209b59b8f9873aa2f37654e81a7beea51
   MessageViewController: 63ef2719d82c91d949ad52e101f049028a5a0611
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   NVActivityIndicatorView: b19ddab2576f805cbe0fb2306cba3476e09a1dea
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
@@ -86,8 +161,7 @@ SPEC CHECKSUMS:
   SnapSDK: 16d505e0e5a9340c49ce767f3131f4af76fe29e8
   SwiftVideoGenerator: 461ef57a52d1258160ba9d58ed90813c89b192b9
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
-  TagListView: 0c7e9c26b9aff858224ee6b155f5fcacd9e27c83
 
-PODFILE CHECKSUM: ce5dc7ceddd0f4ca768c0d5137ebe1f3670a4b93
+PODFILE CHECKSUM: 1a9cac43a58ba2ef8e6112ae32fa18e7930aedda
 
 COCOAPODS: 1.5.3

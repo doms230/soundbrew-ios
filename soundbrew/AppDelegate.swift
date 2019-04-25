@@ -15,6 +15,7 @@ import AppCenter
 import AppCenterAnalytics
 import AppCenterCrashes
 import StoreKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,12 +27,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().barTintColor = .white
         UITabBar.appearance().tintColor = Color().black()
         
-        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[ MSAnalytics.self, MSCrashes.self])
+        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSAnalytics.self, MSCrashes.self])
+        
+        FirebaseApp.configure()
 
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
-            $0.server = "https://soundbrew.herokuapp.com/parse"
+            $0.server = "https://www.soundbrew.app/parse"
         }
         Parse.initialize(with: configuration)
 
@@ -46,6 +49,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let storyboard = UIStoryboard(name: "Login", bundle: nil)
             let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
             window?.rootViewController = controller
+            
+        } else {
+            print("called this")
         }
         
        // SKPaymentQueue.default().add(self)
@@ -54,8 +60,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        MSAnalytics.trackEvent("app opened")
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
+            if let error = error {
+                print("dynamic link error: \(error.localizedDescription)")
+                
+            } else {
+                if let url = dynamiclink?.url {
+                    self.goToSongWithId(url.lastPathComponent)
+                }
+            }
+        }
+        
+        return handled
+    }
+    
+    //called if user is opening for the first time
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
+        return application(app, open: url,
+                           sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                           annotation: "")
+    }
+    
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
+            if let url = dynamicLink.url {
+                print(url.lastPathComponent)
+            }
+            //print(dynamicLink.url ?? "d")
+            return true
+            
+        } else {
+            print("first open: couldn't open dynamic link")
+        }
+        return false
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -129,6 +168,15 @@ extension AppDelegate: SKPaymentTransactionObserver {
     
     func handleDeferredState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
         print("Purchase deferred for product id: \(transaction.payment.productIdentifier)")
+    }
+    
+    func goToSongWithId(_ soundObjectId: String) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let tabBarController = storyboard.instantiateViewController(withIdentifier: "main") as! UITabBarController
+        let nav = tabBarController.viewControllers![0] as! UINavigationController
+        let homeViewController = nav.topViewController as! HomeViewController
+        homeViewController.receivedSoundObjectId = soundObjectId
+        self.window?.rootViewController = tabBarController
     }
 }
 

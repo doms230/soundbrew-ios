@@ -21,7 +21,7 @@ target 'soundbrew' do
   pod 'Parse'
   pod 'NVActivityIndicatorView'
   #pod 'SidebarOverlay'
-  pod 'TagListView'
+  #pod 'TagListView'
   pod 'Kingfisher'
   pod 'Alamofire'
   pod 'SwiftyJSON'
@@ -31,4 +31,6 @@ target 'soundbrew' do
   pod 'AppCenter'
   pod 'SwiftVideoGenerator'
   pod 'MessageViewController'
+  pod 'Firebase/Core'
+  pod 'Firebase/DynamicLinks'
 end

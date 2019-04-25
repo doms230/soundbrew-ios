@@ -47,7 +47,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: TagsViewController = segue.destination as! TagsViewController
+        let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
         viewController.tagDelegate = self
         if let tags = tagsToUpdateInTagsViewController {
             viewController.chosenTags = tags

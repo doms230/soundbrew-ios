@@ -18,6 +18,7 @@ import SwiftVideoGenerator
 import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
+import FirebaseDynamicLinks
 
 class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
 
@@ -96,14 +97,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         
         if let artistName = sound.artist?.name {
             self.artistName.setTitle(artistName, for: .normal)
-            if let artistVerified = sound.artist?.isVerified {
-                if artistVerified {
-                    self.verifiedCheck.image = UIImage(named: "check")
-                }
-                
-            } else {
-                self.verifiedCheck.image = nil
-            }
             
         } else {
             let placeHolder = ""
@@ -242,11 +235,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         })
     }
     
-    lazy var verifiedCheck: UIImageView = {
-        let image = UIImageView()
-        return image
-    }()
-    
     lazy var tagButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "tag"), for: .normal)
@@ -299,8 +287,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }
         alertController.addAction(instagramAction)
         
-        let musicVideoAction = UIAlertAction(title: "Save Music Snippet", style: .default) { (_) -> Void in
-            self.checkAccessToPhotoLibrary()
+        let musicVideoAction = UIAlertAction(title: "Copy Link", style: .default) { (_) -> Void in
+            self.copyLink()
         }
         alertController.addAction(musicVideoAction)
         
@@ -540,6 +528,32 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     //mark: share
     let shareAppURL = "https://www.soundbrew.app/ios"
     
+    func copyLink() {
+        guard let link = URL(string: "https://soundbrew.app/\(sound!.objectId!)") else { return }
+        let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
+        linkBuilder!.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.soundbrew.soundbrew-artists")
+        linkBuilder!.iOSParameters!.appStoreID = "1438851832"
+        linkBuilder!.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        linkBuilder!.socialMetaTagParameters!.title = "\(self.sound!.title!)"
+        linkBuilder!.socialMetaTagParameters!.descriptionText = "Listen to \(self.sound!.title!) by \(self.sound!.artist!.name!) on Soundbrew!"
+        linkBuilder!.socialMetaTagParameters!.imageURL = URL(string: self.sound!.artURL)
+        linkBuilder!.shorten() { url, warnings, error in
+            if let error = error {
+                print(error)
+                
+            } else if let url = url {
+                UIPasteboard.general.string = "\(url)"
+                self.uiElement.showAlert("Success", message: "Link copied.", target: self)
+            }
+            
+            //guard let url = url, error != nil else { return }
+
+        }
+        //guard let longDynamicLink = linkBuilder!.url else { return }
+        //print("The long URL is: \(longDynamicLink)")
+    }
+    
     func imageForSharing() -> UIImage {
         let soundArtImage = SoundArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
         soundArtImage.songArt.image = sound?.artImage
@@ -663,19 +677,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 self.sound!.artist?.name = artistName
                 
                 self.sound!.artist?.city = user["city"] as? String
-                
-                if let artistVerified = user["artistVerified"] as? Bool {
-                    self.sound!.artist?.isVerified = artistVerified
-                    if artistVerified {
-                        self.verifiedCheck.image = UIImage(named: "check")
-                        
-                    } else {
-                        self.verifiedCheck.image = nil
-                    }
-                    
-                } else {
-                    self.verifiedCheck.image = nil
-                }
             }
         }
     }

@@ -2,41 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
-	<string>ca-app-pub-3940256099942544/2934735716</string>
-	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
-	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>799130960882-se1tlrnd4g7lfvs8ctglvdj8jfunec3a.apps.googleusercontent.com</string>
+	<string>510041293074-lbfmkp03jk747c0hprqn44lvao2dsdao.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.799130960882-se1tlrnd4g7lfvs8ctglvdj8jfunec3a</string>
+	<string>com.googleusercontent.apps.510041293074-lbfmkp03jk747c0hprqn44lvao2dsdao</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDaxw5AhVpthTQtYfyxt1xNgauzMB1CuTA</string>
+	<string>AIzaSyDooCBpxFx6X5VLhgmyRud7zwBkwZhiOGU</string>
 	<key>GCM_SENDER_ID</key>
-	<string>799130960882</string>
+	<string>510041293074</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.soundbrew.soundbrew</string>
+	<string>com.soundbrew.soundbrew-artists</string>
 	<key>PROJECT_ID</key>
-	<string>soundbrew-3b8a4</string>
+	<string>soundbrew-artists</string>
 	<key>STORAGE_BUCKET</key>
-	<string>soundbrew-3b8a4.appspot.com</string>
+	<string>soundbrew-artists.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<true></true>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
 	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false></false>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:799130960882:ios:062430943c78ef89</string>
+	<string>1:510041293074:ios:185ff0991a41bdcd</string>
 	<key>DATABASE_URL</key>
-	<string>https://soundbrew-3b8a4.firebaseio.com</string>
-	<key>ADMOB_APP_ID</key>
-	<string>ca-app-pub-9150756002517285~9630230904</string>
+	<string>https://soundbrew-artists.firebaseio.com</string>
 </dict>
 </plist>

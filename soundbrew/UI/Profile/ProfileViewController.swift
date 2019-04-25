@@ -60,7 +60,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
             let soundType = soundList.soundType!
-            //print(tags!.count)
             soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: self.artist?.objectId, tags: tags, searchText: nil)
         }
     }
@@ -127,7 +126,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         self.tableView.separatorStyle = .none
-        //tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) -> Void in
@@ -187,31 +185,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         cell.username.text = username
                     }
                 }
-                
-                //social buttons are recreated multiple times, so have to check whether not they've already been created.
-                /*if artist.instagramUsername != nil && instagramButton == nil {
-                    if artist.instagramUsername! != "" {
-                        addSocialButton(cell.socialScrollview, buttonImageName: "instagram_logo")
-                    }
-                }
-                
-                if artist.twitterUsername != nil && twitterButton == nil {
-                    if artist.twitterUsername! != "" {
-                        addSocialButton(cell.socialScrollview, buttonImageName: "twitter_logo")
-                    }
-                }
-                
-                if artist.snapchatUsername != nil && snapchatButton == nil {
-                    if artist.snapchatUsername! != "" {
-                        addSocialButton(cell.socialScrollview, buttonImageName: "snapchat_logo")
-                    }
-                }
-                
-                if artist.website != nil && websiteButton == nil {
-                    if artist.website! != "" {
-                        addSocialButton(cell.socialScrollview, buttonImageName: "website_logo")
-                    }
-                }*/
                 
                 cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
                 if let currentUser = PFUser.current() {

@@ -17,7 +17,6 @@ import Parse
 import DeckTransition
 
 class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
-    
     var target: UIViewController!
     var tableView: UITableView?
     var sounds = [Sound]()
@@ -280,7 +279,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             
         case "search":
             loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: nil, searchText: self.searchText)
-            break 
+            break
+            
+        case "link":
+            break
             
         default:
             break
@@ -330,6 +332,39 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                 }
             }
         }
+    }
+    
+    func newSoundObject(_ object: PFObject) -> Sound {
+        let title = object["title"] as! String
+        let art = object["songArt"] as! PFFileObject
+        let audio = object["audioFile"] as! PFFileObject
+        let tags = object["tags"] as! Array<String>
+        let userId = object["userId"] as! String
+        var plays: Int?
+        if let soundPlays = object["plays"] as? Int {
+            plays = soundPlays
+        }
+        
+        var likes: Int?
+        if let soundPlays = object["likes"] as? Int {
+            likes = soundPlays
+        }
+        
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+        
+        var relevancyScore = 0
+        if let selectedTagsForFiltering = self.selectedTagsForFiltering {
+            for tag in tags {
+                let selectedTagNames = selectedTagsForFiltering.map {$0.name!}
+                if selectedTagNames.contains(tag) {
+                    relevancyScore += 1
+                }
+            }
+        }
+        
+        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes)
+        
+        return sound
     }
     
     //mark: tags filter
@@ -395,7 +430,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     }
 
     func prepareToShowTags(_ segue: UIStoryboardSegue) {
-        let viewController = segue.destination as! TagsViewController
+        let viewController = segue.destination as! ChooseTagsViewController
         viewController.tagDelegate = self
         if let tags = self.selectedTagsForFiltering {
             viewController.chosenTags = tags
@@ -450,6 +485,21 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     }
     
     //mark: data
+    func loadSound(_ objectId: String) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                let sound = self.newSoundObject(object)
+                self.sounds.append(sound)
+                self.updateSounds()
+            }
+        }
+    }
+    
     //To insure that data isn't loaded again when user is at bottom of screen
     var isUpdatingData = false
     var thereIsNoMoreDataToLoad = false
@@ -458,6 +508,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         
         isUpdatingData = true
         let query = PFQuery(className: "Post")
+        
         if let likeIds = likeIds {
             query.whereKey("objectId", containedIn: likeIds)
         }
@@ -491,38 +542,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        let title = object["title"] as! String
-                        let art = object["songArt"] as! PFFileObject
-                        let audio = object["audioFile"] as! PFFileObject
-                        let tags = object["tags"] as! Array<String>
-                        let userId = object["userId"] as! String
-                        var plays: Int?
-                        if let soundPlays = object["plays"] as? Int {
-                            plays = soundPlays
-                        }
-                        
-                        var likes: Int?
-                        if let soundPlays = object["likes"] as? Int {
-                            likes = soundPlays
-                        }
-                        
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
-                        
-                        var relevancyScore = 0
-                        if let selectedTagsForFiltering = self.selectedTagsForFiltering {
-                            for tag in tags {
-                                let selectedTagNames = selectedTagsForFiltering.map {$0.name!}
-                                if selectedTagNames.contains(tag) {
-                                    relevancyScore += 1
-                                }
-                            }
-                        }
-                        
-                        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes)
-                        
+                        let sound = self.newSoundObject(object)
                         self.sounds.append(sound)
                     }
-                    
                     self.updateSounds()
                     
                 } else {
