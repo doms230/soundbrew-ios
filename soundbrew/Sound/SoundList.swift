@@ -101,7 +101,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                 miniPlayerView?.isHidden = true 
             }
             
-            setUpTableView()
+            //setUpTableView()
         }
     }
     

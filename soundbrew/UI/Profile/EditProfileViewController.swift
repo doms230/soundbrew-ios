@@ -94,14 +94,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 7
+            return 4
             
-        } else if section == 3 {
+        } else if section == 4 {
             return 9
         }
         
@@ -169,7 +169,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 break
                 
-            case 3:
+            /*case 3:
                 instagramText = cell.editProfileInput
                 inputTitle = "Instagram @"
                 if let instagram = artist?.instagramUsername {
@@ -191,14 +191,17 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 if let snapchat = artist?.snapchatUsername {
                     inputText = snapchat
                 }
-                break
+                break*/
                 
-            case 6:
+            case 3:
                 websiteText = cell.editProfileInput
                 inputTitle = "Website"
                 if let website = artist?.website {
                     inputText = website
                 }
+                
+            case 4:
+                break
                 
             default:
                 break
@@ -209,7 +212,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell.editProfileInput.text = inputText
             break
             
-        /*case 2:
+        case 2:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .gray
@@ -221,9 +224,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if let bio = artist?.bio {
                 cell.editBioText.text = bio
             }
-            break*/
+            break
             
-        case 2:
+        case 3:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
@@ -236,7 +239,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell.editProfileInput.text = artist!.email
             break
             
-        case 3:
+        case 4:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
@@ -256,7 +259,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         } else if indexPath.section == 2 {
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            self.performSegue(withIdentifier: "showDetailEditInfo", sender: self)
+            self.performSegue(withIdentifier: "showEditBio", sender: self)
         }
     }
     
@@ -342,15 +345,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 
                 user["city"] = self.cityText.text
                 
-                var igText = self.instagramText.text
+                /*var igText = self.instagramText.text
                 if igText!.starts(with: "@") {
                     igText?.removeFirst()
                 }
                 user["instagramHandle"] = igText
                 user["twitterHandle"] = self.twitterText.text
-                user["snapchatHandle"] = self.snapchatText.text!
+                user["snapchatHandle"] = self.snapchatText.text!*/
                 user["otherLink"] = self.websiteText.text
-                //user["bio"] = self.bioLabel.text
+                user["bio"] = self.bioLabel.text
                 user["email"] = self.emailText.text
                 
                 if let newUserImage = self.newProfileImageFile {
@@ -376,7 +379,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                                 artist.city = city
                             }
                             
-                            if let instagramUsername = user["instagramHandle"] as? String {
+                           /* if let instagramUsername = user["instagramHandle"] as? String {
                                 artist.instagramUsername = instagramUsername
                             }
                             
@@ -386,7 +389,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             
                             if let snapchatUsername = user["snapchatHandle"] as? String {
                                 artist.snapchatUsername = snapchatUsername
-                            }
+                            }*/
                             
                             if let website = user["otherLink"] as? String {
                                 artist.website = website

@@ -63,7 +63,7 @@ class MiniPlayerView: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.isHidden = true
         self.backgroundColor = .white
         self.layer.borderWidth = 1
         self.layer.borderColor = color.darkGray().cgColor
@@ -74,7 +74,7 @@ class MiniPlayerView: UIButton {
         super.init(coder: aDecoder)
     }
     
-    override func updateConstraints() {        
+    override func updateConstraints() {
         if(shouldSetupConstraints) {
             self.addSubview(playBackButton)
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
@@ -120,6 +120,7 @@ class MiniPlayerView: UIButton {
     
     @objc func didReceiveSound() {
         setSound()
+        self.isHidden = false 
     }
     
     @objc func playbackWasPaused() {

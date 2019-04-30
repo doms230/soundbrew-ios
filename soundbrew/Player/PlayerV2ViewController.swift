@@ -266,6 +266,9 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     @objc func didPressLikeButton(_ sender: UIButton) {
         if PFUser.current() != nil {
             manageLikeForCurrentSound()
+            
+        } else {
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
         }
     }
     
@@ -287,8 +290,10 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }
         alertController.addAction(instagramAction)
         
-        let musicVideoAction = UIAlertAction(title: "Copy Link", style: .default) { (_) -> Void in
-            self.copyLink()
+        let musicVideoAction = UIAlertAction(title: "More Options", style: .default) { (_) -> Void in
+            if let sound = self.sound {
+                self.uiElement.createDynamicLink("sound", sound: sound, artist: nil, target: self)
+            }
         }
         alertController.addAction(musicVideoAction)
         
@@ -513,14 +518,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        commentButton.addTarget(self, action: #selector(didPressCommentButton(_:)), for: .touchUpInside)
+        /*commentButton.addTarget(self, action: #selector(didPressCommentButton(_:)), for: .touchUpInside)
         self.view.addSubview(commentButton)
         commentButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
             make.top.equalTo(self.likeButton)
             //make.left.equalTo(self.skipButton.snp.right).offset(uiElement.leftOffset)
             make.right.equalTo(self.likeButton.snp.left).offset(uiElement.rightOffset)
-        }
+        }*/
         
         setSound()
     }
@@ -528,121 +533,11 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     //mark: share
     let shareAppURL = "https://www.soundbrew.app/ios"
     
-    func copyLink() {
-        guard let link = URL(string: "https://soundbrew.app/\(sound!.objectId!)") else { return }
-        let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
-        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
-        linkBuilder!.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.soundbrew.soundbrew-artists")
-        linkBuilder!.iOSParameters!.appStoreID = "1438851832"
-        linkBuilder!.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-        linkBuilder!.socialMetaTagParameters!.title = "\(self.sound!.title!)"
-        linkBuilder!.socialMetaTagParameters!.descriptionText = "Listen to \(self.sound!.title!) by \(self.sound!.artist!.name!) on Soundbrew!"
-        linkBuilder!.socialMetaTagParameters!.imageURL = URL(string: self.sound!.artURL)
-        linkBuilder!.shorten() { url, warnings, error in
-            if let error = error {
-                print(error)
-                
-            } else if let url = url {
-                UIPasteboard.general.string = "\(url)"
-                self.uiElement.showAlert("Success", message: "Link copied.", target: self)
-            }
-            
-            //guard let url = url, error != nil else { return }
-
-        }
-        //guard let longDynamicLink = linkBuilder!.url else { return }
-        //print("The long URL is: \(longDynamicLink)")
-    }
-    
     func imageForSharing() -> UIImage {
         let soundArtImage = SoundArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
         soundArtImage.songArt.image = sound?.artImage
         soundArtImage.updateConstraints()
         return soundArtImage.asImage()
-    }
-    
-    func prepareAudioFileForSharing() {
-        self.startAnimating()
-        
-        do {
-            let audioURL = URL(string: sound!.audioURL)
-            let audioData = sound!.audioData
-            
-            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
-            try audioData?.write(to: audioFileURL, options: .atomic)
-            
-            generateVideoFromAudioAndArtFile(audioFileURL)
-            
-        } catch let error {
-            self.stopAnimating()
-            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
-        }
-    }
-    
-    func generateVideoFromAudioAndArtFile(_ audioFileURL: URL) {
-        let musicVideoImage = imageForSharing()
-        VideoGenerator.current.fileName = "SingleMovieFileName"
-        VideoGenerator.current.shouldOptimiseImageForVideo = true
-        VideoGenerator.current.maxVideoLengthInSeconds = 30
-        VideoGenerator.current.videoBackgroundColor = .black
-        VideoGenerator.current.generate(withImages: [musicVideoImage], andAudios: [audioFileURL], andType: .single, { (progress) in
-            print(progress)
-            
-        }, success: { (url) in
-            print(url)
-            self.stopAnimating()
-            print("absolute String: \(url.absoluteString)")
-            self.saveVideoToUserPhotoLibrary(url)
-            
-        }, failure: { (error) in
-            print(error)
-            self.stopAnimating()
-            self.uiElement.showAlert("Oops", message: "There was an issue creating the music video snippet", target: self)
-        })
-    }
-    
-    func saveVideoToUserPhotoLibrary(_ url: URL) {
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-            
-        }) { saved, error in
-            if saved {
-                let alertController = UIAlertController(title: "Your video was successfully saved to your photos library.", message: nil, preferredStyle: .alert)
-                let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alertController.addAction(defaultAction)
-                self.present(alertController, animated: true, completion: nil)
-                self.stopAnimating()
-            }
-        }
-    }
-    
-    func checkAccessToPhotoLibrary() {
-        switch PHPhotoLibrary.authorizationStatus() {
-        case .authorized:
-            self.prepareAudioFileForSharing()
-            break
-            
-        case .denied:
-            self.uiElement.permissionDenied("You Denied Access", message: "Soundbrew needs access to your photo library to create a music video snippet. ", target: self)
-            break
-            
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization({ (newStatus) in
-                if newStatus == PHAuthorizationStatus.authorized {
-                    self.prepareAudioFileForSharing()
-                    
-                } else {
-                    self.uiElement.permissionDenied("You Denied Access", message: "Soundbrew needs access to your photo library to create a music video snippet. ", target: self)
-                }
-            })
-            break
-            
-        case .restricted:
-            break
-            
-        default:
-            break
-        }
     }
     
     func shareToSnapchat() {

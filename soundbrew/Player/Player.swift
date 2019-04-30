@@ -147,7 +147,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 print(error)
                 
             } else if let audioData = audioData {
-                print(audioData)
                 if prepareAndPlay {
                     self.prepareAndPlay(audioData)
                 }
@@ -315,6 +314,44 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     //mark: data
+    func loadDynamicLinkSound(_ objectId: String) {
+        let query = PFQuery(className:"Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                let sound = [self.newSoundObject(object)]
+                self.sounds = sound
+                self.setUpNextSong(false, at: 0)
+            }
+        }
+    }
+    
+    func newSoundObject(_ object: PFObject) -> Sound {
+        let title = object["title"] as! String
+        let art = object["songArt"] as! PFFileObject
+        let audio = object["audioFile"] as! PFFileObject
+        let tags = object["tags"] as! Array<String>
+        let userId = object["userId"] as! String
+        var plays: Int?
+        if let soundPlays = object["plays"] as? Int {
+            plays = soundPlays
+        }
+        
+        var likes: Int?
+        if let soundPlays = object["likes"] as? Int {
+            likes = soundPlays
+        }
+        
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+        
+        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes)
+        
+        return sound
+    }
+    
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {

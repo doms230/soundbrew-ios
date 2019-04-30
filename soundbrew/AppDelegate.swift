@@ -68,7 +68,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
             } else {
                 if let url = dynamiclink?.url {
-                    self.goToSongWithId(url.lastPathComponent)
+                    if let pathComponents = dynamiclink?.url?.pathComponents {
+                        if pathComponents.contains("sound") {
+                            self.playSound(url: url)
+                            
+                        } else if pathComponents.contains("profile") {
+                            self.loadUserInfoFromCloud(url.lastPathComponent)
+                        }
+                    }
                 }
             }
         }
@@ -86,9 +93,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
             if let url = dynamicLink.url {
-                print(url.lastPathComponent)
+                playSound(url: url)
             }
-            //print(dynamicLink.url ?? "d")
+            
             return true
             
         } else {
@@ -170,13 +177,78 @@ extension AppDelegate: SKPaymentTransactionObserver {
         print("Purchase deferred for product id: \(transaction.payment.productIdentifier)")
     }
     
-    func goToSongWithId(_ soundObjectId: String) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let tabBarController = storyboard.instantiateViewController(withIdentifier: "main") as! UITabBarController
-        let nav = tabBarController.viewControllers![0] as! UINavigationController
-        let homeViewController = nav.topViewController as! HomeViewController
-        homeViewController.receivedSoundObjectId = soundObjectId
-        self.window?.rootViewController = tabBarController
+    func playSound(url: URL) {
+        let player = Player.sharedInstance
+        let objectId = url.lastPathComponent
+        player.loadDynamicLinkSound(objectId)
+    }
+    
+    func loadUserInfoFromCloud(_ userId: String) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                let username = user["username"] as? String
+                
+                var email: String?
+                if user.objectId! == PFUser.current()!.objectId {
+                    email = user["email"] as? String
+                }
+                
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                
+                if let followerCount = user["followerCount"] as? Int {
+                    artist.followerCount = followerCount
+                }
+                
+                if let name = user["artistName"] as? String {
+                    artist.name = name
+                }
+                
+                if let username = user["username"] as? String {
+                    artist.username = username
+                }
+                
+                if let city = user["city"] as? String {
+                    artist.city = city
+                }
+                
+                if let userImageFile = user["userImage"] as? PFFileObject {
+                    artist.image = userImageFile.url!
+                }
+                
+                if let bio = user["bio"] as? String {
+                    artist.bio = bio
+                }
+                
+                if let artistVerification = user["artistVerification"] as? Bool {
+                    artist.isVerified = artistVerification
+                }
+                
+                if let instagramUsername = user["instagramHandle"] as? String {
+                    artist.instagramUsername = instagramUsername
+                }
+                
+                if let twitterUsername = user["twitterHandle"] as? String {
+                    artist.twitterUsername = twitterUsername
+                }
+                
+                if let snapchatUsername = user["snapchatHandle"] as? String {
+                    artist.snapchatUsername = snapchatUsername
+                }
+                
+                if let website = user["otherLink"] as? String {
+                    artist.website = website
+                }
+                
+                if let currentViewController = self.window?.rootViewController {
+                    currentViewController.performSegue(withIdentifier: "showProfile", sender: currentViewController)
+                }
+            }
+        }
     }
 }
 

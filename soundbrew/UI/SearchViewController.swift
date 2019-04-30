@@ -70,7 +70,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func didSelectSoundAt(row: Int) {
         if let player = soundList.player {
             player.didSelectSoundAt(row)
-            soundList.miniPlayerView?.isHidden = false
+            //soundList.miniPlayerView?.isHidden = false
             tableView.reloadData()
         }
     }
@@ -296,12 +296,15 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
     }
     
-    func searchTags(_ text: String) {
+    func searchTags(_ text: String?) {
         self.searchTags.removeAll()
         
         let query = PFQuery(className: "Tag")
-        query.whereKey("tag", matchesRegex: text.lowercased())
+        if let text = text {
+            query.whereKey("tag", matchesRegex: text.lowercased())
+        }
         query.addDescendingOrder("count")
+        query.limit = 25
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -350,41 +353,44 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func search() {
-        if !searchBar.text!.isEmpty {
-            switch searchType {
-            case tagSearch:
+        switch searchType {
+        case tagSearch:
+            searchBar.placeholder = "Mood, Activity, Genre, City, Anything"
+            if searchBar.text!.isEmpty {
+                searchTags(nil)
+                
+            } else {
                 searchTags(searchBar.text!)
-                break
-                
-            case profileSearch:
-                searchUsers(searchBar.text!)
-                break
-                
-            case soundSearch:
-                soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!)
-                break
-                
-            default:
-                break
             }
+            break
+            
+        case profileSearch:
+            searchBar.placeholder = "Name, Username"
+            searchUsers(searchBar.text!)
+            break
+            
+        case soundSearch:
+            searchBar.placeholder = "Sound Name"
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!)
+            break
+            
+        default:
+            break
         }
     }
     
-    @objc func didPressProfileSoundsButton(_ sender: UIButton) {
+    @objc func didPressSearchTypeButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
             searchType = tagSearch
-            searchBar.placeholder = "Mood, Activity, Genre, City, Anything"
             break
             
         case 1:
             searchType = profileSearch
-            searchBar.placeholder = "Name, Username"
             break
             
         case 2:
             searchType = soundSearch
-            searchBar.placeholder = "Sound Name"
             break
             
         default:
@@ -392,31 +398,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         search()
-        
-        self.tableView.reloadData()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
         searchIsActive = true
-        self.tableView.reloadData()
-        
-        switch searchType {
-        case tagSearch:
-            searchBar.placeholder = "Mood, Activity, Genre, City, Anything"
-            break
-            
-        case profileSearch:
-            searchBar.placeholder = "Name, Username"
-            break
-            
-        case soundSearch:
-            searchBar.placeholder = "Sound Name"
-            break
-            
-        default:
-            break
-        }
+        search()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -435,15 +422,15 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.isSearchActive = true
         
         cell.firstListType.setTitle("Tags", for: .normal)
-        cell.firstListType.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
+        cell.firstListType.addTarget(self, action: #selector(self.didPressSearchTypeButton(_:)), for: .touchUpInside)
         cell.firstListType.tag = 0
         
         cell.secondListType.setTitle("Accounts", for: .normal)
-        cell.secondListType.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
+        cell.secondListType.addTarget(self, action: #selector(self.didPressSearchTypeButton(_:)), for: .touchUpInside)
         cell.secondListType.tag = 1
         
         cell.thirdListType.setTitle("Sounds", for: .normal)
-        cell.thirdListType.addTarget(self, action: #selector(self.didPressProfileSoundsButton(_:)), for: .touchUpInside)
+        cell.thirdListType.addTarget(self, action: #selector(self.didPressSearchTypeButton(_:)), for: .touchUpInside)
         cell.thirdListType.tag = 2
         
         switch searchType {
@@ -483,7 +470,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         usernameQuery.whereKey("artistName", matchesRegex: text.lowercased())
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
-        query.limit = 100
+        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {

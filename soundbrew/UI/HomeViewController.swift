@@ -117,7 +117,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            soundList.miniPlayerView?.isHidden = false
+            //soundList.miniPlayerView?.isHidden = false
             tableView.reloadData()
         }
     }

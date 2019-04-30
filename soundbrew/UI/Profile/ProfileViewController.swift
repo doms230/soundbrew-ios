@@ -5,6 +5,7 @@
 //  Created by Dominic  Smith on 10/11/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
 //
+// mark: button actions, data, tableview, social buttons
 
 import UIKit
 import Parse
@@ -29,14 +30,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let settingsButton = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
-        self.navigationItem.rightBarButtonItem = settingsButton
+        let settingsButton = UIBarButtonItem(image: UIImage(named: "more"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
+        
+        let shareButton = UIBarButtonItem(image: UIImage(named: "share"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+        
+        self.navigationItem.rightBarButtonItems = [settingsButton, shareButton]
         
         if let currentUser = PFUser.current(){
             self.currentUser = currentUser
         }
         
         if artist != nil {
+            if let username = artist?.username {
+                if !username.contains("@") {
+                    self.navigationItem.title = username
+                }
+            }
+            
             self.setUpTableView()
             soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId, tags: nil, searchText: nil)
             
@@ -44,10 +54,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 checkFollowStatus(self.currentUser!)
             }
             
+        } else if currentUser != nil {
+            loadUserInfoFromCloud(currentUser!.objectId!)
+            
         } else {
-            if currentUser != nil {
-                loadUserInfoFromCloud(currentUser!.objectId!)
-            }
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
         }
     }
     
@@ -55,7 +66,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if soundList != nil {
             var tags: Array<Tag>?
             if let soundListTags = soundList.selectedTagsForFiltering {
-                print(soundListTags.count)
                 tags = soundListTags
             }
             
@@ -150,10 +160,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let player = soundList.player {
-            player.didSelectSoundAt(indexPath.row)
-            soundList.miniPlayerView?.isHidden = false
-            tableView.reloadData()
+        if indexPath.section == 3 {
+            if let player = soundList.player {
+                player.didSelectSoundAt(indexPath.row)
+                soundList.miniPlayerView?.isHidden = false
+                tableView.reloadData()
+            }
         }
     }
     
@@ -177,52 +189,39 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.city.text = city
                 }
                 
-                if let username = artist.username {
-                    if username.contains("@") {
-                        cell.username.text = ""
-                        
-                    } else {
-                        cell.username.text = username
-                    }
+                if let bio = artist.bio {
+                    cell.username.text = bio 
                 }
+            }
                 
-                cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
-                if let currentUser = PFUser.current() {
-                    if currentUser.objectId == artist.objectId {
-                        cell.actionButton.setTitle("Edit Profile", for: .normal)
-                        cell.actionButton.backgroundColor = .white
-                        cell.actionButton.layer.borderWidth = 1
-                        cell.actionButton.layer.borderColor = color.darkGray().cgColor
+            cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
+            if PFUser.current()!.objectId == artist?.objectId {
+                cell.actionButton.setTitle("Edit Profile", for: .normal)
+                cell.actionButton.backgroundColor = .white
+                cell.actionButton.layer.borderWidth = 1
+                cell.actionButton.layer.borderColor = color.darkGray().cgColor
+                cell.actionButton.setTitleColor(color.black(), for: .normal)
+                
+            } else {
+                if let isFollowedByCurrentUser = artist!.isFollowedByCurrentUser {
+                    if isFollowedByCurrentUser {
+                        cell.actionButton.setTitle("Following", for: .normal)
+                        cell.actionButton.backgroundColor = color.darkGray()
                         cell.actionButton.setTitleColor(color.black(), for: .normal)
                         
                     } else {
-                        if let isFollowedByCurrentUser = artist.isFollowedByCurrentUser {
-                            if isFollowedByCurrentUser {
-                                cell.actionButton.setTitle("Following", for: .normal)
-                                cell.actionButton.backgroundColor = color.darkGray()
-                                cell.actionButton.setTitleColor(color.black(), for: .normal)
-                                
-                            } else {
-                                cell.actionButton.setTitle("Follow", for: .normal)
-                                cell.actionButton.backgroundColor = color.blue()
-                                cell.actionButton.setTitleColor(.white, for: .normal)
-                            }
-                            
-                        } else {
-                            cell.actionButton.setTitle("Follow", for: .normal)
-                            cell.actionButton.backgroundColor = color.blue()
-                            cell.actionButton.setTitleColor(.white, for: .normal)
-                        }
-                        
-                        cell.actionButton.layer.borderWidth = 0
+                        cell.actionButton.setTitle("Follow", for: .normal)
+                        cell.actionButton.backgroundColor = color.blue()
+                        cell.actionButton.setTitleColor(.white, for: .normal)
                     }
                     
                 } else {
                     cell.actionButton.setTitle("Follow", for: .normal)
                     cell.actionButton.backgroundColor = color.blue()
-                    cell.actionButton.layer.borderWidth = 0
                     cell.actionButton.setTitleColor(.white, for: .normal)
                 }
+                
+                cell.actionButton.layer.borderWidth = 0
             }
             
             return cell
@@ -255,20 +254,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         case 3:
             if soundList.sounds.count == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-                if soundList.soundType == "uploads" {
-                    if artist!.objectId == PFUser.current()!.objectId {
-                        cell.headerTitle.text = "You haven't released any sounds yet. Tap the 'New Sound' tab to get started."
-                    
-                    } else {
-                        cell.headerTitle.text = "No releases yet."
-                    }
-                    
-                } else {
-                    if artist!.objectId == PFUser.current()!.objectId {
-                        cell.headerTitle.text = "Sounds you like will appear here."
+                
+                if let artist = self.artist {
+                    if soundList.soundType == "uploads" {
+                        if artist.objectId == PFUser.current()!.objectId {
+                            cell.headerTitle.text = "You haven't released any sounds yet. Tap the 'New Sound' tab to get started."
+                            
+                        } else {
+                            cell.headerTitle.text = "No releases yet."
+                        }
                         
                     } else {
-                        cell.headerTitle.text = "Nothing in their collection yet."
+                        if artist.objectId == PFUser.current()!.objectId {
+                            cell.headerTitle.text = "Sounds you like will appear here."
+                            
+                        } else {
+                            cell.headerTitle.text = "Nothing in their collection yet."
+                        }
                     }
                 }
                 
@@ -414,6 +416,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
+        if let artist = artist {
+            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+        }
+    }
+    
     @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
         let menuAlert = UIAlertController(title: nil , message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -450,6 +458,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
             } else if let user = user {
                 let username = user["username"] as? String
+                
+                self.navigationItem.title = username
                 
                 var email: String?
                 if user.objectId! == PFUser.current()!.objectId {

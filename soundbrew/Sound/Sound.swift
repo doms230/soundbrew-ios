@@ -44,3 +44,39 @@ class Sound {
         self.likes = likes 
     }
 }
+
+func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound {
+    let title = object["title"] as! String
+    let art = object["songArt"] as! PFFileObject
+    let audio = object["audioFile"] as! PFFileObject
+    let tags = object["tags"] as! Array<String>
+    
+    var plays: Int?
+    if let soundPlays = object["plays"] as? Int {
+        plays = soundPlays
+    }
+    
+    var likes: Int?
+    if let soundPlays = object["likes"] as? Int {
+        likes = soundPlays
+    }
+    
+    let userId = object["userId"] as! String
+    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+    
+    var relevancyScore = 0
+    if let tagsForFiltering = tagsForFiltering {
+        for tag in tags {
+            let selectedTagNames = tagsForFiltering.map {$0.name!}
+            if selectedTagNames.contains(tag) {
+                relevancyScore += 1
+            }
+        }
+    }
+    
+    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes)
+    
+    
+    
+    return sound
+}

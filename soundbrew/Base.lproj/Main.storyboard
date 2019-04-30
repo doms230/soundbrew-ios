@@ -82,10 +82,29 @@
                         <viewLayoutGuide key="safeArea" id="NaE-LY-JE5"/>
                     </view>
                     <navigationItem key="navigationItem" id="3A4-h1-0pg"/>
+                    <connections>
+                        <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditBio" id="t1V-yP-gW0"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2482" y="-403"/>
+        </scene>
+        <!--Edit Bio View Controller-->
+        <scene sceneID="UXW-zh-5xg">
+            <objects>
+                <viewController id="3jl-7I-oti" customClass="EditBioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="eBy-XP-uAL">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="WKJ-WH-T7i"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="smL-OJ-pEv"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tvS-2b-70E" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4240.579710144928" y="-396.42857142857139"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="kGU-t6-6qU">
@@ -120,11 +139,12 @@
                         <segue destination="eYP-Ly-uEt" kind="relationship" relationship="viewControllers" id="6Fx-h3-Jo0"/>
                         <segue destination="vdK-at-bld" kind="relationship" relationship="viewControllers" id="OLw-UF-l1Y"/>
                         <segue destination="PB4-PS-JEx" kind="relationship" relationship="viewControllers" id="rT1-MK-KM7"/>
+                        <segue destination="vdK-at-bld" kind="show" identifier="showProfile" id="6TZ-rH-77o"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bk6-yl-ZEN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2108" y="-800"/>
+            <point key="canvasLocation" x="-1929" y="-788"/>
         </scene>
         <!--Comment View Controller-->
         <scene sceneID="FMo-w8-eYx">
@@ -304,6 +324,24 @@
             </objects>
             <point key="canvasLocation" x="-599" y="-1750"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="LMc-NU-utU">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="n4H-QI-4Ol" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5ux-yi-Vqb">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="3jl-7I-oti" kind="relationship" relationship="rootViewController" id="1JY-4R-GMW"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xm3-aw-Ekz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3330.434782608696" y="-396.42857142857139"/>
+        </scene>
     </scenes>
     <resources>
         <image name="add" width="23" height="23"/>
@@ -317,9 +355,10 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="wBb-Ll-LfM"/>
+        <segue reference="6TZ-rH-77o"/>
         <segue reference="eW3-lv-tSJ"/>
         <segue reference="Mz5-gw-jR1"/>
-        <segue reference="vKf-hT-VHa"/>
+        <segue reference="clB-kw-cXy"/>
         <segue reference="Lzr-CP-43Y"/>
         <segue reference="XjQ-ls-dhp"/>
     </inferredMetricsTieBreakers>
