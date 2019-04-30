@@ -45,14 +45,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         registerForRemoteNotification()
         
-        if PFUser.current() == nil {
+        /*if PFUser.current() == nil {
             let storyboard = UIStoryboard(name: "Login", bundle: nil)
             let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
             window?.rootViewController = controller
             
         } else {
             print("called this")
-        }
+        }*/
         
        // SKPaymentQueue.default().add(self)
        //Payment.shared.loadSubscriptionOptions()
@@ -66,15 +66,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let error = error {
                 print("dynamic link error: \(error.localizedDescription)")
                 
-            } else {
-                if let url = dynamiclink?.url {
-                    if let pathComponents = dynamiclink?.url?.pathComponents {
-                        if pathComponents.contains("sound") {
-                            self.playSound(url: url)
-                            
-                        } else if pathComponents.contains("profile") {
-                            self.loadUserInfoFromCloud(url.lastPathComponent)
-                        }
+            } else if let url = dynamiclink?.url {
+                if let pathComponents = dynamiclink?.url?.pathComponents {
+                    if pathComponents.contains("sound") {
+                        self.playSound(url: url)
+                        
+                    } else if pathComponents.contains("profile") {
+                        self.loadUserInfoFromCloud(url.lastPathComponent)
                     }
                 }
             }
@@ -138,7 +136,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: SKPaymentTransactionObserver {
     func paymentQueue(_ queue: SKPaymentQueue,
                       updatedTransactions transactions: [SKPaymentTransaction]) {
-        
         for transaction in transactions {
             switch transaction.transactionState {
             case .purchasing:
@@ -184,70 +181,11 @@ extension AppDelegate: SKPaymentTransactionObserver {
     }
     
     func loadUserInfoFromCloud(_ userId: String) {
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                let username = user["username"] as? String
-                
-                var email: String?
-                if user.objectId! == PFUser.current()!.objectId {
-                    email = user["email"] as? String
-                }
-                
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
-                
-                if let followerCount = user["followerCount"] as? Int {
-                    artist.followerCount = followerCount
-                }
-                
-                if let name = user["artistName"] as? String {
-                    artist.name = name
-                }
-                
-                if let username = user["username"] as? String {
-                    artist.username = username
-                }
-                
-                if let city = user["city"] as? String {
-                    artist.city = city
-                }
-                
-                if let userImageFile = user["userImage"] as? PFFileObject {
-                    artist.image = userImageFile.url!
-                }
-                
-                if let bio = user["bio"] as? String {
-                    artist.bio = bio
-                }
-                
-                if let artistVerification = user["artistVerification"] as? Bool {
-                    artist.isVerified = artistVerification
-                }
-                
-                if let instagramUsername = user["instagramHandle"] as? String {
-                    artist.instagramUsername = instagramUsername
-                }
-                
-                if let twitterUsername = user["twitterHandle"] as? String {
-                    artist.twitterUsername = twitterUsername
-                }
-                
-                if let snapchatUsername = user["snapchatHandle"] as? String {
-                    artist.snapchatUsername = snapchatUsername
-                }
-                
-                if let website = user["otherLink"] as? String {
-                    artist.website = website
-                }
-                
-                if let currentViewController = self.window?.rootViewController {
-                    currentViewController.performSegue(withIdentifier: "showProfile", sender: currentViewController)
-                }
-            }
+        if let tabBarController = self.window?.rootViewController as? UITabBarController {
+            UIElement().setUserDefault("receivedUserId", value: userId)
+            let navigationController = tabBarController.selectedViewController as? UINavigationController
+            let viewController = navigationController?.topViewController
+            viewController!.performSegue(withIdentifier: "showProfile", sender: viewController)
         }
     }
 }

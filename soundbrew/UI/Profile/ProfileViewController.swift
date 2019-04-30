@@ -41,18 +41,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         if artist != nil {
-            if let username = artist?.username {
-                if !username.contains("@") {
-                    self.navigationItem.title = username
-                }
-            }
+            self.executeTableViewSoundListFollowStatus()
             
-            self.setUpTableView()
-            soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId, tags: nil, searchText: nil)
-            
-            if currentUser != nil {
-                checkFollowStatus(self.currentUser!)
-            }
+        } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
+            loadUserInfoFromCloud(userId)
+            UserDefaults.standard.removeObject(forKey: "receivedUserId")
             
         } else if currentUser != nil {
             loadUserInfoFromCloud(currentUser!.objectId!)
@@ -115,6 +108,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let artist = value {
             self.artist = artist
             self.tableView.reloadData()
+        }
+    }
+    
+    func executeTableViewSoundListFollowStatus() {
+        if let username = artist?.username {
+            if !username.contains("@") {
+                self.navigationItem.title = username
+            }
+        }
+        
+        soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId, tags: nil, searchText: nil)
+        self.setUpTableView()
+        
+        if currentUser != nil && currentUser?.objectId != artist?.objectId {
+            checkFollowStatus(self.currentUser!)
         }
     }
     
@@ -459,7 +467,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else if let user = user {
                 let username = user["username"] as? String
                 
-                self.navigationItem.title = username
+                /*if !username!.contains("@") {
+                    self.navigationItem.title = username
+                }*/
                 
                 var email: String?
                 if user.objectId! == PFUser.current()!.objectId {
@@ -513,9 +523,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
                 self.artist = artist
-                
-                self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId, tags: nil, searchText: nil)
-                self.setUpTableView()
+                self.executeTableViewSoundListFollowStatus()
+                /*self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId, tags: nil, searchText: nil)
+                self.setUpTableView()*/
             }
         }
     }

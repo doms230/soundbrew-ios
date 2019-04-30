@@ -23,6 +23,7 @@
                     <navigationItem key="navigationItem" id="M5X-po-2VR"/>
                     <connections>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showSoundInfo" id="LnM-xP-wsl"/>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="o5h-UM-HVB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -69,7 +70,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="182" y="-403"/>
+            <point key="canvasLocation" x="181" y="-403"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -139,7 +140,6 @@
                         <segue destination="eYP-Ly-uEt" kind="relationship" relationship="viewControllers" id="6Fx-h3-Jo0"/>
                         <segue destination="vdK-at-bld" kind="relationship" relationship="viewControllers" id="OLw-UF-l1Y"/>
                         <segue destination="PB4-PS-JEx" kind="relationship" relationship="viewControllers" id="rT1-MK-KM7"/>
-                        <segue destination="vdK-at-bld" kind="show" identifier="showProfile" id="6TZ-rH-77o"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bk6-yl-ZEN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -355,11 +355,10 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="wBb-Ll-LfM"/>
-        <segue reference="6TZ-rH-77o"/>
         <segue reference="eW3-lv-tSJ"/>
         <segue reference="Mz5-gw-jR1"/>
-        <segue reference="clB-kw-cXy"/>
-        <segue reference="Lzr-CP-43Y"/>
+        <segue reference="o5h-UM-HVB"/>
+        <segue reference="LnM-xP-wsl"/>
         <segue reference="XjQ-ls-dhp"/>
     </inferredMetricsTieBreakers>
 </document>

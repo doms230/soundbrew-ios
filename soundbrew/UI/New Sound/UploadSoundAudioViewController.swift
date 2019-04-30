@@ -41,9 +41,11 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
-        viewController.soundFileName = soundFilename
-        viewController.soundParseFile = soundParseFile
+        if segue.identifier != "showProfile" {
+            let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
+            viewController.soundFileName = soundFilename
+            viewController.soundParseFile = soundParseFile
+        }
     }
     
     func showUploadSoundButton() {

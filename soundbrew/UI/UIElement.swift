@@ -124,11 +124,22 @@ class UIElement {
             objectId = artist.objectId
             description = "Check out my Soundbrew page!"
             if let username = artist.username {
-                title = username
+                if !username.contains("@") {
+                    title = username
+                    
+                } else if let name = artist.name {
+                    title = name
+                    
+                } else {
+                    title = "Soundbrew Artist"
+                }
             }
             
             if let image = artist.image {
                 imageURL = image
+                
+            } else {
+                imageURL = "https://www.soundbrew.app/images/logo_green.jpg"
             }
         }
         guard let link = URL(string: "https://soundbrew.app/\(linkType)/\(objectId)") else { return }
