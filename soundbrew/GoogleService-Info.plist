@@ -32,5 +32,7 @@
 	<string>1:510041293074:ios:185ff0991a41bdcd</string>
 	<key>DATABASE_URL</key>
 	<string>https://soundbrew-artists.firebaseio.com</string>
+	<key>ADMOB_APP_ID</key>
+	<string>ca-app-pub-9150756002517285~6608111231</string>
 </dict>
 </plist>

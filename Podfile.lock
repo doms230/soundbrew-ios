@@ -10,6 +10,9 @@ PODS:
     - AppCenter/Core
   - Bolts/Tasks (1.9.0)
   - DeckTransition (2.1.0)
+  - Firebase/AdMob (5.20.1):
+    - Firebase/Core
+    - Google-Mobile-Ads-SDK (~> 7.42)
   - Firebase/Core (5.20.1):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.8.0)
@@ -39,6 +42,8 @@ PODS:
     - FirebaseCore (~> 5.2)
     - GoogleUtilities/Environment (~> 5.2)
     - GoogleUtilities/UserDefaults (~> 5.2)
+  - Google-Mobile-Ads-SDK (7.42.2):
+    - GoogleAppMeasurement (~> 5.7)
   - GoogleAppMeasurement (5.8.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -90,13 +95,13 @@ PODS:
     - PINOperation (~> 1.1)
   - SnapSDK/SCSDKCreativeKit (1.2.2)
   - SnapSDK/SCSDKLoginKit (1.2.2)
-  - SwiftVideoGenerator (1.2.6)
   - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
   - Alamofire
   - AppCenter
   - DeckTransition
+  - Firebase/AdMob
   - Firebase/Core
   - Firebase/DynamicLinks
   - Kingfisher
@@ -106,7 +111,6 @@ DEPENDENCIES:
   - ShareInstagram
   - SnapKit
   - SnapSDK
-  - SwiftVideoGenerator
   - SwiftyJSON
 
 SPEC REPOS:
@@ -121,6 +125,7 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseDynamicLinks
     - FirebaseInstanceID
+    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleUtilities
     - Kingfisher
@@ -133,7 +138,6 @@ SPEC REPOS:
     - ShareInstagram
     - SnapKit
     - SnapSDK
-    - SwiftVideoGenerator
     - SwiftyJSON
 
 SPEC CHECKSUMS:
@@ -147,6 +151,7 @@ SPEC CHECKSUMS:
   FirebaseCore: f1a9a8be1aee4bf71a2fc0f4096df6788bdfda61
   FirebaseDynamicLinks: f7a8717e2c7ea652923882a2d60b0045d6fd99d5
   FirebaseInstanceID: a122b0c258720cf250551bb2bedf48c699f80d90
+  Google-Mobile-Ads-SDK: 8f4f7e793bfd3fff5b082181b54112f81b579a67
   GoogleAppMeasurement: 1624046ab1bcc5e170061a56ef5679000b079c8e
   GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   Kingfisher: d9e7e0b209b59b8f9873aa2f37654e81a7beea51
@@ -159,9 +164,8 @@ SPEC CHECKSUMS:
   ShareInstagram: 787136afff8d1fbe899b1c3e5450560694071dff
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
   SnapSDK: 16d505e0e5a9340c49ce767f3131f4af76fe29e8
-  SwiftVideoGenerator: 461ef57a52d1258160ba9d58ed90813c89b192b9
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: 1a9cac43a58ba2ef8e6112ae32fa18e7930aedda
+PODFILE CHECKSUM: 5bee8f87c9ff256ecf59af7de4450acf9e90e338
 
 COCOAPODS: 1.5.3

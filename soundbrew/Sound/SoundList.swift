@@ -40,6 +40,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         self.selectedTagsForFiltering = tags
         self.searchText = searchText
         player = Player.sharedInstance
+        player?.target = target
+        player?.tableview = tableView
         
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
@@ -274,7 +276,13 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             break
             
         case "follows":
-            self.loadFollows("createdAt")
+            if userId == nil {
+                showNoResultsLabel()
+                
+            } else {
+               self.loadFollows("createdAt")
+            }
+            
             break
             
         case "search":

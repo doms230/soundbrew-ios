@@ -25,10 +25,54 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var tableview: UITableView?
     var miniPlayerView: MiniPlayerView!
     var target: UIViewController!
+    var ad: Ad!
     
     override init() {
         super.init()
         setupRemoteTransportControls()
+        ad = Ad(player: self)
+    }
+    
+    func prepareAndPlay(_ audioData: Data) {
+        var soundPlayable = true
+        
+        //need audio url so can see what type of file audio is... helps get audio duration
+        let audioURL = URL(string: sounds[currentSoundIndex].audioURL)
+        
+        
+        // Set up the session.
+        let session = AVAudioSession.sharedInstance()
+        
+        do {
+            //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
+            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
+            try audioData.write(to: audioFileURL, options: .atomic)
+            
+            try session.setCategory(AVAudioSession.Category.playback,
+                                    mode: .default,
+                                    policy: .longForm,
+                                    options: [])
+            
+            // Set up the player.
+            self.player = try AVAudioPlayer(contentsOf: audioFileURL)
+            player?.delegate = self
+            
+            // Activate and request the route.
+            try session.setActive(true)
+            
+        } catch let error {
+            soundPlayable = false
+            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
+        }
+        
+        if soundPlayable {
+            if ad.secondsPlayedSinceLastAd < ad.fifteenMinutesInSeconds {
+                self.play()
+                
+            } else if  ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds {
+                ad.showAd(target)
+            }
+        }
     }
     
     func sendSoundUpdateToUI() {
@@ -43,6 +87,17 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let player = self.player {
             if !player.isPlaying {
                 player.play()
+                let sound = sounds[currentSoundIndex]
+                currentSound = sound
+                setBackgroundAudioViews()
+                incrementPlayCount(sound: sound)
+                
+                if let currentUser = PFUser.current() {
+                    self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
+                    
+                } else {
+                    self.sendSoundUpdateToUI()
+                }
             }
         }
     }
@@ -155,55 +210,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func prepareAndPlay(_ audioData: Data) {
-        var soundPlayable = true
-        
-        //need audio url so can see what type of file audio is... helps get audio duration
-        let audioURL = URL(string: sounds[currentSoundIndex].audioURL)
-        
-        
-        // Set up the session.
-        let session = AVAudioSession.sharedInstance()
-        
-        do {
-            //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
-            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
-            try audioData.write(to: audioFileURL, options: .atomic)
-            
-            try session.setCategory(AVAudioSession.Category.playback,
-                                    mode: .default,
-                                    policy: .longForm,
-                                    options: [])
-            
-            // Set up the player.
-            self.player = try AVAudioPlayer(contentsOf: audioFileURL)
-            player?.delegate = self
-            
-            // Activate and request the route.
-            try session.setActive(true)
-            
-        } catch let error {
-            soundPlayable = false
-            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
-        }
-        
-        if soundPlayable {
-            player?.play()
-            let sound = sounds[currentSoundIndex]
-            currentSound = sound
-            setBackgroundAudioViews()
-            incrementPlayCount(sound: sound)
-            
-            if let currentUser = PFUser.current() {
-                self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
-                
-            } else {
-                self.sendSoundUpdateToUI()
-            }
-        }
-    }
-    
     func incrementPlayCount(sound: Sound) {
+        ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
+        UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
+        
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId) {
             (object: PFObject?, error: Error?) -> Void in

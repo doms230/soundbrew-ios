@@ -37,6 +37,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>7</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-9150756002517285~6608111231</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -51,8 +53,6 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Soundbrew needs access to your camera, so you can take a picture for you profile.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Download Music Video</string>
 	<key>SCSDKClientId</key>
 	<string>7530c9a7-b226-43ba-9c5e-082c14b6db3c</string>
 	<key>SCSDKRedirectUrl</key>

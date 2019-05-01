@@ -29,8 +29,9 @@ target 'soundbrew' do
   pod 'ShareInstagram'
   pod 'DeckTransition'
   pod 'AppCenter'
-  pod 'SwiftVideoGenerator'
   pod 'MessageViewController'
   pod 'Firebase/Core'
   pod 'Firebase/DynamicLinks'
+  pod 'Firebase/AdMob'
+
 end

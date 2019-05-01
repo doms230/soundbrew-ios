@@ -37,14 +37,16 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 //
                 return
         }*/
-                
+        
+        soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: PFUser.current()?.objectId, tags: nil, searchText: nil)
+        
+        setUpTableView()
+        
         if let currentUser = PFUser.current() {
             loadUserInfoFromCloud(currentUser.objectId!)
             self.currentUser = currentUser
-            soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUser.objectId, tags: nil, searchText: nil)
             
-            setUpTableView()
-        }        
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -106,7 +108,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.top.equalTo(self.view)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-(soundList.miniPlayerView!.frame.height + (self.tabBarController?.tabBar.frame.height)!))
         }
     }
     
@@ -117,7 +119,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
             player.didSelectSoundAt(indexPath.row)
-            //soundList.miniPlayerView?.isHidden = false
             tableView.reloadData()
         }
     }

@@ -16,6 +16,7 @@ import AppCenterAnalytics
 import AppCenterCrashes
 import StoreKit
 import Firebase
+import GoogleMobileAds
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,7 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSAnalytics.self, MSCrashes.self])
         
         FirebaseApp.configure()
-
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
@@ -90,8 +92,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
-            if let url = dynamicLink.url {
-                playSound(url: url)
+            if let pathComponents = dynamicLink.url?.pathComponents {
+                if pathComponents.contains("sound") {
+                    self.playSound(url: url)
+                    
+                } else if pathComponents.contains("profile") {
+                    self.loadUserInfoFromCloud(url.lastPathComponent)
+                }
             }
             
             return true

@@ -70,7 +70,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func didSelectSoundAt(row: Int) {
         if let player = soundList.player {
             player.didSelectSoundAt(row)
-            //soundList.miniPlayerView?.isHidden = false
             tableView.reloadData()
         }
     }

@@ -247,27 +247,22 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             switch indexPath.row {
             case 0:
                 self.tagType = "genre"
-                tagsToUpdateInTagsViewController = [self.genreTag] as? Array<Tag>
                 break
                 
             case 1:
                 self.tagType = "city"
-                tagsToUpdateInTagsViewController = [self.cityTag] as? Array<Tag>
                 break
                 
             case 2:
                 self.tagType = "mood"
-                tagsToUpdateInTagsViewController = [self.moodTag] as? Array<Tag>
                 break
                 
             case 3:
                 self.tagType = "activity"
-                tagsToUpdateInTagsViewController = [self.activityTag] as? Array<Tag>
                 break
                 
             case 4:
                 self.tagType = "similar artist"
-                tagsToUpdateInTagsViewController = [self.similarArtistTag] as? Array<Tag>
                 break
                 
             case 5:

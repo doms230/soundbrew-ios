@@ -10,6 +10,8 @@ import UIKit
 import Foundation
 import Parse
 import FirebaseDynamicLinks
+import SCSDKCreativeKit
+import ShareInstagram
 
 class UIElement {
     let topOffset = 10
@@ -161,5 +163,60 @@ class UIElement {
                 target.present(activityViewController, animated: true, completion: nil)
             }
         }
+    }
+    
+    //mark: share
+    let shareAppURL = "https://www.soundbrew.app/ios"
+    
+    func imageForSharing(_ sound: Sound) -> UIImage {
+        let soundArtImage = SoundArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 610))
+        soundArtImage.soundArt.image = sound.artImage
+        soundArtImage.soundTitle.text = sound.title
+        soundArtImage.artistName.text = sound.artist!.name
+        soundArtImage.updateConstraints()
+        return soundArtImage.asImage()
+    }
+    
+    func shareToSnapchat(_ sound: Sound) {
+        let snapchatImage = imageForSharing(sound)
+        let snap = SCSDKNoSnapContent()
+        snap.sticker = SCSDKSnapSticker(stickerImage: snapchatImage)
+        snap.attachmentUrl = shareAppURL
+        let api = SCSDKSnapAPI(content: snap)
+        api.startSnapping(completionHandler: { (error: Error?) in
+            if let error = error {
+                print("Snapchat error: \(error)")
+            }
+        })
+    }
+    
+    func shareToInstagram(_ sound: Sound) {
+        let share = ShareImageInstagram()
+        let igImage = imageForSharing(sound)
+        share.postToInstagramStories(image: igImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
+    }
+    
+    func showShareOptions(_ target: UIViewController, sound: Sound) {
+        let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
+        
+        let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
+            self.shareToSnapchat(sound)
+        }
+        alertController.addAction(snapchatAction)
+        
+        let instagramAction = UIAlertAction(title: "Instagram Stories", style: .default) { (_) -> Void in
+            self.shareToInstagram(sound)
+        }
+        alertController.addAction(instagramAction)
+        
+        let moreAction = UIAlertAction(title: "Share Link", style: .default) { (_) -> Void in
+            self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
+        }
+        alertController.addAction(moreAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        target.present(alertController, animated: true, completion: nil)
     }
 }

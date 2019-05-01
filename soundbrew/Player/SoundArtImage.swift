@@ -15,16 +15,34 @@ class SoundArtImage: UIView {
     let color = Color()
     let uiElement = UIElement()
     
-    lazy var soundbrewTitle: UILabel = {
+    lazy var soundTitle: UILabel = {
         let label = UILabel()
-        label.text = "Listen on Soundbrew"
-        label.textColor = color.black()
+        label.text = "Sound Title"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var artistName: UILabel = {
+        let label = UILabel()
+        label.text = "Artist Name"
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.textAlignment = .center
         return label
     }()
     
-    lazy var songArt: UIImageView = {
+    lazy var appName: UILabel = {
+        let label = UILabel()
+        label.text = "Listen on Soundbrew"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var soundArt: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
         image.backgroundColor = .white
@@ -34,9 +52,9 @@ class SoundArtImage: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = .white
-        self.layer.borderWidth = 1
-        self.layer.borderColor = color.darkGray().cgColor
+        self.backgroundColor = .clear
+        //self.layer.borderWidth = 1
+        //self.layer.borderColor = color.darkGray().cgColor
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -44,18 +62,23 @@ class SoundArtImage: UIView {
     }
     
     override func updateConstraints() {
-        songArt.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height - 50)
-        self.addSubview(songArt)
+        soundArt.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
+        self.addSubview(soundArt)
         
-        soundbrewTitle.frame = CGRect(x: 10, y: self.frame.height - 30, width: self.frame.width - 10, height: 30)
-        self.addSubview(soundbrewTitle)
+        soundTitle.frame = CGRect(x: 10, y: 515, width: 500, height: 30)
+        self.addSubview(soundTitle)
+        
+        artistName.frame = CGRect(x: 10, y: 545, width: 500, height: 30)
+        self.addSubview(artistName)
+        
+        appName.frame = CGRect(x: 10, y: 570, width: 500, height: 30)
+        self.addSubview(appName)
         
         super.updateConstraints()
     }
 }
 
 extension UIView {
-    
     // Using a function since `var image` might conflict with an existing variable
     // (like on `UIImageView`)
     func asImage() -> UIImage {
@@ -64,6 +87,7 @@ extension UIView {
             return renderer.image { rendererContext in
                 layer.render(in: rendererContext.cgContext)
             }
+            
         } else {
             UIGraphicsBeginImageContext(self.frame.size)
             self.layer.render(in:UIGraphicsGetCurrentContext()!)

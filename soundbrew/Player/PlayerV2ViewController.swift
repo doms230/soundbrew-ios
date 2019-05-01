@@ -14,7 +14,6 @@ import Parse
 import Kingfisher
 import SnapKit
 import DeckTransition
-import SwiftVideoGenerator
 import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
@@ -37,6 +36,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             self.sound = sound 
             setupNotificationCenter()
             setUpView()
+            player?.target = self 
         }
     }
     
@@ -142,7 +142,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             }
             
         } else {
-            //show sign up alert
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
         }
     }
     
@@ -278,29 +278,9 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         return button
     }()
     @objc func didPressShareButton(_ sender: UIButton) {
-        let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
-        
-        let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
-            self.shareToSnapchat()
+        if let sound = self.sound {
+            self.uiElement.showShareOptions(self, sound: sound)
         }
-        alertController.addAction(snapchatAction)
-        
-        let instagramAction = UIAlertAction(title: "Instagram", style: .default) { (_) -> Void in
-            self.shareToInstagram()
-        }
-        alertController.addAction(instagramAction)
-        
-        let musicVideoAction = UIAlertAction(title: "More Options", style: .default) { (_) -> Void in
-            if let sound = self.sound {
-                self.uiElement.createDynamicLink("sound", sound: sound, artist: nil, target: self)
-            }
-        }
-        alertController.addAction(musicVideoAction)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
     lazy var playBackSlider: UISlider = {
@@ -528,35 +508,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }*/
         
         setSound()
-    }
-    
-    //mark: share
-    let shareAppURL = "https://www.soundbrew.app/ios"
-    
-    func imageForSharing() -> UIImage {
-        let soundArtImage = SoundArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
-        soundArtImage.songArt.image = sound?.artImage
-        soundArtImage.updateConstraints()
-        return soundArtImage.asImage()
-    }
-    
-    func shareToSnapchat() {
-        let snapchatImage = imageForSharing()
-        let snap = SCSDKNoSnapContent()
-        snap.sticker = SCSDKSnapSticker(stickerImage: snapchatImage)
-        snap.attachmentUrl = shareAppURL
-        let api = SCSDKSnapAPI(content: snap)
-        api.startSnapping(completionHandler: { (error: Error?) in
-            if let error = error {
-                print("Snapchat error: \(error)")
-            }
-        })
-    }
-    
-    func shareToInstagram() {
-        let share = ShareImageInstagram()
-        let igImage = imageForSharing()
-        share.postToInstagramStories(image: igImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
     }
     
     func loadUserInfoFromCloud(_ userId: String) {

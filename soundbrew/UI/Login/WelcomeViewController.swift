@@ -19,6 +19,15 @@ class WelcomeViewController: UIViewController {
     var retreivedImage: PFFileObject!
     let screenSize: CGRect = UIScreen.main.bounds
     
+    lazy var exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "dismiss"), for: .normal)
+        return button
+    }()
+    @objc func didPressExitButton(_ sender: UIButton) {
+        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+    }
+    
     lazy var appImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "appy")
@@ -80,6 +89,14 @@ class WelcomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        self.view.addSubview(exitButton)
+        exitButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset + 20)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
        // GIDSignIn.sharedInstance().uiDelegate = self
         
         self.view.addSubview(appImage)
@@ -95,17 +112,18 @@ class WelcomeViewController: UIViewController {
         
         self.view.addSubview(termsButton)
         termsButton.addTarget(self, action: #selector(termsAction(_:)), for: .touchUpInside)
+
+        appName.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.view)
+            //make.top.equalTo(self.appImage.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
         
         appImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(100)
-            make.top.equalTo((self.view.frame.height / 2) - 200)
-            make.left.equalTo((self.view.frame.width / 2) - 50)
-        }
-        
-        appName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.appImage.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(appName.snp.top).offset(uiElement.bottomOffset)
+            make.centerX.equalTo(self.view)
         }
         
         signinButton.snp.makeConstraints { (make) -> Void in

@@ -30,9 +30,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let settingsButton = UIBarButtonItem(image: UIImage(named: "more"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
+        let settingsButton = UIBarButtonItem(image: UIImage(named: "more_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
         
-        let shareButton = UIBarButtonItem(image: UIImage(named: "share"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+        let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
         
         self.navigationItem.rightBarButtonItems = [settingsButton, shareButton]
         
@@ -203,19 +203,27 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
                 
             cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
-            if PFUser.current()!.objectId == artist?.objectId {
-                cell.actionButton.setTitle("Edit Profile", for: .normal)
-                cell.actionButton.backgroundColor = .white
-                cell.actionButton.layer.borderWidth = 1
-                cell.actionButton.layer.borderColor = color.darkGray().cgColor
-                cell.actionButton.setTitleColor(color.black(), for: .normal)
-                
-            } else {
-                if let isFollowedByCurrentUser = artist!.isFollowedByCurrentUser {
-                    if isFollowedByCurrentUser {
-                        cell.actionButton.setTitle("Following", for: .normal)
-                        cell.actionButton.backgroundColor = color.darkGray()
-                        cell.actionButton.setTitleColor(color.black(), for: .normal)
+            
+            if let currentUser = self.currentUser {
+                if currentUser.objectId == artist?.objectId {
+                    cell.actionButton.setTitle("Edit Profile", for: .normal)
+                    cell.actionButton.backgroundColor = .white
+                    cell.actionButton.layer.borderWidth = 1
+                    cell.actionButton.layer.borderColor = color.darkGray().cgColor
+                    cell.actionButton.setTitleColor(color.black(), for: .normal)
+                    
+                } else {
+                    if let isFollowedByCurrentUser = artist!.isFollowedByCurrentUser {
+                        if isFollowedByCurrentUser {
+                            cell.actionButton.setTitle("Following", for: .normal)
+                            cell.actionButton.backgroundColor = color.darkGray()
+                            cell.actionButton.setTitleColor(color.black(), for: .normal)
+                            
+                        } else {
+                            cell.actionButton.setTitle("Follow", for: .normal)
+                            cell.actionButton.backgroundColor = color.blue()
+                            cell.actionButton.setTitleColor(.white, for: .normal)
+                        }
                         
                     } else {
                         cell.actionButton.setTitle("Follow", for: .normal)
@@ -223,13 +231,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         cell.actionButton.setTitleColor(.white, for: .normal)
                     }
                     
-                } else {
-                    cell.actionButton.setTitle("Follow", for: .normal)
-                    cell.actionButton.backgroundColor = color.blue()
-                    cell.actionButton.setTitleColor(.white, for: .normal)
+                    cell.actionButton.layer.borderWidth = 0
                 }
                 
-                cell.actionButton.layer.borderWidth = 0
+            } else {
+                cell.actionButton.setTitle("Follow", for: .normal)
+                cell.actionButton.backgroundColor = color.blue()
+                cell.actionButton.setTitleColor(.white, for: .normal)
             }
             
             return cell
@@ -263,23 +271,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if soundList.sounds.count == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
                 
-                if let artist = self.artist {
-                    if soundList.soundType == "uploads" {
-                        if artist.objectId == PFUser.current()!.objectId {
-                            cell.headerTitle.text = "You haven't released any sounds yet. Tap the 'New Sound' tab to get started."
-                            
-                        } else {
-                            cell.headerTitle.text = "No releases yet."
-                        }
-                        
-                    } else {
-                        if artist.objectId == PFUser.current()!.objectId {
-                            cell.headerTitle.text = "Sounds you like will appear here."
-                            
-                        } else {
-                            cell.headerTitle.text = "Nothing in their collection yet."
-                        }
-                    }
+                if soundList.soundType == "uploads" {
+                    cell.headerTitle.text = "No releases yet."
+                    
+                } else {
+                    cell.headerTitle.text = "Nothing in their collection yet."
                 }
                 
                 return cell
@@ -421,6 +417,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else {
                 followUser(currentUser)
             }
+            
+        } else {
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
         }
     }
     
