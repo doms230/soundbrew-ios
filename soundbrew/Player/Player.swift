@@ -27,6 +27,23 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var miniPlayerView: MiniPlayerView!
     var target: UIViewController!
     var ad: Ad!
+    var secondsPlayed = 0.0
+    var secondsPlayedTimer = Timer()
+    var didRecordStream = false
+    
+    @objc func UpdateTimer(_ timer: Timer) {
+        secondsPlayed = secondsPlayed + timer.timeInterval
+        print(secondsPlayed)
+        if secondsPlayed >= 30 && !didRecordStream {
+            didRecordStream = true 
+            if let currentSound = currentSound {
+                incrementStreamCount(currentSound)
+            }
+        }
+    }
+    func startTimer() {
+        secondsPlayedTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
+    }
     
     override init() {
         super.init()
@@ -67,7 +84,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         if soundPlayable {
+            resetStream()
             self.play()
+            incrementPlayCount(sounds[currentSoundIndex])
         }
     }
     
@@ -89,7 +108,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     player.play()
                     sendSoundUpdateToUI()
                     MSAnalytics.trackEvent("Play")
-                    incrementPlayCount(sound: sounds[currentSoundIndex])
+                    startTimer()
                 }
             }
             
@@ -107,6 +126,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let player = self.player {
             if player.isPlaying {
                 player.pause()
+                secondsPlayedTimer.invalidate()
             }
         }
     }
@@ -121,7 +141,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
                 setBackgroundAudioNowPlaying(player, sound: self.currentSound!)
-                incrementPlayCount(sound: self.currentSound!)
+                incrementPlayCount(self.currentSound!)
                 MSAnalytics.trackEvent("Go Back")
                 
             } else {
@@ -237,7 +257,47 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func incrementPlayCount(sound: Sound) {
+    func incrementStreamCount(_ sound: Sound) {
+        if let artistObjectId = sound.artist?.objectId {
+            let query = PFQuery(className: "Payment")
+            query.whereKey("userId", equalTo: artistObjectId)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if error != nil {
+                    self.newArtistPaymentRow(artistObjectId)
+                    
+                } else if let object = object {
+                    object.incrementKey("streamsSinceLastPayout")
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        if error != nil {
+                            self.didRecordStream = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func newArtistPaymentRow(_ artistObjectId: String) {
+        let newPaymentRow = PFObject(className: "Payment")
+        newPaymentRow["userId"] = artistObjectId
+        newPaymentRow["streamsSinceLastPayout"] = 1
+        newPaymentRow.saveEventually{
+            (success: Bool, error: Error?) in
+            if error != nil {
+                self.didRecordStream = false
+            }
+        }
+    }
+    
+    func resetStream() {
+        didRecordStream = false
+        secondsPlayedTimer.invalidate()
+        secondsPlayed = 0.0
+    }
+    
+    func incrementPlayCount(_ sound: Sound) {
         ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
         UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
         
