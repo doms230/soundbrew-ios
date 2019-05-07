@@ -20,7 +20,7 @@ target 'soundbrew' do
   pod 'SnapKit'
   pod 'Parse'
   pod 'NVActivityIndicatorView'
-  pod 'SidebarOverlay'
+  #pod 'SidebarOverlay'
   #pod 'TagListView'
   pod 'Kingfisher'
   pod 'Alamofire'

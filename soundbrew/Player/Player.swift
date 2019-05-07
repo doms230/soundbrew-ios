@@ -31,20 +31,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
     
-    @objc func UpdateTimer(_ timer: Timer) {
-        secondsPlayed = secondsPlayed + timer.timeInterval
-        print(secondsPlayed)
-        if secondsPlayed >= 30 && !didRecordStream {
-            didRecordStream = true 
-            if let currentSound = currentSound {
-                incrementStreamCount(currentSound)
-            }
-        }
-    }
-    func startTimer() {
-        secondsPlayedTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
-    }
-    
     override init() {
         super.init()
         setupRemoteTransportControls()
@@ -295,6 +281,19 @@ class Player: NSObject, AVAudioPlayerDelegate {
         didRecordStream = false
         secondsPlayedTimer.invalidate()
         secondsPlayed = 0.0
+    }
+    
+    @objc func UpdateTimer(_ timer: Timer) {
+        secondsPlayed = secondsPlayed + timer.timeInterval
+        if secondsPlayed >= 30 && !didRecordStream {
+            didRecordStream = true
+            if let currentSound = currentSound {
+                incrementStreamCount(currentSound)
+            }
+        }
+    }
+    func startTimer() {
+        secondsPlayedTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     
     func incrementPlayCount(_ sound: Sound) {

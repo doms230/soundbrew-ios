@@ -14,7 +14,6 @@ import SnapKit
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate {
     
-    let tableView = UITableView()
     let uiElement = UIElement()
     let color = Color()
     
@@ -30,25 +29,22 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let settingsButton = UIBarButtonItem(image: UIImage(named: "more_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
-        
-        let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
-        
-        self.navigationItem.rightBarButtonItems = [settingsButton, shareButton]
-        
         if let currentUser = PFUser.current(){
             self.currentUser = currentUser
         }
         
-        if artist != nil {
+        if let artist = artist {
             self.executeTableViewSoundListFollowStatus()
+            self.setUpNavigationButtons(artist.objectId)
             
         } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
             loadUserInfoFromCloud(userId)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
+            setUpNavigationButtons(userId)
             
-        } else if currentUser != nil {
-            loadUserInfoFromCloud(currentUser!.objectId!)
+        } else if let currentUser = self.currentUser {
+            loadUserInfoFromCloud(currentUser.objectId!)
+            setUpNavigationButtons(currentUser.objectId!)
             
         } else {
             self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
@@ -96,6 +92,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.prepareToShowComments(segue)
             break
             
+        case "showSettings":
+            let viewController = segue.destination as! SettingsViewController
+            viewController.artist = artist
+            break
+            
         default:
             break
         }
@@ -127,6 +128,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //MARK: Tableview
+    let tableView = UITableView()
     let reuse = "soundReuse"
     let profileReuse = "profileReuse"
     let listTypeHeaderReuse = "listTypeHeaderReuse"
@@ -395,6 +397,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: button actions
+    func setUpNavigationButtons(_ userId: String) {
+        if let currentUser = self.currentUser {
+            if currentUser.objectId! == userId {
+                let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressMenuButton(_:)))
+                self.navigationItem.rightBarButtonItem = menuButton
+                
+            } else {
+                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+                self.navigationItem.rightBarButtonItem = shareButton
+            }
+            
+        } else {
+            let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+            self.navigationItem.rightBarButtonItem = shareButton
+        }
+    }
+    
     @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.artist?.website {
             UIApplication.shared.open(URL(string: website)!, options: [:], completionHandler: nil)
@@ -429,19 +448,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
-        let menuAlert = UIAlertController(title: nil , message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
-            PFUser.logOut()
-            let storyboard = UIStoryboard(name: "Login", bundle: nil)
-            let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            //show window
-            appDelegate.window?.rootViewController = controller
-        }))
-    
-        self.present(menuAlert, animated: true, completion: nil)
+    @objc func didPressMenuButton(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: "showSettings", sender: self)
     }
     
     @objc func didPressMySoundType(_ sender: UIButton) {

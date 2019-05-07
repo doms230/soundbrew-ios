@@ -66,6 +66,7 @@
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                         <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
                         <segue destination="0eG-FI-KSj" kind="show" identifier="showComments" id="Mz5-gw-jR1"/>
+                        <segue destination="QfG-7B-QZs" kind="show" identifier="showSettings" id="l3q-a8-5VE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -89,7 +90,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2482" y="-403"/>
+            <point key="canvasLocation" x="2541" y="-1047"/>
         </scene>
         <!--Edit Bio View Controller-->
         <scene sceneID="UXW-zh-5xg">
@@ -105,7 +106,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tvS-2b-70E" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4240.579710144928" y="-396.42857142857139"/>
+            <point key="canvasLocation" x="4067" y="-1047"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="kGU-t6-6qU">
@@ -159,7 +160,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sFd-n7-GQQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3299" y="-1339"/>
+            <point key="canvasLocation" x="1674" y="-1712"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
@@ -176,6 +177,39 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1675" y="305"/>
+        </scene>
+        <!--Settings View Controller-->
+        <scene sceneID="2Zy-jX-lX6">
+            <objects>
+                <viewController id="QfG-7B-QZs" customClass="SettingsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="jST-u1-XnP">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="eiN-od-ikU"/>
+                    </view>
+                    <connections>
+                        <segue destination="95U-fn-szc" kind="show" identifier="showStreams" id="TvR-vP-VG5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ao8-n6-bNi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1674" y="-403"/>
+        </scene>
+        <!--Streams View Controller-->
+        <scene sceneID="sau-AF-KuI">
+            <objects>
+                <viewController id="95U-fn-szc" customClass="StreamsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tW7-Ln-Jvo">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="Kjx-re-HmU"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ObZ-3j-GYf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2541" y="-403"/>
         </scene>
         <!--Search View Controller-->
         <scene sceneID="PqT-ua-W6V">
@@ -304,7 +338,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nXJ-NO-8er" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1676" y="-403"/>
+            <point key="canvasLocation" x="1674" y="-1046"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Z8X-5O-BsK">
@@ -344,7 +378,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xm3-aw-Ekz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3330.434782608696" y="-396.42857142857139"/>
+            <point key="canvasLocation" x="3303" y="-1047"/>
         </scene>
     </scenes>
     <resources>
@@ -358,11 +392,11 @@
         <image name="search_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ETQ-eW-HKD"/>
-        <segue reference="cJs-1X-ayw"/>
-        <segue reference="om5-dC-93c"/>
-        <segue reference="3jW-Fd-CA3"/>
-        <segue reference="SpB-6h-026"/>
-        <segue reference="hAI-d0-wwO"/>
+        <segue reference="wBb-Ll-LfM"/>
+        <segue reference="eW3-lv-tSJ"/>
+        <segue reference="Mz5-gw-jR1"/>
+        <segue reference="vKf-hT-VHa"/>
+        <segue reference="Lzr-CP-43Y"/>
+        <segue reference="XjQ-ls-dhp"/>
     </inferredMetricsTieBreakers>
 </document>
