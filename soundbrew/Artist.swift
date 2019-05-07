@@ -66,8 +66,10 @@ class Artist {
                     }
                 }
                 
-                if user.objectId! == PFUser.current()!.objectId {
-                    self.email = user["email"] as? String
+                if let currentUser = PFUser.current() {
+                    if currentUser.objectId! == user.objectId! {
+                        self.email = user["email"] as? String
+                    }
                 }
                 
                 if let followerCount = user["followerCount"] as? Int {

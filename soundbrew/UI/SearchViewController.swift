@@ -478,8 +478,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         let username = user["username"] as? String
                         
                         var email: String?
-                        if user.objectId! == PFUser.current()!.objectId {
-                            email = user["email"] as? String
+                        
+                        if let currentUser = PFUser.current() {
+                            if currentUser.objectId! == user.objectId! {
+                                email = user["email"] as? String
+                            }
                         }
                         
                         let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)

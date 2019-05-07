@@ -30,6 +30,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var secondsPlayed = 0.0
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
+    var didRecordPlay = false
     
     override init() {
         super.init()
@@ -42,7 +43,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         //need audio url so can see what type of file audio is... helps get audio duration
         let audioURL = URL(string: sounds[currentSoundIndex].audioURL)
-        
         
         // Set up the session.
         let session = AVAudioSession.sharedInstance()
@@ -72,7 +72,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if soundPlayable {
             resetStream()
             self.play()
-            incrementPlayCount(sounds[currentSoundIndex])
         }
     }
     
@@ -194,7 +193,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func updateUI(_ sound: Sound) {
         currentSound = sound
-        setBackgroundAudioViews()
+        setBackgroundAudioViews(sound)
         if let currentUser = PFUser.current() {
             self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
             
@@ -254,6 +253,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     
                 } else if let object = object {
                     object.incrementKey("streamsSinceLastPayout")
+                    object.incrementKey("streams")
                     object.saveEventually {
                         (success: Bool, error: Error?) in
                         if error != nil {
@@ -269,6 +269,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         let newPaymentRow = PFObject(className: "Payment")
         newPaymentRow["userId"] = artistObjectId
         newPaymentRow["streamsSinceLastPayout"] = 1
+        newPaymentRow["streams"] = 1
         newPaymentRow.saveEventually{
             (success: Bool, error: Error?) in
             if error != nil {
@@ -278,6 +279,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func resetStream() {
+        didRecordPlay = false
         didRecordStream = false
         secondsPlayedTimer.invalidate()
         secondsPlayed = 0.0
@@ -285,6 +287,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     @objc func UpdateTimer(_ timer: Timer) {
         secondsPlayed = secondsPlayed + timer.timeInterval
+        
+        if secondsPlayed >= 5 && !didRecordPlay {
+            didRecordPlay = true
+            if let currentSound = currentSound {
+                incrementPlayCount(currentSound)
+            }
+        }
+        
         if secondsPlayed >= 30 && !didRecordStream {
             didRecordStream = true
             if let currentSound = currentSound {
@@ -396,22 +406,22 @@ class Player: NSObject, AVAudioPlayerDelegate {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
-    func setBackgroundAudioViews() {
-        self.sounds[currentSoundIndex].artFile.getDataInBackground { (imageData: Data?, error: Error?) in
+    func setBackgroundAudioViews(_ sound: Sound) {
+        sound.artFile.getDataInBackground { (imageData: Data?, error: Error?) in
             if let error = error {
                 print(error.localizedDescription)
                 
             } else if let imageData = imageData {
                 let image = UIImage(data:imageData)
-                self.sounds[self.currentSoundIndex].artImage = image
+                sound.artImage = image
                 
-                if (self.sounds[self.currentSoundIndex].artist?.name) != nil {
+                if (sound.artist?.name) != nil {
                     if let player = self.player {
-                        self.setBackgroundAudioNowPlaying(player, sound: self.sounds[self.currentSoundIndex])
+                        self.setBackgroundAudioNowPlaying(player, sound: sound)
                     }
                     
                 } else {
-                    self.loadUserInfoFromCloud(self.sounds[self.currentSoundIndex].artist!.objectId, i: self.currentSoundIndex)
+                    self.loadUserInfoFromCloud(sound.artist!.objectId, i: self.currentSoundIndex)
                 }
             }
         }

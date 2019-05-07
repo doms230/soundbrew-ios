@@ -16,6 +16,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpTableView()
+        self.navigationItem.title = "Settings"
     }
     
     //mark: tableview

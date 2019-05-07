@@ -219,20 +219,27 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
-        if sound.artist!.objectId == PFUser.current()!.objectId! {
-            menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
-                self.deleteSong(sound.objectId, row: row)
-            }))
-            
-            menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
-                self.selectedSound = sound
-                self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
-            }))
-            
-            menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
-                self.selectedSound = sound
-                self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
-            }))
+        if let currentUser = PFUser.current() {
+            if sound.artist!.objectId == currentUser.objectId {
+                menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
+                    self.deleteSong(sound.objectId, row: row)
+                }))
+                
+                menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
+                    self.selectedSound = sound
+                    self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
+                }))
+                
+                menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
+                    self.selectedSound = sound
+                    self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
+                }))
+                
+            } else {
+                menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
+                    self.selectedArtist(sound.artist)
+                }))
+            }
             
         } else {
             menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
