@@ -1,11 +1,11 @@
 //
-//  PlayerV2ViewController.swift
-//  soundbrew
+// PlayerV2ViewController.swift
+// soundbrew
 //
-//  Created by Dominic  Smith on 2/6/19.
-//  Copyright © 2019 Dominic  Smith. All rights reserved.
+// Created by Dominic  Smith on 2/6/19.
+// Copyright © 2019 Dominic  Smith. All rights reserved.
 //
-//mark: View, Share
+// mark: View, Share
 
 import UIKit
 import SCSDKCreativeKit
@@ -43,14 +43,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidAppear(_ animated: Bool) {
         if let player = self.player {
             self.sound = player.currentSound
-            if let currentPlayer = player.player {
-                if currentPlayer.isPlaying && player.currentSound != nil {
-                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    
-                } else {
-                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                }
-            }
         }
     }
     
@@ -68,6 +60,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             self.sound = player.currentSound
             setCurrentSoundView(self.sound!)
             self.shouldEnableSoundView(true)
+            if let soundPlayer = player.player {
+                if soundPlayer.isPlaying  {
+                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    
+                } else {
+                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                }
+            }
         }
     }
     
@@ -78,7 +78,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         
         if let duration = self.player?.player?.duration {
             self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
-            
             playBackSlider.maximumValue = Float(duration)
             self.startTimer()
         }
@@ -129,6 +128,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 if let isLiked = self.sound?.isLiked {
                     if isLiked {
                         unlikeSound(currentUser.objectId!, postId: sound.objectId)
+                        MSAnalytics.trackEvent("New Un-like")
                         
                     } else {
                         newLike(currentUser.objectId!, postId: sound.objectId)
@@ -331,16 +331,18 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let player = self.player?.player {
-            if player.isPlaying {
-                player.pause()
-                timer.invalidate()
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                
-            } else {
-                player.play()
-                startTimer()
-                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        if let player = self.player {
+            if let soundPlayer = player.player {
+                if soundPlayer.isPlaying {
+                    player.pause()
+                    timer.invalidate()
+                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                    
+                } else {
+                    player.play()
+                    startTimer()
+                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                }
             }
         }
     }
@@ -388,7 +390,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         songArt.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(self.view.frame.height / 2)
             make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
-            //make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(exitButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -443,24 +444,20 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.height.width.equalTo(65)
             make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
             make.centerX.equalTo(self.view)
-           // make.left.equalTo((self.view.frame.width / 2) - (65 / 2))
         }
         
         self.view.addSubview(goBackButton)
         goBackButton.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
-            //make.top.equalTo(playBackButton).offset(3)
             make.centerY.equalTo(playBackButton)
             make.centerX.equalTo(self.view).offset(-(55 + uiElement.leftOffset))
-           // make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
         }
         
         shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
         self.view.addSubview(shareButton)
         shareButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
-            //make.top.equalTo(self.goBackButton).offset(uiElement.topOffset)
             make.centerY.equalTo(self.goBackButton)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
@@ -477,10 +474,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
-            //make.top.equalTo(playBackButton).offset(3)
             make.centerY.equalTo(playBackButton)
             make.centerX.equalTo(self.view).offset(55 + uiElement.leftOffset)
-            //make.left.equalTo(self.playBackButton.snp.right).offset(uiElement.leftOffset)
         }
         
         if isSoundLiked() {
@@ -493,7 +488,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(likeButton)
         likeButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
-           //make.top.equalTo(self.skipButton).offset(uiElement.topOffset)
             make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }

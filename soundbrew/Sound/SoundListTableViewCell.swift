@@ -25,7 +25,7 @@ class SoundListTableViewCell: UITableViewCell {
     //filter new/popular
     lazy var newButton: UIButton = {
         let button = UIButton()
-        button.setTitle("New", for: .normal)
+        button.setTitle("Recent", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(color.black(), for: .normal)
         return button
@@ -33,7 +33,7 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var popularButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Popular", for: .normal)
+        button.setTitle("Top", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.lightGray, for: .normal)
         return button

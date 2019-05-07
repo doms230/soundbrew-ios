@@ -43,21 +43,38 @@ class MiniPlayerView: UIButton {
         return image
     }()
     
+    lazy var activitySpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = color.black()
+        spinner.startAnimating()
+        spinner.isHidden = true
+        return spinner
+    }()
+    
     lazy var playBackButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "play"), for: .normal)
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let player = self.player?.player {
-            if player.isPlaying {
-                player.pause()
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                
-            } else {
-                player.play()
-                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        if let player = self.player {
+            if let soundPlayer = player.player {
+                if soundPlayer.isPlaying {
+                    player.pause()
+                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                    
+                } else {
+                    player.play()
+                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                }
             }
+            
+            activitySpinner.isHidden = true
+            playBackButton.isHidden = false
+            
+        } else {
+            activitySpinner.isHidden = false
+            playBackButton.isHidden = true
         }
     }
     
@@ -81,9 +98,14 @@ class MiniPlayerView: UIButton {
             playBackButton.snp.makeConstraints { (make) -> Void in
                 make.width.height.equalTo(30)
                 make.centerY.equalTo(self)
-               // make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            
+            self.addSubview(activitySpinner)
+            activitySpinner.snp.makeConstraints { (make) -> Void in
+                make.width.height.equalTo(30)
+                make.centerY.equalTo(self)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             self.addSubview(songArt)
@@ -120,7 +142,7 @@ class MiniPlayerView: UIButton {
     
     @objc func didReceiveSound() {
         setSound()
-        self.isHidden = false 
+        self.isHidden = false
     }
     
     @objc func playbackWasPaused() {
@@ -142,6 +164,13 @@ class MiniPlayerView: UIButton {
                 } else {
                     self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                 }
+                
+                activitySpinner.isHidden = true
+                playBackButton.isHidden = false
+                
+            } else {
+                activitySpinner.isHidden = false
+                playBackButton.isHidden = true
             }
         }
     }

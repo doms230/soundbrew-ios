@@ -37,6 +37,8 @@ class Ad: NSObject, GADInterstitialDelegate {
             interstitial.present(fromRootViewController: target)
             
         } else {
+            let extraTimeForAdToLoad = 60
+            secondsPlayedSinceLastAd = secondsPlayedSinceLastAd - extraTimeForAdToLoad
             player.play()
         }
     }
@@ -49,10 +51,9 @@ class Ad: NSObject, GADInterstitialDelegate {
     }
     
     func interstitialDidDismissScreen(_ ad: GADInterstitial) {
-        player.play()
-        interstitial = createAndLoadInterstitial()
-        
         secondsPlayedSinceLastAd = 0
         UIElement().setUserDefault("secondsPlayedSinceLastAd", value: secondsPlayedSinceLastAd)
+        player.play()
+        interstitial = createAndLoadInterstitial()
     }
 }

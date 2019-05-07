@@ -12,6 +12,7 @@ import AVFoundation
 import Parse
 import MediaPlayer
 import Kingfisher
+import AppCenterAnalytics
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
@@ -66,12 +67,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         if soundPlayable {
-            if ad.secondsPlayedSinceLastAd < ad.fifteenMinutesInSeconds {
-                self.play()
-                
-            } else if  ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds {
-                ad.showAd(target)
-            }
+            self.play()
         }
     }
     
@@ -84,21 +80,26 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func play() {
-        if let player = self.player {
-            if !player.isPlaying {
-                player.play()
-                let sound = sounds[currentSoundIndex]
-                currentSound = sound
-                setBackgroundAudioViews()
-                incrementPlayCount(sound: sound)
-                
-                if let currentUser = PFUser.current() {
-                    self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
-                    
-                } else {
-                    self.sendSoundUpdateToUI()
+        let applicationState = UIApplication.shared.applicationState
+        
+        if ad.secondsPlayedSinceLastAd < ad.fifteenMinutesInSeconds {
+            shouldEnableCommandCenter(true)
+            if let player = self.player {
+                if !player.isPlaying {
+                    player.play()
+                    sendSoundUpdateToUI()
+                    MSAnalytics.trackEvent("Play")
+                    incrementPlayCount(sound: sounds[currentSoundIndex])
                 }
             }
+            
+            //currenty, ads can only be shown when app is active and view is shown.
+        } else if ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds && applicationState == .active {
+            ad.showAd(target)
+            
+        } else if ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds &&
+            applicationState == .background {
+            shouldEnableCommandCenter(false)
         }
     }
     
@@ -112,6 +113,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func next() {
         self.setUpNextSong(false, at: nil)
+        MSAnalytics.trackEvent("Skip")
     }
     
     func previous() {
@@ -120,6 +122,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.currentTime = 0.0
                 setBackgroundAudioNowPlaying(player, sound: self.currentSound!)
                 incrementPlayCount(sound: self.currentSound!)
+                MSAnalytics.trackEvent("Go Back")
                 
             } else {
                 self.setUpNextSong(true, at: nil)
@@ -144,8 +147,22 @@ class Player: NSObject, AVAudioPlayerDelegate {
             player = nil
         }
         
+        if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
+            updateUI(sound)
+            prepareToPlaySound(sound)
+            setUpAudioForNextSound()
+        }
+    }
+    
+    func setUpAudioForNextSound() {
+        let nextSoundIndex = currentSoundIndex + 1
+        if sounds.indices.contains(nextSoundIndex) && sounds[nextSoundIndex].audioData == nil {
+            fetchAudioData(nextSoundIndex, prepareAndPlay: false)
+        }
+    }
+    
+    func determineSoundToPlay(_ didPressGoBackButton: Bool, at: Int?) -> Sound? {
         var sound: Sound
-        
         if let at = at {
             currentSoundIndex = at
             sound = sounds[at]
@@ -157,16 +174,26 @@ class Player: NSObject, AVAudioPlayerDelegate {
             sound = incrementPlaylistPositionAndReturnSound()
         }
         
+        return sound
+    }
+    
+    func prepareToPlaySound(_ sound: Sound) {
         if let audioData = sound.audioData {
             self.prepareAndPlay(audioData)
             
         } else {
             fetchAudioData(currentSoundIndex, prepareAndPlay: true)
         }
-        
-        let nextSoundIndex = currentSoundIndex + 1
-        if sounds.indices.contains(nextSoundIndex) && sounds[nextSoundIndex].audioData == nil {
-            fetchAudioData(nextSoundIndex, prepareAndPlay: false)
+    }
+    
+    func updateUI(_ sound: Sound) {
+        currentSound = sound
+        setBackgroundAudioViews()
+        if let currentUser = PFUser.current() {
+            self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
+            
+        } else {
+            self.sendSoundUpdateToUI()
         }
     }
     
@@ -276,6 +303,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
 
             return .commandFailed
         }
+    }
+    
+    func shouldEnableCommandCenter(_ shouldEnable: Bool ) {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.playCommand.isEnabled = shouldEnable
+        commandCenter.pauseCommand.isEnabled = shouldEnable
+        commandCenter.nextTrackCommand.isEnabled = shouldEnable
+        commandCenter.previousTrackCommand.isEnabled = shouldEnable
     }
     
     func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer, sound: Sound) {
