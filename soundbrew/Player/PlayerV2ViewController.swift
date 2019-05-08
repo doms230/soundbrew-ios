@@ -48,11 +48,21 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
     //mark: sound
     @objc func didReceiveSound(){
         setSound()
+    }
+    
+    @objc func didBecomeActive() {
+        if self.viewIfLoaded?.window != nil {
+            if let player = player {
+                player.target = self
+            }
+        }
     }
     
     func setSound() {

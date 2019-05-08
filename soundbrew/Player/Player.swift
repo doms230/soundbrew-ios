@@ -207,7 +207,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func incrementPlaylistPositionAndReturnSound() -> Sound {
         self.currentSoundIndex = self.currentSoundIndex + 1
         
-        if self.currentSoundIndex == sounds.count {
+        if self.currentSoundIndex == sounds.count || !self.sounds.indices.contains(self.currentSoundIndex) {
             //no sounds left, go back to zero.
             self.currentSoundIndex = 0
         }
