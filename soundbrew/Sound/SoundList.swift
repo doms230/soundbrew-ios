@@ -42,7 +42,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         player = Player.sharedInstance
         player?.target = target
         player?.tableview = tableView
-        
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
     }
@@ -316,14 +315,12 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         } else if let player = self.player {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             player.sounds = self.sounds
-            noResultsLabel.textColor = .white
-            print("yea")
             self.tableView?.isHidden = false
+            target.view.bringSubviewToFront(tableView!)
+            self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
         }
         
         self.tableView?.reloadData()
-        //self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
-        
         determineIfRateTheAppPopUpShouldShow()
     }
     

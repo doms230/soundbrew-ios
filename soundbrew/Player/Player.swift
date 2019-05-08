@@ -5,7 +5,7 @@
 //  Created by Dominic  Smith on 2/6/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
-//mark: Data,
+//mark: Data
 
 import Foundation
 import AVFoundation
@@ -99,10 +99,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
             
             //currenty, ads can only be shown when app is active and view is shown.
         } else if ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds && applicationState == .active {
+            print("is active")
             ad.showAd(target)
             
         } else if ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds &&
             applicationState == .background {
+            print("is not active")
             shouldEnableCommandCenter(false)
         }
     }
@@ -283,6 +285,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         didRecordStream = false
         secondsPlayedTimer.invalidate()
         secondsPlayed = 0.0
+        ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
+        UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
     }
     
     @objc func UpdateTimer(_ timer: Timer) {
@@ -307,9 +311,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func incrementPlayCount(_ sound: Sound) {
-        ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
-        UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
-        
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId) {
             (object: PFObject?, error: Error?) -> Void in

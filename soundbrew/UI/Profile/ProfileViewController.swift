@@ -400,7 +400,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func setUpNavigationButtons(_ userId: String) {
         if let currentUser = self.currentUser {
             if currentUser.objectId! == userId {
-                let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressMenuButton(_:)))
+                let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
                 self.navigationItem.rightBarButtonItem = menuButton
                 
             } else {
@@ -448,7 +448,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressMenuButton(_ sender: UIBarButtonItem) {
+    @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
         self.performSegue(withIdentifier: "showSettings", sender: self)
     }
     

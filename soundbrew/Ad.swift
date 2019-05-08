@@ -13,8 +13,8 @@ class Ad: NSObject, GADInterstitialDelegate {
     var player: Player!
     var interstitial: GADInterstitial!
     var secondsPlayedSinceLastAd = 0
-    //let fifteenMinutesInSeconds = 5
-    let fifteenMinutesInSeconds = 900
+    let fifteenMinutesInSeconds = 5
+    //let fifteenMinutesInSeconds = 900
     
     init(player: Player!) {
         super.init()
@@ -37,8 +37,8 @@ class Ad: NSObject, GADInterstitialDelegate {
             interstitial.present(fromRootViewController: target)
             
         } else {
-            let extraTimeForAdToLoad = 60
-            secondsPlayedSinceLastAd = secondsPlayedSinceLastAd - extraTimeForAdToLoad
+            //let extraTimeForAdToLoad = 60
+            //secondsPlayedSinceLastAd = secondsPlayedSinceLastAd - extraTimeForAdToLoad
             player.play()
         }
     }

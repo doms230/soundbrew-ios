@@ -33,6 +33,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var didPressUploadButton = false
     
     var soundThatIsBeingEdited: Sound?
+    var newSoundObjectId: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -364,6 +365,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
+                self.newSoundObjectId = newSound.objectId
                 self.saveTags(tags)
                 MSAnalytics.trackEvent("sound uploaded")
                 
@@ -390,7 +392,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     (success: Bool, error: Error?) in
                     if (success) {
                         self.stopAnimating()
-                        //self.dismiss(animated: true, completion: nil)
                         self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {

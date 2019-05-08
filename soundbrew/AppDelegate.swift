@@ -113,6 +113,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let installation = PFInstallation.current()
         installation?.badge = 0
         installation?.saveEventually()
+        
+        //doing this to insure that if ad needs to be shown, the ad is attached to the right view controller
+        //won't show if ad is attached to view controller that isn't currently active...
+        
+        let player = Player.sharedInstance
+        player.target = self.window?.rootViewController
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
