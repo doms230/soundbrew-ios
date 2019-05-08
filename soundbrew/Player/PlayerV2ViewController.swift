@@ -159,6 +159,9 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 self.player!.sounds[self.player!.currentSoundIndex].isLiked = true
                 self.sound!.isLiked = true
                 self.incrementLikeCount(sound: self.sound!, incrementLikes: true, decrementLikes: false)
+                if let currentUsername = PFUser.current()?.username {
+                    self.uiElement.sendAlert("\(currentUsername) added \(self.sound!.title!) to their collection.", toUserId: self.sound!.artist!.objectId)
+                }
                 
             } else if let error = error {
                 self.likeButton.setImage(UIImage(named: self.likeImage), for: .normal)

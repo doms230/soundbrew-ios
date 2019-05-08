@@ -102,8 +102,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             } else {
                 miniPlayerView?.isHidden = true 
             }
-            
-            //setUpTableView()
         }
     }
     
@@ -318,6 +316,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         } else if let player = self.player {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             player.sounds = self.sounds
+            noResultsLabel.textColor = .white
+            print("yea")
             self.tableView?.isHidden = false
         }
         
@@ -460,9 +460,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             currentTagObjectIds = selectedTagsForFiltering.map {$0.objectId}
         }
         if let newTags = value {
-            print(newTags.count)
-            print(soundType)
-            
             let newTagObjectIds = newTags.map {$0.objectId}
             if currentTagObjectIds != newTagObjectIds {
                 self.selectedTagsForFiltering = newTags

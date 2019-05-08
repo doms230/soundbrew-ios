@@ -317,13 +317,19 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 print(error)
                 
             } else if let object = object {
-                /*if let plays = object["plays"] as? Double {
-                 //We want to notify artists every time their song hits a milestone like 10, 20, 100, 110, etc. Best way to determine if "plays" equally divids by 10
-                 let incrementedPlays = plays + 1.0
-                 if incrementedPlays.truncatingRemainder(dividingBy: 10) == 0 {
-                 self.sendAlert("Congrats \(sound.artistName!), \(sound.title!) just hit \(incrementedPlays) plays!", toUserId: sound.userId)
-                 }
-                 }*/
+                if let plays = object["plays"] as? Double {
+                    //We want to notify artists every time their song hits a milestone like 10, 20, 100, 110, etc. Best way to determine if "plays" equally divids by 10
+                    let incrementedPlays = plays + 1.0
+                    switch incrementedPlays {
+                    case 10, 50, 100, 1000, 10000, 100000, 1000000:
+                    UIElement().sendAlert("Congrats, \(sound.title!) just hit \(Int(incrementedPlays)) plays!", toUserId: sound.artist!.objectId)
+                        break
+                        
+                        default:
+                        break
+                        
+                    }
+                }
                 object.incrementKey("plays")
                 object.saveEventually()
             }

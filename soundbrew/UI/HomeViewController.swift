@@ -91,9 +91,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     //mark: tableview
     var tableView = UITableView()
-    let recentPopularReuse = "recentPopularReuse"
     let soundReuse = "soundReuse"
-    let filterSoundsReuse = "filterSoundsReuse"
     let noSoundsReuse = "noSoundsReuse"
     
     func setUpTableView() {
@@ -113,6 +111,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if soundList.sounds.count == 0 {
+            return 1
+        }
         return soundList.sounds.count
     }
     
@@ -124,8 +125,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        return soundList.sound(indexPath, cell: cell)
+        if soundList.sounds.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            return cell
+            
+        } else {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+            return soundList.sound(indexPath, cell: cell)
+        }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

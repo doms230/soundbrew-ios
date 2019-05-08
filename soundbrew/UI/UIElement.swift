@@ -12,6 +12,7 @@ import Parse
 import FirebaseDynamicLinks
 import SCSDKCreativeKit
 import ShareInstagram
+import Alamofire
 
 class UIElement {
     let topOffset = 10
@@ -218,5 +219,11 @@ class UIElement {
         alertController.addAction(cancelAction)
         
         target.present(alertController, animated: true, completion: nil)
+    }
+    
+    func sendAlert(_ message: String, toUserId: String) {
+        Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
+            //print(response.response as Any)
+        }
     }
 }

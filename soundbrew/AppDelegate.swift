@@ -109,10 +109,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return false
     }
     
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        let installation = PFInstallation.current()
+        installation?.badge = 0
+        installation?.saveEventually()
+    }
+    
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let installation = PFInstallation.current()
         installation?.setDeviceTokenFrom(deviceToken)
-        installation?.saveInBackground()
+        installation?.saveEventually()
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
