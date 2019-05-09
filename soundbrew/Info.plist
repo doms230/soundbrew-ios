@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.5</string>
+	<string>0.3.6</string>
 	<key>CFBundleURLSchemes</key>
 	<array>
 		<string>soundbrew</string>
@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>9</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9150756002517285~6608111231</string>
 	<key>LSApplicationCategoryType</key>
@@ -53,6 +53,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Soundbrew needs access to your camera, so you can take a picture for you profile.</string>
+	<key>NSLocationUsageDescription</key>
+	<string></string>
 	<key>SCSDKClientId</key>
 	<string>7530c9a7-b226-43ba-9c5e-082c14b6db3c</string>
 	<key>SCSDKRedirectUrl</key>

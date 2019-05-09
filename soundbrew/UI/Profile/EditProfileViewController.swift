@@ -33,6 +33,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var cityText: UITextField!
 
     var emailText: UITextField!
+    var shouldUpdateEmail = false
     
     var editDetailType: String!
     
@@ -67,8 +68,17 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     @objc func didPressCancelButton(_ sender: UIButton){
         self.dismiss(animated: true, completion: nil)
     }
+    
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        if validateEmail() && validateUsername() {
+        usernameText.text = self.uiElement.cleanUpText(usernameText.text!)
+        emailText.text = self.uiElement.cleanUpText(emailText.text!)
+        websiteText.text = self.uiElement.cleanUpText(websiteText.text!)
+        
+        if emailText.text != self.artist?.email {
+            shouldUpdateEmail = true
+        }
+        
+        if validateEmail() && validateUsername() && validateWebsite()  {
             updateUserInfo()
         }
     }
@@ -169,30 +179,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 break
                 
-            /*case 3:
-                instagramText = cell.editProfileInput
-                inputTitle = "Instagram @"
-                if let instagram = artist?.instagramUsername {
-                    inputText = instagram
-                }
-                break
-                
-            case 4:
-                twitterText = cell.editProfileInput
-                inputTitle = "Twitter @"
-                if let twitter = artist?.twitterUsername {
-                    inputText = twitter
-                }
-                break
-                
-            case 5:
-                snapchatText = cell.editProfileInput
-                inputTitle = "Snapchat @"
-                if let snapchat = artist?.snapchatUsername {
-                    inputText = snapchat
-                }
-                break*/
-                
             case 3:
                 websiteText = cell.editProfileInput
                 inputTitle = "Website"
@@ -207,7 +193,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 break
             }
             
-            //cell.editProfileInput.placeholder = inputTitle
             cell.editProfileTitle.text = inputTitle
             cell.editProfileInput.text = inputText
             break
@@ -222,7 +207,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             bioLabel = cell.editBioText
             cell.editBioTitle.text = "Bio"
             if let bio = artist?.bio {
-                cell.editBioText.text = bio
+                if bio.isEmpty {
+                    cell.editBioText.text = "Add Bio"
+                    
+                } else {
+                   cell.editBioText.text = bio
+                }
+                
+            } else {
+                cell.editBioText.text = "Add Bio"
             }
             break
             
@@ -233,10 +226,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             tableView.separatorStyle = .singleLine
             tableView.separatorInset = .zero
             
-            //cell.editProfileInput.placeholder = "Email"
             cell.editProfileTitle.text = "Email"
             emailText = cell.editProfileInput
-            cell.editProfileInput.text = artist!.email
+            if let email = artist?.email {
+                cell.editProfileInput.text = email
+                
+            } else {
+                cell.editProfileInput.text = PFUser.current()?.email
+                artist?.email = PFUser.current()?.email
+            }
             break
             
         case 4:
@@ -344,17 +342,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 
                 user["city"] = self.cityText.text
-                
-                /*var igText = self.instagramText.text
-                if igText!.starts(with: "@") {
-                    igText?.removeFirst()
-                }
-                user["instagramHandle"] = igText
-                user["twitterHandle"] = self.twitterText.text
-                user["snapchatHandle"] = self.snapchatText.text!*/
-                user["otherLink"] = self.websiteText.text
+                user["website"] = self.websiteText.text
                 user["bio"] = self.bioLabel.text
-                user["email"] = self.emailText.text
+                
+                if self.shouldUpdateEmail {
+                    user["email"] = self.emailText.text
+                }
                 
                 if let newUserImage = self.newProfileImageFile {
                     user["userImage"] = newUserImage
@@ -365,7 +358,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.stopAnimating()
                     if (success) {
                         if let artistDelegate = self.artistDelegate {
-                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, isFollowedByCurrentUser: nil, followerCount: nil)
                             
                             if let followerCount = user["followerCount"] as? Int {
                                 artist.followerCount = followerCount
@@ -379,19 +372,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                                 artist.city = city
                             }
                             
-                           /* if let instagramUsername = user["instagramHandle"] as? String {
-                                artist.instagramUsername = instagramUsername
-                            }
-                            
-                            if let twitterUsername = user["twitterHandle"] as? String {
-                                artist.twitterUsername = twitterUsername
-                            }
-                            
-                            if let snapchatUsername = user["snapchatHandle"] as? String {
-                                artist.snapchatUsername = snapchatUsername
-                            }*/
-                            
-                            if let website = user["otherLink"] as? String {
+                            if let website = user["website"] as? String {
                                 artist.website = website
                             }
                             
@@ -430,7 +411,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil)
                 
                 if let followerCount = user["followerCount"] as? Int {
                     artist.followerCount = followerCount
@@ -465,19 +446,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     artist.isVerified = artistVerification
                 }
                 
-                if let instagramUsername = user["instagramHandle"] as? String {
-                    artist.instagramUsername = instagramUsername
-                }
-                
-                if let twitterUsername = user["twitterHandle"] as? String {
-                    artist.twitterUsername = twitterUsername
-                }
-                
-                if let snapchatUsername = user["snapchatHandle"] as? String {
-                    artist.snapchatUsername = snapchatUsername
-                }
-                
-                if let website = user["otherLink"] as? String {
+                if let website = user["website"] as? String {
                     artist.website = website
                 }
                 
@@ -499,13 +468,24 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func validateUsername() -> Bool {
-        if  usernameText.text!.contains("@") {
+        if usernameText.text!.contains("@") {
             self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Invalid username.")
             return false
             
         } else if usernameText.text!.isEmpty {
             self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
             return false
+        }
+        
+        return true
+    }
+    
+    func validateWebsite() -> Bool {
+        if !websiteText.text!.isEmpty {
+            if !UIApplication.shared.canOpenURL(URL(string: websiteText.text!)!) {
+                self.uiElement.showTextFieldErrorMessage(self.websiteText, text: "Invalid url.")
+                return false
+            }
         }
         
         return true

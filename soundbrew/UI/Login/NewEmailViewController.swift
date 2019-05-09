@@ -26,7 +26,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var subTitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.text = "A valid email is required to get paid from your streams."
+        label.text = "A verified email is required to get paid from your streams."
         label.numberOfLines = 0
         return label
     }()

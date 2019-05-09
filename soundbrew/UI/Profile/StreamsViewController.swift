@@ -24,15 +24,15 @@ class StreamsViewController: UIViewController {
         let label = UILabel()
         label.text = "Streams Since Last Payout"
         label.textColor = color.black()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         return label
     }()
     
     lazy var streamExplanation: UILabel = {
         let label = UILabel()
-        label.text = "A stream on Soundbrew is recorded when a listener plays your sound for 30 seconds or more. \n\n You earn $0.013 per stream. \n\n You're eligble for payout when you earn at-least $20 worth of streams or 1,538 streams."
+        label.text = "A stream on Soundbrew is recorded when a listener plays your sound for 30 seconds or more. A stream does not equal a play. \n\n You earn $0.013 per stream. \n\n You're eligble for payout when you earn at-least $20 worth of streams or 1,538 streams. \n\n Contact support@soundbrew.app for any questions or concerns."
         label.textColor = color.black()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.numberOfLines = 0
         return label
     }()
@@ -41,8 +41,7 @@ class StreamsViewController: UIViewController {
         let label = UILabel()
         label.text = "Loading"
         label.textColor = color.black()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        label.textAlignment = .center
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         return label
     }()
     
@@ -73,16 +72,17 @@ class StreamsViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        streamExplanation.snp.makeConstraints { (make) -> Void in
+        streamCount.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(streamTitle.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        streamCount.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(streamExplanation.snp.bottom).offset(uiElement.topOffset)
+        streamExplanation.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(streamCount.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
+
     }
 }

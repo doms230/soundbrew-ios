@@ -54,7 +54,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     @objc func didPressRightButton(_ sender: UIButton) {
         addNewComment(messageView.text, atTime: Double(atTime!), postId: postId!)
         
-        let artist = Artist(objectId: PFUser.current()!.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+        let artist = Artist(objectId: PFUser.current()!.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil)
         let comment = Comment(objectId: nil, artist: artist, text: messageView.text, atTime: Float(atTime!))
         self.comments.append(comment)
         messageView.text = ""
@@ -157,7 +157,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
                         let atTime = object["atTime"] as! Double
                         let userId = object["userId"] as! String
                         
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil)
                         
                         let comment = Comment(objectId: object.objectId!, artist: artist, text: text, atTime: Float(atTime))
                         
@@ -185,7 +185,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
                 let username = user["username"] as? String
                 cell.username.text = username
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: nil, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil)
                 
                 if let name = user["artistName"] as? String {
                     //cell.soundArtist.text = name

@@ -65,6 +65,13 @@ class ProfileTableViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var bio: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.numberOfLines = 0
+        return label
+    }()
+    
     lazy var city: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
@@ -74,23 +81,8 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var website: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "website"), for: .normal)
-        button.layer.cornerRadius = 25 / 2
-        button.clipsToBounds = true
+        button.setTitleColor(color.blue(), for: .normal)
         return button
-    }()
-    
-    lazy var instagramButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "instagram_logo"), for: .normal)
-        button.layer.cornerRadius = 25 / 2
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var socialScrollview: UIScrollView = {
-        let scrollView = UIScrollView()
-        return scrollView
     }()
     
     lazy var actionButton: UIButton = {
@@ -167,8 +159,8 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(profileImage)
             self.addSubview(displayName)
             self.addSubview(city)
-            self.addSubview(username)
-            //self.addSubview(socialScrollview)
+            self.addSubview(bio)
+            self.addSubview(website)
             self.addSubview(actionButton)
             
             profileImage.layer.cornerRadius = 75/2
@@ -176,16 +168,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.height.width.equalTo(75)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
-            
-            /*socialScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
-                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
-                //make.centerY.equalTo(actionButton)
-                make.left.equalTo(profileImage.snp.right)
-                make.right.equalTo(self)
-            }*/
             
             actionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(30)
@@ -199,17 +182,22 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(profileImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            username.snp.makeConstraints { (make) -> Void in
+            bio.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayName.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
-                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(username.snp.bottom)
+                make.top.equalTo(bio.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
+            }
+            
+            website.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(city.snp.bottom)
+                make.left.equalTo(displayName)
+                //make.right.equalTo(displayName)
                 make.bottom.equalTo(self)
             }
     
@@ -218,7 +206,6 @@ class ProfileTableViewCell: UITableViewCell {
         case "searchProfileReuse":
             self.addSubview(profileImage)
             self.addSubview(displayName)
-            self.addSubview(city)
             self.addSubview(username)
             
             profileImage.layer.cornerRadius = 25
@@ -238,7 +225,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(displayName.snp.bottom)
                 make.left.equalTo(displayName)
                 make.right.equalTo(displayName)
-                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             break
@@ -262,26 +248,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            break
-            
-        case "actionProfileReuse":
-            self.addSubview(socialScrollview)
-            self.addSubview(actionButton)
-            actionButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
-                make.width.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                //make.right.equalTo(profileImage.snp.right)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            socialScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
-                make.centerY.equalTo(actionButton)
-                make.left.equalTo(actionButton.snp.right)
-                make.right.equalTo(self)
-            }
             break
             
         case "editProfileImageReuse":
@@ -377,9 +343,9 @@ class ProfileTableViewCell: UITableViewCell {
             
             firstListType.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.top.equalTo(self)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(self)
             }
             
             secondListType.snp.makeConstraints { (make) -> Void in

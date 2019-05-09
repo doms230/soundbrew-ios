@@ -20,13 +20,10 @@ class Artist {
     var isVerified: Bool?
     var bio: String?
     var email: String?
-    var instagramUsername: String?
-    var twitterUsername: String?
-    var snapchatUsername: String?
     var isFollowedByCurrentUser: Bool?
     var followerCount: Int?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, instagramUsername: String?, twitterUsername: String?, snapchatUsername: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -36,9 +33,6 @@ class Artist {
         self.isVerified = isVerified
         self.bio = bio
         self.email = email
-        self.instagramUsername = instagramUsername
-        self.twitterUsername = twitterUsername
-        self.snapchatUsername = snapchatUsername
         self.isFollowedByCurrentUser = isFollowedByCurrentUser
         self.followerCount = followerCount
     }
@@ -57,15 +51,6 @@ class Artist {
                     self.username = username
                 }
                 
-                if let cell = cell {
-                    if username!.contains("@") {
-                        cell.username.text = ""
-                        
-                    } else {
-                        cell.username.text = username
-                    }
-                }
-                
                 if let currentUser = PFUser.current() {
                     if currentUser.objectId! == user.objectId! {
                         self.email = user["email"] as? String
@@ -81,10 +66,6 @@ class Artist {
                     if let cell = cell {
                         cell.displayName.text = name
                     }
-                }
-                
-                if let username = user["username"] as? String {
-                    self.username = username
                 }
                 
                 if let city = user["city"] as? String {
@@ -105,28 +86,9 @@ class Artist {
                     self.bio = bio
                 }
                 
-                if let artistVerification = user["artistVerification"] as? Bool {
-                    self.isVerified = artistVerification
-                }
-                
-                if let instagramUsername = user["instagramHandle"] as? String {
-                    self.instagramUsername = instagramUsername
-                }
-                
-                if let twitterUsername = user["twitterHandle"] as? String {
-                    self.twitterUsername = twitterUsername
-                }
-                
-                if let snapchatUsername = user["snapchatHandle"] as? String {
-                    self.snapchatUsername = snapchatUsername
-                }
-                
-                if let website = user["otherLink"] as? String {
+                if let website = user["website"] as? String {
                     self.website = website
                 }
-                
-            /*target.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId, tags: nil, searchText: nil)
-                target.setUpTableView()*/
             }
         }
     }

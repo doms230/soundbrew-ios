@@ -69,6 +69,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func didSelectSoundAt(row: Int) {
         if let player = soundList.player {
+            player.sounds = soundList.sounds
             player.didSelectSoundAt(row)
             tableView.reloadData()
         }
@@ -354,7 +355,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func search() {
         switch searchType {
         case tagSearch:
-            searchBar.placeholder = "Mood, Activity, Genre, City, Anything"
+            searchBar.placeholder = "Try a Mood"
             if searchBar.text!.isEmpty {
                 searchTags(nil)
                 
@@ -365,7 +366,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         case profileSearch:
             searchBar.placeholder = "Name, Username"
-            searchUsers(searchBar.text!)
+            if !searchBar.text!.isEmpty {
+                searchUsers(searchBar.text!)
+                
+            } else {
+                self.tableView.reloadData()
+            }
+            
             break
             
         case soundSearch:
@@ -466,7 +473,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         nameQuery.whereKey("artistName", matchesRegex: text)
         
         let usernameQuery = PFQuery(className: "_User")
-        usernameQuery.whereKey("artistName", matchesRegex: text.lowercased())
+        usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.limit = 50
@@ -485,7 +492,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             }
                         }
                         
-                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil)
                         
                         if let followerCount = user["followerCount"] as? Int {
                             artist.followerCount = followerCount
@@ -515,19 +522,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             artist.isVerified = artistVerification
                         }
                         
-                        if let instagramUsername = user["instagramHandle"] as? String {
-                            artist.instagramUsername = instagramUsername
-                        }
-                        
-                        if let twitterUsername = user["twitterHandle"] as? String {
-                            artist.twitterUsername = twitterUsername
-                        }
-                        
-                        if let snapchatUsername = user["snapchatHandle"] as? String {
-                            artist.snapchatUsername = snapchatUsername
-                        }
-                        
-                        if let website = user["otherLink"] as? String {
+                        if let website = user["website"] as? String {
                             artist.website = website
                         }
                         

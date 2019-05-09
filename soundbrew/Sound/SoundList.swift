@@ -93,6 +93,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             if let player = self.player?.player  {
                 if player.isPlaying {
                     miniPlayerView?.playBackButton.setImage(UIImage(named: "pause_white"), for: .normal)
+                    miniPlayerView?.isHidden = false
                     
                 } else {
                     miniPlayerView?.playBackButton.setImage(UIImage(named: "play_white"), for: .normal)
@@ -322,7 +323,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             
         } else if let player = self.player {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-            player.sounds = self.sounds
+            //player.sounds = self.sounds
             self.tableView?.isHidden = false
             target.view.bringSubviewToFront(tableView!)
             self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
@@ -371,7 +372,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             likes = soundPlays
         }
         
-        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
         
         var relevancyScore = 0
         if let selectedTagsForFiltering = self.selectedTagsForFiltering {
@@ -628,7 +629,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             } else if let user = user {
                 let artistUsername = user["username"] as? String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, instagramUsername: nil, twitterUsername: nil, snapchatUsername: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil)
                 
                 if let name = user["artistName"] as? String {
                     cell.soundArtist.text = name

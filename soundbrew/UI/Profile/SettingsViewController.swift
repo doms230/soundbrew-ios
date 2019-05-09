@@ -43,6 +43,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         switch indexPath.row {
         case 0:
             cell.settingsButton.setTitle("Streams", for: .normal)
+            cell.settingsButton.setImage(UIImage(named: "dollar"), for: .normal)
             cell.settingsButton.tag = 0
             break
             
@@ -55,6 +56,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         case 2:
             cell.settingsButton.tag = 2
             cell.settingsButton.setTitle("Sign Out", for: .normal)
+            cell.settingsButton.setImage(UIImage(named: "signout"), for: .normal)
             break
             
         default:
