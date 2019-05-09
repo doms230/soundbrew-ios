@@ -23,20 +23,21 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     var miniPlayerView: MiniPlayerView?
     let uiElement = UIElement()
     let color = Color()
-    var userId: String?
+    var profileUserId: String?
     var player: Player?
     var likedSoundIds = [String]()
     var followUserIds = [String]()
     var soundType: String!
     var didLoadLikedSounds = false
     var searchText: String?
+    var domSmithUserId = "AWKPPDI4CB"
     
     init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?, searchText: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
         self.soundType = soundType
-        self.userId = userId
+        self.profileUserId = userId
         self.selectedTagsForFiltering = tags
         self.searchText = searchText
         player = Player.sharedInstance
@@ -146,20 +147,27 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func prepareToShowSelectedArtist(_ segue: UIStoryboardSegue) {
         let viewController = segue.destination as! ProfileViewController
-        viewController.artist = selectedArtist
+        viewController.profileArtist = selectedArtist
     }
     
     func selectedArtist(_ artist: Artist?) {
+        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
+        let navigationController = tabBarController?.selectedViewController as? UINavigationController
+        let view = navigationController?.topViewController
+        //let view = navigationController
         if let selectedArtist = artist {
-            if let userId = self.userId {
+            //checking to make sure selected artist isn't already on artist profile page
+            if let userId = self.profileUserId {
                 if userId != selectedArtist.objectId {
                     self.selectedArtist = selectedArtist
-                    target.performSegue(withIdentifier: "showProfile", sender: self)
+                    //target.performSegue(withIdentifier: "showProfile", sender: self)
+                    view?.performSegue(withIdentifier: "showProfile", sender: self)
                 }
                 
             } else {
                 self.selectedArtist = selectedArtist
-                target.performSegue(withIdentifier: "showProfile", sender: self)
+                view?.performSegue(withIdentifier: "showProfile", sender: self)
+                //target.performSegue(withIdentifier: "showProfile", sender: self)
             }
         }
     }
@@ -272,7 +280,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             break
             
         case "uploads":
-            loadSounds(descendingOrder, likeIds: nil, userId: userId!, tags: selectedTagsForFiltering, followIds: nil, searchText: nil)
+            loadSounds(descendingOrder, likeIds: nil, userId: profileUserId!, tags: selectedTagsForFiltering, followIds: nil, searchText: nil)
             break
             
         case "likes":
@@ -280,7 +288,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             break
             
         case "follows":
-            if userId == nil {
+            if profileUserId == nil {
                 showNoResultsLabel()
                 
             } else {
@@ -338,7 +346,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         if let currentUser = PFUser.current() {
             if sounds.count != 0 {
                 if self.soundType == "uploads" || self.soundType == "likes" {
-                    if currentUser.objectId == self.userId! && self.userId! != "AWKPPDI4CB" {
+                    if currentUser.objectId == self.profileUserId! &&
+                        self.profileUserId! != domSmithUserId  {
                         SKStoreReviewController.requestReview()
                     }
                 }
@@ -568,7 +577,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func loadLikes(_ descendingOrder: String) {
         let query = PFQuery(className: "Like")
-        query.whereKey("userId", equalTo: userId!)
+        query.whereKey("userId", equalTo: profileUserId!)
         query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -590,7 +599,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func loadFollows(_ descendingOrder: String) {
         let query = PFQuery(className: "Follow")
-        query.whereKey("fromUserId", equalTo: userId!)
+        query.whereKey("fromUserId", equalTo: profileUserId!)
         query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

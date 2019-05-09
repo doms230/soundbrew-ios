@@ -50,7 +50,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        print("view did appear")
         if soundList != nil {
             var tags: Array<Tag>?
             if let soundListTags = soundList.selectedTagsForFiltering {

@@ -13,9 +13,9 @@ class Ad: NSObject, GADInterstitialDelegate {
     var player: Player!
     var interstitial: GADInterstitial!
     var secondsPlayedSinceLastAd = 0
-    //let fifteenMinutesInSeconds = 5
-    let fifteenMinutesInSeconds = 900
-    let pubAddUnitID = "ca-app-pub-9150756002517285~6608111231"
+    let fifteenMinutesInSeconds = 5
+    //let fifteenMinutesInSeconds = 900
+    let liveAddUnitID = "ca-app-pub-9150756002517285/2563611363"
     let testAddUnitID = "ca-app-pub-3940256099942544/4411468910"
     
     init(player: Player!) {

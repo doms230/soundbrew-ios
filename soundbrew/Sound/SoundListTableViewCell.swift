@@ -83,8 +83,15 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var menuButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "more"), for: .normal)
+        //button.setImage(UIImage(named: "more"), for: .normal)
+        //button.imageView?.contentMode = .scaleAspectFit
         return button 
+    }()
+    
+    lazy var menuImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "more")
+        return image
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -103,6 +110,7 @@ class SoundListTableViewCell: UITableViewCell {
             
         case "soundReuse":
             self.addSubview(menuButton)
+            self.menuButton.addSubview(menuImage)
             self.addSubview(soundArtImage)
             self.addSubview(soundTitle)
             self.addSubview(soundArtist)
@@ -117,9 +125,15 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(15)
+                make.height.width.equalTo(50)
                 make.top.equalTo(soundArtImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            menuImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.top.equalTo(menuButton)
+                make.right.equalTo(menuButton)
             }
             
             soundTitle.snp.makeConstraints { (make) -> Void in

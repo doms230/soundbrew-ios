@@ -17,7 +17,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let uiElement = UIElement()
     let color = Color()
     
-    var artist: Artist?
+    var profileArtist: Artist?
     
     var soundList: SoundList!
     var profileSounds = [Sound]()
@@ -33,7 +33,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.currentUser = currentUser
         }
         
-        if let artist = artist {
+        if let artist = profileArtist {
             self.executeTableViewSoundListFollowStatus()
             self.setUpNavigationButtons(artist.objectId)
             
@@ -59,7 +59,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
             let soundType = soundList.soundType!
-            soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: self.artist?.objectId, tags: tags, searchText: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: self.profileArtist?.objectId, tags: tags, searchText: nil)
         }
     }
     
@@ -68,7 +68,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         case "showEditProfile":
             let navigationController = segue.destination as! UINavigationController
             let editProfileController = navigationController.topViewController as! EditProfileViewController
-            editProfileController.artist = artist
+            editProfileController.artist = profileArtist
             editProfileController.artistDelegate = self
             break
             
@@ -94,7 +94,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         case "showSettings":
             let viewController = segue.destination as! SettingsViewController
-            viewController.artist = artist
+            viewController.artist = profileArtist
             break
             
         default:
@@ -107,22 +107,22 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func newArtistInfo(_ value: Artist?) {
         if let artist = value {
-            self.artist = artist
+            self.profileArtist = artist
             self.tableView.reloadData()
         }
     }
     
     func executeTableViewSoundListFollowStatus() {
-        if let username = artist?.username {
+        if let username = profileArtist?.username {
             if !username.contains("@") {
                 self.navigationItem.title = username
             }
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: artist?.objectId, tags: nil, searchText: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: profileArtist?.objectId, tags: nil, searchText: nil)
         self.setUpTableView()
         
-        if currentUser != nil && currentUser?.objectId != artist?.objectId {
+        if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
             checkFollowStatus(self.currentUser!)
         }
     }
@@ -186,7 +186,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             cell.selectionStyle = .none
             
-            if let artist = self.artist {
+            if let artist = self.profileArtist {
                 if let artistImage = artist.image {
                     cell.profileImage.kf.setImage(with: URL(string: artistImage))
                 }
@@ -207,7 +207,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
             
             if let currentUser = self.currentUser {
-                if currentUser.objectId == artist?.objectId {
+                if currentUser.objectId == profileArtist?.objectId {
                     cell.actionButton.setTitle("Edit Profile", for: .normal)
                     cell.actionButton.backgroundColor = .white
                     cell.actionButton.layer.borderWidth = 1
@@ -215,7 +215,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.actionButton.setTitleColor(color.black(), for: .normal)
                     
                 } else {
-                    if let isFollowedByCurrentUser = artist!.isFollowedByCurrentUser {
+                    if let isFollowedByCurrentUser = profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
                             cell.actionButton.setTitle("Following", for: .normal)
                             cell.actionButton.backgroundColor = color.darkGray()
@@ -297,7 +297,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
             if soundList.soundType == "uploads" {
-                soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: artist?.objectId, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+                soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: profileArtist?.objectId, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
                 
             } else {
                 soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.likedSoundIds, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
@@ -353,7 +353,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc func didPressSocialButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
-            if let username = artist?.instagramUsername {
+            if let username = profileArtist?.instagramUsername {
                 let instagramURL = "https://www.instagram.com/\(username)"
                 if isURLVerified(instagramURL) {
                     UIApplication.shared.open(URL(string: instagramURL)!, options: [:], completionHandler: nil)
@@ -362,7 +362,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case 1:
-            if let username = artist?.twitterUsername {
+            if let username = profileArtist?.twitterUsername {
                 let twitterURL = "https://www.twitter.com/\(username)"
                 if isURLVerified(twitterURL) {
                     UIApplication.shared.open(URL(string: twitterURL)!, options: [:], completionHandler: nil)
@@ -371,7 +371,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case 2:
-            if let username = artist?.snapchatUsername {
+            if let username = profileArtist?.snapchatUsername {
                 let snapchatURL = "https://www.snapchat.com/add/\(username)"
                 if isURLVerified(snapchatURL) {
                     UIApplication.shared.open(URL(string: snapchatURL)!, options: [:], completionHandler: nil)
@@ -380,7 +380,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case 3:
-            if let website = artist?.website {
+            if let website = profileArtist?.website {
                 if isURLVerified(website) {
                     UIApplication.shared.open(URL(string: "\(website)")!, options: [:], completionHandler: nil)
                 }
@@ -415,17 +415,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressWebsiteButton(_ sender: UIButton) {
-        if let website = self.artist?.website {
+        if let website = self.profileArtist?.website {
             UIApplication.shared.open(URL(string: website)!, options: [:], completionHandler: nil)
         }
     }
     
     @objc func didPressActionButton(_ sender: UIButton) {
         if let currentUser = self.currentUser {
-            if currentUser.objectId == artist!.objectId {
+            if currentUser.objectId == profileArtist!.objectId {
                 self.performSegue(withIdentifier: "showEditProfile", sender: self)
                 
-            } else if let isFollowedByCurrentUser = artist?.isFollowedByCurrentUser {
+            } else if let isFollowedByCurrentUser = profileArtist?.isFollowedByCurrentUser {
                 if isFollowedByCurrentUser {
                     unFollowerUser(currentUser)
                     
@@ -443,7 +443,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
-        if let artist = artist {
+        if let artist = profileArtist {
             self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
         }
     }
@@ -529,7 +529,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     artist.website = website
                 }
                 
-                self.artist = artist
+                self.profileArtist = artist
                 self.executeTableViewSoundListFollowStatus()
                 /*self.soundList = SoundList(target: self, tableView: self.tableView, soundType: "uploads", userId: artist.objectId, tags: nil, searchText: nil)
                 self.setUpTableView()*/
@@ -538,38 +538,38 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func followUser(_ currentUser: PFUser) {
-        self.artist!.isFollowedByCurrentUser = true
+        self.profileArtist!.isFollowedByCurrentUser = true
         self.tableView.reloadData()
         let newFollow = PFObject(className: "Follow")
         newFollow["fromUserId"] = currentUser.objectId
-        newFollow["toUserId"] = artist!.objectId
+        newFollow["toUserId"] = profileArtist!.objectId
         newFollow["isRemoved"] = false
         newFollow.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                self.incrementFollowerCount(artist: self.artist!, incrementFollows: true, decrementFollows: false)
+                self.incrementFollowerCount(artist: self.profileArtist!, incrementFollows: true, decrementFollows: false)
                 if let currentUser = self.currentUser {
-                    self.uiElement.sendAlert("\(currentUser.username!) followed you.", toUserId: self.artist!.objectId)
+                    self.uiElement.sendAlert("\(currentUser.username!) followed you.", toUserId: self.profileArtist!.objectId)
                 }
                 
             } else {
-                self.artist!.isFollowedByCurrentUser = false
+                self.profileArtist!.isFollowedByCurrentUser = false
                 self.tableView.reloadData()
             }
         }
     }
     
     func unFollowerUser(_ currentUser: PFUser) {
-        self.artist!.isFollowedByCurrentUser = false
+        self.profileArtist!.isFollowedByCurrentUser = false
         self.tableView.reloadData()
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: artist!.objectId)
+        query.whereKey("toUserId", equalTo: profileArtist!.objectId)
         query.whereKey("isRemoved", equalTo: false)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if error != nil {
-                self.artist!.isFollowedByCurrentUser = true
+                self.profileArtist!.isFollowedByCurrentUser = true
                 self.tableView.reloadData()
                 
             } else if let object = object {
@@ -577,7 +577,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 object.saveEventually {
                     (success: Bool, error: Error?) in
                     if success && error == nil {
-                        self.incrementFollowerCount(artist: self.artist!, incrementFollows: false, decrementFollows: true)
+                        self.incrementFollowerCount(artist: self.profileArtist!, incrementFollows: false, decrementFollows: true)
                     }
                 }
             }
@@ -587,17 +587,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func checkFollowStatus(_ currentUser: PFUser) {
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: artist!.objectId)
+        query.whereKey("toUserId", equalTo: profileArtist!.objectId)
         query.whereKey("isRemoved", equalTo: false)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
                 print("follwoing")
-                self.artist?.isFollowedByCurrentUser = true
+                self.profileArtist?.isFollowedByCurrentUser = true
                 
             } else {
                 print("not following")
-                self.artist?.isFollowedByCurrentUser = false
+                self.profileArtist?.isFollowedByCurrentUser = false
             }
             
             self.tableView.reloadData()
