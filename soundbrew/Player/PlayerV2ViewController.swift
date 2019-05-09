@@ -304,9 +304,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         return slider
     }()
     @objc func sliderValueDidChange(_ sender: UISlider) {
-        if let player = self.player?.player {
-            player.currentTime = TimeInterval(sender.value)
-            playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
+        if let player = self.player {
+            if let soundPlayer = player.player {
+                player.setBackgroundAudioNowPlaying(soundPlayer, sound: sound!)
+                soundPlayer.currentTime = TimeInterval(sender.value)
+                playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
+            }
         }
     }
     

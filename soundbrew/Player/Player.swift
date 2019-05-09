@@ -76,6 +76,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func sendSoundUpdateToUI() {
+        self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
+        
         if let tableView = self.tableview {
             tableView.reloadData()
         }
@@ -389,7 +391,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         commandCenter.previousTrackCommand.isEnabled = shouldEnable
     }
     
-    func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer, sound: Sound) {
+    func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer?, sound: Sound) {
         var nowPlayingInfo = [String : Any]()
         
         // Define Now Playing Info
@@ -404,10 +406,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
         }
         
-        let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
-        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+        if let player = player {
+            let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+        }
         
         // Set the metadata
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
@@ -423,9 +427,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sound.artImage = image
                 
                 if (sound.artist?.name) != nil {
-                    if let player = self.player {
-                        self.setBackgroundAudioNowPlaying(player, sound: sound)
-                    }
+                    self.setBackgroundAudioNowPlaying(self.player, sound: sound)
                     
                 } else {
                     self.loadUserInfoFromCloud(sound.artist!.objectId, i: self.currentSoundIndex)

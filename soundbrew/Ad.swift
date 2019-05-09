@@ -15,6 +15,8 @@ class Ad: NSObject, GADInterstitialDelegate {
     var secondsPlayedSinceLastAd = 0
     //let fifteenMinutesInSeconds = 5
     let fifteenMinutesInSeconds = 900
+    let pubAddUnitID = "ca-app-pub-9150756002517285~6608111231"
+    let testAddUnitID = "ca-app-pub-3940256099942544/4411468910"
     
     init(player: Player!) {
         super.init()
@@ -26,7 +28,7 @@ class Ad: NSObject, GADInterstitialDelegate {
     }
     
     func createAndLoadInterstitial() -> GADInterstitial {
-        let interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/4411468910")
+        let interstitial = GADInterstitial(adUnitID: testAddUnitID)
         interstitial.delegate = self
         interstitial.load(GADRequest())
         return interstitial
