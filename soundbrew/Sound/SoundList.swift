@@ -42,7 +42,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         self.searchText = searchText
         player = Player.sharedInstance
         player?.target = target
-        player?.tableview = tableView
+        player?.tableView = tableView
         setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
     }
@@ -69,7 +69,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     let filterSoundsReuse = "filterSoundsReuse"
     func setUpTableView() {
         if let player = self.player {
-            player.tableview = self.tableView
+            player.tableView = self.tableView
         }
     }
     
@@ -321,7 +321,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         } else if soundType == "follows" && self.sounds.count == 0 {
             showNoResultsLabel()
             
-        } else if let player = self.player {
+        } else if self.player != nil {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             //player.sounds = self.sounds
             self.tableView?.isHidden = false

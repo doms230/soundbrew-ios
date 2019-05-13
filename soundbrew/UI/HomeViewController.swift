@@ -119,9 +119,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let player = soundList.player {
-            player.sounds = soundList.sounds
+            player.didSelectSoundAt(indexPath.row, soundList: soundList)
+            /*player.sounds = soundList.sounds
             player.didSelectSoundAt(indexPath.row)
-            tableView.reloadData()
+            player.loadAudioData()
+            tableView.reloadData()*/
         }
     }
     

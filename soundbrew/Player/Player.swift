@@ -23,7 +23,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var sounds: Array<Sound>!
     var currentSound: Sound?
     var tags = [String]()
-    var tableview: UITableView?
+    var tableView: UITableView?
     var miniPlayerView: MiniPlayerView!
     var target: UIViewController!
     var ad: Ad!
@@ -78,7 +78,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func sendSoundUpdateToUI() {
         self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
         
-        if let tableView = self.tableview {
+        if let tableView = self.tableView {
             tableView.reloadData()
         }
         
@@ -139,8 +139,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func didSelectSoundAt(_ i: Int) {
+    func didSelectSoundAt(_ i: Int, soundList: SoundList) {
+        self.sounds = soundList.sounds
         self.setUpNextSong(false, at: i)
+        self.loadAudioData()
+        if let tableView = self.tableView {
+            tableView.reloadData()
+        }
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -242,6 +247,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     self.prepareAndPlay(audioData)
                 }
                 self.sounds[position].audioData = audioData
+            }
+        }
+    }
+    
+    func loadAudioData() {
+        for i in 0..<self.sounds.count {
+            if self.sounds[i].audioData == nil {
+                fetchAudioData(i, prepareAndPlay: false)
             }
         }
     }

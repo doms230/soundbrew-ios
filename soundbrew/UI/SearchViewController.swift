@@ -67,14 +67,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func didSelectSoundAt(row: Int) {
-        if let player = soundList.player {
-            player.sounds = soundList.sounds
-            player.didSelectSoundAt(row)
-            tableView.reloadData()
-        }
-    }
-    
     func showDiscoverSounds() {
         searchBar.setShowsCancelButton(false, animated: true)
         searchBar.text = ""
@@ -125,7 +117,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if selectedTagsForFiltering.count != 0 {
+        if selectedTagsForFiltering.count != 0 && !searchIsActive {
             return 3
         }
         return 2
@@ -134,7 +126,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var soundSection = 1
         
-        if selectedTagsForFiltering.count != 0 {
+        if selectedTagsForFiltering.count != 0 && !searchIsActive{
             soundSection = 2
         }
         
@@ -223,7 +215,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 break
                 
             case soundSearch:
-                didSelectSoundAt(row: indexPath.row)
+                if let player = soundList.player {
+                    player.didSelectSoundAt(indexPath.row, soundList: soundList)
+                }
                 break
                 
             default:
@@ -231,10 +225,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             
         } else if selectedTagsForFiltering.count != 0 && indexPath.section == 2 && !searchIsActive {
-            didSelectSoundAt(row: indexPath.row)
+            if let player = soundList.player {
+                player.didSelectSoundAt(indexPath.row, soundList: soundList)
+            }
             
         } else if selectedTagsForFiltering.count == 0 && indexPath.section == 1  && !searchIsActive {
-            didSelectSoundAt(row: indexPath.row)
+            if let player = soundList.player {
+                player.didSelectSoundAt(indexPath.row, soundList: soundList)
+            }
         }
     }
     
@@ -297,8 +295,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchTags(_ text: String?) {
-        self.searchTags.removeAll()
-        
         let query = PFQuery(className: "Tag")
         if let text = text {
             query.whereKey("tag", matchesRegex: text.lowercased())
@@ -309,6 +305,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
                 if let objects = objects {
+                    var tagResults = [Tag]()
                     for object in objects {
                         let name = object["tag"] as! String
                         let count = object["count"] as! Int
@@ -316,11 +313,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         let image = object["image"] as? PFFileObject
                         
                         let tag = Tag(objectId: object.objectId, name: name, count: count, isSelected: false, type: type, image: image?.url)
-                        let tagObjectId = self.searchTags.map{$0.objectId}
-                        if !tagObjectId.contains(tag.objectId) {
-                            self.searchTags.append(tag)
-                        }
+                        tagResults.append(tag)
                     }
+                    self.searchTags = tagResults
                 }
                 self.tableView.reloadData()
                 
@@ -355,7 +350,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func search() {
         switch searchType {
         case tagSearch:
-            searchBar.placeholder = "Try a Mood"
+            searchBar.placeholder = "Try a Mood, Activity, City, Genre"
             if searchBar.text!.isEmpty {
                 searchTags(nil)
                 
@@ -466,8 +461,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchUsers(_ text: String) {
-        self.searchUsers.removeAll()
-        
         let nameQuery = PFQuery(className: "_User")
         nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
         nameQuery.whereKey("artistName", matchesRegex: text)
@@ -481,6 +474,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
                 if let objects = objects {
+                    var userResults = [Artist]()
                     for user in objects {
                         let username = user["username"] as? String
                         
@@ -526,8 +520,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             artist.website = website
                         }
                         
-                        self.searchUsers.append(artist)
+                        userResults.append(artist)
                     }
+                    
+                    self.searchUsers = userResults
                 }
                 
                 self.tableView.reloadData()
