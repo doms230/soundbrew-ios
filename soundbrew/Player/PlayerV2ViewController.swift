@@ -70,6 +70,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             self.sound = player.currentSound
             setCurrentSoundView(self.sound!)
             self.shouldEnableSoundView(true)
+            self.checkFollowStatus()
             if let soundPlayer = player.player {
                 if soundPlayer.isPlaying  {
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
@@ -257,17 +258,34 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         //TODO: add tag action
     }
     
-    lazy var commentButton: UIButton = {
+    lazy var userRelationButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "comment"), for: .normal)
+        button.setImage(UIImage(named: "follow"), for: .normal)
         return button
     }()
-    @objc func didPressCommentButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: {() in
+    @objc func didPressUserRelationButton(_ sender: UIButton) {
+        if let currentUser = PFUser.current() {
+            if let isFollowedByCurrentUser = self.sound?.artist?.isFollowedByCurrentUser {
+                if isFollowedByCurrentUser {
+                    unFollowerUser(currentUser)
+                    
+                } else {
+                    followUser(currentUser)
+                }
+                
+            } else {
+                followUser(currentUser)
+            }
+            
+        } else {
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+        }
+        
+        /*self.dismiss(animated: true, completion: {() in
             if let commentDelegate = self.commentDelegate {
                 commentDelegate.selectedComments(self.sound?.objectId, atTime: self.playBackSlider.value)
             }
-        })
+        })*/
     }
     
     let likeRedImage = "like_red"
@@ -417,12 +435,20 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(songArt)
         }
         
+        userRelationButton.addTarget(self, action: #selector(didPressUserRelationButton(_:)), for: .touchUpInside)
+        self.view.addSubview(userRelationButton)
+        userRelationButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.elementOffset)
+            make.right.equalTo(songArt)
+        }
+        
         self.view.addSubview(artistName)
         artistName.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         artistName.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songTitle.snp.bottom)
             make.left.equalTo(exitButton)
-            make.right.equalTo(songArt)
+            make.right.equalTo(userRelationButton.snp.left).offset(-(uiElement.elementOffset))
         }
         
         /*self.artistName.addSubview(verifiedCheck)
@@ -508,15 +534,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        /*commentButton.addTarget(self, action: #selector(didPressCommentButton(_:)), for: .touchUpInside)
-        self.view.addSubview(commentButton)
-        commentButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.likeButton)
-            //make.left.equalTo(self.skipButton.snp.right).offset(uiElement.leftOffset)
-            make.right.equalTo(self.likeButton.snp.left).offset(uiElement.rightOffset)
-        }*/
-        
         setSound()
     }
     
@@ -556,4 +573,78 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             }
         }
     }
+    
+    func followUser(_ currentUser: PFUser) {
+        self.sound!.artist!.isFollowedByCurrentUser = true
+        self.userRelationButton.setImage(UIImage(named: "follow_green"), for: .normal)
+        let newFollow = PFObject(className: "Follow")
+        newFollow["fromUserId"] = currentUser.objectId
+        newFollow["toUserId"] = self.sound!.artist!.objectId
+        newFollow["isRemoved"] = false
+        newFollow.saveEventually {
+            (success: Bool, error: Error?) in
+            if success && error == nil {
+                self.uiElement.sendAlert("\(currentUser.username!) followed you.", toUserId: self.sound!.artist!.objectId)
+                
+            } else {
+                self.sound!.artist!.isFollowedByCurrentUser = false
+            }
+        }
+    }
+    
+    func unFollowerUser(_ currentUser: PFUser) {
+        self.sound!.artist!.isFollowedByCurrentUser = false
+        self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
+        let query = PFQuery(className: "Follow")
+        query.whereKey("fromUserId", equalTo: currentUser.objectId!)
+        query.whereKey("toUserId", equalTo: self.sound!.artist!.objectId)
+        query.whereKey("isRemoved", equalTo: false)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if error != nil {
+                self.sound!.artist!.isFollowedByCurrentUser = true
+                self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
+                
+            } else if let object = object {
+                object["isRemoved"] = true
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if success && error == nil {
+                    }
+                }
+            }
+        }
+    }
+    
+    func checkFollowStatus() {
+        if let currentUser = PFUser.current() {
+            if self.sound!.artist?.objectId != currentUser.objectId {
+                let query = PFQuery(className: "Follow")
+                query.whereKey("fromUserId", equalTo: currentUser.objectId!)
+                query.whereKey("toUserId", equalTo: self.sound!.artist!.objectId)
+                query.whereKey("isRemoved", equalTo: false)
+                query.getFirstObjectInBackground {
+                    (object: PFObject?, error: Error?) -> Void in
+                    if object != nil && error == nil {
+                        self.sound!.artist!.isFollowedByCurrentUser = true
+                        self.userRelationButton.setImage(UIImage(named: "follow_green"), for: .normal)
+                        
+                    } else {
+                        self.sound!.artist!.isFollowedByCurrentUser = false
+                        self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
+                    }
+                    self.userRelationButton.isEnabled = true
+                }
+                
+            } else {
+                self.userRelationButton.isEnabled = false
+                self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
+            }
+            
+        } else {
+            self.userRelationButton.isEnabled = true
+            self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
+        }
+    }
+    
 }

@@ -441,9 +441,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             (success: Bool, error: Error?) in
             if success && error == nil {
                 self.incrementFollowerCount(artist: self.profileArtist!, incrementFollows: true, decrementFollows: false)
-                if let currentUser = self.currentUser {
-                    self.uiElement.sendAlert("\(currentUser.username!) followed you.", toUserId: self.profileArtist!.objectId)
-                }
+                self.uiElement.sendAlert("\(currentUser.username!) followed you.", toUserId: self.profileArtist!.objectId)
                 
             } else {
                 self.profileArtist!.isFollowedByCurrentUser = false
