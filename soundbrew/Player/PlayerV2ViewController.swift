@@ -435,20 +435,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(songArt)
         }
         
-        userRelationButton.addTarget(self, action: #selector(didPressUserRelationButton(_:)), for: .touchUpInside)
-        self.view.addSubview(userRelationButton)
-        userRelationButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.elementOffset)
-            make.right.equalTo(songArt)
-        }
-        
         self.view.addSubview(artistName)
         artistName.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         artistName.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songTitle.snp.bottom)
             make.left.equalTo(exitButton)
-            make.right.equalTo(userRelationButton.snp.left).offset(-(uiElement.elementOffset))
+            make.right.equalTo(songArt)
         }
         
         /*self.artistName.addSubview(verifiedCheck)
@@ -532,6 +524,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.height.width.equalTo(25)
             make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        userRelationButton.addTarget(self, action: #selector(didPressUserRelationButton(_:)), for: .touchUpInside)
+        self.view.addSubview(userRelationButton)
+        userRelationButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.top.equalTo(likeButton)
+            make.right.equalTo(likeButton.snp.left).offset(uiElement.rightOffset)
         }
         
         setSound()
