@@ -68,11 +68,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showDiscoverSounds() {
-        searchBar.setShowsCancelButton(false, animated: true)
-        searchBar.text = ""
-        searchBar.placeholder = "Search"
-        searchTags.removeAll()
-        self.searchBar.resignFirstResponder()
+        self.exitSearch()
         
         var tags: Array<Tag>?
         if selectedTagsForFiltering.count != 0 {
@@ -205,7 +201,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             switch searchType {
             case tagSearch:
                 selectedTagsForFiltering.append(searchTags[indexPath.row])
-                self.tableView.reloadData()
                 showDiscoverSounds()
                 break
                 
@@ -348,10 +343,20 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.navigationItem.leftBarButtonItem = leftNavBarButton
     }
     
+    func exitSearch() {
+        searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.text = ""
+        searchBar.placeholder = "Search"
+        searchTags.removeAll()
+        self.searchBar.resignFirstResponder()
+        searchIsActive = false
+        self.tableView.reloadData()
+    }
+    
     func search() {
         switch searchType {
         case tagSearch:
-            searchBar.placeholder = "Try a Mood, Activity, City, Genre"
+            searchBar.placeholder = "Try 'Happy' or 'LoFi'"
             if searchBar.text!.isEmpty {
                 searchTags(nil)
                 
@@ -418,9 +423,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchIsActive = false
-        self.tableView.reloadData()
-        showDiscoverSounds()
+        exitSearch()
     }
     
     func searchTypeCell() -> UITableViewCell {

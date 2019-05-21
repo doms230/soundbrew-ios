@@ -152,24 +152,26 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     }
     
     func selectedArtist(_ artist: Artist?) {
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
-        let navigationController = tabBarController?.selectedViewController as? UINavigationController
-        let view = navigationController?.topViewController
-        //let view = navigationController
         if let selectedArtist = artist {
             //checking to make sure selected artist isn't already on artist profile page
             if let userId = self.profileUserId {
                 if userId != selectedArtist.objectId {
                     self.selectedArtist = selectedArtist
-                    //target.performSegue(withIdentifier: "showProfile", sender: self)
-                    view?.performSegue(withIdentifier: "showProfile", sender: self)
+                    self.segueToProfile()
                 }
                 
             } else {
                 self.selectedArtist = selectedArtist
-                view?.performSegue(withIdentifier: "showProfile", sender: self)
-                //target.performSegue(withIdentifier: "showProfile", sender: self)
+                self.segueToProfile()
             }
+        }
+    }
+    
+    func segueToProfile() {
+        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
+        let navigationController = tabBarController?.selectedViewController as? UINavigationController
+        if let view = navigationController?.topViewController {
+            view.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
     
@@ -300,9 +302,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             
         case "search":
             loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: nil, followIds: nil, searchText: self.searchText)
-            break
-            
-        case "link":
             break
             
         default:

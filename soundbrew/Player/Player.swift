@@ -64,14 +64,16 @@ class Player: NSObject, AVAudioPlayerDelegate {
             // Activate and request the route.
             try session.setActive(true)
             
-        } catch let error {
+        } catch {
             soundPlayable = false
-            fatalError("*** Unable to set up the audio session: \(error.localizedDescription) ***")
         }
         
         if soundPlayable {
             resetStream()
             self.play()
+            
+        } else {
+            setUpNextSong(false, at: nil)
         }
     }
     
@@ -176,10 +178,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func determineSoundToPlay(_ didPressGoBackButton: Bool, at: Int?) -> Sound? {
-        var sound: Sound
+        var sound: Sound?
+        
         if let at = at {
             currentSoundIndex = at
-            sound = sounds[at]
+            if sounds.indices.contains(at) {
+                sound = sounds[at]
+            }
             
         } else if didPressGoBackButton {
             sound = decrementPlaylistPositionAndReturnSound()
@@ -451,7 +456,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     //mark: data
     func loadDynamicLinkSound(_ objectId: String) {
-        let query = PFQuery(className:"Post")
+        let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
@@ -498,7 +503,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             } else if let user = user {
                 let artistName = user["artistName"] as? String
                 self.sounds[i].artist?.name = artistName
-                self.setBackgroundAudioNowPlaying(self.player!, sound: self.sounds[self.currentSoundIndex])
+                self.setBackgroundAudioNowPlaying(self.player, sound: self.sounds[self.currentSoundIndex])
                 self.sounds[i].artist?.city = user["city"] as? String
             }
         }

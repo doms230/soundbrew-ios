@@ -27,7 +27,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 30)
-        label.text = "Sign in"
+        label.text = "Sign In"
         label.numberOfLines = 0
         return label
     }()

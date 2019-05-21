@@ -41,6 +41,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             saveAudioFile()
             soundParseFileDidFinishProcessing = true
             soundArtDidFinishProcessing = true
+            if let userId = PFUser.current()?.objectId {
+                loadCurrentUserCity(userId)
+            }
         }
         
         setUpViews()
@@ -147,7 +150,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 6
+            return 5
         }
         
         return 1
@@ -184,15 +187,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 1:
-                cell.soundTagLabel.text = "City Tag"
-                if let cityTag = self.cityTag {
-                    cell.chosenSoundTagLabel.text = cityTag.name
-                    cell.chosenSoundTagLabel.textColor = color.blue()
-                }
-                tableView.separatorStyle = .singleLine
-                break
-                
-            case 2:
                 cell.soundTagLabel.text = "Mood Tag"
                 if let moodTag = self.moodTag {
                     cell.chosenSoundTagLabel.text = moodTag.name
@@ -201,7 +195,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 tableView.separatorStyle = .singleLine
                 break
                 
-            case 3:
+            case 2:
                 cell.soundTagLabel.text = "Activity Tag"
                 if let activityTag = self.activityTag {
                     cell.chosenSoundTagLabel.text = activityTag.name
@@ -209,14 +203,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 tableView.separatorStyle = .singleLine
                 
-            case 4:
+            case 3:
                 cell.soundTagLabel.text = "Similar Artist"
                 if let similarArtistTag = self.similarArtistTag {
                     cell.chosenSoundTagLabel.text = similarArtistTag.name
                     cell.chosenSoundTagLabel.textColor = color.blue()
                 }
                 
-            case 5:
+            case 4:
                 cell.soundTagLabel.text = "More Tags"
                 if let moreTags = self.moreTags {
                     if moreTags.count == 1 {
@@ -252,22 +246,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 1:
-                self.tagType = "city"
-                break
-                
-            case 2:
                 self.tagType = "mood"
                 break
                 
-            case 3:
+            case 2:
                 self.tagType = "activity"
                 break
                 
-            case 4:
+            case 3:
                 self.tagType = "similar artist"
                 break
                 
-            case 5:
+            case 4:
                 self.tagType = nil
                 self.tagsToUpdateInChooseTagsViewController = moreTags
                 break
@@ -360,8 +350,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["title"] = soundTitle.text
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
-        newSound["genre"] = genreTag!.name
-        newSound["city"] = cityTag!.name
         newSound["tags"] = tags.map {$0.name}
         newSound.saveEventually {
             (success: Bool, error: Error?) in
@@ -409,12 +397,26 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let moreTags = self.moreTags {
             tags = moreTags
         }
-        tags.append(genreTag!)
-        tags.append(activityTag!)
-        tags.append(moodTag!)
-        tags.append(cityTag!)
-        tags.append(similarArtistTag!)
-    
+        
+        if let genreTag = self.genreTag {
+            tags.append(genreTag)
+        }
+        
+        if let activityTag = self.activityTag {
+            tags.append(activityTag)
+        }
+        
+        if let moodTag = self.moodTag {
+            tags.append(moodTag)
+        }
+        
+        if let cityTag = self.cityTag {
+            tags.append(cityTag)
+        }
+        if let similarArtistTag = self.similarArtistTag {
+            tags.append(similarArtistTag)
+        }
+        
         return tags
     }
     
@@ -506,8 +508,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if moodTag == nil {
                 uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
                 
-            } else if cityTag == nil {
-                uiElement.showAlert("Sound City is Required", message: "Tap the 'add mood tag' button to choose", target: self)
+            } else if similarArtistTag == nil {
+                uiElement.showAlert("Similar Artist is Required", message: "Tap the 'add Similar artist tag' button to choose", target: self)
                 
             } else {
                 return true
@@ -534,5 +536,36 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         alertController.addAction(settingsAction)
         
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func loadCurrentUserCity(_ userId: String) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                if let city = user["city"] as? String {
+                    if !city.isEmpty {
+                        self.loadCityTag(city)
+                    }
+                }
+            }
+        }
+    }
+    
+    func loadCityTag(_ city: String) {
+        let query = PFQuery(className: "Tag")
+        query.whereKey("tag", equalTo: city)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object != nil && error == nil {
+                self.cityTag = Tag(objectId: object?.objectId, name: object!["tag"] as? String, count: 0, isSelected: false, type: "city", image: nil)
+                
+            } else {
+                self.cityTag = Tag(objectId: nil, name: city, count: 0, isSelected: false, type: "city", image: nil)
+            }
+        }
     }
 }
