@@ -312,7 +312,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func updateSounds() {
         self.isUpdatingData = false
-        
         //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way app will load collection automatically.
         if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
             self.soundType = "likes"
@@ -447,6 +446,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         }
         
         if currentSoundOrder != soundOrder {
+            if let tableview = self.tableView {
+                sounds.removeAll()
+                tableview.reloadData()
+            }
             determineTypeOfSoundToLoad(soundType)
         }
     }
@@ -650,6 +653,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                 
                 if let image = user["userImage"] as? PFFileObject {
                     artist.image = image.url
+                }
+                
+                if let bio = user["bio"] as? String {
+                    artist.bio = bio 
                 }
                 
                 //issue with crashing between loads

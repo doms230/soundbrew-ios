@@ -54,7 +54,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var searchIsActive = false
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        searchBar.placeholder = "Search"
+        searchBar.placeholder = "Create or Search Tags"
         searchBar.barTintColor = .white
         searchBar.backgroundImage = UIImage()
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
@@ -168,7 +168,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setupChooseTagsView() {
-        if self.chosenTags.count != 0 {
+        if self.chosenTags.count != 0 && tagType == nil {
             for tag in chosenTags {
                 addChosenTagButton(tag.name)
             }

@@ -364,6 +364,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressMySoundType(_ sender: UIButton) {
+        let currentSoundType = soundList.soundType
+        
         if sender.tag == 0 {
             soundList.soundType = "uploads"
             
@@ -371,7 +373,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.soundType = "likes"
         }
         
-        soundList.determineTypeOfSoundToLoad(soundList.soundType)
+        if currentSoundType != soundList.soundType {
+            self.tableView.reloadData()
+            soundList.determineTypeOfSoundToLoad(soundList.soundType)
+        }
     }
     
     //Mark: Data

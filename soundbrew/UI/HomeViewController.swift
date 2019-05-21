@@ -51,13 +51,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-            var tags: Array<Tag>?
-            if let soundListTags = soundList.selectedTagsForFiltering {
-                tags = soundListTags
-            }
-            
             if let currentUserId = self.currentUser?.objectId {
-                soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUserId, tags: tags, searchText: nil)
+                soundList = SoundList(target: self, tableView: tableView, soundType: "follows", userId: currentUserId, tags: nil, searchText: nil)
             }            
         }
     }

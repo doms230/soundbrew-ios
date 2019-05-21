@@ -73,7 +73,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         searchBar.placeholder = "Search"
         searchTags.removeAll()
         self.searchBar.resignFirstResponder()
-        searchIsActive = false
         
         var tags: Array<Tag>?
         if selectedTagsForFiltering.count != 0 {
@@ -206,6 +205,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             switch searchType {
             case tagSearch:
                 selectedTagsForFiltering.append(searchTags[indexPath.row])
+                self.tableView.reloadData()
                 showDiscoverSounds()
                 break
                 
@@ -215,9 +215,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 break
                 
             case soundSearch:
-                if let player = soundList.player {
-                    player.didSelectSoundAt(indexPath.row, soundList: soundList)
-                }
+                didSelectSoundAt(indexPath.row)
                 break
                 
             default:
@@ -225,14 +223,16 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             
         } else if selectedTagsForFiltering.count != 0 && indexPath.section == 2 && !searchIsActive {
-            if let player = soundList.player {
-                player.didSelectSoundAt(indexPath.row, soundList: soundList)
-            }
+            didSelectSoundAt(indexPath.row)
             
         } else if selectedTagsForFiltering.count == 0 && indexPath.section == 1  && !searchIsActive {
-            if let player = soundList.player {
-                player.didSelectSoundAt(indexPath.row, soundList: soundList)
-            }
+            didSelectSoundAt(indexPath.row)
+        }
+    }
+    
+    func didSelectSoundAt(_ row: Int) {
+        if let player = soundList.player {
+            player.didSelectSoundAt(row, soundList: soundList)
         }
     }
     
@@ -285,6 +285,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func didPressTagButton(_ sender: UIButton) {
         selectedTagsForFiltering.remove(at: sender.tag)
+        self.tableView.reloadData()
         
         var tags: Array<Tag>?
         if selectedTagsForFiltering.count != 0 {
@@ -398,12 +399,15 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             break
         }
         
+        self.tableView.reloadData()
+        
         search()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
         searchIsActive = true
+        self.tableView.reloadData()
         search()
     }
     
@@ -414,6 +418,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchIsActive = false
+        self.tableView.reloadData()
         showDiscoverSounds()
     }
     

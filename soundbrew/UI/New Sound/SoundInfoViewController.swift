@@ -50,13 +50,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
         viewController.tagDelegate = self
-        if let tags = tagsToUpdateInTagsViewController {
-            viewController.chosenTags = tags
-        }
         
         if let tagType = tagType {
             viewController.tagType = tagType
-        }
+            
+        } else if let tags = tagsToUpdateInChooseTagsViewController {
+            //only want to populate chosen tags if user is choosing more tags
+                viewController.chosenTags = tags
+            }
     }
     
     func setUpViews() {
@@ -82,7 +83,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var moreTags: Array<Tag>?
     var cityTag: Tag?
     var similarArtistTag: Tag?
-    var tagsToUpdateInTagsViewController: Array<Tag>?
+    var tagsToUpdateInChooseTagsViewController: Array<Tag>?
     
     func changeTags(_ value: Array<Tag>?) {
         if let tagType = self.tagType {
@@ -106,7 +107,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     
                 case "similar artist":
                     self.similarArtistTag = tag[0]
-
+                    
                 default:
                     break
                 }
@@ -268,7 +269,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             case 5:
                 self.tagType = nil
-                tagsToUpdateInTagsViewController = moreTags
+                self.tagsToUpdateInChooseTagsViewController = moreTags
                 break
                 
             default:
