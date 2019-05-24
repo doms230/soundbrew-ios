@@ -170,9 +170,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     func segueToProfile() {
         let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
         let navigationController = tabBarController?.selectedViewController as? UINavigationController
-        if let view = navigationController?.topViewController {
-            view.performSegue(withIdentifier: "showProfile", sender: self)
-        }
+        let view = navigationController?.topViewController
+        if let segueView = view {
+            segueView.performSegue(withIdentifier: "showProfile", sender: self)
+        }        
     }
     
     //mark: sounds
