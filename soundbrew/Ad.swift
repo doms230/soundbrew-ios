@@ -46,7 +46,6 @@ class Ad: NSObject, GADInterstitialDelegate {
     /// Tells the delegate an ad request failed.
     func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
         print("interstitial:didFailToReceiveAdWithError: \(error.localizedDescription)")
-        resetSecondsPlayAndLoadAd()
     }
     
     func interstitialDidDismissScreen(_ ad: GADInterstitial) {

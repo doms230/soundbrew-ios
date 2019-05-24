@@ -18,6 +18,8 @@
 		F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */; };
 		F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23C621E21DC38E6005C9FF0 /* Login.storyboard */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
+		F24E930B22974FB8003D4E8A /* Compressor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24E930A22974FB7003D4E8A /* Compressor.swift */; };
+		F24E930D22974FCA003D4E8A /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24E930C22974FCA003D4E8A /* FileHelper.swift */; };
 		F24F2B722271496A006D1CB7 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B712271496A006D1CB7 /* ShareViewController.swift */; };
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
 		F24F2B782278E9F9006D1CB7 /* Ad.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B772278E9F9006D1CB7 /* Ad.swift */; };
@@ -92,6 +94,8 @@
 		F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		F23C621E21DC38E6005C9FF0 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
 		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
+		F24E930A22974FB7003D4E8A /* Compressor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Compressor.swift; sourceTree = "<group>"; };
+		F24E930C22974FCA003D4E8A /* FileHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		F24F2B712271496A006D1CB7 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F24F2B772278E9F9006D1CB7 /* Ad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ad.swift; sourceTree = "<group>"; };
@@ -257,6 +261,8 @@
 				F268992A21753A3B00C21663 /* Tag.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F24F2B772278E9F9006D1CB7 /* Ad.swift */,
+				F24E930A22974FB7003D4E8A /* Compressor.swift */,
+				F24E930C22974FCA003D4E8A /* FileHelper.swift */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
 				F268989A215AF87200C21663 /* UI */,
@@ -640,11 +646,13 @@
 				F24F2B722271496A006D1CB7 /* ShareViewController.swift in Sources */,
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
+				F24E930D22974FCA003D4E8A /* FileHelper.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SearchViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
 				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
 				F2EA8578224BFE4A005D6153 /* HomeViewController.swift in Sources */,
+				F24E930B22974FB8003D4E8A /* Compressor.swift in Sources */,
 				F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				F24F2B7E228121FB006D1CB7 /* SettingsViewController.swift in Sources */,

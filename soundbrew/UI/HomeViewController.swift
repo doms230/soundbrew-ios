@@ -135,6 +135,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
+        /*if soundList.sounds.indices.contains(indexPath.row) {
+            if soundList.sounds[indexPath.row].audioData == nil && soundList.sounds[indexPath.row].audio != nil {
+                print("fetching aduio")
+                soundList.player?.fetchAudioData(indexPath.row, prepareAndPlay: false)
+            }
+        }*/
+        
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
             soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: soundList.followUserIds, searchText: nil)
         }

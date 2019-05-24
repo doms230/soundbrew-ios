@@ -56,7 +56,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                                     mode: .default,
                                     policy: .longForm,
                                     options: [])
-            
             // Set up the player.
             self.player = try AVAudioPlayer(contentsOf: audioFileURL)
             player?.delegate = self
@@ -144,7 +143,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func didSelectSoundAt(_ i: Int, soundList: SoundList) {
         self.sounds = soundList.sounds
         self.setUpNextSong(false, at: i)
-        self.loadAudioData()
         if let tableView = self.tableView {
             tableView.reloadData()
         }
@@ -252,14 +250,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     self.prepareAndPlay(audioData)
                 }
                 self.sounds[position].audioData = audioData
-            }
-        }
-    }
-    
-    func loadAudioData() {
-        for i in 0..<self.sounds.count {
-            if self.sounds[i].audioData == nil {
-                fetchAudioData(i, prepareAndPlay: false)
             }
         }
     }

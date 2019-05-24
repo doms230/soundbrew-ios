@@ -557,7 +557,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         }
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder(descendingOrder)
-        query.limit = 100
+        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
