@@ -39,6 +39,32 @@ class SoundListTableViewCell: UITableViewCell {
         return button
     }()
     
+    //filter discover/following/collection
+    lazy var discoverButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Recent", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        button.setTitleColor(color.black(), for: .normal)
+        return button
+    }()
+    
+    lazy var followingButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Top", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        button.setTitleColor(.lightGray, for: .normal)
+        return button
+    }()
+    
+    lazy var collectionButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Top", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        button.setTitleColor(.lightGray, for: .normal)
+        return button
+    }()
+    
+    
     lazy var tagsScrollview: UIScrollView = {
         let scrollView = UIScrollView()
         return scrollView

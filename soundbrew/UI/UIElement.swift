@@ -97,11 +97,17 @@ class UIElement {
     }
     
     func cleanUpText(_ text: String) -> String {
-        let cleanText = text.trimmingCharacters(
+        var textWithNoSpaces = ""
+        let textArray = text.components(separatedBy: " ")
+        for text in textArray {
+            textWithNoSpaces = textWithNoSpaces + text
+        }
+        
+        let textWithWhiteSpaceTrimmed = textWithNoSpaces.trimmingCharacters(
             in: NSCharacterSet.whitespacesAndNewlines
         )
                 
-        return cleanText.lowercased()
+        return textWithWhiteSpaceTrimmed.lowercased()
     }
     
     func formatTime(_ durationInSeconds: Double ) -> String {

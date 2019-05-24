@@ -8,7 +8,7 @@
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
 //  SoundlistViewController.swift and ProfileViewController.swift utilize this class
 //
-// MARK: tableView, sounds, artist, tags filter, data, miniplayer, comment
+// MARK: tableView, sounds, artist, tags filter, data, miniplayer, comment, search
 
 
 import Foundation
@@ -70,6 +70,16 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     func setUpTableView() {
         if let player = self.player {
             player.tableView = self.tableView
+        }
+    }
+    
+    //mark: search
+    func shouldShowSearchPage() {
+        if self.sounds.count == 0 && soundType == "follows" {
+            let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
+            if let tabBar = tabBarController {
+                tabBar.selectedIndex = 1
+            }
         }
     }
     
@@ -573,6 +583,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                     self.thereIsNoMoreDataToLoad = true
                 }
                 
+                self.shouldShowSearchPage()
+                
             } else {
                 print("Error: \(error!)")
             }
@@ -657,6 +669,10 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                 
                 if let bio = user["bio"] as? String {
                     artist.bio = bio 
+                }
+                
+                if let website = user["website"] as? String {
+                    artist.website = website
                 }
                 
                 //issue with crashing between loads

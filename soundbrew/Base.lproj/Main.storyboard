@@ -392,7 +392,6 @@
         <image name="search_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZJ9-R5-Hqk"/>
         <segue reference="wBb-Ll-LfM"/>
         <segue reference="eW3-lv-tSJ"/>
         <segue reference="Mz5-gw-jR1"/>
