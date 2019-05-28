@@ -12,6 +12,7 @@ import MobileCoreServices
 import SnapKit
 import NVActivityIndicatorView
 import Compression
+import Zip
 
 class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable {
     
@@ -77,7 +78,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         //processAudioForDatabase(urls[0])
-        compressAudio(urls[0])
+        //compressAudio(urls[0])
+        zipAudio(urls[0])
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -88,6 +90,17 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     
     // The `Progress` instance used to calculate encode or
     // decode progress.
+    
+    func zipAudio(_ url: URL) {
+        do {
+            let zipFilePath = try Zip.quickZipFiles([url], fileName: "archive") // Zip
+            self.processAudioForDatabase(zipFilePath)
+        }
+        catch {
+            print("Something went wrong")
+        }
+    }
+    
     let progress = Progress()
     
     func compressAudio(_ url: URL) {

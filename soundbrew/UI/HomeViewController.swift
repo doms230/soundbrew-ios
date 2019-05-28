@@ -47,7 +47,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.currentUser = currentUser
         }
         
-        soundList.player?.loadDynamicLinkSound("wVPVp143X9")
+        soundList.player?.loadDynamicLinkSound("KJAnJZ3rTu")
     }
     
     override func viewDidAppear(_ animated: Bool) {

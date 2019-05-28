@@ -14,6 +14,7 @@ import MediaPlayer
 import Kingfisher
 import AppCenterAnalytics
 import Compression
+import Zip
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
@@ -50,16 +51,18 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         do {
             //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
-            //let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
+            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
             
-            //try audioData.write(to: audioFileURL, options: .atomic)
+            try audioData.write(to: audioFileURL, options: .atomic)
+            
+            let unzipDirectory = try Zip.quickUnzipFile(audioFileURL)
             
             try session.setCategory(AVAudioSession.Category.playback,
                                     mode: .default,
                                     policy: .longForm,
                                     options: [])
             // Set up the player.
-            self.player = try AVAudioPlayer(contentsOf: audioFileURL)
+            self.player = try AVAudioPlayer(contentsOf: unzipDirectory)
             player?.delegate = self
             
             // Activate and request the route.
@@ -249,8 +252,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 
             } else if let audioData = audioData {
                 if prepareAndPlay {
-                    //self.prepareAndPlay(audioData)
-                    self.uncompressAudio(audioData)
+                    self.prepareAndPlay(audioData)
+                    //self.uncompressAudio(audioData)
                 }
                 self.sounds[position].audioData = audioData
             }
