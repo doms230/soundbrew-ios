@@ -45,8 +45,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         if let currentUser = PFUser.current() {
             loadUserInfoFromCloud(currentUser.objectId!)
             self.currentUser = currentUser
-            
         }
+        
+        soundList.player?.loadDynamicLinkSound("wVPVp143X9")
     }
     
     override func viewDidAppear(_ animated: Bool) {

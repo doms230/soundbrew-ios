@@ -76,7 +76,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        processAudioForDatabase(urls[0])
+        //processAudioForDatabase(urls[0])
+        compressAudio(urls[0])
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -107,7 +108,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                     ? fileName + encodeAlgorithm.pathExtension
                     : fileNameDeletingPathExtension)
         {
-            //self.progress.totalUnitCount = Int64(sourceLength)
+            self.progress.totalUnitCount = Int64(sourceLength)
             
             DispatchQueue.global(qos: .utility).async {
                 // Observe `progress.fractionCompleted` to update UI during encode
@@ -115,11 +116,13 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                 let observation = self.progress.observe(\.fractionCompleted,
                                                         options: [.new]) { (progress, _) in
                                                             if progress.isFinished {
-                                                                /*self.updateUIOnCompletion(operation: operation)*/
-                                                                print("compressed file: \(NSTemporaryDirectory())")
+                                                                if let compressedFilename = FileHelper.urlFor(fileNameInTempDirectory: fileName + encodeAlgorithm.pathExtension) {
+                                                                    self.processAudioForDatabase(compressedFilename)
+                                                                    
+                                                                }
+                                                                
                                                             } else {
-                                                                /*self.updateUIWithProgress(progress.fractionCompleted,
-                                                                                          operation: operation)*/
+                                                               //print(progress.fractionCompleted)
                                                             }
                 }
             
@@ -130,8 +133,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                 Compressor.streamingCompression(operation: operation,
                                                 sourceFileHandle: sourceFileHandle,
                                                 destinationFileHandle: destinationFileHandle,
-                                                algorithm: algorithm) {_ in
-                                                    //self.progress.completedUnitCount = $0
+                                                algorithm: algorithm) {
+                                                    self.progress.completedUnitCount = $0
                 }
             }
             
@@ -141,20 +144,23 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func processAudioForDatabase(_ url: URL) {
-        do {
-            self.soundFilename = "audio.\(url.pathExtension)"
-            let audioFile = try Data(contentsOf: url, options: .uncached)
-            self.soundParseFile = PFFileObject(name: self.soundFilename, data: audioFile)
-            if soundThatIsBeingEdited != nil {
-                saveAudioFile()
+        DispatchQueue.main.async {
+            do {
+                print("path extension: \(url.pathExtension)")
+                self.soundFilename = "audio.\(url.pathExtension)"
+                let audioFile = try Data(contentsOf: url, options: .uncached)
+                self.soundParseFile = PFFileObject(name: self.soundFilename, data: audioFile)
+                if self.soundThatIsBeingEdited != nil {
+                    self.saveAudioFile()
+                    
+                } else {
+                    self.performSegue(withIdentifier: "showSoundInfo", sender: self)
+                    self.showUploadSoundButton()
+                }
                 
-            } else {
-                self.performSegue(withIdentifier: "showSoundInfo", sender: self)
-                self.showUploadSoundButton()
+            } catch {
+                UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
             }
-            
-        } catch {
-            UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
         }
     }
     

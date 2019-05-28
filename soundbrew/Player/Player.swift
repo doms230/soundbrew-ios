@@ -13,6 +13,7 @@ import Parse
 import MediaPlayer
 import Kingfisher
 import AppCenterAnalytics
+import Compression
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
@@ -49,8 +50,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         do {
             //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
-            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
-            try audioData.write(to: audioFileURL, options: .atomic)
+            //let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
+            
+            //try audioData.write(to: audioFileURL, options: .atomic)
             
             try session.setCategory(AVAudioSession.Category.playback,
                                     mode: .default,
@@ -72,7 +74,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             self.play()
             
         } else {
-            setUpNextSong(false, at: nil)
+            //setUpNextSong(false, at: nil)
         }
     }
     
@@ -247,7 +249,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 
             } else if let audioData = audioData {
                 if prepareAndPlay {
-                    self.prepareAndPlay(audioData)
+                    //self.prepareAndPlay(audioData)
+                    self.uncompressAudio(audioData)
                 }
                 self.sounds[position].audioData = audioData
             }
@@ -444,6 +447,71 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
+    //mark: compression write audio
+    var audioFileURL: URL!
+    let progress = Progress()
+    
+    func uncompressAudio(_ audioData: Data) {
+        let url = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(URL(string: self.sounds[0].audioURL)!.lastPathComponent)")
+        
+        do {
+           try audioData.write(to: url, options: .atomic)
+        } catch {
+            print("couldn't write data")
+        }
+        
+        let algorithm: compression_algorithm
+        let operation: compression_stream_operation
+        let encodeAlgorithm = COMPRESSION_ZLIB
+        
+        algorithm = compression_algorithm(name: url.pathExtension)!
+        operation = COMPRESSION_STREAM_DECODE
+        
+        if
+            let sourceFileHandle = try? FileHandle(forReadingFrom: url),
+            let sourceLength = FileHelper.fileSize(atURL: url),
+            let fileName = url.pathComponents.last,
+            let fileNameDeletingPathExtension = url.deletingPathExtension().pathComponents.last,
+            let destinationFileHandle = FileHandle.makeFileHandle(forWritingToFileNameInTempDirectory:
+                operation == COMPRESSION_STREAM_ENCODE
+                    ? fileName + encodeAlgorithm.pathExtension
+                    : fileNameDeletingPathExtension)
+        {
+            self.progress.totalUnitCount = Int64(sourceLength)
+            
+            DispatchQueue.global(qos: .utility).async {
+                // Observe `progress.fractionCompleted` to update UI during encode
+                // or decode operation.
+                let observation = self.progress.observe(\.fractionCompleted,
+                                                        options: [.new]) { (progress, _) in
+                                                            if progress.isFinished {
+                                                                if let uncompressedFilename = FileHelper.urlFor(fileNameInTempDirectory: fileNameDeletingPathExtension) {
+                                                                    self.audioFileURL = uncompressedFilename
+                                                                    self.prepareAndPlay(self.sounds[0].audioData!)
+                                                                }
+                                                                
+                                                            } else {
+                                                                //print(progress.fractionCompleted)
+                                                            }
+                }
+                
+                defer {
+                    observation.invalidate()
+                }
+                
+                Compressor.streamingCompression(operation: operation,
+                                                sourceFileHandle: sourceFileHandle,
+                                                destinationFileHandle: destinationFileHandle,
+                                                algorithm: algorithm) {
+                                                    self.progress.completedUnitCount = $0
+                }
+            }
+            
+        } else {
+            fatalError("Unable to complete operation.")
+        }
+    }
+    
     //mark: data
     func loadDynamicLinkSound(_ objectId: String) {
         let query = PFQuery(className: "Post")
@@ -463,7 +531,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func newSoundObject(_ object: PFObject) -> Sound {
         let title = object["title"] as! String
         let art = object["songArt"] as! PFFileObject
-        let audio = object["audioFile"] as! PFFileObject
+        //let audio = object["audioFile"] as! PFFileObject
+        let audio = object["audioFileCompressed"] as! PFFileObject
         let tags = object["tags"] as! Array<String>
         let userId = object["userId"] as! String
         var plays: Int?

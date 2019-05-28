@@ -27,6 +27,7 @@ class Compressor {
         var status = compression_stream_init(&stream, operation, algorithm)
         guard status != COMPRESSION_STATUS_ERROR else {
             fatalError("Unable to initialize the compression stream.")
+            //print("Unable to initialize the compression stream.")
         }
         defer {
             compression_stream_destroy(&stream)

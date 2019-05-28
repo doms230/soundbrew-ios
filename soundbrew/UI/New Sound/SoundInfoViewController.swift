@@ -348,7 +348,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let newSound = PFObject(className: "Post")
         newSound["userId"] = PFUser.current()!.objectId!
         newSound["title"] = soundTitle.text
-        newSound["audioFile"] = soundParseFile
+        //newSound["audioFile"] = soundParseFile
+        newSound["audioFileCompressed"] = soundParseFile
+        newSound["isRemoved"] = true 
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
         newSound.saveEventually {
