@@ -426,7 +426,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             soundOrder = "recent"
         }
         
-        cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
+        /*cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
         xPositionForTags = uiElement.leftOffset
         if let tags = self.selectedTagsForFiltering {
             if tags.count != 0 {
@@ -440,7 +440,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             
         } else if cell.tagsScrollview.subviews.count == 0 {
             self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
-        }
+        }*/
         
         return cell
     }

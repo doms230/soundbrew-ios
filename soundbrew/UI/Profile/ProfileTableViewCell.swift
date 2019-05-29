@@ -19,7 +19,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var firstListType: UIButton = {
         let button = UIButton()
         button.setTitle("Releases", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(color.black(), for: .normal)
         return button
     }()
@@ -27,7 +27,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var secondListType: UIButton = {
         let button = UIButton()
         button.setTitle("Collection", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.lightGray, for: .normal)
         return button
     }()
@@ -35,7 +35,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var thirdListType: UIButton = {
         let button = UIButton()
         button.setTitle("Collection", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.lightGray, for: .normal)
         return button
     }()
@@ -359,7 +359,6 @@ class ProfileTableViewCell: UITableViewCell {
         case "SearchListTypeHeaderReuse":
             self.addSubview(firstListType)
             self.addSubview(secondListType)
-            self.addSubview(thirdListType)
             
             firstListType.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
@@ -372,13 +371,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.height.equalTo(35)
                 make.top.equalTo(firstListType)
                 make.left.equalTo(firstListType.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(firstListType)
-            }
-            
-            thirdListType.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(firstListType)
-                make.left.equalTo(secondListType.snp.right).offset(uiElement.leftOffset + 10)
                 make.bottom.equalTo(firstListType)
             }
             

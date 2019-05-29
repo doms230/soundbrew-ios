@@ -42,7 +42,7 @@ class SoundListTableViewCell: UITableViewCell {
     //filter discover/following/collection
     lazy var discoverButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Recent", for: .normal)
+        button.setTitle("Discover", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(color.black(), for: .normal)
         return button
@@ -50,7 +50,7 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var followingButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Top", for: .normal)
+        button.setTitle("Following", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.lightGray, for: .normal)
         return button
@@ -58,7 +58,7 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var collectionButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Top", for: .normal)
+        button.setTitle("My Collection", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.lightGray, for: .normal)
         return button
@@ -248,6 +248,33 @@ class SoundListTableViewCell: UITableViewCell {
                 make.top.equalTo(newButton)
                 make.left.equalTo(newButton.snp.right).offset(uiElement.leftOffset + 10)
                 make.bottom.equalTo(newButton)
+            }
+            break
+            
+        case "playlistSoundsReuse":
+            self.addSubview(discoverButton)
+            self.addSubview(followingButton)
+            self.addSubview(collectionButton)
+            
+            discoverButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            followingButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(discoverButton)
+                make.left.equalTo(discoverButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(discoverButton)
+            }
+            
+            collectionButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(discoverButton)
+                make.left.equalTo(followingButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(discoverButton)
             }
             break
             

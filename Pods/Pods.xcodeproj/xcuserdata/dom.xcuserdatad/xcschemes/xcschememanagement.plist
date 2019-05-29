@@ -144,6 +144,11 @@
 			<key>orderHint</key>
 			<integer>20</integer>
 		</dict>
+		<key>Zip.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>21</integer>
+		</dict>
 		<key>nanopb.xcscheme</key>
 		<dict>
 			<key>isShown</key>
