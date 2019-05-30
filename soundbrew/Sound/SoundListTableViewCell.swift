@@ -228,7 +228,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
-                make.bottom.equalTo(self)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             break
             

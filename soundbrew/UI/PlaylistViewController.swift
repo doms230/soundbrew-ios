@@ -26,7 +26,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: nil, searchText: nil)
+        
+        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: selectedTagsForFiltering, searchText: nil)
         setupSearchBar()
         setUpTableView()
     }

@@ -110,14 +110,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     
                 case "similar artist":
                     self.similarArtistTag = tag[0]
+                    break
                     
                 default:
+                    self.moreTags = value
                     break
                 }
             }
-            
-        } else {
-            self.moreTags = value
         }
         
         self.tableView.reloadData()
@@ -258,7 +257,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 4:
-                self.tagType = nil
+                self.tagType = "more"
                 self.tagsToUpdateInChooseTagsViewController = moreTags
                 break
                 
@@ -468,27 +467,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (percentDone: Int32) -> Void in
             // Update your progress spinner here. percentDone will be between 0 and 100.
         })
-    }
-    
-    @objc func didPressGenreButton(_ sender: UIButton) {
-        switch sender.tag {
-        case 0:
-            tagType = "genre"
-            break
-            
-        case 1:
-            tagType = "mood"
-            break
-            
-        case 2:
-            tagType = "activity"
-            break
-            
-        default:
-            break
-        }
-        
-        self.performSegue(withIdentifier: "showChooseGenre", sender: self)
     }
     
     func soundInfoIsVerified() -> Bool {

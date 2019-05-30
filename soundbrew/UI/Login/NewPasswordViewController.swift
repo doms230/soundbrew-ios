@@ -100,6 +100,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         user.username = usernameString
         user.password = passwordText.text!
         user.email = emailString
+        user["artistName"] = usernameString
         let acl = PFACL()
         acl.hasPublicWriteAccess = true
         acl.hasPublicReadAccess = true
