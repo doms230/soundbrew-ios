@@ -10,8 +10,6 @@
 import UIKit
 import SnapKit
 import Parse
-import AVFoundation
-import Alamofire
 
 class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
@@ -20,8 +18,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.backgroundColor = .white
         
         if tagType == nil {
             setUpSearchBar()
@@ -138,7 +134,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.dataSource = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
-        tableView.backgroundColor = backgroundColor()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         view.addSubview(tableView)
@@ -339,7 +334,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func addChosenTagButton(_ buttonTitle: String, tag: Int) {
         self.chooseTagsLabel.removeFromSuperview()
         
-        let name = "x | \(buttonTitle)"
+        let name = "X | \(buttonTitle)"
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(name)
         let buttonHeight = 40
@@ -491,9 +486,5 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.uiElement.showAlert("Oops", message: "\(error!)", target: self)
             }
         }
-    }
-    
-    func backgroundColor() -> UIColor {
-        return .white
     }
 }

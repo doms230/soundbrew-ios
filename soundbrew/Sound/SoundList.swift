@@ -298,7 +298,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             break
             
         case "likes":
-            self.loadLikes(descendingOrder)
+            if let profileUserId = self.profileUserId {
+                self.loadLikes(descendingOrder, profileUserId: profileUserId)
+            }
             break
             
         case "follows":
@@ -591,9 +593,9 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         }
     }
     
-    func loadLikes(_ descendingOrder: String) {
+    func loadLikes(_ descendingOrder: String, profileUserId: String) {
         let query = PFQuery(className: "Like")
-        query.whereKey("userId", equalTo: profileUserId!)
+        query.whereKey("userId", equalTo: profileUserId)
         query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
