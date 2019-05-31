@@ -14,7 +14,7 @@ import Kingfisher
 import SnapKit
 import AppCenterCrashes
 
-class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagDelegate {
     
     var soundList: SoundList!
     var searchSounds = [Sound]()
@@ -27,24 +27,26 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: selectedTagsForFiltering, searchText: nil)
-        
+        showSounds(playlistType)
         setupNavigationItems()
         setUpTableView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        //showSounds(playlistType)
+        if soundList != nil {
+            var tags: Array<Tag>?
+            if selectedTagsForFiltering.count != 0 {
+                tags = selectedTagsForFiltering
+            }
+            
+            soundList = SoundList(target: self, tableView: tableView, soundType: playlistType, userId: PFUser.current()?.objectId, tags: tags, searchText: nil)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
-            break
-            
-        case "showTags":
-            soundList.prepareToShowTags(segue)
             break
             
         case "showEditSoundInfo":
@@ -59,14 +61,21 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             soundList.prepareToShowComments(segue)
             break
             
+        case "showPlaylist":
+            let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
+            viewController.tagDelegate = self
+            break
+            
         default:
             break 
         }
     }
     
     func showSounds(_ soundType: String) {
-        self.soundList.sounds.removeAll()
-        self.tableView.reloadData()
+        if soundList != nil {
+            self.soundList.sounds.removeAll()
+            self.tableView.reloadData()
+        }
         
         var tags: Array<Tag>?
         if selectedTagsForFiltering.count != 0 {
@@ -86,6 +95,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
+        tableView.backgroundColor = color.lightGray()   
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.frame = view.bounds
@@ -94,10 +104,10 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     func numberOfSections(in tableView: UITableView) -> Int {
         if selectedTagsForFiltering.count != 0 {
-            return 3
+            return 2
         }
         
-        return 2
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -115,19 +125,15 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var soundSection = 0
-        
         if selectedTagsForFiltering.count != 0 {
-            soundSection = 1
-            
             if indexPath.section == 0 {
                 return tagCell(indexPath)
+                
+            } else if indexPath.section == 1 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+                cell.backgroundColor = .white 
+                return soundList.sound(indexPath, cell: cell)
             }
-        }
-        
-        if indexPath.section == soundSection {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-            return soundList.sound(indexPath, cell: cell)
         }
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
@@ -150,83 +156,33 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
-        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
-            print("close to pbottom")
+
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
+            print("to bottom")
             soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
-        }
-    }
-    
-    //mark: playlist filter
-    func playlistFilterOptions(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
-        var discoverButtonTitleColor = color.black()
-        var followingButtonTitleColor = color.black()
-        var collectionButtonTitleColor = color.black()
-        switch playlistType {
-        case "discover":
-            followingButtonTitleColor = color.darkGray()
-            collectionButtonTitleColor = color.darkGray()
-            break
-            
-        case "follows":
-            discoverButtonTitleColor = color.darkGray()
-            collectionButtonTitleColor = color.darkGray()
-            break
-            
-        case "likes":
-            discoverButtonTitleColor = color.darkGray()
-            followingButtonTitleColor = color.darkGray()
-            break
-            
-        default:
-            break
-        }
-        
-        cell.selectionStyle = .none
-        cell.discoverButton.addTarget(self, action: #selector(self.didPressPlayListFilterButton(_:)), for: .touchUpInside)
-        cell.discoverButton.tag = 0
-        cell.discoverButton.setTitleColor(discoverButtonTitleColor, for: .normal)
-        
-        cell.followingButton.addTarget(self, action: #selector(self.didPressPlayListFilterButton(_:)), for: .touchUpInside)
-        cell.followingButton.tag = 1
-        cell.followingButton.setTitleColor(followingButtonTitleColor, for: .normal)
-        
-        cell.collectionButton.addTarget(self, action: #selector(self.didPressPlayListFilterButton(_:)), for: .touchUpInside)
-        cell.collectionButton.tag = 2
-        cell.collectionButton.setTitleColor(collectionButtonTitleColor, for: .normal)
-        
-        return cell
-    }
-    
-    @objc func didPressPlayListFilterButton(_ sender: UIButton) {
-        switch sender.tag {
-        case 0:
-            playlistType = "discover"
-            showSounds(playlistType)
-            break
-            
-        case 1:
-            playlistType = "follows"
-            showSounds(playlistType)
-            break
-            
-        case 2:
-            playlistType = "likes"
-            showSounds(playlistType)
-            break
-            
-        default:
-            break
         }
     }
     
     //mark: tags
     var selectedTagsForFiltering = [Tag]()
-    var xPositionForTags = UIElement().leftOffset
+    var xPositionForTags = 0
+    
+    func changeTags(_ value: Array<Tag>?) {
+        if let tags = value {
+            selectedTagsForFiltering = tags
+            soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
+            
+        } else {
+            selectedTagsForFiltering.removeAll()
+        }
+        
+        self.tableView.reloadData()
+    }
     
     func tagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagsReuse) as! SoundListTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.lightGray()
         cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
         xPositionForTags = uiElement.leftOffset
         if selectedTagsForFiltering.count != 0 {
@@ -245,16 +201,14 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(name)
         
         let tagButton = UIButton()
-        tagButton.frame = CGRect(x: xPositionForTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: 30)
-        tagButton.setTitle( name, for: .normal)
-        tagButton.setTitleColor(.white, for: .normal)
-        tagButton.setBackgroundImage(UIImage(named: "background"), for: .normal)
-        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        tagButton.layer.cornerRadius = 5
+        tagButton.frame = CGRect(x: xPositionForTags, y: 0, width: buttonTitleWidth, height: 30)
+        tagButton.setTitle("#\(name.capitalized)", for: .normal)
+        tagButton.setTitleColor(color.black(), for: .normal)
+        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 19)
         tagButton.tag = index
         scrollview.addSubview(tagButton)
         
-        xPositionForTags = xPositionForTags + Int(tagButton.frame.width) + uiElement.elementOffset
+        xPositionForTags = xPositionForTags + Int(tagButton.frame.width)
         scrollview.contentSize = CGSize(width: xPositionForTags, height: 35)
     }
     
@@ -263,6 +217,10 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     var soundType: UIBarButtonItem!
     
     func setupNavigationItems() {
+        
+        let newPlaylistButton = UIBarButtonItem(title: "Create Playlist", style: .plain, target: self, action: #selector(didPressNewPlaylistButton(_:)))
+        self.navigationItem.leftBarButtonItem = newPlaylistButton
+        
         var soundOrderImage = "recent"
         var tag = 0
         if let filter = uiElement.getUserDefault("filter") as? String {
@@ -308,6 +266,10 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         soundType.tag = soundTypeTag
         
         self.navigationItem.rightBarButtonItems = [soundType, soundOrder]
+    }
+    
+    @objc func didPressNewPlaylistButton(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: "showPlaylist", sender: self)
     }
     
     @objc func didPresssFilterType(_ sender: UIBarButtonItem) {

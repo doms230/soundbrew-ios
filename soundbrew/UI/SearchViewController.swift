@@ -40,10 +40,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             soundList.prepareToShowSelectedArtist(segue)
             break
             
-        case "showTags":
-            soundList.prepareToShowTags(segue)
-            break
-            
         case "showEditSoundInfo":
             soundList.prepareToShowSoundInfo(segue)
             break

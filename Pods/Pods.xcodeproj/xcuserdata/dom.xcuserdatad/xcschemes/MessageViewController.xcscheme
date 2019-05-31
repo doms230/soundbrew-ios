@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "47EDC1A36C990546A95696AD98450635"
+               BlueprintIdentifier = "563D9B0709A54A3BFD6E13DC38D228EB"
+               BuildableName = "MessageViewController.framework"
                BlueprintName = "MessageViewController"
-               ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "MessageViewController.framework">
+               ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

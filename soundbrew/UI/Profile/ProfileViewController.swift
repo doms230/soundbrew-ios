@@ -80,10 +80,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.prepareToShowSoundAudioUpload(segue)
             break
             
-        case "showTags":
-            soundList.prepareToShowTags(segue)
-            break
-            
         case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
             break
@@ -146,6 +142,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         self.tableView.separatorStyle = .none
+        self.tableView.backgroundColor = .white 
         self.view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) -> Void in
@@ -205,10 +202,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.website.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
                 }
             }
-                
-            cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
             
             if let currentUser = self.currentUser {
+                cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
+                
                 if currentUser.objectId == profileArtist?.objectId {
                     cell.actionButton.setTitle("Edit Profile", for: .normal)
                     cell.actionButton.backgroundColor = .white
@@ -216,7 +213,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.actionButton.layer.borderColor = color.darkGray().cgColor
                     cell.actionButton.setTitleColor(color.black(), for: .normal)
                     
+                    cell.newSoundButton.addTarget(self, action: #selector(didPressNewSoundButton(_:)), for: .touchUpInside)
+                    cell.newSoundButton.isHidden = false
+                    
                 } else {
+                    cell.newSoundButton.isHidden = true
+                    
                     if let isFollowedByCurrentUser = profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
                             cell.actionButton.setTitle("Following", for: .normal)
@@ -239,9 +241,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
             } else {
-                cell.actionButton.setTitle("Follow", for: .normal)
-                cell.actionButton.backgroundColor = color.blue()
-                cell.actionButton.setTitleColor(.white, for: .normal)
+                cell.actionButton.isHidden = true
+                cell.newSoundButton.isHidden = true
             }
             
             return cell
@@ -297,7 +298,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsNoMoreDataToLoad {
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             if soundList.soundType == "uploads" {
                 soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: profileArtist?.objectId, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
                 
@@ -313,15 +314,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if currentUser.objectId! == userId {
                 let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
                 self.navigationItem.rightBarButtonItem = menuButton
-                
-            } else {
-                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
-                self.navigationItem.rightBarButtonItem = shareButton
             }
             
         } else {
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
+        }
+    }
+    
+    @objc func didPressNewSoundButton(_ sender: UIButton) {
+        if self.currentUser != nil {
+            self.performSegue(withIdentifier: "showUploadSound", sender: self)
         }
     }
     

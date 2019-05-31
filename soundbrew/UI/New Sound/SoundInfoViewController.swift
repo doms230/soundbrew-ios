@@ -132,7 +132,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .white 
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
@@ -526,7 +526,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if let user = user {
                 if let city = user["city"] as? String {
                     if !city.isEmpty {
-                        self.loadCityTag(city)
+                        self.loadCityTag(city.lowercased())
                     }
                 }
             }

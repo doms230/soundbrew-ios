@@ -30,7 +30,7 @@ target 'soundbrew' do
   pod 'DeckTransition'
   pod 'AppCenter'
   pod 'MessageViewController'
-  pod 'Firebase/Core'
+  pod 'Firebase/Core', '~> 6.0.0'
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/AdMob'
 

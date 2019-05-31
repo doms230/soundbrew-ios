@@ -9,7 +9,6 @@
 import UIKit
 import Parse
 import SnapKit
-//import GoogleSignIn
 
 class WelcomeViewController: UIViewController {
     let color = Color()
@@ -68,14 +67,6 @@ class WelcomeViewController: UIViewController {
         return button
     }()
     
-    /*lazy var googleButton: GIDSignInButton = {
-        let button = GIDSignInButton()
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        button.contentHorizontalAlignment = .center
-        return button
-    }()*/
-    
     lazy var termsButton: UIButton = {
         let button = UIButton()
         button.setTitle("By continuing, you agree to our terms and privacy policy", for: .normal)
@@ -97,8 +88,6 @@ class WelcomeViewController: UIViewController {
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-       // GIDSignIn.sharedInstance().uiDelegate = self
-        
         self.view.addSubview(appImage)
         self.view.addSubview(appName)
         
@@ -115,7 +104,6 @@ class WelcomeViewController: UIViewController {
 
         appName.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.view)
-            //make.top.equalTo(self.appImage.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -139,13 +127,6 @@ class WelcomeViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.termsButton.snp.top).offset(uiElement.bottomOffset)
         }
-        
-        /*googleButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.termsButton.snp.top).offset(-10)
-        }*/
         
         termsButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)

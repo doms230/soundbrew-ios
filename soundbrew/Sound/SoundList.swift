@@ -16,7 +16,7 @@ import UIKit
 import Parse
 import DeckTransition
 
-class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
+class SoundList: NSObject, PlayerDelegate, CommentDelegate {
     var target: UIViewController!
     var tableView: UITableView?
     var sounds = [Sound]()
@@ -70,16 +70,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     func setUpTableView() {
         if let player = self.player {
             player.tableView = self.tableView
-        }
-    }
-    
-    //mark: search
-    func shouldShowSearchPage() {
-        if self.sounds.count == 0 && soundType == "follows" {
-            let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
-            if let tabBar = tabBarController {
-                tabBar.selectedIndex = 1
-            }
         }
     }
     
@@ -163,17 +153,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     func selectedArtist(_ artist: Artist?) {
         if let selectedArtist = artist {
-            //checking to make sure selected artist isn't already on artist profile page
-            if let userId = self.profileUserId {
-                if userId != selectedArtist.objectId {
-                    self.selectedArtist = selectedArtist
-                    self.segueToProfile()
-                }
-                
-            } else {
-                self.selectedArtist = selectedArtist
-                self.segueToProfile()
-            }
+            self.selectedArtist = selectedArtist
+            self.segueToProfile()
         }
     }
     
@@ -233,26 +214,33 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     @objc func didPressMenuButton(_ sender: UIButton) {
         let row = sender.tag
-        let sound = sounds[sender.tag]
-        
-        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        if let currentUser = PFUser.current() {
-            if sound.artist!.objectId == currentUser.objectId {
-                menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
-                    self.deleteSong(sound.objectId, row: row)
-                }))
-                
-                menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
-                    self.selectedSound = sound
-                    self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
-                }))
-                
-                menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
-                    self.selectedSound = sound
-                    self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
-                }))
+        if sounds.indices.contains(sender.tag) {
+            let sound = sounds[sender.tag]
+            
+            let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+            menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            if let currentUser = PFUser.current() {
+                if sound.artist!.objectId == currentUser.objectId {
+                    menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
+                        self.deleteSong(sound.objectId, row: row)
+                    }))
+                    
+                    menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
+                        self.selectedSound = sound
+                        self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
+                    }))
+                    
+                    menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
+                        self.selectedSound = sound
+                        self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
+                    }))
+                    
+                } else {
+                    menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
+                        self.selectedArtist(sound.artist)
+                    }))
+                }
                 
             } else {
                 menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
@@ -260,13 +248,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                 }))
             }
             
-        } else {
-            menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
-                self.selectedArtist(sound.artist)
-            }))
+            target.present(menuAlert, animated: true, completion: nil)
         }
-        
-        target.present(menuAlert, animated: true, completion: nil)
     }
     
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
@@ -337,7 +320,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             //player.sounds = self.sounds
             self.tableView?.isHidden = false
             target.view.bringSubviewToFront(tableView!)
-            self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+            //self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
         }
         
         self.tableView?.reloadData()
@@ -358,8 +341,8 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         if let currentUser = PFUser.current() {
             if sounds.count != 0 {
                 if self.soundType == "uploads" || self.soundType == "likes" {
-                    if currentUser.objectId == self.profileUserId! &&
-                        self.profileUserId! != domSmithUserId  {
+                    if currentUser.objectId == self.profileUserId! { //&&
+                        //self.profileUserId! != domSmithUserId  {
                         SKStoreReviewController.requestReview()
                     }
                 }
@@ -465,34 +448,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
             determineTypeOfSoundToLoad(soundType)
         }
     }
-
-    func prepareToShowTags(_ segue: UIStoryboardSegue) {
-        let viewController = segue.destination as! ChooseTagsViewController
-        viewController.tagDelegate = self
-        if let tags = self.selectedTagsForFiltering {
-            viewController.chosenTags = tags
-        }
-    }
-    
-    func changeTags(_ value: Array<Tag>?) {
-        //Only want to reload data if tags changed
-    
-        var currentTagObjectIds = [String]()
-        if let selectedTagsForFiltering = self.selectedTagsForFiltering {
-            currentTagObjectIds = selectedTagsForFiltering.map {$0.objectId}
-        }
-        if let newTags = value {
-            let newTagObjectIds = newTags.map {$0.objectId}
-            if currentTagObjectIds != newTagObjectIds {
-                self.selectedTagsForFiltering = newTags
-                determineTypeOfSoundToLoad(soundType)
-            }
-            
-        } else {
-            self.selectedTagsForFiltering = nil
-            determineTypeOfSoundToLoad(soundType)
-        }
-    }
     
     func addSelectedTags(_ scrollview: UIScrollView, tagName: String) {
         let buttonTitleWithX = "\(tagName)"
@@ -536,7 +491,7 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
     
     //To insure that data isn't loaded again when user is at bottom of screen
     var isUpdatingData = false
-    var thereIsNoMoreDataToLoad = false
+    var thereIsMoreDataToLoad = true
     
     func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?, tags: Array<Tag>?, followIds: Array<String>?, searchText: String?) {
         
@@ -566,7 +521,6 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
         }
         if sounds.count != 0 {
             query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId})
-            print("cha")
         }
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder(descendingOrder)
@@ -579,15 +533,20 @@ class SoundList: NSObject, PlayerDelegate, TagDelegate, CommentDelegate {
                         let sound = self.newSoundObject(object)
                         self.sounds.append(sound)
                     }
-                    self.updateSounds()
+                    
+                    if objects.count == 0 {
+                        self.thereIsMoreDataToLoad = false
+                        
+                    } else {
+                        self.updateSounds()
+                    }
                     
                 } else {
-                    self.thereIsNoMoreDataToLoad = true
+                    self.thereIsMoreDataToLoad = false
                 }
                 
-                self.shouldShowSearchPage()
-                
             } else {
+                self.thereIsMoreDataToLoad = false
                 print("Error: \(error!)")
             }
         }

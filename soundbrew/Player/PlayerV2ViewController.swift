@@ -17,7 +17,7 @@ import DeckTransition
 import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
-import FirebaseDynamicLinks
+//import FirebaseDynamicLinks
 
 class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
 

@@ -18,21 +18,15 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if tagType == nil {
-            setUpSearchBar()
-            
-        } else {
-            setUpDoneButton()
-        }
-        
+        setUpDoneButton()
         loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showPlaylist" {
-            let viewController = segue.destination as! PlaylistViewController
-            viewController.selectedTagsForFiltering = self.chosenTags
+            let navi = segue.destination as! UINavigationController
+            let topviewController = navi.topViewController as! PlaylistViewController
+            topviewController.selectedTagsForFiltering = self.chosenTags
         }
     }
     
@@ -46,7 +40,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setUpDoneButton() {
-        view.addSubview(doneButton)
+        if tagType == nil {
+            doneButton.setTitle("Create", for: .normal)
+        }
+        self.view.addSubview(doneButton)
         doneButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
         doneButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
@@ -77,23 +74,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setUpSearchBar() {
-        if tagType == nil {
-            searchBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width - 100, height: 10)
-            searchBar.placeholder = "Search Tags"
-            let leftNavBarButton = UIBarButtonItem(customView: searchBar)
-            self.navigationItem.leftBarButtonItem = leftNavBarButton
-            
-            let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(didPressNaviDoneButton(_:)))
-            self.navigationItem.rightBarButtonItem = doneButton
-            
-        } else {
-            searchBar.placeholder = "Search or Create Tags"
-            self.view.addSubview(searchBar)
-            searchBar.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(doneButton)
-                make.left.equalTo(self.view).offset(uiElement.elementOffset)
-                make.right.equalTo(doneButton.snp.left).offset(-(uiElement.elementOffset))
-            }
+        searchBar.placeholder = "Search or Create Tags"
+        self.view.addSubview(searchBar)
+        searchBar.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(doneButton)
+            make.left.equalTo(self.view).offset(uiElement.elementOffset)
+            make.right.equalTo(doneButton.snp.left).offset(-(uiElement.elementOffset))
         }
     }
     
@@ -199,7 +185,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var tags = [Tag]()
     var filteredTags = [Tag]()
-    var featureTagTitles = ["all tags", "mood", "similar artist", "activity", "city", "genre"]
+    var featureTagTitles = ["all", "mood", "similar artist", "activity", "city", "genre"]
     
     var xPositionForFeatureTags = UIElement().leftOffset
     var selectedFeatureType = 0
@@ -227,8 +213,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             backgroundColor = color.blue()
         }
         
+        let buttonHeight = 30
+        
         let tagButton = UIButton()
-        tagButton.frame = CGRect(x: xPositionForFeatureTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: 30)
+        tagButton.frame = CGRect(x: xPositionForFeatureTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: buttonHeight)
         tagButton.setTitle( name.capitalized, for: .normal)
         tagButton.setTitleColor(titleColor, for: .normal)
         tagButton.backgroundColor = backgroundColor
@@ -239,7 +227,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         scrollview.addSubview(tagButton)
         
         xPositionForFeatureTags = xPositionForFeatureTags + Int(tagButton.frame.width) + uiElement.leftOffset
-        scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: 30)
+        scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
     }
     
     @objc func didPressFeatureTagButton(_ sender: UIButton) {
@@ -262,10 +250,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Select Tags for Playlist"
+        label.text = "Select Tags For Your Playlist"
         label.textColor = color.black()
         label.textAlignment = .center
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         return label
     }()
     
@@ -337,14 +325,14 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         let name = "X | \(buttonTitle)"
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(name)
-        let buttonHeight = 40
+        let buttonHeight = 30
         
         let chosenTagButton = UIButton()
         chosenTagButton.frame = CGRect(x: xPositionForChosenTags, y: 0, width: buttonTitleWidth, height: buttonHeight)
         chosenTagButton.setTitle(name, for: .normal)
         chosenTagButton.setTitleColor(.white, for: .normal)
-        chosenTagButton.setBackgroundImage(UIImage(named: "background"), for: .normal)
-        chosenTagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        chosenTagButton.backgroundColor = color.blue()
+        chosenTagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         chosenTagButton.layer.cornerRadius = 3
         chosenTagButton.clipsToBounds = true
         chosenTagButton.tag = tag

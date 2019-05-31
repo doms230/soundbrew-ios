@@ -95,6 +95,17 @@ class ProfileTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var newSoundButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Upload Sound", for: .normal)
+        button.backgroundColor = color.green()
+        button.setTitleColor(color.black(), for: .normal)
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        return button
+    }()
+    
     //EditProfile
     lazy var editProfileLabel: UILabel = {
         let label = UILabel()
@@ -162,6 +173,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(bio)
             self.addSubview(website)
             self.addSubview(actionButton)
+            self.addSubview(newSoundButton)
             
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
@@ -172,10 +184,19 @@ class ProfileTableViewCell: UITableViewCell {
             
             actionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(30)
-                make.width.equalTo(100)
+                make.width.equalTo(125)
                 make.centerY.equalTo(profileImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
             }
+            
+            /*newSoundButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(30)
+                make.width.equalTo(125)
+                make.centerY.equalTo(profileImage)
+                make.left.equalTo(actionButton)
+                make.right.equalTo(actionButton)
+            }*/
             
             displayName.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
