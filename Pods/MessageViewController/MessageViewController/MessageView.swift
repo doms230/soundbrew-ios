@@ -117,7 +117,7 @@ public final class MessageView: UIView, MessageTextViewListener {
         get { return textView.textContainerInset }
     }
 
-    public func setButton(icon: UIImage?, for state: UIControlState, position: ButtonPosition) {
+    public func setButton(icon: UIImage?, for state: UIControl.State, position: ButtonPosition) {
         let button: UIButton
         switch position {
         case .left:
@@ -129,7 +129,7 @@ public final class MessageView: UIView, MessageTextViewListener {
         buttonLayoutDidChange(button: button)
     }
 
-    public func setButton(title: String, for state: UIControlState, position: ButtonPosition) {
+    public func setButton(title: String, for state: UIControl.State, position: ButtonPosition) {
         let button: UIButton
         switch position {
         case .left:

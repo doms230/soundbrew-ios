@@ -420,6 +420,7 @@
 				TargetAttributes = {
 					F2689865215AEF8F00C21663 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -446,10 +447,12 @@
 					};
 					F2689879215AEF9000C21663 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = F2689865215AEF8F00C21663;
 					};
 					F2689884215AEF9000C21663 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = F2689865215AEF8F00C21663;
 					};
 				};
@@ -807,7 +810,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-artists";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -829,7 +832,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-artists";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -850,7 +853,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/soundbrew.app/soundbrew";
 			};
@@ -872,7 +875,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/soundbrew.app/soundbrew";
 			};
@@ -893,7 +896,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = soundbrew;
 			};
@@ -914,7 +917,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.soundbrew.soundbrewUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = soundbrew;
 			};

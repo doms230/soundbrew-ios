@@ -89,11 +89,11 @@ open class MessageViewController: UIViewController, MessageAutocompleteControlle
         messageAutocompleteController.layoutDelegate = self
 
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardDidShow(notification:)), name: NSNotification.Name.UIKeyboardDidShow, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardDidHide(notification:)), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(appWillResignActive(notification:)), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.NSNotification.Name.UIKeyboardWillShow, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardDidShow(notification:)), name: UIResponder.NSNotification.Name.UIKeyboardDidShow, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.NSNotification.Name.UIKeyboardWillHide, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardDidHide(notification:)), name: UIResponder.NSNotification.Name.UIKeyboardDidHide, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(appWillResignActive(notification:)), name: UIApplication.NSNotification.Name.UIApplicationWillResignActive, object: nil)
     }
 
     internal var safeAreaAdditionalHeight: CGFloat {
@@ -157,8 +157,8 @@ open class MessageViewController: UIViewController, MessageAutocompleteControlle
     // MARK: Notifications
 
     @objc internal func keyboardWillShow(notification: Notification) {
-        guard let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect,
-            let animationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+            let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
             else { return }
 
         scrollView?.stopScrolling()
@@ -195,7 +195,7 @@ open class MessageViewController: UIViewController, MessageAutocompleteControlle
     }
 
     @objc internal func keyboardWillHide(notification: Notification) {
-        guard let animationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval
+        guard let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
             else { return }
 
         keyboardState = .hiding
