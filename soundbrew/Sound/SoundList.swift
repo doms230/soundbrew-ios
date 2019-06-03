@@ -172,7 +172,8 @@ class SoundList: NSObject, PlayerDelegate {
             cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
             cell.menuButton.tag = indexPath.row
             
-            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
+            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "audio"))
+        
             cell.soundTitle.text = sound.title
             
             if let plays = sound.plays {
