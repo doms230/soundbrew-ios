@@ -25,8 +25,9 @@ class Sound {
     var artist: Artist?
     var isLiked: Bool?
     var likes: Int?
+    var tmpFile: TemporaryFile?
     
-    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?, isLiked: Bool?, likes: Int?) {
+    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?, isLiked: Bool?, likes: Int?, tmpFile: TemporaryFile?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -41,7 +42,8 @@ class Sound {
         self.audioData = audioData
         self.artist = artist
         self.isLiked = isLiked
-        self.likes = likes 
+        self.likes = likes
+        self.tmpFile = tmpFile
     }
 }
 
@@ -74,7 +76,7 @@ func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound 
         }
     }
     
-    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes)
+    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
     
     
     

@@ -42,28 +42,45 @@ class Player: NSObject, AVAudioPlayerDelegate {
         var soundPlayable = true
         
         //need audio url so can see what type of file audio is... helps get audio duration
-        let audioURL = URL(string: sounds[currentSoundIndex].audioURL)
+        let sound = sounds[currentSoundIndex]
+        var audioURL: URL?
+        var soundObjectId: String?
+        if let getAudioURL = URL(string: sound.audioURL) {
+            audioURL = getAudioURL
+        }
+        
+        if let getSoundObject = sound.objectId {
+            soundObjectId = getSoundObject
+        }
         
         // Set up the session.
         let session = AVAudioSession.sharedInstance()
         
         do {
             //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
-            let audioFileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(audioURL!.lastPathComponent)")
-            try audioData.write(to: audioFileURL, options: .atomic)
+            if audioURL != nil && soundObjectId != nil {
+                let tempAudioFile = try TemporaryFile(creatingTempDirectoryForFilename: "\(audioURL!.lastPathComponent)")
+                self.sounds[currentSoundIndex].tmpFile = tempAudioFile
+                
+                try audioData.write(to: tempAudioFile.fileURL, options: .atomic)
+                
+                try session.setCategory(AVAudioSession.Category.playback,
+                                        mode: .default,
+                                        policy: .longForm,
+                                        options: [])
+                // Set up the player.
+                self.player = try AVAudioPlayer(contentsOf: tempAudioFile.fileURL)
+                player?.delegate = self
+                
+                // Activate and request the route.
+                try session.setActive(true)
+                
+            } else {
+                soundPlayable = false
+            }
             
-            try session.setCategory(AVAudioSession.Category.playback,
-                                    mode: .default,
-                                    policy: .longForm,
-                                    options: [])
-            // Set up the player.
-            self.player = try AVAudioPlayer(contentsOf: audioFileURL)
-            player?.delegate = self
-            
-            // Activate and request the route.
-            try session.setActive(true)
-            
-        } catch {
+        } catch let error {
+            print(error)
             soundPlayable = false
         }
         
@@ -159,6 +176,17 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if player != nil {
             player?.pause()
             player = nil
+        }
+        
+        DispatchQueue.main.async {
+            if let temporaryFile =  self.sounds[self.currentSoundIndex].tmpFile {
+                do {
+                    try temporaryFile.deleteDirectory()
+                    
+                } catch let error {
+                    print("error deleting temp file: \(error)")
+                }
+            }
         }
         
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
@@ -478,7 +506,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
         
-        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes)
+        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
         
         return sound
     }

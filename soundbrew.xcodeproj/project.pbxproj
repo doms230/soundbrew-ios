@@ -37,6 +37,7 @@
 		F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A9861222FA5F200C96EED /* EditBioViewController.swift */; };
 		F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */; };
 		F2E5081C21FFC5A200985E34 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* PlaylistViewController.swift */; };
+		F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
 		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
 		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
@@ -113,6 +114,7 @@
 		F28A9861222FA5F200C96EED /* EditBioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBioViewController.swift; sourceTree = "<group>"; };
 		F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewUsernameViewController.swift; path = ../NewUsernameViewController.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
+		F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemporaryFile.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
 		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 		F2689868215AEF8F00C21663 /* soundbrew */ = {
 			isa = PBXGroup;
 			children = (
+				F2E6E4F522A5934900B4537D /* New Group1 */,
 				F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */,
 				F26898F0216B874C00C21663 /* soundbrew.entitlements */,
 				F2689875215AEF9000C21663 /* Info.plist */,
@@ -246,7 +249,6 @@
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F268992A21753A3B00C21663 /* Tag.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
-				F24F2B772278E9F9006D1CB7 /* Ad.swift */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
 				F268989A215AF87200C21663 /* UI */,
@@ -295,6 +297,15 @@
 				F23C620F21DC34DB005C9FF0 /* Login */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		F2E6E4F522A5934900B4537D /* New Group1 */ = {
+			isa = PBXGroup;
+			children = (
+				F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */,
+				F24F2B772278E9F9006D1CB7 /* Ad.swift */,
+			);
+			path = "New Group1";
 			sourceTree = "<group>";
 		};
 		F2EA6F51220BDE89007FA614 /* Player */ = {
@@ -575,6 +586,7 @@
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F26CFF80229F0DDB00D01627 /* SearchViewController.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
+				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
 				F24F2B782278E9F9006D1CB7 /* Ad.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
