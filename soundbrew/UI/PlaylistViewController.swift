@@ -57,10 +57,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             soundList.prepareToShowSoundAudioUpload(segue)
             break
             
-        case "showComments":
-            soundList.prepareToShowComments(segue)
-            break
-            
         case "showPlaylist":
             let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
             viewController.tagDelegate = self

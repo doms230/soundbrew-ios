@@ -48,10 +48,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             soundList.prepareToShowSoundAudioUpload(segue)
             break
             
-        case "showComments":
-            soundList.prepareToShowComments(segue)
-            break
-            
         default:
             break
         }

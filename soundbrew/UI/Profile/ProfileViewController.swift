@@ -84,10 +84,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.prepareToShowSelectedArtist(segue)
             break
             
-        case "showComments":
-            soundList.prepareToShowComments(segue)
-            break
-            
         case "showSettings":
             let viewController = segue.destination as! SettingsViewController
             viewController.artist = profileArtist

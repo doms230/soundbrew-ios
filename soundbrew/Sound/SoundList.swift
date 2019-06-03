@@ -16,7 +16,7 @@ import UIKit
 import Parse
 import DeckTransition
 
-class SoundList: NSObject, PlayerDelegate, CommentDelegate {
+class SoundList: NSObject, PlayerDelegate {
     var target: UIViewController!
     var tableView: UITableView?
     var sounds = [Sound]()
@@ -118,29 +118,10 @@ class SoundList: NSObject, PlayerDelegate, CommentDelegate {
         let modal = PlayerV2ViewController()
         modal.player = self.player
         modal.playerDelegate = self
-        modal.commentDelegate = self 
         let transitionDelegate = DeckTransitioningDelegate()
         modal.transitioningDelegate = transitionDelegate
         modal.modalPresentationStyle = .custom
         target.present(modal, animated: true, completion: nil)
-    }
-    
-    //mark: comment
-    var commentPostId: String!
-    var commentAtTime: Float!
-    
-    func prepareToShowComments(_ segue: UIStoryboardSegue) {
-        let viewController = segue.destination as! CommentViewController
-        viewController.postId = commentPostId
-        viewController.atTime = commentAtTime
-    }
-    func selectedComments(_ postId: String?, atTime: Float?) {
-        if let postId = postId {
-            commentPostId = postId
-            commentAtTime = atTime!
-            miniPlayerView!.isHidden = true
-            target.performSegue(withIdentifier: "showComments", sender: self)
-        }
     }
     
     //mark: artist

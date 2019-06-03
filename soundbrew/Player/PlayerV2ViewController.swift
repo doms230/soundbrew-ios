@@ -28,7 +28,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     var sound: Sound?
     
     var playerDelegate: PlayerDelegate?
-    var commentDelegate: CommentDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()

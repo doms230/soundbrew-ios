@@ -68,7 +68,6 @@ PODS:
   - GoogleUtilities/UserDefaults (6.2.0):
     - GoogleUtilities/Logger
   - Kingfisher (5.5.0)
-  - MessageViewController (0.2.1)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -104,7 +103,6 @@ DEPENDENCIES:
   - Firebase/Core
   - Firebase/DynamicLinks
   - Kingfisher
-  - MessageViewController
   - NVActivityIndicatorView
   - Parse
   - ShareInstagram
@@ -128,7 +126,6 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleUtilities
     - Kingfisher
-    - MessageViewController
     - nanopb
     - NVActivityIndicatorView
     - Parse
@@ -154,7 +151,6 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 51d8d9ea48f0ca44484d29cfbdef976fbd4fc336
   GoogleUtilities: 996e0db07153674fd1b54b220fda3a3dc3547cba
   Kingfisher: 6fe5e67a90fd335e49b0f5c075ff55ac5ebedd94
-  MessageViewController: 63ef2719d82c91d949ad52e101f049028a5a0611
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   NVActivityIndicatorView: b19ddab2576f805cbe0fb2306cba3476e09a1dea
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
@@ -165,6 +161,6 @@ SPEC CHECKSUMS:
   SnapSDK: be510aaabbfa7ab0142b53770f2e79c6c6b363e6
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
 
-PODFILE CHECKSUM: 5bee8f87c9ff256ecf59af7de4450acf9e90e338
+PODFILE CHECKSUM: 63f968366f6b0ceab954ce120ab3922e8e66c783
 
 COCOAPODS: 1.7.1

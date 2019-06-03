@@ -84,7 +84,6 @@
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="Lzr-CP-43Y"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                         <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
-                        <segue destination="0eG-FI-KSj" kind="show" identifier="showComments" id="Mz5-gw-jR1"/>
                         <segue destination="QfG-7B-QZs" kind="show" identifier="showSettings" id="l3q-a8-5VE"/>
                     </connections>
                 </viewController>
@@ -139,7 +138,6 @@
                     </view>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="vKf-hT-VHa"/>
-                        <segue destination="0eG-FI-KSj" kind="show" identifier="showComments" id="ikP-kz-qeq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jvL-th-QNN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -164,21 +162,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bk6-yl-ZEN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1929" y="-788"/>
-        </scene>
-        <!--Comment View Controller-->
-        <scene sceneID="FMo-w8-eYx">
-            <objects>
-                <viewController id="0eG-FI-KSj" customClass="CommentViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="hRZ-gk-U03">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="NOl-8k-UcN"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="sFd-n7-GQQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2541" y="-1829"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
@@ -244,7 +227,6 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ciq-Pd-2ja"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="6q5-Hq-145"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="b9t-dY-jAL"/>
-                        <segue destination="0eG-FI-KSj" kind="show" identifier="showComments" id="czo-Nq-UiO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -289,7 +271,6 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="SpB-6h-026"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="hAI-d0-wwO"/>
-                        <segue destination="0eG-FI-KSj" kind="show" identifier="showComments" id="om5-dC-93c"/>
                         <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showPlaylist" id="Rwu-7L-fq5"/>
                     </connections>
                 </viewController>
@@ -390,7 +371,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="cJs-1X-ayw"/>
         <segue reference="Rwu-7L-fq5"/>
-        <segue reference="om5-dC-93c"/>
         <segue reference="3jW-Fd-CA3"/>
         <segue reference="SpB-6h-026"/>
         <segue reference="hAI-d0-wwO"/>
