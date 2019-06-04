@@ -36,7 +36,8 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var soundTagLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        label.text = "Tags"
         return label
     }()
     

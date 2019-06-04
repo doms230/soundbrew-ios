@@ -60,7 +60,7 @@
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
                     </view>
                     <connections>
-                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" id="7xJ-zD-c6d"/>
+                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showTags" modalPresentationStyle="currentContext" id="7xJ-zD-c6d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -163,10 +163,10 @@
             </objects>
             <point key="canvasLocation" x="-1929" y="-788"/>
         </scene>
-        <!--Choose Tags View Controller-->
+        <!--New Sound Tags View Controller-->
         <scene sceneID="MiY-1a-dLz">
             <objects>
-                <viewController id="EFp-6t-Bz1" customClass="ChooseTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="EFp-6t-Bz1" customClass="NewSoundTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HvH-Jy-vPO">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -174,10 +174,28 @@
                         <viewLayoutGuide key="safeArea" id="ppU-zV-2lC"/>
                     </view>
                     <navigationItem key="navigationItem" id="4jM-sc-wOU"/>
+                    <connections>
+                        <segue destination="Wod-6r-vBx" kind="presentation" identifier="showChooseTags" modalPresentationStyle="currentContext" id="dQu-jO-jhF"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rty-tM-z2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1674" y="376"/>
+        </scene>
+        <!--Choose Tags View Controller-->
+        <scene sceneID="M20-Wr-7YN">
+            <objects>
+                <viewController id="Wod-6r-vBx" customClass="ChooseTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dVL-dQ-Z1D">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="C2O-ih-25I"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2541" y="376"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="2Zy-jX-lX6">
@@ -370,7 +388,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="cJs-1X-ayw"/>
-        <segue reference="Rwu-7L-fq5"/>
+        <segue reference="7xJ-zD-c6d"/>
         <segue reference="3jW-Fd-CA3"/>
         <segue reference="SpB-6h-026"/>
         <segue reference="hAI-d0-wwO"/>

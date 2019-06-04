@@ -162,7 +162,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     var selectedTagsForFiltering = [Tag]()
     var xPositionForTags = 0
     
-    func changeTags(_ value: Array<Tag>?) {
+    func receivedTags(_ value: Array<Tag>?) {
         if let tags = value {
             selectedTagsForFiltering = tags
             soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)

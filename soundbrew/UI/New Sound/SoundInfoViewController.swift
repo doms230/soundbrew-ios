@@ -52,17 +52,58 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         setUpTableView()
     }
     
+    /*override func viewDidAppear(_ animated: Bool) {
+        if soundThatIsBeingEdited == nil {
+            saveAudioFile()
+        }
+    }*/
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
+        let viewController: NewSoundTagsViewController = segue.destination as! NewSoundTagsViewController
         viewController.tagDelegate = self
         
-        if let tagType = tagType {
+        if let chosenTags = self.chosenTags {
+            for tag in chosenTags {
+                if let type = tag.type {
+                    switch type {
+                    case "genre":
+                        viewController.genreTag = tag
+                        break
+                        
+                    case "mood":
+                        viewController.moodTag = tag
+                        break
+                        
+                    case "activity":
+                        viewController.activityTag = tag
+                        break
+                        
+                    case "similar artist":
+                        viewController.similarArtistTag = tag
+                        break
+                        
+                    case "city":
+                        viewController.cityTag = tag
+                        break
+                        
+                    default:
+                        viewController.moreTags?.append(tag)
+                        break
+                    }
+                    
+                } else {
+                    viewController.moreTags?.append(tag)
+                }
+            }
+        }
+        
+        /*if let tagType = tagType {
             viewController.tagType = tagType
             
         } else if let tags = tagsToUpdateInChooseTagsViewController {
             //only want to populate chosen tags if user is choosing more tags
                 viewController.chosenTags = tags
-            }
+        }*/
     }
     
     //mark: views
@@ -84,17 +125,25 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //MARK: tags
     var showTags = "showTags"
-    var tagType: String?
+    var chosenTagsLabel: UILabel!
+    /*var tagType: String?
     var genreTag: Tag?
     var moodTag: Tag?
     var activityTag: Tag?
     var moreTags: Array<Tag>?
     var cityTag: Tag?
-    var similarArtistTag: Tag?
-    var tagsToUpdateInChooseTagsViewController: Array<Tag>?
+    var similarArtistTag: Tag?*/
+    var chosenTags: Array<Tag>?
+    //var tagsToUpdateInChooseTagsViewController: Array<Tag>?
     
-    func changeTags(_ value: Array<Tag>?) {
-        if let tagType = self.tagType {
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        print("receivedTags")
+        if let chosenTags = chosenTags {
+            self.chosenTags = chosenTags
+            self.chosenTagsLabel.text = "\(self.chosenTags!.count)"
+            self.chosenTagsLabel.textColor = color.blue()
+        }
+        /*if let tagType = self.tagType {
             if let tag = value {
                 switch tagType {
                 case "city":
@@ -122,7 +171,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     break
                 }
             }
-        }
+        }*/
         
         self.tableView.reloadData()
     }
@@ -156,10 +205,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 {
-            return 5
-        }
-        
         return 1
     }
     
@@ -190,7 +235,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as? SoundInfoTableViewCell
             
-            switch indexPath.row {
+             chosenTagsLabel =  cell.chosenSoundTagLabel
+            
+            tableView.separatorStyle = .none
+            
+            /*switch indexPath.row {
             case 0:
                 cell.soundTagLabel.text = "Genre Tag"
                 if let genreTag = self.genreTag {
@@ -244,7 +293,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             default:
                 break 
-            }
+            }*/
         }
         
         cell.selectionStyle = .none
@@ -254,7 +303,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 2 {
-            switch indexPath.row {
+            self.performSegue(withIdentifier: showTags, sender: self)
+            /*switch indexPath.row {
             case 0:
                 self.tagType = "genre"
                 break
@@ -278,9 +328,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             default:
                 break
-            }
-            
-            self.performSegue(withIdentifier: showTags, sender: self)
+            }*/
         }
     }
     
@@ -347,6 +395,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 updateSound(sound.objectId)
                 
             } else {
+                print("soundParseFile: \(soundParseFileDidFinishProcessing)")
+                print("soundart: \(soundArtDidFinishProcessing)")
                 if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
                     saveSound()
                     
@@ -358,18 +408,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func saveSound() {
-        let tags = getTags()
+        //let tags = getTags()
         let newSound = PFObject(className: "Post")
         newSound["userId"] = PFUser.current()!.objectId!
         newSound["title"] = soundTitle.text
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
-        newSound["tags"] = tags.map {$0.name}
+        if let chosenTags = self.chosenTags {
+            newSound["tags"] = chosenTags.map {$0.name}
+        }
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
                 self.newSoundObjectId = newSound.objectId
-                self.saveTags(tags)
+                self.saveTags(self.chosenTags)
                 MSAnalytics.trackEvent("sound uploaded")
                 
             } else if let error = error {
@@ -406,7 +458,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func getTags() -> Array<Tag> {
+    /*func getTags() -> Array<Tag> {
         var tags = [Tag]()
         if let moreTags = self.moreTags {
             tags = moreTags
@@ -432,31 +484,33 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         return tags
-    }
+    }*/
     
-    func saveTags(_ tags: Array<Tag>) {
-        for tag in tags {
-            if let tagId = tag.objectId {
-                let query = PFQuery(className: "Tag")
-                query.getObjectInBackground(withId: tagId) {
-                    (object: PFObject?, error: Error?) -> Void in
-                    if let error = error {
-                        print(error)
-                        
-                    } else if let object = object {
-                        object.incrementKey("count")
-                        object.saveEventually()
+    func saveTags(_ tags: Array<Tag>?) {
+        if let tags = tags {
+            for tag in tags {
+                if let tagId = tag.objectId {
+                    let query = PFQuery(className: "Tag")
+                    query.getObjectInBackground(withId: tagId) {
+                        (object: PFObject?, error: Error?) -> Void in
+                        if let error = error {
+                            print(error)
+                            
+                        } else if let object = object {
+                            object.incrementKey("count")
+                            object.saveEventually()
+                        }
                     }
+                    
+                } else {
+                    let newTag = PFObject(className: "Tag")
+                    newTag["tag"] = tag.name
+                    newTag["count"] = 1
+                    if let type = tag.type {
+                        newTag["type"] = type
+                    }
+                    newTag.saveEventually()
                 }
-                
-            } else {
-                let newTag = PFObject(className: "Tag")
-                newTag["tag"] = tag.name
-                newTag["count"] = 1
-                if let type = tag.type {
-                    newTag["type"] = type
-                }
-                newTag.saveEventually()
             }
         }
         
@@ -495,7 +549,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if soundArt == nil {
                 uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
                 
-            } else if genreTag == nil {
+            } else {
+                return true
+            } /*else if genreTag == nil {
                 uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
                 
             } else if activityTag == nil {
@@ -509,7 +565,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else {
                 return true
-            }
+            }*/
             
         } else {
             return true
@@ -552,15 +608,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func loadCityTag(_ city: String) {
+        let cityTag = Tag(objectId: nil, name: city, count: 0, isSelected: false, type: "city", image: nil)
         let query = PFQuery(className: "Tag")
         query.whereKey("tag", equalTo: city)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
-                self.cityTag = Tag(objectId: object?.objectId, name: object!["tag"] as? String, count: 0, isSelected: false, type: "city", image: nil)
+                cityTag.objectId = object?.objectId
+                cityTag.name = object!["tag"] as? String
+                self.chosenTags?.append(cityTag)
                 
             } else {
-                self.cityTag = Tag(objectId: nil, name: city, count: 0, isSelected: false, type: "city", image: nil)
+                self.chosenTags?.append(cityTag)
             }
         }
     }

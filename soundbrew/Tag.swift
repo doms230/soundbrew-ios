@@ -45,5 +45,5 @@ class Tag {
 }
 
 protocol TagDelegate {
-    func changeTags(_ value: Array<Tag>?)
+    func receivedTags(_ chosenTags: Array<Tag>?)
 }

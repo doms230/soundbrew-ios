@@ -18,7 +18,15 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpDoneButton()
+        
+        //dont want to show done button if only choosing one tag
+        if tagType == nil || tagType == "more" {
+            setUpDoneButton()
+            
+        } else {
+            setUpSearchBar()
+        }
+        
         loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
     }
     
@@ -64,7 +72,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var searchIsActive = false
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        searchBar.placeholder = "Create or Search Tags"
+        searchBar.placeholder = "Search Tags"
         searchBar.barTintColor = .white
         searchBar.backgroundImage = UIImage()
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
@@ -74,12 +82,21 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setUpSearchBar() {
-        searchBar.placeholder = "Search or Create Tags"
+        if tagType != nil {
+            searchBar.placeholder = "Search or Create Tags"
+        }
+        
         self.view.addSubview(searchBar)
         searchBar.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(doneButton)
             make.left.equalTo(self.view).offset(uiElement.elementOffset)
-            make.right.equalTo(doneButton.snp.left).offset(-(uiElement.elementOffset))
+            if tagType == nil || tagType == "more" {
+                make.centerY.equalTo(doneButton)
+                make.right.equalTo(doneButton.snp.left).offset(-(uiElement.elementOffset))
+                
+            } else {
+                make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            }
         }
     }
     
@@ -123,7 +140,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         view.addSubview(tableView)
-        
         tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
             make.left.equalTo(self.view)
@@ -166,14 +182,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func didSelectRowAt(_ row: Int) {
         let selectedTag = filteredTags[row]
-        
-        if tagType != nil && tagType != "more" {
-            appendTag(selectedTag)
-            handleTagsForDismissal()
-            
-        } else {
-            appendTag(selectedTag)
-        }
+        appendTag(selectedTag)
     }
     
     //MARK: tags
@@ -185,7 +194,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var tags = [Tag]()
     var filteredTags = [Tag]()
-    var featureTagTitles = ["all", "mood", "similar artist", "activity", "city", "genre"]
+    var featureTagTitles = ["genre", "mood", "activity", "similar artist", "city", "all"]
     
     var xPositionForFeatureTags = UIElement().leftOffset
     var selectedFeatureType = 0
@@ -316,7 +325,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.chosenTags.append(tag)
         }
         
-        self.tableView.reloadData()
+        if tagType == nil || tagType == "more" {
+            self.tableView.reloadData()
+            
+        } else {
+            handleTagsForDismissal()
+        }
     }
     
     func addChosenTagButton(_ buttonTitle: String, tag: Int) {
@@ -349,7 +363,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             if self.chosenTags.count != 0 {
                 chosenTags = self.chosenTags
             }
-            tagDelegate.changeTags(chosenTags)
+            tagDelegate.receivedTags(chosenTags)
         }
         
         self.dismiss(animated: true, completion: nil)

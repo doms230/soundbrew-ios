@@ -16,6 +16,7 @@
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
 		F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */; };
 		F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23C621E21DC38E6005C9FF0 /* Login.storyboard */; };
+		F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
 		F24F2B782278E9F9006D1CB7 /* Ad.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B772278E9F9006D1CB7 /* Ad.swift */; };
@@ -86,6 +87,7 @@
 		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		F23C621E21DC38E6005C9FF0 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
+		F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSoundTagsViewController.swift; sourceTree = "<group>"; };
 		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
 		F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F24F2B772278E9F9006D1CB7 /* Ad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ad.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
 				F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
+				F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";
@@ -588,6 +591,7 @@
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
 				F24F2B782278E9F9006D1CB7 /* Ad.swift in Sources */,
+				F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
