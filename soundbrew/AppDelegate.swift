@@ -85,6 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //called if user is opening for the first time
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
+        
         return application(app, open: url,
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
@@ -169,7 +170,6 @@ extension AppDelegate: SKPaymentTransactionObserver {
                 handleDeferredState(for: transaction, in: queue)
             }
         }
-        
     }
     
     func handlePurchasingState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {

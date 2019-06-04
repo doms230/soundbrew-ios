@@ -4,7 +4,7 @@
 //
 //  Created by Dominic  Smith on 10/8/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-//TODO: Get User's cit they are in 
+//mark: tableview, audio, tags, media upload, view
 
 import UIKit
 import Parse
@@ -35,6 +35,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundThatIsBeingEdited: Sound?
     var newSoundObjectId: String!
     
+    var uploadButton: UIBarButtonItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if soundThatIsBeingEdited == nil {
@@ -63,13 +65,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
     }
     
+    //mark: views
+    
     func setUpViews() {
         var title = "UPLOAD"
         if soundThatIsBeingEdited != nil {
             title = "UPDATE"
         }
         
-        let uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
+        uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
+        uploadButton.isEnabled = false
         self.navigationItem.rightBarButtonItem = uploadButton
     }
     
@@ -126,12 +131,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var tableView: UITableView!
     let soundInfoReuse = "soundInfoReuse"
     let soundTagReuse = "soundTagReuse"
+    let soundProgressReuse = "soundProgressReuse"
+    
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundProgressReuse)
         tableView.backgroundColor = .white 
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .singleLine
@@ -141,14 +149,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func numberOfSections(in tableView: UITableView) -> Int {
         if soundThatIsBeingEdited == nil {
-            return 2
+            return 3
         }
         
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 {
+        if section == 2 {
             return 5
         }
         
@@ -159,6 +167,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var cell: SoundInfoTableViewCell!
         
         if indexPath.section == 0 {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
+            
+            self.progressSliderTitle = cell.progressSliderTitle
+            self.progressSliderPrecentDoneLabel = cell.chosenSoundTagLabel
+            self.progressSlider = cell.progessSlider
+            
+        } else if indexPath.section == 1 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as? SoundInfoTableViewCell
             
             if let sound = soundThatIsBeingEdited {
@@ -238,7 +253,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
+        if indexPath.section == 2 {
             switch indexPath.row {
             case 0:
                 self.tagType = "genre"
@@ -449,15 +464,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
     }
     
-    func saveAudioFile() {
+    //mark: audio
+    var progressSlider: UISlider!
+    var progressSliderPrecentDoneLabel: UILabel!
+    var progressSliderTitle: UILabel!
+    func saveAudioFile() {        
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundParseFileDidFinishProcessing = true
-                
-                if self.didPressUploadButton && self.soundArtDidFinishProcessing {
-                    self.saveSound()
-                }
+                self.uploadButton.isEnabled = true
+                self.progressSliderTitle.text = "Audio Processing Complete."
                 
             } else if let error = error {
                 self.errorAlert("Sound Processing Failed", message: error.localizedDescription)
@@ -465,7 +482,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         }, progressBlock: {
             (percentDone: Int32) -> Void in
-            // Update your progress spinner here. percentDone will be between 0 and 100.
+            self.progressSlider.value = Float(percentDone)
+            self.progressSliderPrecentDoneLabel.text = "\(percentDone)%"
         })
     }
     
