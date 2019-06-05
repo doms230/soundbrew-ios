@@ -289,7 +289,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="SpB-6h-026"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="hAI-d0-wwO"/>
-                        <segue destination="EFp-6t-Bz1" kind="presentation" identifier="showPlaylist" id="Rwu-7L-fq5"/>
+                        <segue destination="Wod-6r-vBx" kind="presentation" identifier="showPlaylist" id="3Cm-nn-6Ji"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -388,7 +388,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="cJs-1X-ayw"/>
-        <segue reference="7xJ-zD-c6d"/>
+        <segue reference="3Cm-nn-6Ji"/>
         <segue reference="3jW-Fd-CA3"/>
         <segue reference="SpB-6h-026"/>
         <segue reference="hAI-d0-wwO"/>
