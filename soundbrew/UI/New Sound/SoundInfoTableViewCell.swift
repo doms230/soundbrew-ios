@@ -68,9 +68,16 @@ class SoundInfoTableViewCell: UITableViewCell {
         return slider
     }()
     
+    lazy var socialSwitch: UISwitch = {
+       let socialSwitch = UISwitch()
+        socialSwitch.onTintColor = color.blue()
+        return socialSwitch
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        if reuseIdentifier == "soundProgressReuse" {
+        switch reuseIdentifier {
+        case "soundProgressReuse":
             self.addSubview(progressSliderTitle)
             self.addSubview(progessSlider)
             self.addSubview(chosenSoundTagLabel)
@@ -95,8 +102,9 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
+            break
             
-        } else if reuseIdentifier == "soundInfoReuse" {
+        case "soundInfoReuse":
             //self.addSubview(soundArtLabel)
             self.addSubview(soundArt)
             self.addSubview(soundTitle)
@@ -106,15 +114,16 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-             }
+            }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundArt).offset(40)
                 make.left.equalTo(soundArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
+            break
             
-        } else if reuseIdentifier == "soundTagReuse" {
+        case "soundTagReuse":
             self.addSubview(soundTagLabel)
             self.addSubview(chosenSoundTagLabel)
             
@@ -129,7 +138,29 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(soundTagLabel)
             }
+            break
+            
+        case "soundSocialReuse":
+            self.addSubview(soundTagLabel)
+            self.addSubview(socialSwitch)
+            
+            socialSwitch.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundTagLabel)
+            }
+            
+            soundTagLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(socialSwitch)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            break
+            
+        default:
+            break
         }
+
     }
     
     ///////////

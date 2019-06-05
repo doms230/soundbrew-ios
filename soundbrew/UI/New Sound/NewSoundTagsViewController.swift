@@ -15,6 +15,7 @@ class NewSoundTagsViewController: UIViewController, UITableViewDataSource, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpDoneButton()
+        setUpTableView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -32,26 +33,12 @@ class NewSoundTagsViewController: UIViewController, UITableViewDataSource, UITab
     
     //
     //MARK: done Button
-    let uiElement = UIElement()
-    lazy var doneButton: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        button.setTitleColor(color.blue(), for: .normal)
-        button.setTitle("Done", for: .normal)
-        return button
-    }()
-    
     func setUpDoneButton() {
-        self.view.addSubview(doneButton)
-        doneButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
-        doneButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
+        navigationItem.rightBarButtonItem = doneButton 
         
-        setUpTableView()
     }
-    @objc func didPressDoneButton(_ sender: UIButton) {
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
         handleTagsForDismissal()
     }
     
@@ -67,13 +54,15 @@ class NewSoundTagsViewController: UIViewController, UITableViewDataSource, UITab
         tableView.backgroundColor = .white
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .singleLine
+        tableView.frame = view.bounds
         self.view.addSubview(tableView)
-        tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.doneButton.snp.bottom)
+        
+        /*tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.doneButton.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
-        }
+        }*/
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
