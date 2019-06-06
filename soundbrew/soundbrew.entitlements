@@ -8,5 +8,7 @@
 	<array>
 		<string>applinks:soundbrew.page.link</string>
 	</array>
+	<key>com.apple.developer.authentication-services.autofill-credential-provider</key>
+	<true/>
 </dict>
 </plist>

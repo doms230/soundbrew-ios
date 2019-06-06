@@ -13,6 +13,7 @@ import FirebaseDynamicLinks
 import SCSDKCreativeKit
 import ShareInstagram
 import Alamofire
+import Kingfisher
 
 class UIElement {
     let topOffset = 10
@@ -167,7 +168,8 @@ class UIElement {
             } else if let url = url {
                 let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = target.view
-                target.present(activityViewController, animated: true, completion: nil)
+                target.present(activityViewController, animated: true, completion: { () -> Void in
+                })
             }
         }
     }
@@ -231,5 +233,28 @@ class UIElement {
         Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
             //print(response.response as Any)
         }
+    }
+    
+    func newSoundObject(_ object: PFObject) -> Sound {
+        let title = object["title"] as! String
+        let art = object["songArt"] as! PFFileObject
+        let audio = object["audioFile"] as! PFFileObject
+        let tags = object["tags"] as! Array<String>
+        let userId = object["userId"] as! String
+        var plays: Int?
+        if let soundPlays = object["plays"] as? Int {
+            plays = soundPlays
+        }
+        
+        var likes: Int?
+        if let soundPlays = object["likes"] as? Int {
+            likes = soundPlays
+        }
+        
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
+        
+        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
+        
+        return sound
     }
 }

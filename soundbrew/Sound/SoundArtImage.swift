@@ -35,7 +35,7 @@ class SoundArtImage: UIView {
     
     lazy var appName: UILabel = {
         let label = UILabel()
-        label.text = "Listen on Soundbrew"
+        label.text = "Listen on @sound_brew"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         label.textAlignment = .center

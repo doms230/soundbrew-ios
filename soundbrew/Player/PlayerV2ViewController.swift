@@ -16,8 +16,7 @@ import SnapKit
 import DeckTransition
 import Photos
 import NVActivityIndicatorView
-import AppCenterAnalytics
-//import FirebaseDynamicLinks
+import FirebaseAnalytics
 
 class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
 
@@ -138,16 +137,28 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 if let isLiked = self.sound?.isLiked {
                     if isLiked {
                         unlikeSound(currentUser.objectId!, postId: sound.objectId)
-                        MSAnalytics.trackEvent("New Un-like")
+                        Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                            AnalyticsParameterItemID: "id-unlike",
+                            AnalyticsParameterItemName: "un like sound",
+                            AnalyticsParameterContentType: "cont"
+                            ])
                         
                     } else {
                         newLike(currentUser.objectId!, postId: sound.objectId)
-                        MSAnalytics.trackEvent("New Like")
+                        Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                            AnalyticsParameterItemID: "id-new-like",
+                            AnalyticsParameterItemName: "new like",
+                            AnalyticsParameterContentType: "cont"
+                            ])
                     }
                     
                 } else {
                     newLike(currentUser.objectId!, postId: sound.objectId)
-                    MSAnalytics.trackEvent("New Like")
+                    Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                        AnalyticsParameterItemID: "id-new-like",
+                        AnalyticsParameterItemName: "new like",
+                        AnalyticsParameterContentType: "cont"
+                        ])
                 }
             }
             

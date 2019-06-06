@@ -12,7 +12,7 @@ import AVFoundation
 import Parse
 import MediaPlayer
 import Kingfisher
-import AppCenterAnalytics
+import FirebaseAnalytics
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
@@ -112,8 +112,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 if !player.isPlaying {
                     player.play()
                     sendSoundUpdateToUI()
-                    MSAnalytics.trackEvent("Play")
                     startTimer()
+                    Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                        AnalyticsParameterItemID: "id-play",
+                        AnalyticsParameterItemName: "play",
+                        AnalyticsParameterContentType: "cont"
+                        ])
                 }
             }
             
@@ -140,7 +144,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func next() {
         self.setUpNextSong(false, at: nil)
-        MSAnalytics.trackEvent("Skip")
+        Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+            AnalyticsParameterItemID: "id-skip",
+            AnalyticsParameterItemName: "skip",
+            AnalyticsParameterContentType: "cont"
+            ])
     }
     
     func previous() {
@@ -149,7 +157,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.currentTime = 0.0
                 setBackgroundAudioNowPlaying(player, sound: self.currentSound!)
                 incrementPlayCount(self.currentSound!)
-                MSAnalytics.trackEvent("Go Back")
+                Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                    AnalyticsParameterItemID: "id-goback",
+                    AnalyticsParameterItemName: "go back",
+                    AnalyticsParameterContentType: "cont"
+                    ])
                 
             } else {
                 self.setUpNextSong(true, at: nil)
@@ -481,34 +493,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 print(error)
                 
             } else if let object = object {
-                let sound = [self.newSoundObject(object)]
+                let sound = [UIElement().newSoundObject(object)]
                 self.sounds = sound
                 self.setUpNextSong(false, at: 0)
             }
         }
-    }
-    
-    func newSoundObject(_ object: PFObject) -> Sound {
-        let title = object["title"] as! String
-        let art = object["songArt"] as! PFFileObject
-        let audio = object["audioFile"] as! PFFileObject
-        let tags = object["tags"] as! Array<String>
-        let userId = object["userId"] as! String
-        var plays: Int?
-        if let soundPlays = object["plays"] as? Int {
-            plays = soundPlays
-        }
-        
-        var likes: Int?
-        if let soundPlays = object["likes"] as? Int {
-            likes = soundPlays
-        }
-        
-        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
-        
-        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
-        
-        return sound
     }
     
     func loadUserInfoFromCloud(_ userId: String, i: Int) {

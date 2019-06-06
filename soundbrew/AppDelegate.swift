@@ -12,7 +12,6 @@ import Parse
 import NVActivityIndicatorView
 import UserNotifications
 import AppCenter
-import AppCenterAnalytics
 import AppCenterCrashes
 import StoreKit
 import Firebase
@@ -28,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().barTintColor = .white
         UITabBar.appearance().tintColor = Color().black()
         
-        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSAnalytics.self, MSCrashes.self])
+        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self])
         
         FirebaseApp.configure()
         GADMobileAds.sharedInstance().start(completionHandler: nil)
@@ -151,47 +150,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
-}
-
-extension AppDelegate: SKPaymentTransactionObserver {
-    func paymentQueue(_ queue: SKPaymentQueue,
-                      updatedTransactions transactions: [SKPaymentTransaction]) {
-        for transaction in transactions {
-            switch transaction.transactionState {
-            case .purchasing:
-                handlePurchasingState(for: transaction, in: queue)
-            case .purchased:
-                handlePurchasedState(for: transaction, in: queue)
-            case .restored:
-                handleRestoredState(for: transaction, in: queue)
-            case .failed:
-                handleFailedState(for: transaction, in: queue)
-            case .deferred:
-                handleDeferredState(for: transaction, in: queue)
-            }
-        }
-    }
-    
-    func handlePurchasingState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
-        print("User is attempting to purchase product id: \(transaction.payment.productIdentifier)")
-    }
-    
-    func handlePurchasedState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
-        print("User purchased product id: \(transaction.payment.productIdentifier)")
-        //queue.finishTransaction(transaction)
-    }
-    
-    func handleRestoredState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
-        print("Purchase restored for product id: \(transaction.payment.productIdentifier)")
-    }
-    
-    func handleFailedState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
-        print("Purchase failed for product id: \(transaction.payment.productIdentifier)")
-    }
-    
-    func handleDeferredState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
-        print("Purchase deferred for product id: \(transaction.payment.productIdentifier)")
-    }
     
     func playSound(url: URL) {
         let player = Player.sharedInstance
@@ -207,5 +165,6 @@ extension AppDelegate: SKPaymentTransactionObserver {
             viewController!.performSegue(withIdentifier: "showProfile", sender: viewController)
         }
     }
+    
 }
 

@@ -36,7 +36,7 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var soundTagLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
         label.text = "Tags"
         return label
     }()
@@ -49,7 +49,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var progressSliderTitle: UILabel = {
+    lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Processing Audio..."
         label.textColor = color.black()
@@ -78,30 +78,25 @@ class SoundInfoTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
         case "soundProgressReuse":
-            self.addSubview(progressSliderTitle)
             self.addSubview(progessSlider)
-            self.addSubview(chosenSoundTagLabel)
+            self.addSubview(titleLabel)
             chosenSoundTagLabel.textColor = color.black()
             chosenSoundTagLabel.text = "0%"
             
-            progressSliderTitle.snp.makeConstraints { (make) -> Void in
+            progessSlider.snp.makeConstraints { (make) -> Void in
+                //make.top.equalTo(titleLabel.snp.bottom)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
+            
+            titleLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            chosenSoundTagLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(progressSliderTitle.snp.bottom)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            progessSlider.snp.makeConstraints { (make) -> Void in
-                //make.top.equalTo(chosenSoundTagLabel)
-                make.centerY.equalTo(chosenSoundTagLabel)
-                make.left.equalTo(chosenSoundTagLabel.snp.right)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(progessSlider.snp.top).offset(uiElement.bottomOffset)
             }
+
             break
             
         case "soundInfoReuse":
@@ -136,18 +131,24 @@ class SoundInfoTableViewCell: UITableViewCell {
             chosenSoundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundTagLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(soundTagLabel)
+                //make.bottom.equalTo(soundTagLabel)
             }
             break
             
         case "soundSocialReuse":
+            //self.addSubview(titleLabel)
             self.addSubview(soundTagLabel)
             self.addSubview(socialSwitch)
+            
+            /*titleLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }*/
             
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(soundTagLabel)
+                make.bottom.equalTo(self)
             }
             
             soundTagLabel.snp.makeConstraints { (make) -> Void in
