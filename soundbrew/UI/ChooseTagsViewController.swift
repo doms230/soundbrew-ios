@@ -22,6 +22,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         //dont want to show done button if only choosing one tag
         if tagType == nil || tagType == "more" {
             setUpDoneButton()
+            print("h")
             
         } else {
             setUpSearchBar()
@@ -32,8 +33,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showPlaylist" {
-            let navi = segue.destination as! UINavigationController
-            let topviewController = navi.topViewController as! PlaylistViewController
+            //let navi = segue.destination as! UINavigationController
+            //let topviewController = navi.topViewController as! PlaylistViewController
+            let topviewController = segue.destination as! PlaylistViewController
             topviewController.selectedTagsForFiltering = self.chosenTags
         }
     }
@@ -52,7 +54,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             doneButton.setTitle("Create", for: .normal)
         }
         self.view.addSubview(doneButton)
-        doneButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
+        doneButton.addTarget(self, action: #selector(self.didPressChooseTagsDoneButton(_:)), for: .touchUpInside)
         doneButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -60,12 +62,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         setUpSearchBar()
     }
-    @objc func didPressDoneButton(_ sender: UIButton) {
+    @objc func didPressChooseTagsDoneButton(_ sender: UIButton) {
         handleTagsForDismissal()
-    }
-    
-    @objc func didPressNaviDoneButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showPlaylist", sender: self)
     }
     
     //MARK: SearchBar
@@ -366,7 +364,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             tagDelegate.receivedTags(chosenTags)
         }
         
-        self.dismiss(animated: true, completion: nil)
+        if tagType == nil {
+            self.performSegue(withIdentifier: "showPlaylist", sender: self)
+            
+        } else {
+            self.dismiss(animated: true, completion: nil)
+        }
     }
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
@@ -423,7 +426,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             }
         }
         
-        if selectedFeatureType != 0 {
+        if selectedFeatureType != 5 {
             query.whereKey("type", equalTo: featureTagTitles[selectedFeatureType])
         }
         

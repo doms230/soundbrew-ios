@@ -213,8 +213,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     func setupNavigationItems() {
         
-        let newPlaylistButton = UIBarButtonItem(title: "Create Playlist", style: .plain, target: self, action: #selector(didPressNewPlaylistButton(_:)))
-        self.navigationItem.leftBarButtonItem = newPlaylistButton
+        //let newPlaylistButton = UIBarButtonItem(title: "Create Playlist", style: .plain, target: self, action: #selector(didPressNewPlaylistButton(_:)))
+        //self.navigationItem.leftBarButtonItem = newPlaylistButton
         
         var soundOrderImage = "recent"
         var tag = 0
@@ -264,7 +264,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @objc func didPressNewPlaylistButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showPlaylist", sender: self)
+        //self.performSegue(withIdentifier: "showPlaylist", sender: self)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPresssFilterType(_ sender: UIBarButtonItem) {
