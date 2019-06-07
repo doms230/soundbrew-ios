@@ -104,9 +104,23 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func play() {
-        let applicationState = UIApplication.shared.applicationState
+        shouldEnableCommandCenter(true)
+        if let player = self.player {
+            if !player.isPlaying {
+                player.play()
+                sendSoundUpdateToUI()
+                startTimer()
+                Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                    AnalyticsParameterItemID: "id-play",
+                    AnalyticsParameterItemName: "play",
+                    AnalyticsParameterContentType: "cont"
+                    ])
+            }
+        }
         
-        if ad.secondsPlayedSinceLastAd < ad.fifteenMinutesInSeconds {
+        /*
+         let applicationState = UIApplication.shared.applicationState
+         if ad.secondsPlayedSinceLastAd < ad.fifteenMinutesInSeconds {
             shouldEnableCommandCenter(true)
             if let player = self.player {
                 if !player.isPlaying {
@@ -130,7 +144,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             applicationState == .background {
             print("is not active")
             shouldEnableCommandCenter(false)
-        }
+        }*/
     }
     
     func pause() {

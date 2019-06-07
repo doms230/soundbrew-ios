@@ -33,14 +33,25 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! SettingsTableViewCell
         cell.settingsButton.addTarget(self, action: #selector(self.didPressSettingsButton(_:)), for: .touchUpInside)
         
-        switch indexPath.row {
+        if indexPath.row == 0 {
+            cell.settingsButton.setTitle("Share profile", for: .normal)
+            cell.settingsButton.setImage(UIImage(named: "share"), for: .normal)
+            cell.settingsButton.tag = 0
+            
+        } else {
+            cell.settingsButton.tag = 1
+            cell.settingsButton.setTitle("Sign Out", for: .normal)
+            cell.settingsButton.setImage(UIImage(named: "signout"), for: .normal)
+        }
+        
+        /*switch indexPath.row {
         case 0:
             cell.settingsButton.setTitle("Streams", for: .normal)
             cell.settingsButton.setImage(UIImage(named: "dollar"), for: .normal)
@@ -61,13 +72,27 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         default:
             break
-        }
+        }*/
         
         return cell 
     }
     
     @objc func didPressSettingsButton(_ sender: UIButton) {
-        switch sender.tag {
+        if sender.tag == 0 {
+            //share profile
+            if let artist = artist {
+                UIElement().createDynamicLink("profile", sound: nil, artist: artist, target: self)
+            }
+            
+        } else {
+            PFUser.logOut()
+            let storyboard = UIStoryboard(name: "Login", bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            //show window
+            appDelegate.window?.rootViewController = controller
+        }
+        /*switch sender.tag {
         case 0:
             //streaming
             self.performSegue(withIdentifier: "showStreams", sender: self)
@@ -91,6 +116,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         default:
             break 
-        }
+        }*/
     }
 }

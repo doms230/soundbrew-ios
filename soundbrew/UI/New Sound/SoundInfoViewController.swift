@@ -70,10 +70,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var title = "UPLOAD"
         if soundThatIsBeingEdited != nil {
             title = "UPDATE"
+            
+        } else {
+            uploadButton.isEnabled = false
         }
         
         uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
-        uploadButton.isEnabled = false
+        
         self.navigationItem.rightBarButtonItem = uploadButton
     }
     
@@ -165,86 +168,80 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: SoundInfoTableViewCell!
         
-        if indexPath.section == 0 {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
-            
-            self.progressSliderTitle = cell.titleLabel
-            self.progressSliderPrecentDoneLabel = cell.chosenSoundTagLabel
-            self.progressSlider = cell.progessSlider
-            
-            tableView.separatorStyle = .none
-            
-        } else if indexPath.section == 1 {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as? SoundInfoTableViewCell
-            
-            if let sound = soundThatIsBeingEdited {
-                cell.soundArt.kf.setImage(with: URL(string: sound.artURL), for: .normal)
-                cell.soundTitle.text = sound.title
-            }
-            
-            soundArtButton = cell.soundArt
-            cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
-            
-            soundTitle = cell.soundTitle
-            tableView.separatorStyle = .singleLine
+        if indexPath.section == 0 && soundThatIsBeingEdited != nil {
+            cell = soundInfo()
             
         } else {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as? SoundInfoTableViewCell
-            
-            switch indexPath.row {
-            case 0:
-                cell.soundTagLabel.text = "Genre Tag"
-                if let genreTag = self.genreTag {
-                    cell.chosenSoundTagLabel.text = genreTag.name
-                    cell.chosenSoundTagLabel.textColor = color.blue()
-                }
-                tableView.separatorStyle = .singleLine
-                break
+            if indexPath.section == 0 {
+                cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
                 
-            case 1:
-                cell.soundTagLabel.text = "Mood Tag"
-                if let moodTag = self.moodTag {
-                    cell.chosenSoundTagLabel.text = moodTag.name
-                    cell.chosenSoundTagLabel.textColor = color.blue()
-                }
-                tableView.separatorStyle = .singleLine
-                break
+                self.progressSliderTitle = cell.titleLabel
+                self.progressSliderPrecentDoneLabel = cell.chosenSoundTagLabel
+                self.progressSlider = cell.progessSlider
                 
-            case 2:
-                cell.soundTagLabel.text = "Activity Tag"
-                if let activityTag = self.activityTag {
-                    cell.chosenSoundTagLabel.text = activityTag.name
-                    cell.chosenSoundTagLabel.textColor = color.blue()
-                }
-                tableView.separatorStyle = .singleLine
-                
-            case 3:
-                cell.soundTagLabel.text = "Similar Artist"
-                if let similarArtistTag = self.similarArtistTag {
-                    cell.chosenSoundTagLabel.text = similarArtistTag.name
-                    cell.chosenSoundTagLabel.textColor = color.blue()
-                }
-                
-            case 4:
-                cell.soundTagLabel.text = "More Tags"
-                if let moreTags = self.moreTags {
-                    if moreTags.count == 1 {
-                        cell.chosenSoundTagLabel.text = "\(moreTags.count) tag"
-                        
-                    } else {
-                        cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
-                    }
-                    
-                    cell.chosenSoundTagLabel.textColor = color.blue()
-                    
-                } else {
-                    cell.chosenSoundTagLabel.text = "Add"
-                    cell.chosenSoundTagLabel.textColor = color.red()
-                }
                 tableView.separatorStyle = .none
                 
-            default:
-                break
+            } else if indexPath.section == 1 {
+                cell = soundInfo()
+                
+            } else {
+                cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as? SoundInfoTableViewCell
+                
+                switch indexPath.row {
+                case 0:
+                    cell.soundTagLabel.text = "Genre Tag"
+                    if let genreTag = self.genreTag {
+                        cell.chosenSoundTagLabel.text = genreTag.name
+                        cell.chosenSoundTagLabel.textColor = color.blue()
+                    }
+                    tableView.separatorStyle = .singleLine
+                    break
+                    
+                case 1:
+                    cell.soundTagLabel.text = "Mood Tag"
+                    if let moodTag = self.moodTag {
+                        cell.chosenSoundTagLabel.text = moodTag.name
+                        cell.chosenSoundTagLabel.textColor = color.blue()
+                    }
+                    tableView.separatorStyle = .singleLine
+                    break
+                    
+                case 2:
+                    cell.soundTagLabel.text = "Activity Tag"
+                    if let activityTag = self.activityTag {
+                        cell.chosenSoundTagLabel.text = activityTag.name
+                        cell.chosenSoundTagLabel.textColor = color.blue()
+                    }
+                    tableView.separatorStyle = .singleLine
+                    
+                case 3:
+                    cell.soundTagLabel.text = "Similar Artist"
+                    if let similarArtistTag = self.similarArtistTag {
+                        cell.chosenSoundTagLabel.text = similarArtistTag.name
+                        cell.chosenSoundTagLabel.textColor = color.blue()
+                    }
+                    
+                case 4:
+                    cell.soundTagLabel.text = "More Tags"
+                    if let moreTags = self.moreTags {
+                        if moreTags.count == 1 {
+                            cell.chosenSoundTagLabel.text = "\(moreTags.count) tag"
+                            
+                        } else {
+                            cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
+                        }
+                        
+                        cell.chosenSoundTagLabel.textColor = color.blue()
+                        
+                    } else {
+                        cell.chosenSoundTagLabel.text = "Add"
+                        cell.chosenSoundTagLabel.textColor = color.red()
+                    }
+                    tableView.separatorStyle = .none
+                    
+                default:
+                    break
+                }
             }
         }
         
@@ -283,6 +280,23 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
             self.performSegue(withIdentifier: showTags, sender: self)
         }
+    }
+    
+    func soundInfo() -> SoundInfoTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
+        
+        if let sound = soundThatIsBeingEdited {
+            cell.soundArt.kf.setImage(with: URL(string: sound.artURL), for: .normal)
+            cell.soundTitle.text = sound.title
+        }
+        
+        soundArtButton = cell.soundArt
+        cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
+        
+        soundTitle = cell.soundTitle
+        tableView.separatorStyle = .singleLine
+        
+        return cell
     }
     
     //mark: media upload
@@ -436,8 +450,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let similarArtistTag = self.similarArtistTag {
             tags.append(similarArtistTag)
         }
-        
-
         
         return tags
     }

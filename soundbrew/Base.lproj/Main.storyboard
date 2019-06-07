@@ -80,7 +80,6 @@
                     <navigationItem key="navigationItem" id="N3L-mg-Zvf"/>
                     <connections>
                         <segue destination="k7A-1j-YbY" kind="presentation" identifier="showEditProfile" id="wBb-Ll-LfM"/>
-                        <segue destination="o5t-RR-tBo" kind="show" identifier="showSounds" id="eW3-lv-tSJ"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="Lzr-CP-43Y"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                         <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
@@ -89,7 +88,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="181" y="-403"/>
+            <point key="canvasLocation" x="4343" y="2199"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -143,7 +142,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jvL-th-QNN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="929" y="-403"/>
+            <point key="canvasLocation" x="4846" y="302"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ini-3B-14d">
@@ -180,12 +179,11 @@
                     <navigationItem key="navigationItem" id="bkc-Sl-S7V"/>
                     <connections>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showPlaylist" id="Rdg-RZ-Gre"/>
-                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ltZ-x1-JRI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="259" y="-2020"/>
+            <point key="canvasLocation" x="143" y="-2050"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="2Zy-jX-lX6">
@@ -376,10 +374,9 @@
         <image name="search_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="daa-iD-mz7"/>
-        <segue reference="cJs-1X-ayw"/>
-        <segue reference="ciq-Pd-2ja"/>
-        <segue reference="6q5-Hq-145"/>
-        <segue reference="b9t-dY-jAL"/>
+        <segue reference="TaG-Bf-cPg"/>
+        <segue reference="o5h-UM-HVB"/>
+        <segue reference="Lzr-CP-43Y"/>
+        <segue reference="XjQ-ls-dhp"/>
     </inferredMetricsTieBreakers>
 </document>
