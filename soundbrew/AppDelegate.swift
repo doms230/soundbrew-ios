@@ -165,6 +165,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             viewController!.performSegue(withIdentifier: "showProfile", sender: viewController)
         }
     }
-    
 }
 

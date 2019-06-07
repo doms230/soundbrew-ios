@@ -180,6 +180,7 @@
                     <navigationItem key="navigationItem" id="bkc-Sl-S7V"/>
                     <connections>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showPlaylist" id="Rdg-RZ-Gre"/>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ltZ-x1-JRI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -238,7 +239,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZAT-Vy-jzw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="182" y="-1067"/>
+            <point key="canvasLocation" x="258" y="-1067"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="XyK-yh-w2g">
@@ -377,8 +378,8 @@
     <inferredMetricsTieBreakers>
         <segue reference="daa-iD-mz7"/>
         <segue reference="cJs-1X-ayw"/>
-        <segue reference="3jW-Fd-CA3"/>
-        <segue reference="SpB-6h-026"/>
-        <segue reference="hAI-d0-wwO"/>
+        <segue reference="ciq-Pd-2ja"/>
+        <segue reference="6q5-Hq-145"/>
+        <segue reference="b9t-dY-jAL"/>
     </inferredMetricsTieBreakers>
 </document>

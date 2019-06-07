@@ -152,7 +152,7 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedSound: Sound!
     var descendingOrder = "createdAt"
     
-    func sound(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
+    func soundCell(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
         cell.selectionStyle = .none
         
         if sounds.indices.contains(indexPath.row) {
@@ -172,7 +172,7 @@ class SoundList: NSObject, PlayerDelegate {
             cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
             cell.menuButton.tag = indexPath.row
             
-            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "audio"))
+            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
         
             cell.soundTitle.text = sound.title
             
@@ -299,13 +299,14 @@ class SoundList: NSObject, PlayerDelegate {
             
         } else if self.player != nil {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-            //player.sounds = self.sounds
             self.tableView?.isHidden = false
             target.view.bringSubviewToFront(tableView!)
-            //self.tableView?.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+            self.player!.sounds = self.sounds
+            self.player!.fetchAudioData(0, prepareAndPlay: false)
         }
         
         self.tableView?.reloadData()
+        
         determineIfRateTheAppPopUpShouldShow()
     }
     
@@ -502,7 +503,7 @@ class SoundList: NSObject, PlayerDelegate {
             query.whereKey("title", hasPrefix: searchText)
         }
         if sounds.count != 0 {
-            query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId})
+            query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
         }
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder(descendingOrder)

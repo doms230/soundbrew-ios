@@ -127,24 +127,25 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             } else if indexPath.section == 1 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
                 cell.backgroundColor = .white 
-                return soundList.sound(indexPath, cell: cell)
+                return soundList.soundCell(indexPath, cell: cell)
             }
         }
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        return soundList.sound(indexPath, cell: cell)
+        return soundList.soundCell(indexPath, cell: cell)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if selectedTagsForFiltering.count == 0 && indexPath.section == 0 {
-            didSelectSoundAt(indexPath.row)
+        //only one section if user decided to not choose any tags for their playlist 
+        if selectedTagsForFiltering.count != 0 && indexPath.section == 1 {
+            didSelectRowAt(indexPath.row)
             
-        } else if selectedTagsForFiltering.count != 0 && indexPath.section == 1 {
-            didSelectSoundAt(indexPath.row)
+        } else if selectedTagsForFiltering.count == 0 && indexPath.section == 0 {
+            didSelectRowAt(indexPath.row)
         }
     }
     
-    func didSelectSoundAt(_ row: Int) {
+    func didSelectRowAt(_ row: Int) {
         if let player = soundList.player {
             player.didSelectSoundAt(row, soundList: soundList)
         }

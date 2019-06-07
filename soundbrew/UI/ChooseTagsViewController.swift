@@ -15,6 +15,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     let uiElement = UIElement()
     let color = Color()
+    var selectedArtist: Artist!
     
     override func viewDidLoad() {
         super.viewDidLoad()

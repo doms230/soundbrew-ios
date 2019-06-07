@@ -284,7 +284,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
                 profileSounds = soundList.sounds
-                return soundList.sound(indexPath, cell: cell)
+                return soundList.soundCell(indexPath, cell: cell)
             }
             
         default:
@@ -459,7 +459,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.reloadData()
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: profileArtist!.objectId)
+        query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
@@ -482,16 +482,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func checkFollowStatus(_ currentUser: PFUser) {
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: profileArtist!.objectId)
+        query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
-                print("follwoing")
                 self.profileArtist?.isFollowedByCurrentUser = true
                 
             } else {
-                print("not following")
                 self.profileArtist?.isFollowedByCurrentUser = false
             }
             

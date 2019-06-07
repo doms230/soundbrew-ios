@@ -54,6 +54,8 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
+        image.layer.borderWidth = 1
+        image.layer.borderColor = color.darkGray().cgColor
         return image
     }()
     

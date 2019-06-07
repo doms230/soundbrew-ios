@@ -170,7 +170,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func didSelectSoundAt(_ i: Int, soundList: SoundList) {
-        self.sounds = soundList.sounds
+        //self.sounds = soundList.sounds
         self.setUpNextSong(false, at: i)
         if let tableView = self.tableView {
             tableView.reloadData()
@@ -288,6 +288,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
             } else if let audioData = audioData {
                 if prepareAndPlay {
                     self.prepareAndPlay(audioData)
+                    
+                } else if self.sounds.indices.contains(position + 1) {
+                    //self.fetchAudioData(position + 1, prepareAndPlay: false)
                 }
                 self.sounds[position].audioData = audioData
             }

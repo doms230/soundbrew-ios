@@ -116,7 +116,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 
             case soundSearch:
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-                return soundList.sound(indexPath, cell: cell)
+                return soundList.soundCell(indexPath, cell: cell)
                 
             default:
                 return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
