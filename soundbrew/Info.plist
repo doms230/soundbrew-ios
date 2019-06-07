@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.4.2</string>
+	<string>0.4.3</string>
 	<key>CFBundleURLSchemes</key>
 	<array>
 		<string>soundbrew</string>
@@ -46,7 +46,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>15</string>
+	<string>16</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9150756002517285~6608111231</string>
 	<key>LSApplicationCategoryType</key>

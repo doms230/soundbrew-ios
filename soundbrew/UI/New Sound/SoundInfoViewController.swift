@@ -68,15 +68,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //mark: views
     func setUpViews() {
         var title = "UPLOAD"
+        var shouldUploadButtonBeEnabled = true
         if soundThatIsBeingEdited != nil {
             title = "UPDATE"
             
         } else {
-            uploadButton.isEnabled = false
+            shouldUploadButtonBeEnabled = false
         }
         
         uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
-        
+        uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
     }
     
@@ -380,7 +381,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
-        newSound["isRemoved"] = true
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
