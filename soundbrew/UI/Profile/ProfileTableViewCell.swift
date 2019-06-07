@@ -52,7 +52,7 @@ class ProfileTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var displayName: UILabel = {
+    lazy var displayNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
         return label
@@ -76,6 +76,13 @@ class ProfileTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.textColor = .darkGray 
+        return label
+    }()
+    
+    lazy var userCity: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.textColor = .darkGray
         return label
     }()
     
@@ -118,7 +125,6 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var editProfileTitle: UILabel = {
         let label = UILabel()
-        label.text = "Name"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = .lightGray
         return label
@@ -149,7 +155,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var editBioText: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.numberOfLines = 0
+        //label.numberOfLines = 0
         label.textColor = color.black()
         return label
     }()
@@ -168,7 +174,7 @@ class ProfileTableViewCell: UITableViewCell {
         switch reuseIdentifier {
         case "profileReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayName)
+            self.addSubview(displayNameLabel)
             self.addSubview(city)
             self.addSubview(bio)
             self.addSubview(website)
@@ -198,26 +204,26 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(actionButton)
             }*/
             
-            displayName.snp.makeConstraints { (make) -> Void in
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(profileImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             bio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayName.snp.bottom)
-                make.left.equalTo(displayName)
-                make.right.equalTo(displayName)
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
             }
             
             city.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(bio.snp.bottom)
-                make.left.equalTo(displayName)
-                make.right.equalTo(displayName)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
             }
             
             website.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(city.snp.bottom)
-                make.left.equalTo(displayName)
+                make.left.equalTo(displayNameLabel)
                 //make.right.equalTo(displayName)
                 make.bottom.equalTo(self)
             }
@@ -226,7 +232,7 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "searchProfileReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayName)
+            self.addSubview(displayNameLabel)
             self.addSubview(username)
             
             profileImage.layer.cornerRadius = 25
@@ -237,22 +243,22 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            displayName.snp.makeConstraints { (make) -> Void in
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage).offset(uiElement.elementOffset)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             username.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayName.snp.bottom)
-                make.left.equalTo(displayName)
-                make.right.equalTo(displayName)
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
             }
             
             break
             
         case "searchTagViewReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayName)
+            self.addSubview(displayNameLabel)
             
             profileImage.layer.cornerRadius = 25
             profileImage.snp.makeConstraints { (make) -> Void in
@@ -262,8 +268,8 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            displayName.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
-            displayName.snp.makeConstraints { (make) -> Void in
+            displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(profileImage)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
@@ -308,6 +314,24 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
+        case "editProfileCityReuse":
+            self.addSubview(editProfileTitle)
+            self.addSubview(userCity)
+            editProfileTitle.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(100)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            userCity.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(editProfileTitle)
+                make.left.equalTo(editProfileTitle.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            break
+            
         case "editBioReuse":
             self.addSubview(editBioText)
             self.addSubview(editBioTitle)
@@ -316,6 +340,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.width.equalTo(80)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             rightArrow.snp.makeConstraints { (make) -> Void in
@@ -328,7 +353,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(editBioTitle)
                 make.left.equalTo(editBioTitle.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(rightArrow.snp.left).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
 
             break

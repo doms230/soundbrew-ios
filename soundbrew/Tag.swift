@@ -38,7 +38,7 @@ class Tag {
             cell.profileImage.image = UIImage(named: "hashtag")
         }
         
-        cell.displayName.text = self.name 
+        cell.displayNameLabel.text = self.name 
         
         return cell
     }

@@ -182,7 +182,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
                 if let name = artist.name {
-                    cell.displayName.text = name
+                    cell.displayNameLabel.text = name
                 }
                 
                 if let city = artist.city {

@@ -60,12 +60,12 @@
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
                     </view>
                     <connections>
-                        <segue destination="Wod-6r-vBx" kind="presentation" identifier="showTags" modalPresentationStyle="currentContext" id="yA1-GJ-4KK"/>
+                        <segue destination="3Mr-Tw-OSi" kind="presentation" identifier="showTags" modalPresentationStyle="currentContext" id="TaG-Bf-cPg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="929" y="376"/>
+            <point key="canvasLocation" x="803" y="376"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -104,6 +104,7 @@
                     <navigationItem key="navigationItem" id="3A4-h1-0pg"/>
                     <connections>
                         <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditBio" id="t1V-yP-gW0"/>
+                        <segue destination="3Mr-Tw-OSi" kind="show" identifier="showTags" id="daa-iD-mz7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -178,7 +179,7 @@
                     </tabBarItem>
                     <navigationItem key="navigationItem" id="bkc-Sl-S7V"/>
                     <connections>
-                        <segue destination="PaH-jC-wog" kind="show" identifier="showPlaylist" id="eQ6-O8-w1O"/>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showPlaylist" id="Rdg-RZ-Gre"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -281,7 +282,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1646" y="-2002"/>
+            <point key="canvasLocation" x="1420" y="-2020"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="gi0-ci-PE6">
@@ -374,8 +375,8 @@
         <image name="search_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="daa-iD-mz7"/>
         <segue reference="cJs-1X-ayw"/>
-        <segue reference="MLD-L8-leW"/>
         <segue reference="3jW-Fd-CA3"/>
         <segue reference="SpB-6h-026"/>
         <segue reference="hAI-d0-wwO"/>

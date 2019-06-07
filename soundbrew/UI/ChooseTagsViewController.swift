@@ -18,23 +18,16 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //dont want to show done button if only choosing one tag
-        if tagType == nil || tagType == "more" {
-            setUpDoneButton()
-            print("h")
-            
-        } else {
-            setUpSearchBar()
-        }
-        
+        setUpNavigationBar()
         loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showPlaylist" {
-            //let navi = segue.destination as! UINavigationController
-            //let topviewController = navi.topViewController as! PlaylistViewController
+            let backItem = UIBarButtonItem()
+            backItem.title = "Edit Playlist"
+            navigationItem.backBarButtonItem = backItem
+            
             let topviewController = segue.destination as! PlaylistViewController
             topviewController.selectedTagsForFiltering = self.chosenTags
         }
@@ -49,61 +42,50 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         return button
     }()
     
-    func setUpDoneButton() {
-        if tagType == nil {
-            doneButton.setTitle("Create", for: .normal)
-        }
-        self.view.addSubview(doneButton)
-        doneButton.addTarget(self, action: #selector(self.didPressChooseTagsDoneButton(_:)), for: .touchUpInside)
-        doneButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        setUpSearchBar()
-    }
-    @objc func didPressChooseTagsDoneButton(_ sender: UIButton) {
+    @objc func didPressChooseTagsDoneButton(_ sender: UIBarButtonItem) {
         handleTagsForDismissal()
     }
     
     //MARK: SearchBar
     var searchIsActive = false
+    
     lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
+        var minusInt: CGFloat = 100
+        if self.tagType != nil && self.tagType != "more" {
+            minusInt = 10
+        }
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - minusInt, height: 10))
         searchBar.placeholder = "Search Tags"
-        searchBar.barTintColor = .white
-        searchBar.backgroundImage = UIImage()
+        
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
         searchTextField?.backgroundColor = color.lightGray()
         searchBar.delegate = self
         return searchBar
     }()
     
-    func setUpSearchBar() {
-        if tagType != nil {
+    func setUpNavigationBar() {
+        var title = "Done"
+        if tagType == nil {
             searchBar.placeholder = "Search or Create Tags"
+            title = "Create"
         }
         
-        self.view.addSubview(searchBar)
-        searchBar.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.elementOffset)
-            if tagType == nil || tagType == "more" {
-                make.centerY.equalTo(doneButton)
-                make.right.equalTo(doneButton.snp.left).offset(-(uiElement.elementOffset))
-                
-            } else {
-                make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            }
+        let leftNavBarButton = UIBarButtonItem(customView: searchBar)
+        self.navigationItem.leftBarButtonItem = leftNavBarButton
+        
+        if tagType == nil || tagType == "more" {
+            let doneButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+            self.navigationItem.rightBarButtonItem = doneButton
         }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text!.count == 0 {
+        if searchBar.text!.isEmpty {
             searchIsActive = false
-            self.filteredTags = self.tags
-            self.selectedFeatureType = 0
-            self.tableView.reloadData()
+            //self.filteredTags = self.tags
+            //self.selectedFeatureType = 0
+            loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
+            //self.tableView.reloadData()
             
         } else {
             searchIsActive = true
@@ -118,12 +100,29 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             let searchText = self.searchBar.text!.lowercased()
             if !tagNames.contains(searchText) && !chosenTagNames.contains(searchText)
                 && !searchText.isEmpty {
-                let tag = Tag(objectId: nil, name: searchText, count: 0, isSelected: false, type: self.tagType, image: nil)
+                
+                let cleanTag = cleanupText(searchText)
+                let tag = Tag(objectId: nil, name: cleanTag, count: 0, isSelected: false, type: self.tagType, image: nil)
                 self.filteredTags.append(tag)
             }
         }
     }
-
+    
+    func cleanupText(_ tag: String) -> String {
+        var cleanTag = tag
+        
+        let textWithWhiteSpaceTrimmed = cleanTag.trimmingCharacters(
+            in: NSCharacterSet.whitespacesAndNewlines
+        )
+        cleanTag = textWithWhiteSpaceTrimmed
+        
+        if cleanTag.hasPrefix("#") {
+            cleanTag.removeFirst()
+        }
+        
+        return cleanTag.lowercased()
+    }
+    
     //MARK: Tableview
     var tableView: UITableView!
     let searchTagViewReuse = "searchTagViewReuse"
@@ -270,7 +269,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setupChooseTagsView() {
-        if self.chosenTags.count != 0 && tagType == nil {
+        if self.chosenTags.count != 0 && tagType == "more" {
             for i in 0..<chosenTags.count {
                 addChosenTagButton(self.chosenTags[i].name, tag: i)
             }
@@ -282,7 +281,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(40)
-            make.top.equalTo(self.searchBar.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -419,14 +418,15 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         if let type = type {
             if type == "more" {
-                query.whereKey("type", notContainedIn: featureTagTitles)
+                var tagTypesNotToLoad = self.featureTagTitles
+                tagTypesNotToLoad.append("city")
+                query.whereKey("type", notContainedIn: tagTypesNotToLoad)
                 
             } else {
                 query.whereKey("type", equalTo: type)
             }
-        }
-        
-        if selectedFeatureType != 5 {
+            
+        } else if selectedFeatureType != 5 {
             query.whereKey("type", equalTo: featureTagTitles[selectedFeatureType])
         }
         
@@ -466,16 +466,14 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                     
                     if searchText == nil {
                         self.tags = loadedTags
+                        self.filteredTags = self.tags
                         
                     } else {
                         self.filteredTags = loadedTags
                     }
                 }
                 
-                if searchText == nil {
-                    self.filteredTags = self.tags
-                    
-                } else if self.tagType != nil {
+                if self.tagType != nil && searchText != nil {
                     self.checkIfTagSearchTextExists()
                 }
                 

@@ -56,13 +56,6 @@ class NewSoundTagsViewController: UIViewController, UITableViewDataSource, UITab
         tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
-        
-        /*tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.doneButton.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view)
-        }*/
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

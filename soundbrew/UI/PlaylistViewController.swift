@@ -26,7 +26,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         showSounds(playlistType)
         setupNavigationItems()
         setUpTableView()
@@ -212,10 +211,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     var soundType: UIBarButtonItem!
     
     func setupNavigationItems() {
-        
-        //let newPlaylistButton = UIBarButtonItem(title: "Create Playlist", style: .plain, target: self, action: #selector(didPressNewPlaylistButton(_:)))
-        //self.navigationItem.leftBarButtonItem = newPlaylistButton
-        
         var soundOrderImage = "recent"
         var tag = 0
         if let filter = uiElement.getUserDefault("filter") as? String {
@@ -264,7 +259,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @objc func didPressNewPlaylistButton(_ sender: UIBarButtonItem) {
-        //self.performSegue(withIdentifier: "showPlaylist", sender: self)
         self.dismiss(animated: true, completion: nil)
     }
     

@@ -70,10 +70,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: recentPopularReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
-        //tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: playlistSoundsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: SearchListTypeHeaderReuse)
-        //tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
@@ -124,9 +122,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
             }
         }
-        
-        /*let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        return soundList.sound(indexPath, cell: cell)*/
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -338,5 +333,4 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
     }
-
 }

@@ -12,7 +12,7 @@ import Parse
 import NVActivityIndicatorView
 import Kingfisher
 
-class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate {
+class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate {
     
     let uiElement = UIElement()
     
@@ -29,8 +29,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var twitterText: UITextField!
     var snapchatText: UITextField!
     var websiteText: UITextField!
-    var bioLabel: UILabel!
-    var cityText: UITextField!
 
     var emailText: UITextField!
     var shouldUpdateEmail = false
@@ -52,9 +50,16 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let navigationController = segue.destination as! UINavigationController
-        let viewController = navigationController.topViewController as! EditBioViewController
-        viewController.bio = bioLabel.text
-        viewController.artistDelegate = self
+        if segue.identifier == "showTags" {
+            let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
+            viewController.tagDelegate = self
+            viewController.tagType = "city"
+            
+        } else {
+            let viewController = navigationController.topViewController as! EditBioViewController
+            viewController.bio = self.artist!.bio
+            viewController.artistDelegate = self
+        }
     }
     
     func setUpViews() {
@@ -104,14 +109,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return 6
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 4
+            return 3
             
-        } else if section == 4 {
+        } else if section == 5 {
             return 9
         }
         
@@ -120,7 +125,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: ProfileTableViewCell!
-        let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
         
         switch indexPath.section{
         case 0:
@@ -138,88 +142,17 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             break
             
         case 1:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as? ProfileTableViewCell
-            cell.backgroundColor = .white
-            cell.selectionStyle = .none
-            tableView.separatorStyle = .singleLine
-            tableView.separatorInset = edgeInsets
-            
-            var inputTitle: String!
-            var inputText: String!
-            
-            switch indexPath.row {
-            case 0:
-                nameText = cell.editProfileInput
-                inputTitle = "Name"
-                if let name = artist?.name {
-                    inputText = name
-                }
-                break
-                
-            case 1:
-                usernameText = cell.editProfileInput
-                inputTitle = "Username"
-                if let username = artist?.username {
-                    inputText = username
-                    //username is required, so only want to allow user to cancel if they already have username
-                    let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
-                    self.navigationItem.leftBarButtonItem = cancelButton
-                    
-                } else {
-                    self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
-                }
-                
-                break
-                
-            case 2:
-                cityText = cell.editProfileInput
-                inputTitle = "City"
-                if let city = artist?.city {
-                    inputText = city
-                }
-                break
-                
-            case 3:
-                websiteText = cell.editProfileInput
-                inputTitle = "Website"
-                if let website = artist?.website {
-                    inputText = website
-                }
-                
-            case 4:
-                break
-                
-            default:
-                break
-            }
-            
-            cell.editProfileTitle.text = inputTitle
-            cell.editProfileInput.text = inputText
+            cell = profileInfo(indexPath, tableView: tableView)
             break
             
         case 2:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as? ProfileTableViewCell
-            cell.backgroundColor = .white
-            cell.selectionStyle = .gray
-            tableView.separatorStyle = .singleLine
-            tableView.separatorInset = .zero
-
-            bioLabel = cell.editBioText
-            cell.editBioTitle.text = "Bio"
-            if let bio = artist?.bio {
-                if bio.isEmpty {
-                    cell.editBioText.text = "Add Bio"
-                    
-                } else {
-                   cell.editBioText.text = bio
-                }
-                
-            } else {
-                cell.editBioText.text = "Add Bio"
-            }
-            break
+            cell = cityCell(indexPath, tableView: tableView)
             
         case 3:
+            cell = bioCell(indexPath, tableView: tableView)
+            break
+            
+        case 4:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
@@ -237,7 +170,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
             break
             
-        case 4:
+        case 5:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.backgroundColor = .white
             cell.selectionStyle = .none
@@ -252,13 +185,79 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
             showChangeProfilePhotoPicker()
+            break
             
-        } else if indexPath.section == 2 {
+        case 2:
+            tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
+            self.performSegue(withIdentifier: "showTags", sender: self)
+            break
+            
+        case 3:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             self.performSegue(withIdentifier: "showEditBio", sender: self)
+            break
+            
+        default:
+            break
         }
+    }
+    
+    func profileInfo(_ indexPath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
+        let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
+        cell.backgroundColor = .white
+        cell.selectionStyle = .none
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = edgeInsets
+        
+        var inputTitle: String!
+        var inputText: String!
+        
+        switch indexPath.row {
+        case 0:
+            nameText = cell.editProfileInput
+            inputTitle = "Name"
+            if let name = artist?.name {
+                inputText = name
+            }
+            break
+            
+        case 1:
+            usernameText = cell.editProfileInput
+            inputTitle = "Username"
+            if let username = artist?.username {
+                inputText = username
+                //username is required, so only want to allow user to cancel if they already have username
+                let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
+                self.navigationItem.leftBarButtonItem = cancelButton
+                
+            } else {
+                self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
+            }
+            
+            break
+            
+        case 2:
+            websiteText = cell.editProfileInput
+            inputTitle = "Website"
+            if let website = artist?.website {
+                inputText = website
+            }
+            
+        case 4:
+            break
+            
+        default:
+            break
+        }
+        
+        cell.editProfileTitle.text = inputTitle
+        cell.editProfileInput.text = inputText
+        
+        return cell
     }
     
     //mark: media
@@ -316,10 +315,53 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         present(alertController, animated: true, completion: nil)
     }
     
+    //MARK: city
+    func cityCell(_ indexpath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
+        cell.backgroundColor = .white
+        cell.selectionStyle = .gray
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = .zero
+        
+        cell.editBioTitle.text = "City"
+        if let city = artist?.city {
+            if !city.isEmpty {
+                cell.editBioText.text = city
+            }
+        }
+        
+        return cell
+    }
+    
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        if let tag = chosenTags {
+            artist?.city = tag[0].name
+        }
+        self.tableView.reloadData()
+    }
+    
     //MARK: bio
+    func bioCell(_ indexpath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
+        cell.backgroundColor = .white
+        cell.selectionStyle = .gray
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = .zero
+        
+        cell.editBioTitle.text = "Bio"
+        if let bio = artist?.bio {
+            if !bio.isEmpty {
+                cell.editBioText.text = bio
+            }
+        }
+        
+        return cell
+    }
+    
     func changeBio(_ value: String?) {
         if let newBioText = value {
-            bioLabel.text = newBioText
+            artist!.bio = newBioText
+            self.tableView.reloadData()
         }
     }
     
@@ -341,9 +383,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     user["username"] = self.usernameText.text!
                 }
                 
-                user["city"] = self.cityText.text
+                user["city"] = self.artist?.city
                 user["website"] = self.websiteText.text
-                user["bio"] = self.bioLabel.text
+                user["bio"] = self.artist!.bio
                 
                 if self.shouldUpdateEmail {
                     user["email"] = self.emailText.text

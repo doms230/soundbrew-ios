@@ -64,7 +64,7 @@ class Artist {
                 if let name = user["artistName"] as? String {
                     self.name = name
                     if let cell = cell {
-                        cell.displayName.text = name
+                        cell.displayNameLabel.text = name
                     }
                 }
                 
@@ -106,10 +106,10 @@ class Artist {
         }
         
         if let name = self.name {
-            cell.displayName.text = name
+            cell.displayNameLabel.text = name
             
         } else {
-            cell.displayName.text = ""
+            cell.displayNameLabel.text = ""
         }
         
         if let username = self.username {

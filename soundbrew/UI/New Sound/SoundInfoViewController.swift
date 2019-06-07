@@ -5,6 +5,7 @@
 //  Created by Dominic  Smith on 10/8/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
 //mark: tableview, audio, tags, media upload, view
+
 import UIKit
 import Parse
 import NVActivityIndicatorView
@@ -51,20 +52,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
+        let navi = segue.destination as! UINavigationController
+        let viewController: ChooseTagsViewController = navi.topViewController as! ChooseTagsViewController
         viewController.tagDelegate = self
         
         if let tagType = tagType {
             viewController.tagType = tagType
             
-        } else if let tags = tagsToUpdateInChooseTagsViewController {
-            //only want to populate chosen tags if user is choosing more tags
-            viewController.chosenTags = tags
+            if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
+                viewController.chosenTags = tags
+            }
         }
     }
     
     //mark: views
-    
     func setUpViews() {
         var title = "UPLOAD"
         if soundThatIsBeingEdited != nil {
@@ -170,6 +171,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.progressSliderTitle = cell.titleLabel
             self.progressSliderPrecentDoneLabel = cell.chosenSoundTagLabel
             self.progressSlider = cell.progessSlider
+            
+            tableView.separatorStyle = .none
             
         } else if indexPath.section == 1 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as? SoundInfoTableViewCell
@@ -363,6 +366,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
+        newSound["isRemoved"] = true
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
@@ -428,9 +432,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let cityTag = self.cityTag {
             tags.append(cityTag)
         }
+        
         if let similarArtistTag = self.similarArtistTag {
             tags.append(similarArtistTag)
         }
+        
+
         
         return tags
     }
@@ -531,7 +538,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.uiElement.goBackToPreviousViewController(self)
         }
         alertController.addAction(settingsAction)
-        
         self.present(alertController, animated: true, completion: nil)
     }
     
