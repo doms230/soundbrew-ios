@@ -33,6 +33,5 @@ target 'soundbrew' do
   pod 'Firebase/Core'
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/AdMob'
-  pod 'TwitterKit'
-
+  pod 'Firebase/Auth'
 end

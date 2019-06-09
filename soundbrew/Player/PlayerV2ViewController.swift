@@ -607,7 +607,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: self.sound!.artist!.objectId)
+        query.whereKey("toUserId", equalTo: self.sound!.artist!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
@@ -631,7 +631,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             if self.sound!.artist?.objectId != currentUser.objectId {
                 let query = PFQuery(className: "Follow")
                 query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-                query.whereKey("toUserId", equalTo: self.sound!.artist!.objectId)
+                query.whereKey("toUserId", equalTo: self.sound!.artist!.objectId!)
                 query.whereKey("isRemoved", equalTo: false)
                 query.getFirstObjectInBackground {
                     (object: PFObject?, error: Error?) -> Void in
