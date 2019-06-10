@@ -16,6 +16,7 @@ import AppCenterCrashes
 import StoreKit
 import Firebase
 import GoogleMobileAds
+import TwitterKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,8 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self])
         
         FirebaseApp.configure()
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
-        
+        //GADMobileAds.sharedInstance().start(completionHandler: nil)
+
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
@@ -85,9 +86,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //called if user is opening for the first time
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
         
-        return application(app, open: url,
-                           sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-                           annotation: "")
+        if url.absoluteString.starts(with: "soundbrew") {
+            return application(app, open: url,
+                               sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                               annotation: "")
+            
+        } else {
+           return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
+        }
     }
     
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {

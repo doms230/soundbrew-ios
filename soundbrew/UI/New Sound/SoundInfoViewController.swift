@@ -12,7 +12,8 @@ import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
 import FirebaseAnalytics
-import FirebaseAuth
+import TwitterKit
+import FirebaseDynamicLinks
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate {
     
@@ -40,9 +41,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         if soundThatIsBeingEdited == nil {
+            TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
             saveAudioFile()
             soundParseFileDidFinishProcessing = true
             soundArtDidFinishProcessing = true
+            getTwitterSession()
             if let userId = PFUser.current()?.objectId {
                 loadCurrentUserCity(userId)
             }
@@ -87,10 +90,98 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: social
-    func didPressSocialSwitch(_ sender: UISwitch) {
-        if sender.isOn {
-            
+    //mark: twitter
+    var twitterUserID: String?
+    var shouldPostLinkToTwitter = false
+    var twitterUsername: String?
+    func getTwitterSession() {
+        if let userID = TWTRTwitter.sharedInstance().sessionStore.session()?.userID {
+            twitterUserID = userID
+            let client = TWTRAPIClient()
+            client.loadUser(withID: userID) { (user, error) -> Void in
+                if let user = user {
+                    self.twitterUsername = user.screenName
+                }
+            }
         }
+    }
+    
+    func postTweet(_ url: URL, sound: Sound) {
+        if let userID = self.twitterUserID {
+            let client = TWTRAPIClient(userID: userID)
+            let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
+            let params = ["status": "Check out my song \(sound.title!) on @sound_brew \(url)"]
+            var clientError : NSError?
+            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
+            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
+                if let connectionError = connectionError {
+                    print("Error: \(connectionError)")
+                }
+                
+                do {
+                    if let data = data {
+                        let json = try JSONSerialization.jsonObject(with: data, options: [])
+                        print("json: \(json)")
+                    }
+                    
+                } catch let jsonError as NSError {
+                    print("json error: \(jsonError.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    func createDynamicLink(_ sound: Sound) {
+        let title = sound.title!
+        let description = "\(sound.title!) by \(sound.artist!.name!)"
+        let imageURL = sound.artURL!
+        let objectId = sound.objectId!
+        
+        guard let link = URL(string: "https://soundbrew.app/sound/\(objectId)") else { return }
+        let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
+        linkBuilder!.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.soundbrew.soundbrew-artists")
+        linkBuilder!.iOSParameters!.appStoreID = "1438851832"
+        linkBuilder!.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        linkBuilder!.socialMetaTagParameters!.title = "\(title)"
+        linkBuilder!.socialMetaTagParameters!.descriptionText = description
+        linkBuilder!.socialMetaTagParameters!.imageURL = URL(string: imageURL)
+        linkBuilder!.shorten() { url, warnings, error in
+            if let error = error {
+                print(error)
+                
+            } else if let url = url {
+                print("dynamic link \(url)")
+                self.postTweet(url, sound: sound)
+            }
+        }
+    }
+    
+    
+    @objc func didPressSocialSwitch(_ sender: UISwitch) {
+        if sender.isOn {
+            if twitterUserID == nil {
+                authenticateTwitter()
+                
+            } else {
+                shouldPostLinkToTwitter = true
+            }
+            
+        } else {
+            shouldPostLinkToTwitter = false
+        }
+    }
+    
+    func authenticateTwitter() {
+        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+            if let session = session {
+                self.twitterUserID = session.userID
+                self.shouldPostLinkToTwitter = true
+                
+            } else if let error = error {
+                print("error: \(error.localizedDescription)");
+            }
+        })
     }
     
     //MARK: tags
@@ -113,15 +204,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 1:
-            determineTag(cell, soundTagLabel: "Mood Tag", tag: self.genreTag)
+            determineTag(cell, soundTagLabel: "Mood Tag", tag: self.moodTag)
             break
             
         case 2:
-            determineTag(cell, soundTagLabel: "Activity Tag", tag: self.genreTag)
+            determineTag(cell, soundTagLabel: "Activity Tag", tag: self.activityTag)
             break
             
         case 3:
-            determineTag(cell, soundTagLabel: "Similar Tag", tag: self.genreTag)
+            determineTag(cell, soundTagLabel: "Similar Tag", tag: self.similarArtistTag)
             break
             
         case 4:
@@ -230,7 +321,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: SoundInfoTableViewCell!
-        cell.selectionStyle = .none
         
         if indexPath.section == 0 && soundThatIsBeingEdited != nil {
             cell = soundTitleImageCell()
@@ -256,12 +346,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             case 3:
                 cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as? SoundInfoTableViewCell
                 cell.soundTagLabel.text = "Share To Twitter"
+                cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
                 break
                 
             default:
                 break
             }
         }
+        
+        cell.selectionStyle = .none
         
         return cell
     }
@@ -399,6 +492,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
+                if self.shouldPostLinkToTwitter {
+                    let sound = self.newSoundObject(newSound)
+                    self.createDynamicLink(sound)
+                }
                 self.saveTags(tags)
                 Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
                     AnalyticsParameterItemID: "id-sound upload",
@@ -596,5 +693,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.cityTag = Tag(objectId: nil, name: city, count: 0, isSelected: false, type: "city", image: nil)
             }
         }
+    }
+    
+    func newSoundObject(_ object: PFObject) -> Sound {
+        let title = object["title"] as! String
+        let art = object["songArt"] as! PFFileObject
+        let audio = object["audioFile"] as! PFFileObject
+        let tags = object["tags"] as! Array<String>
+        
+        let userId = object["userId"] as! String
+        let artist = Artist(objectId: userId, name: PFUser.current()?.username, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
+        
+        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: 0, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: 0, tmpFile: nil)
+        
+        return sound
     }
 }

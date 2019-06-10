@@ -132,7 +132,7 @@ class UIElement {
             
         } else if let artist = artist {
             objectId = artist.objectId
-            description = "Check out my Soundbrew page!"
+            description = "Check out my @sound_brew page!"
             if let username = artist.username {
                 if !username.contains("@") {
                     title = username

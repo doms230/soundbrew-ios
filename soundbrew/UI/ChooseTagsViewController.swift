@@ -83,10 +83,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text!.isEmpty {
             searchIsActive = false
-            //self.filteredTags = self.tags
-            //self.selectedFeatureType = 0
             loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
-            //self.tableView.reloadData()
             
         } else {
             searchIsActive = true
@@ -193,19 +190,23 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var tags = [Tag]()
     var filteredTags = [Tag]()
     var featureTagTitles = ["genre", "mood", "activity", "similar artist", "city", "all"]
-    
+    var featureTagScrollview: UIScrollView!
     var xPositionForFeatureTags = UIElement().leftOffset
     var selectedFeatureType = 0
     
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagsReuse) as! SoundListTableViewCell
         cell.selectionStyle = .none
-        xPositionForFeatureTags = uiElement.leftOffset
         
-        for i in 0..<featureTagTitles.count {
-            addSelectedTags(cell.tagsScrollview, name: featureTagTitles[i], index: i)
+        if featureTagScrollview == nil {
+            xPositionForFeatureTags = uiElement.leftOffset
+            
+            featureTagScrollview = cell.tagsScrollview
+            for i in 0..<featureTagTitles.count {
+                addSelectedTags(featureTagScrollview, name: featureTagTitles[i], index: i)
+            }
         }
-        
+
         return cell
     }
     
@@ -215,9 +216,13 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         var titleColor = color.black()
         var backgroundColor = color.darkGray()
-        if selectedFeatureType == index {
-            titleColor = .white
+        if index == 0 {
             backgroundColor = color.blue()
+            titleColor = .white
+            
+        } else {
+            titleColor = color.black()
+            backgroundColor = color.darkGray()
         }
         
         let buttonHeight = 30
@@ -239,16 +244,22 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     @objc func didPressFeatureTagButton(_ sender: UIButton) {
         if sender.tag != selectedFeatureType {
+            let currentSelectedButton = featureTagScrollview.subviews[selectedFeatureType] as! UIButton
+            currentSelectedButton.backgroundColor = color.darkGray()
+            currentSelectedButton.setTitleColor(color.black(), for: .normal)
+            
+            let newSelectedButton = featureTagScrollview.subviews[sender.tag] as! UIButton
+            newSelectedButton.backgroundColor = color.blue()
+            newSelectedButton.setTitleColor(.white, for: .normal)
+            
             selectedFeatureType = sender.tag
-            if sender.tag == 0 {
+            if sender.tag == 6 {
                 self.filteredTags = self.tags
                 
             } else {
                 self.filteredTags.removeAll()
                 loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: searchBar.text)
             }
-            
-            self.tableView.reloadData()
         }
     }
     

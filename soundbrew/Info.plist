@@ -18,10 +18,7 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.4.3</string>
-	<key>CFBundleURLSchemes</key>
-	<array>
-		<string>soundbrew</string>
-	</array>
+	
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -34,16 +31,12 @@
 				<string>com.soundbrew.soundbrew-artists</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>twitter callback</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>twitter</string>
-			</array>
-		</dict>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>twitterkit-shY1N1YKquAcxJF9YtdFzm6N3</string>
+            </array>
+        </dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>16</string>
@@ -58,6 +51,8 @@
 		<string>itms-apps</string>
 		<string>instagram-stories</string>
 		<string>instagram</string>
+        <string>twitter</string>
+        <string>twitterauth</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
