@@ -26,7 +26,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var tableView: UITableView?
     var miniPlayerView: MiniPlayerView!
     var target: UIViewController!
-    var ad: Ad!
+    //var ad: Ad!
     var secondsPlayed = 0.0
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
@@ -35,7 +35,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     override init() {
         super.init()
         setupRemoteTransportControls()
-        ad = Ad(player: self)
+        //ad = Ad(player: self)
     }
     
     func prepareAndPlay(_ audioData: Data) {
@@ -352,8 +352,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         didRecordStream = false
         secondsPlayedTimer.invalidate()
         secondsPlayed = 0.0
-        ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
-        UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
+        //ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
+        //UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
     }
     
     @objc func UpdateTimer(_ timer: Timer) {

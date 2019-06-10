@@ -15,8 +15,8 @@ import AppCenter
 import AppCenterCrashes
 import StoreKit
 import Firebase
-import GoogleMobileAds
 import TwitterKit
+import FacebookCore
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -32,7 +32,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         //GADMobileAds.sharedInstance().start(completionHandler: nil)
-
+        
+        SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
@@ -91,8 +93,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                                annotation: "")
             
+        } else if url.absoluteString.starts(with: "fb") {
+            return SDKApplicationDelegate.shared.application(app, open: url, options: options)
+            
         } else {
-           return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
+            return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
         }
     }
     

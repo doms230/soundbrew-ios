@@ -37,6 +37,12 @@
                 <string>twitterkit-shY1N1YKquAcxJF9YtdFzm6N3</string>
             </array>
         </dict>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>fb310459556465590</string>
+            </array>
+        </dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>16</string>
@@ -53,6 +59,10 @@
 		<string>instagram</string>
         <string>twitter</string>
         <string>twitterauth</string>
+        <string>fbapi</string>
+        <string>fb-messenger-share-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -92,5 +102,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>FacebookAppID</key>
+    <string>310459556465590</string>
+    <key>FacebookDisplayName</key>
+    <string>Soundbrew</string>
 </dict>
 </plist>

@@ -14,6 +14,9 @@ import Kingfisher
 import FirebaseAnalytics
 import TwitterKit
 import FirebaseDynamicLinks
+import FacebookCore
+import FacebookLogin
+import FacebookShare
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate {
     
@@ -42,10 +45,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         if soundThatIsBeingEdited == nil {
             TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
+            getTwitterUserID()
+           /* let store = TWTRTwitter.sharedInstance().sessionStore
+            if let userID = store.session()?.userID {
+                store.logOutUserID(userID)
+            }
+            
+            let login = LoginManager()
+            login.logOut()*/
+            
             saveAudioFile()
             soundParseFileDidFinishProcessing = true
             soundArtDidFinishProcessing = true
-            getTwitterSession()
             if let userId = PFUser.current()?.objectId {
                 loadCurrentUserCity(userId)
             }
@@ -90,44 +101,38 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: social
-    //mark: twitter
-    var twitterUserID: String?
-    var shouldPostLinkToTwitter = false
-    var twitterUsername: String?
-    func getTwitterSession() {
-        if let userID = TWTRTwitter.sharedInstance().sessionStore.session()?.userID {
-            twitterUserID = userID
-            let client = TWTRAPIClient()
-            client.loadUser(withID: userID) { (user, error) -> Void in
-                if let user = user {
-                    self.twitterUsername = user.screenName
-                }
+    func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
+        var socialTitle: String!
+        var tag: Int!
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
+        
+        if indexPath.row == 0 {
+            if shouldPostLinkToFacebook {
+                cell.socialSwitch.isOn = true
             }
+            socialTitle = "Facebook"
+            tag = 0
+            
+        } else {
+            socialTitle = "Twitter"
+            if shouldPostLinkToTwitter {
+                cell.socialSwitch.isOn = true
+            }
+            tag = 1
         }
+        
+        cell.soundTagLabel.text = "Share To \(socialTitle!)"
+        cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
+        cell.socialSwitch.tag = tag
+        
+        return cell
     }
     
-    func postTweet(_ url: URL, sound: Sound) {
-        if let userID = self.twitterUserID {
-            let client = TWTRAPIClient(userID: userID)
-            let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "Check out my song \(sound.title!) on @sound_brew \(url)"]
-            var clientError : NSError?
-            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
-            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
-                if let connectionError = connectionError {
-                    print("Error: \(connectionError)")
-                }
-                
-                do {
-                    if let data = data {
-                        let json = try JSONSerialization.jsonObject(with: data, options: [])
-                        print("json: \(json)")
-                    }
-                    
-                } catch let jsonError as NSError {
-                    print("json error: \(jsonError.localizedDescription)")
-                }
-            }
+    @objc func didPressSocialSwitch(_ sender: UISwitch) {
+        if sender.tag == 0 {
+            checkFacebookAuth(sender)
+        } else {
+            checkTwitterAuth(sender)
         }
     }
     
@@ -149,39 +154,121 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         linkBuilder!.shorten() { url, warnings, error in
             if let error = error {
                 print(error)
-                
             } else if let url = url {
-                print("dynamic link \(url)")
-                self.postTweet(url, sound: sound)
+                if self.shouldPostLinkToFacebook {
+                    self.postToFacebook(url, sound: sound)
+                }
+                if self.shouldPostLinkToTwitter {
+                    self.postTweet(url, sound: sound)
+                }
             }
         }
     }
     
+    //mark: facebook
+    var shouldPostLinkToFacebook = false
     
-    @objc func didPressSocialSwitch(_ sender: UISwitch) {
+    func checkFacebookAuth(_ sender: UISwitch) {
+        if sender.isOn {
+            if AccessToken.current == nil {
+                authenticateFacebook(sender)
+
+            } else {
+                shouldPostLinkToFacebook = true
+            }
+            
+        } else {
+            shouldPostLinkToFacebook = false
+        }
+    }
+    func authenticateFacebook(_ sender: UISwitch) {
+        let loginManager = LoginManager()
+        loginManager.logIn(readPermissions: [.publicProfile], viewController: self) { loginResult in
+            switch loginResult {
+            case .failed(let error):
+                print(error)
+            case .cancelled:
+                print("User cancelled login.")
+                sender.isOn = false
+            case .success:
+                self.shouldPostLinkToFacebook = true
+            }
+        }
+    }
+    
+    func postToFacebook(_ url: URL, sound: Sound) {
+        let content = LinkShareContent(url: url)
+        
+        let shareDialog = ShareDialog(content: content)
+        shareDialog.mode = .native
+        shareDialog.failsOnInvalidData = true
+        shareDialog.completion = { result in
+            // Handle share results
+        }
+        
+        do {
+        try shareDialog.show()
+        } catch let error {
+            print(error)
+        }
+    }
+    
+    //mark: twitter
+    var twitterUserID: String?
+    var shouldPostLinkToTwitter = false
+    
+    func getTwitterUserID() {
+        let store = TWTRTwitter.sharedInstance().sessionStore
+        if let userId = store.session()?.userID {
+            self.twitterUserID = userId
+        }
+    }
+    
+    func checkTwitterAuth(_ sender: UISwitch) {
         if sender.isOn {
             if twitterUserID == nil {
-                authenticateTwitter()
-                
+                authenticateTwitter(sender)
             } else {
                 shouldPostLinkToTwitter = true
             }
-            
         } else {
             shouldPostLinkToTwitter = false
         }
     }
     
-    func authenticateTwitter() {
+    func authenticateTwitter(_ sender: UISwitch) {
         TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
             if let session = session {
                 self.twitterUserID = session.userID
                 self.shouldPostLinkToTwitter = true
-                
             } else if let error = error {
                 print("error: \(error.localizedDescription)");
+                sender.isOn = false
             }
         })
+    }
+    
+    func postTweet(_ url: URL, sound: Sound) {
+        if let userID = self.twitterUserID {
+            let client = TWTRAPIClient(userID: userID)
+            let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
+            let params = ["status": "Listen to \(sound.title!) on #soundbrew \(url)"]
+            var clientError : NSError?
+            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
+            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
+                if let connectionError = connectionError {
+                    print("Error: \(connectionError)")
+                }
+                do {
+                    if let data = data {
+                        let json = try JSONSerialization.jsonObject(with: data, options: [])
+                        print("json: \(json)")
+                    }
+                } catch let jsonError as NSError {
+                    print("json error: \(jsonError.localizedDescription)")
+                }
+            }
+        }
     }
     
     //MARK: tags
@@ -202,25 +289,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         case 0:
             determineTag(cell, soundTagLabel: "Genre Tag", tag: self.genreTag)
             break
-            
         case 1:
             determineTag(cell, soundTagLabel: "Mood Tag", tag: self.moodTag)
             break
-            
         case 2:
             determineTag(cell, soundTagLabel: "Activity Tag", tag: self.activityTag)
             break
-            
         case 3:
             determineTag(cell, soundTagLabel: "Similar Tag", tag: self.similarArtistTag)
             break
-            
         case 4:
             cell.soundTagLabel.text = "More Tags"
             if let moreTags = self.moreTags {
                 if moreTags.count == 1 {
                     cell.chosenSoundTagLabel.text = "\(moreTags.count) tag"
-                    
                 } else {
                     cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
                 }
@@ -255,23 +337,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 case "city":
                     self.cityTag = tag[0]
                     break
-                    
                 case "genre":
                     self.genreTag = tag[0]
                     break
-                    
                 case "mood":
                     self.moodTag = tag[0]
                     break
-                    
                 case "activity":
                     self.activityTag = tag[0]
                     break
-                    
                 case "similar artist":
                     self.similarArtistTag = tag[0]
                     break
-                    
                 default:
                     self.moreTags = chosenTags
                     break
@@ -314,6 +391,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 2 {
             return 5
+        } else if section == 3 {
+            return 2
         }
         
         return 1
@@ -344,9 +423,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 3:
-                cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as? SoundInfoTableViewCell
-                cell.soundTagLabel.text = "Share To Twitter"
-                cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
+                cell = socialCell(indexPath)
                 break
                 
             default:
@@ -489,18 +566,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
+        newSound["isRemoved"] = true
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
-                if self.shouldPostLinkToTwitter {
+                if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
                     let sound = self.newSoundObject(newSound)
                     self.createDynamicLink(sound)
                 }
                 self.saveTags(tags)
                 Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-                    AnalyticsParameterItemID: "id-sound upload",
+                    AnalyticsParameterItemID: "id-soundupload",
                     AnalyticsParameterItemName: "sound upload",
-                    AnalyticsParameterContentType: "cont"
+                    AnalyticsParameterContentType: "soundupload"
                     ])
                 
             } else if let error = error {

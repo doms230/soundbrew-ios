@@ -20,7 +20,6 @@
 		F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F246999A22A82EEE0020497E /* AuthenticationServices.framework */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
-		F24F2B782278E9F9006D1CB7 /* Ad.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B772278E9F9006D1CB7 /* Ad.swift */; };
 		F24F2B7E228121FB006D1CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */; };
 		F24F2B8022812685006D1CB7 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */; };
 		F24F2B8222812EE3006D1CB7 /* StreamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B8122812EE3006D1CB7 /* StreamsViewController.swift */; };
@@ -141,7 +140,6 @@
 		F246999A22A82EEE0020497E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
 		F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		F24F2B772278E9F9006D1CB7 /* Ad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ad.swift; sourceTree = "<group>"; };
 		F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		F24F2B8122812EE3006D1CB7 /* StreamsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamsViewController.swift; sourceTree = "<group>"; };
@@ -371,7 +369,6 @@
 			isa = PBXGroup;
 			children = (
 				F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */,
-				F24F2B772278E9F9006D1CB7 /* Ad.swift */,
 			);
 			path = "New Group1";
 			sourceTree = "<group>";
@@ -725,7 +722,6 @@
 				F26CFF80229F0DDB00D01627 /* SearchViewController.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
-				F24F2B782278E9F9006D1CB7 /* Ad.swift in Sources */,
 				F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,

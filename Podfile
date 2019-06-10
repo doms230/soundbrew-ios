@@ -32,7 +32,9 @@ target 'soundbrew' do
   #pod 'MessageViewController'
   pod 'Firebase/Core'
   pod 'Firebase/DynamicLinks'
-  pod 'Firebase/AdMob'
-  pod 'Firebase/Auth'
+  #pod 'Firebase/AdMob'
   pod 'TwitterKit'
+  pod 'FacebookCore', '~> 0.5.0'
+  pod 'FacebookLogin', '~> 0.5.0'
+  pod 'FacebookShare', '~> 0.5.0'
 end

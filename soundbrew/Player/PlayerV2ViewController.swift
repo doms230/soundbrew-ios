@@ -331,6 +331,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         slider.value = 0
         return slider
     }()
+    
     @objc func sliderValueDidChange(_ sender: UISlider) {
         if let player = self.player {
             if let soundPlayer = player.player {
