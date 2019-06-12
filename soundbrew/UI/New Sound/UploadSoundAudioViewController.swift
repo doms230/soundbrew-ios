@@ -35,7 +35,6 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     override func viewDidLoad() {
         if PFUser.current() != nil {
             showUploadSoundFileUI()
-            
         } else {
             self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
         }

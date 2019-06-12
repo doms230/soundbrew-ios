@@ -1,21 +1,17 @@
 //
-//  SoundList.swift
+//  SoundListV2.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 3/21/19.
+//  Created by Dominic  Smith on 6/12/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
-//  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
-//  SoundlistViewController.swift and ProfileViewController.swift utilize this class
-//
-// MARK: tableView, sounds, artist, tags filter, data, miniplayer, comment, search
 
 import Foundation
 import UIKit
 import Parse
 import DeckTransition
 
-class SoundList: NSObject, PlayerDelegate {
+class SoundListV2: NSObject, PlayerDelegate {
     var target: UIViewController!
     var tableView: UITableView?
     var sounds = [Sound]()
@@ -100,7 +96,7 @@ class SoundList: NSObject, PlayerDelegate {
                 miniPlayerView?.playBackButton.isEnabled = true
                 
             } else {
-                miniPlayerView?.isHidden = true 
+                miniPlayerView?.isHidden = true
             }
         }
     }
@@ -144,7 +140,7 @@ class SoundList: NSObject, PlayerDelegate {
         let view = navigationController?.topViewController
         if let segueView = view {
             segueView.performSegue(withIdentifier: "showProfile", sender: self)
-        }        
+        }
     }
     
     //mark: sounds
@@ -172,7 +168,7 @@ class SoundList: NSObject, PlayerDelegate {
             cell.menuButton.tag = indexPath.row
             
             cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-        
+            
             cell.soundTitle.text = sound.title
             
             if let plays = sound.plays {
@@ -242,6 +238,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.sounds.removeAll()
+        
         self.loadFollows("")
         
         /*if let filter = self.uiElement.getUserDefault("filter") as? String {
@@ -273,7 +270,7 @@ class SoundList: NSObject, PlayerDelegate {
                 showNoResultsLabel()
                 
             } else {
-               self.loadFollows("createdAt")
+                self.loadFollows("createdAt")
             }
             
             break
@@ -298,7 +295,7 @@ class SoundList: NSObject, PlayerDelegate {
             showNoResultsLabel()
             
         } else if self.player != nil {
-            self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+            //self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             self.tableView?.isHidden = false
             target.view.bringSubviewToFront(tableView!)
             self.player!.sounds = self.sounds
@@ -494,7 +491,7 @@ class SoundList: NSObject, PlayerDelegate {
             query.whereKey("tags", containedIn: tagNames)
             //query.whereKey("tags", containsAllObjectsIn: tagNames)
         }
-
+        
         if let followIds = followIds {
             query.whereKey("userId", containedIn: followIds)
         }
@@ -541,16 +538,15 @@ class SoundList: NSObject, PlayerDelegate {
         query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            self.didLoadLikedSounds = true 
+            self.didLoadLikedSounds = true
             if error == nil {
                 if let objects = objects {
                     for object in objects {
                         self.likedSoundIds.append(object["postId"] as! String)
                     }
                 }
-                
-               // self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: self.selectedTagsForFiltering, followIds: nil, searchText: nil)
                 self.loadLikesCreatedAtSounds()
+                //self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil, tags: self.selectedTagsForFiltering, followIds: nil, searchText: nil)
                 
             } else {
                 print("Error: \(error!)")
@@ -570,9 +566,8 @@ class SoundList: NSObject, PlayerDelegate {
                         self.followUserIds.append(object["toUserId"] as! String)
                     }
                 }
-                
-                //self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: self.selectedTagsForFiltering, followIds: self.followUserIds, searchText: nil)
                 self.loadFollowCreatedAtSounds()
+                //self.loadSounds(descendingOrder, likeIds: nil, userId: nil, tags: self.selectedTagsForFiltering, followIds: self.followUserIds, searchText: nil)
                 
             } else {
                 print("Error: \(error!)")
@@ -614,7 +609,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if let bio = user["bio"] as? String {
-                    artist.bio = bio 
+                    artist.bio = bio
                 }
                 
                 if let website = user["website"] as? String {
@@ -657,7 +652,7 @@ class SoundList: NSObject, PlayerDelegate {
     var mixedWorldSounds = [Sound]()
     
     func mixSounds(_ createdAtSounds: Array<Sound>, topSounds: Array<Sound>) -> Array<Sound> {
-        var mixSounds: Array<Sound> = []
+        var mixSounds: Array<Sound>!
         let totalSoundsCount = createdAtSounds.count + topSounds.count
         for i in 0..<totalSoundsCount {
             if i % 2 == 0 {
@@ -671,10 +666,7 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func mixAllSounds(_ mixedFollowSounds: Array<Sound>, mixedLikedSounds: Array<Sound>, mixedWorldSounds: Array<Sound>)  -> Array<Sound> {
-        var mixSounds: Array<Sound> = []
-        print("follow: \(mixedFollowSounds.count)")
-        print("like: \(mixedLikedSounds.count)")
-        print("world \(mixedWorldSounds.count)")
+        var mixSounds: Array<Sound>!
         let totalSoundsCount = mixedFollowSounds.count + mixedLikedSounds.count + mixedWorldSounds.count
         for i in 0..<totalSoundsCount {
             switch i % 3 {
@@ -747,10 +739,10 @@ class SoundList: NSObject, PlayerDelegate {
                     for object in objects {
                         let sound = self.newSoundObject(object)
                         self.followTopSounds.append(sound)
+                        self.followTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+                        self.mixedFollowSounds = self.mixSounds(self.followCreatedAtSounds, topSounds: self.followTopSounds)
+                        self.loadLikes("", profileUserId: self.profileUserId!)
                     }
-                    self.followTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                    self.mixedFollowSounds = self.mixSounds(self.followCreatedAtSounds, topSounds: self.followTopSounds)
-                    self.loadLikes("", profileUserId: self.profileUserId!)
                     
                 } else {
                     //self.thereIsMoreDataToLoad = false
@@ -765,7 +757,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func loadLikesCreatedAtSounds() {
         let query = PFQuery(className: "Post")
-        query.whereKey("objectId", containedIn: likedSoundIds)
+        query.whereKey("userId", containedIn: likedSoundIds)
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("CreatedAt")
         if let tags = self.selectedTagsForFiltering {
@@ -797,7 +789,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func loadLikesTopSounds() {
         let query = PFQuery(className: "Post")
-        query.whereKey("objectId", containedIn: likedSoundIds)
+        query.whereKey("userId", containedIn: likedSoundIds)
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("likes")
         if let tags = self.selectedTagsForFiltering {
@@ -812,10 +804,10 @@ class SoundList: NSObject, PlayerDelegate {
                     for object in objects {
                         let sound = self.newSoundObject(object)
                         self.likesTopSounds.append(sound)
+                        self.likesTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+                        self.mixedFollowSounds = self.mixSounds(self.likesCreatedAtSounds, topSounds: self.likesTopSounds)
+                        self.loadWorldCreatedAtSounds()
                     }
-                    self.likesTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                    self.mixedFollowSounds = self.mixSounds(self.likesCreatedAtSounds, topSounds: self.likesTopSounds)
-                    self.loadWorldCreatedAtSounds()
                     
                 } else {
                     //self.thereIsMoreDataToLoad = false
@@ -875,11 +867,11 @@ class SoundList: NSObject, PlayerDelegate {
                     for object in objects {
                         let sound = self.newSoundObject(object)
                         self.worldTopSounds.append(sound)
+                        self.worldTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+                        self.mixedWorldSounds = self.mixSounds(self.worldCreatedAtSounds, topSounds: self.worldTopSounds)
+                        self.sounds = self.mixAllSounds(self.mixedFollowSounds, mixedLikedSounds: self.mixedLikedSounds, mixedWorldSounds: self.mixedWorldSounds)
+                        self.updateSounds()
                     }
-                    self.worldTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                    self.mixedWorldSounds = self.mixSounds(self.worldCreatedAtSounds, topSounds: self.worldTopSounds)
-                    self.sounds = self.mixAllSounds(self.mixedFollowSounds, mixedLikedSounds: self.mixedLikedSounds, mixedWorldSounds: self.mixedWorldSounds)
-                    self.updateSounds()
                     
                 } else {
                     //self.thereIsMoreDataToLoad = false
@@ -891,5 +883,4 @@ class SoundList: NSObject, PlayerDelegate {
             }
         }
     }
-    
 }

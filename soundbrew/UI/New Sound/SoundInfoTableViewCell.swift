@@ -36,7 +36,7 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var soundTagLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.text = "Tags"
         return label
     }()
@@ -145,7 +145,7 @@ class SoundInfoTableViewCell: UITableViewCell {
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             soundTagLabel.snp.makeConstraints { (make) -> Void in
@@ -154,6 +154,8 @@ class SoundInfoTableViewCell: UITableViewCell {
             }
             
             break
+            
+            //case ""
             
         default:
             break

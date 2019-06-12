@@ -46,14 +46,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if soundThatIsBeingEdited == nil {
             TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
             getTwitterUserID()
-           /* let store = TWTRTwitter.sharedInstance().sessionStore
-            if let userID = store.session()?.userID {
-                store.logOutUserID(userID)
-            }
-            
-            let login = LoginManager()
-            login.logOut()*/
-            
             saveAudioFile()
             soundParseFileDidFinishProcessing = true
             soundArtDidFinishProcessing = true
@@ -124,7 +116,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.soundTagLabel.text = "Share To \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
         cell.socialSwitch.tag = tag
-        
+        tableView.separatorStyle = .none
         return cell
     }
     
@@ -288,15 +280,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         switch indexPath.row {
         case 0:
             determineTag(cell, soundTagLabel: "Genre Tag", tag: self.genreTag)
+            tableView.separatorStyle = .none
             break
         case 1:
             determineTag(cell, soundTagLabel: "Mood Tag", tag: self.moodTag)
+            tableView.separatorStyle = .none
             break
         case 2:
             determineTag(cell, soundTagLabel: "Activity Tag", tag: self.activityTag)
+            tableView.separatorStyle = .none
             break
         case 3:
             determineTag(cell, soundTagLabel: "Similar Tag", tag: self.similarArtistTag)
+            tableView.separatorStyle = .none
             break
         case 4:
             cell.soundTagLabel.text = "More Tags"
@@ -313,12 +309,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.chosenSoundTagLabel.text = "Add"
                 cell.chosenSoundTagLabel.textColor = color.red()
             }
-            
+            tableView.separatorStyle = .singleLine
         default:
             break
         }
         
-        tableView.separatorStyle = .singleLine
+        
         return cell
     }
     
@@ -566,7 +562,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["audioFile"] = soundParseFile
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
-        newSound["isRemoved"] = true
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
