@@ -77,6 +77,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if tagType == nil || tagType == "more" {
             let doneButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
+            
+        } else {
+            searchBar.setShowsCancelButton(true, animated: true)
         }
     }
     
@@ -89,6 +92,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             searchIsActive = true
             loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: searchText)
         }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     func checkIfTagSearchTextExists() {
