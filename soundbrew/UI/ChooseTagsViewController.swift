@@ -77,8 +77,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if tagType == nil || tagType == "more" {
             let doneButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
-            
-        } else {
+        }
+        
+        if tagType != nil && tagType != "more" {
             searchBar.setShowsCancelButton(true, animated: true)
         }
     }
