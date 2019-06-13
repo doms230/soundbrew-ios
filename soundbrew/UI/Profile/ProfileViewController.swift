@@ -296,10 +296,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             if soundList.soundType == "uploads" {
-                soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: profileArtist?.objectId, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+                soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: profileArtist?.objectId)
                 
             } else {
-                soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.likedSoundIds, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+                soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.likedSoundIds, userId: nil)
             }
         }
     }

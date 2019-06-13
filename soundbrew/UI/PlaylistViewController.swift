@@ -26,7 +26,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        showSounds(playlistType)
+        showSounds()
         setupNavigationItems()
         setUpTableView()
     }
@@ -38,7 +38,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
                 tags = selectedTagsForFiltering
             }
             
-            soundList = SoundList(target: self, tableView: tableView, soundType: playlistType, userId: PFUser.current()?.objectId, tags: tags, searchText: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "playlist", userId: PFUser.current()?.objectId, tags: tags, searchText: nil)
         }
     }
     
@@ -66,7 +66,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func showSounds(_ soundType: String) {
+    func showSounds() {
         if soundList != nil {
             self.soundList.sounds.removeAll()
             self.tableView.reloadData()
@@ -77,7 +77,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             tags = selectedTagsForFiltering
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: PFUser.current()?.objectId, tags: tags, searchText: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "playlist", userId: PFUser.current()?.objectId, tags: tags, searchText: nil)
     }
     
     //mark: tableview
@@ -154,7 +154,14 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
-            soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+            //soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
+            
+            if PFUser.current() == nil {
+                soundList.loadWorldCreatedAtSounds()
+                
+            } else {
+                soundList.loadFollowCreatedAtSounds()
+            }
         }
     }
     
