@@ -36,7 +36,9 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         if PFUser.current() != nil {
             showUploadSoundFileUI()
         } else {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Any music you upload will instantly show up in playlists listeners create.", target: self)
+            newSoundButton.setTitle("Sign up", for: .normal)
+            showUploadSoundButton()
         }
     }
     
@@ -60,7 +62,12 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     @objc func didPressUploadButton(_ sender: UIButton) {
-        showUploadSoundFileUI()
+        if PFUser.current() == nil {
+            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+            
+        } else {
+           showUploadSoundFileUI()
+        }
     }
     
     //

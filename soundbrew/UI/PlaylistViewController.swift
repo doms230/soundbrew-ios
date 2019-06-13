@@ -27,7 +27,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         showSounds()
-        setupNavigationItems()
+        //setupNavigationItems()
         setUpTableView()
     }
     
@@ -57,8 +57,8 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             break
             
         case "showPlaylist":
-            let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
-            viewController.tagDelegate = self
+            //let viewController: ChooseTagsViewController = segue.destination as! ChooseTagsViewController
+            //viewController.tagDelegate = self
             break
             
         default:
@@ -215,10 +215,10 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //mark: navigation
-    var soundOrder: UIBarButtonItem!
-    var soundType: UIBarButtonItem!
+    //var soundOrder: UIBarButtonItem!
+    //var soundType: UIBarButtonItem!
     
-    func setupNavigationItems() {
+   /* func setupNavigationItems() {
         var soundOrderImage = "recent"
         var tag = 0
         if let filter = uiElement.getUserDefault("filter") as? String {
@@ -264,9 +264,9 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         soundType.tag = soundTypeTag
         
         self.navigationItem.rightBarButtonItems = [soundType, soundOrder]
-    }
+    }*/
     
-    @objc func didPressNewPlaylistButton(_ sender: UIBarButtonItem) {
+    /*@objc func didPressNewPlaylistButton(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -359,6 +359,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         self.present(alertController, animated: true, completion: nil)
-    }
+    }*/
 }
 

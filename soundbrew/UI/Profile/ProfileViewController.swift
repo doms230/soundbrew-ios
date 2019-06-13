@@ -47,8 +47,34 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             setUpNavigationButtons(currentUser.objectId!)
             
         } else {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "You'll be able to see music you like and any sounds you've uploaded from the profile page.", target: self)
+            showUploadSoundButton()
         }
+    }
+    
+    lazy var signupButton: UIButton = {
+        let image = UIButton()
+        image.setTitle("Sign up", for: .normal)
+        image.titleLabel?.textColor = .black
+        image.layer.cornerRadius = 3
+        image.clipsToBounds = true
+        image.backgroundColor = Color().blue()
+        return image
+    }()
+    
+    func showUploadSoundButton() {
+        signupButton.addTarget(self, action: #selector(self.didPressSignupButton(_:)), for: .touchUpInside)
+        self.view.addSubview(signupButton)
+        signupButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(uiElement.buttonHeight)
+            make.width.equalTo(200)
+            make.top.equalTo(self.view).offset((self.view.frame.height / 2) - CGFloat(uiElement.buttonHeight))
+            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(100))
+        }
+    }
+    
+    @objc func didPressSignupButton(_ sender: UIButton) {
+        self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {

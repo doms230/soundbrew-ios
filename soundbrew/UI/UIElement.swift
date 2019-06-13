@@ -74,6 +74,19 @@ class UIElement {
         target.present(alertController, animated: true, completion: nil)
     }
     
+    func signupRequired(_ title: String, message: String, target: UIViewController) {
+        let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
+        
+        let settingsAction = UIAlertAction(title: "Sign up", style: .default) { (_) -> Void in
+            self.segueToView("Login", withIdentifier: "welcome", target: target)
+        }
+        alertController.addAction(settingsAction)
+        let cancelAction = UIAlertAction(title: "Continue", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        target.present(alertController, animated: true, completion: nil)
+    }
+    
     func setUserDefault(_ key: String, value: Any) {
         UserDefaults.standard.set(value, forKey: key)
         UserDefaults.standard.synchronize()

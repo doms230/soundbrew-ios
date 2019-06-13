@@ -148,7 +148,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                         Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
                             AnalyticsParameterItemID: "id-new-like",
                             AnalyticsParameterItemName: "new like",
-                            AnalyticsParameterContentType: "cont"
+                            AnalyticsParameterContentType: "newlike"
                             ])
                     }
                     
@@ -157,7 +157,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                     Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
                         AnalyticsParameterItemID: "id-new-like",
                         AnalyticsParameterItemName: "new like",
-                        AnalyticsParameterContentType: "cont"
+                        AnalyticsParameterContentType: "unlike"
                         ])
                 }
             }
@@ -288,14 +288,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             }
             
         } else {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Following artists will mix in other songs they've uploaded into playlists you create.", target: self)
         }
-        
-        /*self.dismiss(animated: true, completion: {() in
-            if let commentDelegate = self.commentDelegate {
-                commentDelegate.selectedComments(self.sound?.objectId, atTime: self.playBackSlider.value)
-            }
-        })*/
     }
     
     let likeRedImage = "like_red"
@@ -309,7 +303,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             manageLikeForCurrentSound()
             
         } else {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
+            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Liking songs will mix them into playlists.", target: self)
         }
     }
     
