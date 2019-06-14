@@ -359,7 +359,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     @objc func UpdateTimer(_ timer: Timer) {
         secondsPlayed = secondsPlayed + timer.timeInterval
         
-        if secondsPlayed >= 5 && !didRecordPlay {
+        if secondsPlayed >= 1 && !didRecordPlay {
             didRecordPlay = true
             if let currentSound = currentSound {
                 incrementPlayCount(currentSound)

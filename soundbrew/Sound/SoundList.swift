@@ -889,6 +889,10 @@ class SoundList: NSObject, PlayerDelegate {
                         self.sounds.append(newSound)
                     }
 
+                    if objects.count == 0 {
+                        self.thereIsMoreDataToLoad = false 
+                    }
+                    
                     self.updateSounds()
                     
                 } else {
