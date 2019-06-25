@@ -37,4 +37,5 @@ target 'soundbrew' do
   pod 'FacebookCore', '~> 0.5.0'
   pod 'FacebookLogin', '~> 0.5.0'
   pod 'FacebookShare', '~> 0.5.0'
+  pod 'Zip'
 end

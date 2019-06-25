@@ -378,14 +378,22 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             } else if let user = user {
                 user["artistName"] = self.nameText.text
                 
-                if self.usernameText.text != self.artist?.username {
-                    self.usernameText.text = self.uiElement.cleanUpText(self.usernameText.text!)
-                    user["username"] = self.usernameText.text!
+                if let username = self.artist?.username {
+                    if self.usernameText.text != username {
+                        self.usernameText.text = self.uiElement.cleanUpText(self.usernameText.text!)
+                        user["username"] = self.usernameText.text!
+                    }
                 }
                 
-                user["city"] = self.artist?.city
+                if let city = self.artist?.city {
+                    user["city"] = city
+                }
+                
                 user["website"] = self.websiteText.text
-                user["bio"] = self.artist!.bio
+                
+                if let bio = self.artist?.bio {
+                    user["bio"] = bio
+                }
                 
                 if self.shouldUpdateEmail {
                     user["email"] = self.emailText.text

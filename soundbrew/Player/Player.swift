@@ -60,6 +60,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             //convert Data to URL on disk.. AVAudioPlayer won't play sound otherwise. .documentDirectory
             if audioURL != nil && soundObjectId != nil {
                 let tempAudioFile = try TemporaryFile(creatingTempDirectoryForFilename: "\(audioURL!.lastPathComponent)")
+                
                 self.sounds[currentSoundIndex].tmpFile = tempAudioFile
                 
                 try audioData.write(to: tempAudioFile.fileURL, options: .atomic)

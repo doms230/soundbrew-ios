@@ -11,14 +11,16 @@ import Parse
 import MobileCoreServices
 import SnapKit
 import NVActivityIndicatorView
-import Compression
+//import Compression
+import Zip
 
 class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable {
     
     let uiElement = UIElement()
     
     var soundParseFile: PFFileObject!
-    var soundFilename: String!
+    var soundFileName: String!
+    var soundFileURL: URL!
     
     var soundThatIsBeingEdited: Sound?
     
@@ -43,10 +45,10 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier != "showProfile" {
+        if segue.identifier == "showSoundInfo" {
             let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
-            viewController.soundFileName = soundFilename
-            viewController.soundParseFile = soundParseFile
+            viewController.soundFileURL = self.soundFileURL
+            //viewController.soundParseFile = soundParseFile
         }
     }
     
@@ -82,7 +84,20 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        processAudioForDatabase(urls[0])
+        dismiss(animated: true, completion: nil)
+        self.soundFileURL = urls[0]
+        self.performSegue(withIdentifier: "showSoundInfo", sender: self)
+        //self.showUploadSoundButton()
+        /*if self.soundThatIsBeingEdited == nil {
+         self.soundFileURL = urls[0]
+         self.performSegue(withIdentifier: "showSoundInfo", sender: self)
+         self.showUploadSoundButton()
+         
+         } else {
+         self.processAudioForDatabase(urls[0])
+         //self.showUploadSoundButton()
+         //TODO: dismiss view and show which ever tab view was showing before
+         }*/
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -91,23 +106,17 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         
     func processAudioForDatabase(_ url: URL) {
         do {
-            self.soundFilename = "audio.\(url.pathExtension)"
+            self.soundFileName = "audio.\(url.pathExtension)"
             let audioFile = try Data(contentsOf: url, options: .uncached)
-            self.soundParseFile = PFFileObject(name: self.soundFilename, data: audioFile)
-            if soundThatIsBeingEdited != nil {
-                saveAudioFile()
-                
-            } else {
-                self.performSegue(withIdentifier: "showSoundInfo", sender: self)
-                self.showUploadSoundButton()
-            }
+            self.soundParseFile = PFFileObject(name: self.soundFileName, data: audioFile)
+            //self.saveAudioFile()
             
         } catch {
             UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
         }
     }
     
-    func saveAudioFile() {
+    /*func saveAudioFile() {
         self.startAnimating()
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
@@ -150,5 +159,5 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                 }
             }
         }
-    }
+    }*/
 }

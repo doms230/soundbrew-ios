@@ -116,6 +116,7 @@ PODS:
   - TwitterCore (3.2.0)
   - TwitterKit (3.4.2):
     - TwitterCore (>= 3.2.0)
+  - Zip (1.1.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -134,6 +135,7 @@ DEPENDENCIES:
   - SnapSDK
   - SwiftyJSON
   - TwitterKit
+  - Zip
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -167,6 +169,7 @@ SPEC REPOS:
     - SwiftyJSON
     - TwitterCore
     - TwitterKit
+    - Zip
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
@@ -199,7 +202,8 @@ SPEC CHECKSUMS:
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
+  Zip: 8877eede3dda76bcac281225c20e71c25270774c
 
-PODFILE CHECKSUM: e9005acb9732a35c7515a32040aee4f3ffff8b7d
+PODFILE CHECKSUM: 65a5730e7e49329681d0a7d6807de3a01c2ba4ce
 
 COCOAPODS: 1.7.1

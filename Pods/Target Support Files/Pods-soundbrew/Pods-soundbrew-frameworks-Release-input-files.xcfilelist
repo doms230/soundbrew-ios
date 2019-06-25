@@ -23,4 +23,5 @@ ${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework
 ${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework
 ${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework
 ${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework
+${BUILT_PRODUCTS_DIR}/Zip/Zip.framework
 ${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework

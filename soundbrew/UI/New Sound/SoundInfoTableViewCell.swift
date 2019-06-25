@@ -51,7 +51,6 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Processing Audio..."
         label.textColor = color.black()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         return label

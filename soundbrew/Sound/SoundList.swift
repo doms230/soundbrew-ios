@@ -212,10 +212,10 @@ class SoundList: NSObject, PlayerDelegate {
                         self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
                     }))
                     
-                    menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
+                    /*menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
                         self.selectedSound = sound
                         self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
-                    }))
+                    }))*/
                     
                 } else {
                     menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
