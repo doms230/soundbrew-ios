@@ -119,7 +119,7 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(dividerLine)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
+                make.height.width.equalTo(80)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
@@ -136,20 +136,21 @@ class SoundListTableViewCell: UITableViewCell {
                 make.right.equalTo(menuButton)
             }
             
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
-            }
-            
             soundArtist.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTitle.snp.bottom)
+                make.centerY.equalTo(soundArtImage)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            soundTitle.snp.makeConstraints { (make) -> Void in
+                //make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
+                make.bottom.equalTo(soundArtist.snp.top).offset(-(uiElement.elementOffset))
+            }
+            
             soundPlaysImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
+                make.height.width.equalTo(20)
                 make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(soundTitle)
             }

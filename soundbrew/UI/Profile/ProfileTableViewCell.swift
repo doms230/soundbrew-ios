@@ -104,9 +104,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var newSoundButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Upload Sound", for: .normal)
-        button.backgroundColor = color.green()
-        button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = .lightGray
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
@@ -170,7 +168,6 @@ class ProfileTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         switch reuseIdentifier {
         case "profileReuse":
             self.addSubview(profileImage)
@@ -179,7 +176,6 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(bio)
             self.addSubview(website)
             self.addSubview(actionButton)
-            self.addSubview(newSoundButton)
             
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
@@ -190,19 +186,10 @@ class ProfileTableViewCell: UITableViewCell {
             
             actionButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(30)
-                make.width.equalTo(125)
                 make.centerY.equalTo(profileImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
             }
-            
-            /*newSoundButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
-                make.width.equalTo(125)
-                make.centerY.equalTo(profileImage)
-                make.left.equalTo(actionButton)
-                make.right.equalTo(actionButton)
-            }*/
             
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
@@ -229,33 +216,7 @@ class ProfileTableViewCell: UITableViewCell {
             }
     
             break
-            
-        case "searchProfileReuse":
-            self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(username)
-            
-            profileImage.layer.cornerRadius = 25
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            username.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            break
-            
+                    
         case "searchTagViewReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)

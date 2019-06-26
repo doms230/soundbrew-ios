@@ -20,10 +20,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var profileArtist: Artist?
     
     var soundList: SoundList!
+    var isCurrentUserProfile = false
+    var soundType = "uploads"
     var profileSounds = [Sound]()
-    
     var selectedIndex = 0
-    
     var currentUser: PFUser?
 
     override func viewDidLoad() {
@@ -43,6 +43,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             setUpNavigationButtons(userId)
             
         } else if let currentUser = self.currentUser {
+            isCurrentUserProfile = true
             loadUserInfoFromCloud(currentUser.objectId!)
             setUpNavigationButtons(currentUser.objectId!)
             
@@ -84,8 +85,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 tags = soundListTags
             }
             
-            let soundType = soundList.soundType!
-            soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: self.profileArtist?.objectId, tags: tags, searchText: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: soundList.soundType, userId: self.profileArtist?.objectId, tags: tags, searchText: nil)
         }
     }
     
@@ -151,8 +151,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let profileReuse = "profileReuse"
     let listTypeHeaderReuse = "listTypeHeaderReuse"
     let noSoundsReuse = "noSoundsReuse"
-    let filterSoundsReuse = "filterSoundsReuse"
     let actionProfileReuse = "actionProfileReuse"
+    let uploadSoundReuse = "uploadSoundReuse"
     
     func setUpTableView() {
         tableView.delegate = self
@@ -162,7 +162,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: listTypeHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadSoundReuse)
         self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = .white 
         self.view.addSubview(tableView)
@@ -176,11 +176,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        if isCurrentUserProfile && soundType == "uploads" {
+            return 4
+        }
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 3 && soundList.sounds.count != 0 {
+        var soundListSection = 2
+        if isCurrentUserProfile && soundType == "uploads" {
+            soundListSection = 3
+        }
+        
+        if section == soundListSection && soundList.sounds.count != 0 {
             return soundList.sounds.count
         }
         
@@ -198,123 +206,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
-            
-            cell.selectionStyle = .none
-            
-            if let artist = self.profileArtist {
-                if let artistImage = artist.image {
-                    cell.profileImage.kf.setImage(with: URL(string: artistImage))
-                }
-                
-                if let name = artist.name {
-                    cell.displayNameLabel.text = name
-                }
-                
-                if let city = artist.city {
-                    cell.city.text = city
-                }
-                
-                if let bio = artist.bio {
-                    cell.bio.text = bio 
-                }
-                
-                if let website = artist.website {
-                    cell.website.setTitle(website, for: .normal)
-                    cell.website.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
-                }
-            }
-            
-            if let currentUser = self.currentUser {
-                cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
-                
-                if currentUser.objectId == profileArtist?.objectId {
-                    cell.actionButton.setTitle("Edit Profile", for: .normal)
-                    cell.actionButton.backgroundColor = .white
-                    cell.actionButton.layer.borderWidth = 1
-                    cell.actionButton.layer.borderColor = color.darkGray().cgColor
-                    cell.actionButton.setTitleColor(color.black(), for: .normal)
-                    
-                    cell.newSoundButton.addTarget(self, action: #selector(didPressNewSoundButton(_:)), for: .touchUpInside)
-                    cell.newSoundButton.isHidden = false
-                    
-                } else {
-                    cell.newSoundButton.isHidden = true
-                    
-                    if let isFollowedByCurrentUser = profileArtist!.isFollowedByCurrentUser {
-                        if isFollowedByCurrentUser {
-                            cell.actionButton.setTitle("Following", for: .normal)
-                            cell.actionButton.backgroundColor = color.darkGray()
-                            cell.actionButton.setTitleColor(color.black(), for: .normal)
-                            
-                        } else {
-                            cell.actionButton.setTitle("Follow", for: .normal)
-                            cell.actionButton.backgroundColor = color.blue()
-                            cell.actionButton.setTitleColor(.white, for: .normal)
-                        }
-                        
-                    } else {
-                        cell.actionButton.setTitle("Follow", for: .normal)
-                        cell.actionButton.backgroundColor = color.blue()
-                        cell.actionButton.setTitleColor(.white, for: .normal)
-                    }
-                    
-                    cell.actionButton.layer.borderWidth = 0
-                }
-                
-            } else {
-                cell.actionButton.isHidden = true
-                cell.newSoundButton.isHidden = true
-            }
-            
-            return cell
+            return profileInfoReuse()
             
         case 1:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: listTypeHeaderReuse) as! ProfileTableViewCell
-            cell.selectionStyle = .none
-           
-            cell.firstListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-            cell.firstListType.tag = 0
-            
-            cell.secondListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-            cell.secondListType.tag = 1
-            
-            if soundList.soundType == "uploads" {
-                cell.firstListType.setTitleColor(color.black(), for: .normal)
-                cell.secondListType.setTitleColor(color.darkGray(), for: .normal)
-                
-            } else {
-                cell.firstListType.setTitleColor(color.darkGray(), for: .normal)
-                cell.secondListType.setTitleColor(color.black(), for: .normal)
-            }
-            
-            return cell
+            return listHeadersReuse()
             
         case 2:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
-            return soundList.soundFilterOptions(indexPath, cell: cell)
-            
-        case 3:
-            if soundList.sounds.count == 0 {
-                let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-                
-                if soundList.soundType == "uploads" {
-                    cell.headerTitle.text = "No releases yet."
-                    
-                } else {
-                    cell.headerTitle.text = "Nothing in their collection yet."
-                }
-                
-                return cell
-                
+            if isCurrentUserProfile && soundType == "uploads" {
+                return newSoundReuse()
             } else {
-                let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
-                profileSounds = soundList.sounds
-                return soundList.soundCell(indexPath, cell: cell)
+                return soundsReuse(indexPath)
             }
             
         default:
-            return self.tableView.dequeueReusableCell(withIdentifier: listTypeHeaderReuse) as! SoundListTableViewCell
+            return soundsReuse(indexPath)
         }
     }
     
@@ -330,6 +235,114 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    //mark: sounds
+    func soundsReuse(_ indexPath: IndexPath) -> SoundListTableViewCell {
+        if soundList.sounds.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            
+            if soundList.soundType == "uploads" {
+                cell.headerTitle.text = "No releases yet."
+                
+            } else {
+                cell.headerTitle.text = "Nothing in their collection yet."
+            }
+            
+            return cell
+            
+        } else {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+            profileSounds = soundList.sounds
+            return soundList.soundCell(indexPath, cell: cell) as! SoundListTableViewCell
+        }
+    }
+    
+    func newSoundReuse() -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+        cell.soundArtist.text = "Upload Sound"
+        cell.soundArtImage.backgroundColor = color.darkGray()
+        cell.soundArtImage.image = UIImage(named: "plus")
+        cell.menuButton.isHidden = true
+        cell.soundTitle.isHidden = true
+        cell.soundPlays.isHidden = true
+        cell.soundPlaysImage.isHidden = true
+        return cell
+    }
+    
+    //mark: profileInfo
+    func profileInfoReuse() -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
+        
+        cell.selectionStyle = .none
+        
+        if let artist = self.profileArtist {
+            if let artistImage = artist.image {
+                cell.profileImage.kf.setImage(with: URL(string: artistImage))
+            }
+            
+            if let name = artist.name {
+                cell.displayNameLabel.text = name
+            }
+            
+            if let city = artist.city {
+                cell.city.text = city
+            }
+            
+            if let bio = artist.bio {
+                cell.bio.text = bio
+            }
+            
+            if let website = artist.website {
+                cell.website.setTitle(website, for: .normal)
+                cell.website.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
+            }
+        }
+        
+        if let currentUser = self.currentUser {
+            cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
+            
+            if currentUser.objectId == profileArtist?.objectId {
+                
+                cell.actionButton.setTitle("Edit Profile", for: .normal)
+                cell.actionButton.backgroundColor = .white
+                cell.actionButton.layer.borderWidth = 1
+                cell.actionButton.layer.borderColor = color.darkGray().cgColor
+                cell.actionButton.setTitleColor(color.black(), for: .normal)
+                
+                cell.newSoundButton.addTarget(self, action: #selector(didPressNewSoundButton(_:)), for: .touchUpInside)
+                cell.newSoundButton.isHidden = false
+                
+            } else {
+                cell.newSoundButton.isHidden = true
+                
+                if let isFollowedByCurrentUser = profileArtist!.isFollowedByCurrentUser {
+                    if isFollowedByCurrentUser {
+                        cell.actionButton.setTitle("Following", for: .normal)
+                        cell.actionButton.backgroundColor = color.darkGray()
+                        cell.actionButton.setTitleColor(color.black(), for: .normal)
+                        
+                    } else {
+                        cell.actionButton.setTitle("Follow", for: .normal)
+                        cell.actionButton.backgroundColor = color.blue()
+                        cell.actionButton.setTitleColor(.white, for: .normal)
+                    }
+                    
+                } else {
+                    cell.actionButton.setTitle("Follow", for: .normal)
+                    cell.actionButton.backgroundColor = color.blue()
+                    cell.actionButton.setTitleColor(.white, for: .normal)
+                }
+                
+                cell.actionButton.layer.borderWidth = 0
+            }
+            
+        } else {
+            cell.actionButton.isHidden = true
+            cell.newSoundButton.isHidden = true
+        }
+        
+        return cell
+    }
+    
     //mark: button actions
     func setUpNavigationButtons(_ userId: String) {
         if let currentUser = self.currentUser {
@@ -342,6 +355,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
         }
+        
+        if profileArtist == nil {
+            let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
+            self.navigationItem.leftBarButtonItem = dismissButton
+        }
+    }
+    
+    @objc func didPressDismissButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressNewSoundButton(_ sender: UIButton) {
@@ -393,15 +415,39 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if sender.tag == 0 {
             soundList.soundType = "uploads"
-            
+            soundType = "uploads"
         } else {
             soundList.soundType = "likes"
+            soundType = "likes"
         }
         
         if currentSoundType != soundList.soundType {
             self.tableView.reloadData()
             soundList.determineTypeOfSoundToLoad(soundList.soundType)
         }
+    }
+    
+    //mark: headers
+    func listHeadersReuse() -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: listTypeHeaderReuse) as! ProfileTableViewCell
+        cell.selectionStyle = .none
+        
+        cell.firstListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+        cell.firstListType.tag = 0
+        
+        cell.secondListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
+        cell.secondListType.tag = 1
+        
+        if soundList.soundType == "uploads" {
+            cell.firstListType.setTitleColor(color.black(), for: .normal)
+            cell.secondListType.setTitleColor(color.darkGray(), for: .normal)
+            
+        } else {
+            cell.firstListType.setTitleColor(color.darkGray(), for: .normal)
+            cell.secondListType.setTitleColor(color.black(), for: .normal)
+        }
+        
+        return cell
     }
     
     //Mark: Data

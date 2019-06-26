@@ -172,7 +172,7 @@ class SoundList: NSObject, PlayerDelegate {
             cell.menuButton.tag = indexPath.row
             
             cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
-        
+            
             cell.soundTitle.text = sound.title
             
             if let plays = sound.plays {
@@ -284,7 +284,7 @@ class SoundList: NSObject, PlayerDelegate {
         
         self.tableView?.reloadData()
         
-        determineIfRateTheAppPopUpShouldShow()
+        //determineIfRateTheAppPopUpShouldShow()
     }
     
     func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {

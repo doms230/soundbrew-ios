@@ -35,27 +35,26 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: done Button
-    lazy var doneButton: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        button.setTitleColor(color.blue(), for: .normal)
-        button.setTitle("Done", for: .normal)
-        return button
-    }()
-    
     @objc func didPressChooseTagsDoneButton(_ sender: UIBarButtonItem) {
         handleTagsForDismissal()
+    }
+    
+    //MARK: Profile Butotn
+    @objc func didPressProfileButton(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
     //MARK: SearchBar
     var searchIsActive = false
     
     lazy var searchBar: UISearchBar = {
-        var minusInt: CGFloat = 100
-        if self.tagType != nil && self.tagType != "more" {
-            minusInt = 10
+        var minusWidth: CGFloat =  10
+        var searchBarX: CGFloat = 0
+        if self.tagType == nil || self.tagType == "more" {
+            minusWidth = 150
+            searchBarX = 50
         }
-        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - minusInt, height: 10))
+        let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
         
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
         searchBar.placeholder = "Search Tags"
@@ -69,21 +68,25 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         if let tagType = self.tagType {
             searchBar.placeholder = "Search \(tagType.capitalized) Tags"
-            
         } else {
             searchBar.placeholder = "Search \(featureTagTitles[selectedFeatureTagTypeIndex].capitalized) Tags"
             title = "Create"
         }
         
-        let leftNavBarButton = UIBarButtonItem(customView: searchBar)
-        self.navigationItem.leftBarButtonItem = leftNavBarButton
+        let searchBarItem = UIBarButtonItem(customView: searchBar)
+        if tagType == nil {
+            let profileButton = UIBarButtonItem(image: UIImage(named: "profile_nav"), style: .plain, target: self, action: #selector(self.didPressProfileButton(_:)))
+            self.navigationItem.leftBarButtonItems = [profileButton, searchBarItem]
+            
+        } else {
+            self.navigationItem.leftBarButtonItem = searchBarItem
+        }
         
         if tagType == nil || tagType == "more" {
             let doneButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
-        }
-        
-        if tagType != nil && tagType != "more" {
+            
+        } else {
             searchBar.setShowsCancelButton(true, animated: true)
         }
     }
