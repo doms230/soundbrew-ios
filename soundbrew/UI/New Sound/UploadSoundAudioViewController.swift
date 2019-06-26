@@ -12,7 +12,7 @@ import MobileCoreServices
 import SnapKit
 import NVActivityIndicatorView
 //import Compression
-import Zip
+//import Zip
 
 class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable {
     

@@ -20,7 +20,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpNavigationBar()
-        loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
+        loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -56,9 +56,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             minusInt = 10
         }
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - minusInt, height: 10))
-        searchBar.placeholder = "Search Tags"
         
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
+        searchBar.placeholder = "Search Tags"
         searchTextField?.backgroundColor = color.lightGray()
         searchBar.delegate = self
         return searchBar
@@ -66,8 +66,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func setUpNavigationBar() {
         var title = "Done"
-        if tagType == nil {
-            searchBar.placeholder = "Search or Create Tags"
+        
+        if let tagType = self.tagType {
+            searchBar.placeholder = "Search \(tagType.capitalized) Tags"
+            
+        } else {
+            searchBar.placeholder = "Search \(featureTagTitles[selectedFeatureTagTypeIndex].capitalized) Tags"
             title = "Create"
         }
         
@@ -87,11 +91,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text!.isEmpty {
             searchIsActive = false
-            loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: nil)
+            loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
             
         } else {
             searchIsActive = true
-            loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: searchText)
+            loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: searchText)
         }
     }
     
@@ -197,10 +201,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var tags = [Tag]()
     var filteredTags = [Tag]()
-    var featureTagTitles = ["genre", "mood", "activity", "similar artist", "city", "all"]
+    var featureTagTitles = ["genre", "mood", "activity", "artist", "city", "all"]
     var featureTagScrollview: UIScrollView!
     var xPositionForFeatureTags = UIElement().leftOffset
-    var selectedFeatureType = 0
+    var selectedFeatureTagTypeIndex = 0
     
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagsReuse) as! SoundListTableViewCell
@@ -251,8 +255,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     @objc func didPressFeatureTagButton(_ sender: UIButton) {
-        if sender.tag != selectedFeatureType {
-            let currentSelectedButton = featureTagScrollview.subviews[selectedFeatureType] as! UIButton
+        if sender.tag != selectedFeatureTagTypeIndex {
+            let currentSelectedButton = featureTagScrollview.subviews[selectedFeatureTagTypeIndex] as! UIButton
             currentSelectedButton.backgroundColor = color.darkGray()
             currentSelectedButton.setTitleColor(color.black(), for: .normal)
             
@@ -260,13 +264,17 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             newSelectedButton.backgroundColor = color.blue()
             newSelectedButton.setTitleColor(.white, for: .normal)
             
-            selectedFeatureType = sender.tag
+            selectedFeatureTagTypeIndex = sender.tag
+            self.searchBar.placeholder = "Search \(featureTagTitles[selectedFeatureTagTypeIndex].capitalized) Tags"
+            self.searchBar.text = ""
+            self.searchBar.resignFirstResponder()
+            
             if sender.tag == 6 {
                 self.filteredTags = self.tags
                 
             } else {
                 self.filteredTags.removeAll()
-                loadTags(tagType, selectedFeatureType: selectedFeatureType, searchText: searchBar.text)
+                loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: searchBar.text)
             }
         }
     }
@@ -438,10 +446,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         if let type = type {
             if type == "more" {
-                var tagTypesNotToLoad = self.featureTagTitles
-                tagTypesNotToLoad.append("city")
-                query.whereKey("type", notContainedIn: tagTypesNotToLoad)
-                
+                query.whereKey("type", notContainedIn: self.featureTagTitles)
             } else {
                 query.whereKey("type", equalTo: type)
             }

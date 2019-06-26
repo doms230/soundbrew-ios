@@ -51,6 +51,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if let userId = PFUser.current()?.objectId {
                 loadCurrentUserCity(userId)
+                loadArtistTag()
             }
         }
         
@@ -111,19 +112,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        
+        processAudioForDatabase(nil)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
         if soundThatIsBeingEdited == nil {
             return 4
         }
-        
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 2 {
-            return 5
+            return 4
         } else if section == 3 {
             return 2
         }
@@ -144,9 +146,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.progressSliderTitle = cell.titleLabel
                 self.progressSlider = cell.progressSlider
                 tableView.separatorStyle = .none
-                if !didStartCompressingAudio {
+                /*if !didStartCompressingAudio {
                     compressAudio()
-                }
+                }*/
                 break
                 
             case 1:
@@ -187,10 +189,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 3:
-                self.tagType = "similar artist"
-                break
-                
-            case 4:
                 self.tagType = "more"
                 self.tagsToUpdateInChooseTagsViewController = moreTags
                 break
@@ -241,7 +239,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             tag = 1
         }
         
-        cell.soundTagLabel.text = "Share To \(socialTitle!)"
+        cell.soundTagLabel.text = "Share link To \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
         cell.socialSwitch.tag = tag
         tableView.separatorStyle = .none
@@ -399,7 +397,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var activityTag: Tag?
     var moreTags: Array<Tag>?
     var cityTag: Tag?
-    var similarArtistTag: Tag?
+    var artistTag: Tag?
     var tagsToUpdateInChooseTagsViewController: Array<Tag>?
     
     func tagCell(_ indexPath: IndexPath, tableView: UITableView) -> SoundInfoTableViewCell {
@@ -419,10 +417,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             tableView.separatorStyle = .none
             break
         case 3:
-            determineTag(cell, soundTagLabel: "Similar Tag", tag: self.similarArtistTag)
-            tableView.separatorStyle = .none
-            break
-        case 4:
             cell.soundTagLabel.text = "More Tags"
             if let moreTags = self.moreTags {
                 if moreTags.count == 1 {
@@ -470,9 +464,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 case "activity":
                     self.activityTag = tag[0]
                     break
-                case "similar artist":
-                    self.similarArtistTag = tag[0]
-                    break
                 default:
                     self.moreTags = chosenTags
                     break
@@ -505,8 +496,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             tags.append(cityTag)
         }
         
-        if let similarArtistTag = self.similarArtistTag {
-            tags.append(similarArtistTag)
+        if let artistTag = self.artistTag{
+            tags.append(artistTag)
         }
         
         return tags
@@ -567,20 +558,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func processAudioForDatabase(_ zipFilePath: TemporaryFile) {
+    func processAudioForDatabase(_ zipFilePath: TemporaryFile?) {
         do {
-            self.soundFileExtension = "\(zipFilePath.fileURL.pathExtension)"
-            let audioFile = try Data(contentsOf: zipFilePath.fileURL, options: .uncached)
-            self.soundParseFile = PFFileObject(name: "audio.zip", data: audioFile)
+            //self.soundFileExtension = "\(zipFilePath.fileURL.pathExtension)"
+            let audioFile = try Data(contentsOf: soundFileURL, options: .uncached)
+            self.soundParseFile = PFFileObject(name: "audio.\(self.soundFileURL.lastPathComponent)", data: audioFile)
             self.saveAudioFile()
-            DispatchQueue.main.async {
+            /*DispatchQueue.main.async {
                 do {
                     try zipFilePath.deleteDirectory()
                     
                 } catch let error {
                     print("error deleting temp file: \(error)")
                 }
-            }
+            }*/
             
         } catch {
             //UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
@@ -686,9 +677,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let newSound = PFObject(className: "Post")
         newSound["userId"] = PFUser.current()!.objectId!
         newSound["title"] = soundTitle.text
-        //newSound["audioFile"] = soundParseFile
-        newSound["audioFileCompressed"] = soundParseFile
-        newSound["fileExtension"] = soundFileExtension
+        newSound["audioFile"] = soundParseFile
+        //newSound["audioFileCompressed"] = soundParseFile
+        //newSound["fileExtension"] = soundFileExtension
         newSound["isRemoved"] = true 
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
@@ -771,6 +762,22 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    func loadArtistTag() {
+        if let artistUsername = PFUser.current()?.username {
+            let query = PFQuery(className: "Tag")
+            query.whereKey("tag", equalTo: artistUsername)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    self.artistTag = Tag(objectId: object?.objectId, name: object!["tag"] as? String, count: 0, isSelected: false, type: "artist", image: nil)
+                    
+                } else {
+                    self.artistTag = Tag(objectId: nil, name: artistUsername, count: 0, isSelected: false, type: "artist", image: nil)
+                }
+            }
+        }
+    }
+    
     func newSoundObject(_ object: PFObject) -> Sound {
         let title = object["title"] as! String
         let art = object["songArt"] as! PFFileObject
@@ -804,7 +811,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if moodTag == nil {
                 uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
                 
-            } else if similarArtistTag == nil {
+            } else if artistTag == nil {
                 uiElement.showAlert("Similar Artist is Required", message: "Tap the 'add Similar artist tag' button to choose", target: self)
                 
             } else {
