@@ -468,6 +468,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.moreTags = chosenTags
                     break
                 }
+                
+            } else if tagType == "more" {
+                self.moreTags = nil 
             }
         }
         

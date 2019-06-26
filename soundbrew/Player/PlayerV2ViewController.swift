@@ -571,9 +571,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                     object.incrementKey("likes")
                     
                 } else if decrementLikes {
-                    object.incrementKey("likes", byAmount: -1)
+                    if let likes = object["likes"] as? Int {
+                        if likes > 0 {
+                            object.incrementKey("likes", byAmount: -1)
+                        }
+                    }
                 }
-                
                 object.saveEventually()
             }
         }
