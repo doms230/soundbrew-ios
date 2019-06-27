@@ -21,7 +21,6 @@
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
 		F24F2B7E228121FB006D1CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */; };
 		F24F2B8022812685006D1CB7 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */; };
-		F24F2B8222812EE3006D1CB7 /* StreamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B8122812EE3006D1CB7 /* StreamsViewController.swift */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
 		F2689871215AEF9000C21663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2689870215AEF9000C21663 /* Assets.xcassets */; };
@@ -140,7 +139,6 @@
 		F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
-		F24F2B8122812EE3006D1CB7 /* StreamsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamsViewController.swift; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986E215AEF8F00C21663 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -400,7 +398,6 @@
 				F28A9861222FA5F200C96EED /* EditBioViewController.swift */,
 				F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */,
 				F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */,
-				F24F2B8122812EE3006D1CB7 /* StreamsViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -736,7 +733,6 @@
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
-				F24F2B8222812EE3006D1CB7 /* StreamsViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */,

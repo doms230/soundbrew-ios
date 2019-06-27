@@ -37,7 +37,6 @@ class MiniPlayerView: UIButton {
     
     lazy var songArt: UIImageView = {
         let image = UIImageView()
-       // image.contentMode = .scaleAspe
         image.backgroundColor = .white
         image.image = UIImage(named: "appy")
         return image

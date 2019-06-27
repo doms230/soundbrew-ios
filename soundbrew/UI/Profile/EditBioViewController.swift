@@ -18,19 +18,14 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
         
         setUpDoneButton()
         
-        if let bio = self.bio {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(keyboardWillShow),
-                name: UIResponder.keyboardWillShowNotification,
-                object: nil
-            )
-            
-            setupBioView(bio)
-            
-        } else if let email = self.email {
-            setupEmailView(email)
-        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        setupBioView()
     }
     
     //done
@@ -49,7 +44,6 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     //bio
     var bio: String?
-    
     lazy var bioCount: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
@@ -59,14 +53,16 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     lazy var inputBio: UITextView = {
         let label = UITextView()
-        label.text = "Add Bio"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = Color().black()
         return label
     }()
     
-    func setupBioView(_ text: String) {
-        inputBio.text = text
+    func setupBioView() {
+        if let bioText = self.bio {
+            inputBio.text = bioText
+        }
+        
         inputBio.delegate = self
         self.view.addSubview(inputBio)
         inputBio.snp.makeConstraints { (make) -> Void in
@@ -101,6 +97,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
         
         return textLength <= 150
     }
+    
     var keyboardHeight: CGFloat!
     
     @objc func keyboardWillShow(_ notification: Notification) {
@@ -109,30 +106,5 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
             let keyboardHeight = keyboardRectangle.height
             setupBioCount(Int(keyboardHeight))
         }
-    }
-    
-    //email
-    var email: String?
-    
-    lazy var emailInput: UITextField = {
-        let textField = UITextField()
-        textField.font = UIFont(name: uiElement.mainFont, size: 17)
-        textField.backgroundColor = .white
-        textField.borderStyle = .roundedRect
-        textField.clearButtonMode = .whileEditing
-        textField.keyboardType = .emailAddress
-        textField.placeholder = "Email"
-        return textField
-    }()
-    
-    func setupEmailView(_ email: String) {
-        emailInput.text = email
-        self.view.addSubview(emailInput)
-        emailInput.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        emailInput.becomeFirstResponder()
     }
 }

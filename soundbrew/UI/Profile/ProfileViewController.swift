@@ -54,7 +54,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    
     lazy var signupButton: UIButton = {
         let image = UIButton()
         image.setTitle("Sign up", for: .normal)
@@ -135,7 +134,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: profileArtist?.objectId, tags: nil, searchText: nil)
-        setUpMiniPlayer()
+        
+        let player = Player.sharedInstance
+        if player.player != nil {
+            setUpMiniPlayer()
+            
+        } else {
+            setUpTableView(nil)
+        }
         
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
             checkFollowStatus(self.currentUser!)
@@ -151,7 +157,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let actionProfileReuse = "actionProfileReuse"
     let uploadSoundReuse = "uploadSoundReuse"
     
-    func setUpTableView(_ miniPlayer: UIView) {
+    func setUpTableView(_ miniPlayer: UIView?) {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
@@ -161,13 +167,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadSoundReuse)
         self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = .white 
-        self.view.addSubview(tableView)
-        self.tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(miniPlayer.snp.top)
+        self.tableView.backgroundColor = .white
+        
+        if let miniPlayer = miniPlayer {
+            self.view.addSubview(tableView)
+            self.tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(miniPlayer.snp.top)
+            }
+            
+        } else {
+            self.tableView.frame = view.bounds
+            self.view.addSubview(tableView)
         }
     }
     
@@ -199,12 +212,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else if indexPath.section == 3 {
                 if let player = soundList.player {
                     player.didSelectSoundAt(indexPath.row)
+                    if self.miniPlayerView == nil {
+                        self.setUpMiniPlayer()
+                    }
                 }
             }
             
         } else {
             if let player = soundList.player {
                 player.didSelectSoundAt(indexPath.row)
+                if self.miniPlayerView == nil {
+                    self.setUpMiniPlayer()
+                }
             }
         }
     }
@@ -242,6 +261,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: miniPlayer
+    var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
         let miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
         self.view.addSubview(miniPlayerView)
@@ -255,6 +275,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
+        
         setUpTableView(miniPlayerView)
     }
     

@@ -23,14 +23,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         return label
     }()
     
-    lazy var subTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.text = "A verified email is required to get paid from your streams."
-        label.numberOfLines = 0
-        return label
-    }()
-    
     lazy var emailText: UITextField = {
         let label = UITextField()
         label.placeholder = "Email"
@@ -64,7 +56,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
-        self.view.addSubview(subTitleLabel)
         self.view.addSubview(nextButton)
         nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         
@@ -74,14 +65,8 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        subTitleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         emailText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(subTitleLabel.snp.bottom).offset(10)
+            make.top.equalTo(titleLabel.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }

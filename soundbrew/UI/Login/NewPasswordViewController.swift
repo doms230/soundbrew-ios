@@ -20,7 +20,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
-        label.text = "Choose A Password"
+        label.text = "Choose a Password"
         label.numberOfLines = 0
         return label
     }()

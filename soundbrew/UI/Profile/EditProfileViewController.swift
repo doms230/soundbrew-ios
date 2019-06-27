@@ -350,9 +350,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         cell.editBioTitle.text = "Bio"
         if let bio = artist?.bio {
-            if !bio.isEmpty {
-                cell.editBioText.text = bio
-            }
+            cell.editBioText.text = bio
         }
         
         return cell
@@ -532,6 +530,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func validateWebsite() -> Bool {
         if !websiteText.text!.isEmpty {
+            if !websiteText.text!.starts(with: "https") || !websiteText.text!.starts(with: "http") {
+                websiteText.text = "https://\(websiteText.text!)"
+            }
+            
             if !UIApplication.shared.canOpenURL(URL(string: websiteText.text!)!) {
                 self.uiElement.showTextFieldErrorMessage(self.websiteText, text: "Invalid url.")
                 return false

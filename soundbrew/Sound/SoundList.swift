@@ -209,10 +209,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func updateSounds() {
         self.isUpdatingData = false
-         if soundType == "follows" && self.sounds.count == 0 {
-            showNoResultsLabel()
-            
-        } else if self.player != nil {
+        if self.player != nil {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             self.tableView?.isHidden = false
             target.view.bringSubviewToFront(tableView!)
@@ -431,6 +428,7 @@ class SoundList: NSObject, PlayerDelegate {
                     
                 } else {
                     self.thereIsMoreDataToLoad = false
+                    print("no colection 1")
                 }
                 
             } else {

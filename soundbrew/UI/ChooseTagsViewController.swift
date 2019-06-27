@@ -35,6 +35,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         handleTagsForDismissal()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        if chosenTags.count != 0 && self.tableView != nil {
+            resetScrollviewAndAddChosenTagsBack()
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showPlaylist" {
             let backItem = UIBarButtonItem()
@@ -67,9 +73,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     lazy var searchBar: UISearchBar = {
         var minusWidth: CGFloat =  10
         var searchBarX: CGFloat = 0
-        if self.tagType == nil || self.tagType == "more" {
+        if self.tagType == nil {
             minusWidth = 150
             searchBarX = 50
+            
+        } else if self.tagType == "more" {
+            minusWidth = 100
         }
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
         let searchTextField = searchBar.value(forKey: "searchField") as? UITextField
@@ -444,20 +453,23 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func removeChosenTag(_ sender: UIButton) {
         if chosenTags.count != 0 {
             self.chosenTags.remove(at: sender.tag)
-
-            //reset scrollview
-            self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
-            xPositionForChosenTags = UIElement().leftOffset
-            
-            //add back chosen tags to chosen tag scrollview
-            for i in 0..<chosenTags.count {
-                self.addChosenTagButton(chosenTags[i].name, tag: i)
-            }
-            
-            //show tags label if no more chosen tags
-            if chosenTags.count == 0 {
-                addChooseTagsLabel()
-            }
+            resetScrollviewAndAddChosenTagsBack()
+        }
+    }
+    
+    func resetScrollviewAndAddChosenTagsBack() {
+        //reset scrollview
+        self.chosenTagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
+        xPositionForChosenTags = UIElement().leftOffset
+        
+        //add back chosen tags to chosen tag scrollview
+        for i in 0..<chosenTags.count {
+            self.addChosenTagButton(chosenTags[i].name, tag: i)
+        }
+        
+        //show tags label if no more chosen tags
+        if chosenTags.count == 0 {
+            addChooseTagsLabel()
         }
     }
     

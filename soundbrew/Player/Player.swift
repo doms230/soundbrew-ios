@@ -327,8 +327,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         didRecordStream = false
         secondsPlayedTimer.invalidate()
         secondsPlayed = 0.0
-        //ad.secondsPlayedSinceLastAd = ad.secondsPlayedSinceLastAd + Int(player!.duration)
-        //UIElement().setUserDefault("secondsPlayedSinceLastAd", value: ad.secondsPlayedSinceLastAd)
     }
     
     @objc func UpdateTimer(_ timer: Timer) {

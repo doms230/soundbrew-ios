@@ -27,10 +27,17 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         showSounds()
-        setUpMiniPlayer()
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        let player = Player.sharedInstance
+        if player.player != nil {
+            setUpMiniPlayer()
+            
+        } else {
+            setUpTableView(nil)
+        }
+        
         if soundList != nil {
             var tags: Array<Tag>?
             if selectedTagsForFiltering.count != 0 {
@@ -79,22 +86,27 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     let soundReuse = "soundReuse"
     let tagsReuse = "tagsReuse"
     
-    func setUpTableView(_ miniPlayer: UIView) {
+    func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
         tableView.backgroundColor = color.lightGray()   
         self.tableView.separatorStyle = .none
-        self.view.addSubview(tableView)
-        self.tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(miniPlayer.snp.top)
-        }
-        //self.tableView.frame = view.bounds
         
+        if let miniPlayer = miniPlayer {
+            self.view.addSubview(tableView)
+            self.tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(miniPlayer.snp.top)
+            }
+            
+        } else {
+            self.tableView.frame = view.bounds
+            self.view.addSubview(tableView)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -148,6 +160,9 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     func didSelectRowAt(_ row: Int) {
         if let player = soundList.player {
             player.didSelectSoundAt(row)
+            if miniPlayerView == nil {
+                self.setUpMiniPlayer()
+            }
         }
     }
     
@@ -166,20 +181,26 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //mark: miniPlayer
+    var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
-        let miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        self.view.addSubview(miniPlayerView)
+        miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        self.view.addSubview(miniPlayerView!)
         let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
         slide.direction = .up
-        miniPlayerView.addGestureRecognizer(slide)
-        miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-        miniPlayerView.snp.makeConstraints { (make) -> Void in
+        miniPlayerView!.addGestureRecognizer(slide)
+        miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+        miniPlayerView!.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(90)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view)
         }
-        setUpTableView(miniPlayerView)
+        
+        /*if miniPlayerView.player?.player == nil {
+            miniPlayerView.isHidden = true
+        }*/
+        
+        setUpTableView(miniPlayerView!)
     }
     
     @objc func miniPlayerWasSwiped() {
