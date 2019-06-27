@@ -11,8 +11,9 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
+import DeckTransition
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -53,6 +54,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    
     lazy var signupButton: UIButton = {
         let image = UIButton()
         image.setTitle("Sign up", for: .normal)
@@ -80,12 +82,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidAppear(_ animated: Bool) {
         if soundList != nil {
-            var tags: Array<Tag>?
-            if let soundListTags = soundList.selectedTagsForFiltering {
-                tags = soundListTags
-            }
-            
-            soundList = SoundList(target: self, tableView: tableView, soundType: soundList.soundType, userId: self.profileArtist?.objectId, tags: tags, searchText: nil)
+            executeTableViewSoundListFollowStatus()
         }
     }
     
@@ -138,7 +135,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: profileArtist?.objectId, tags: nil, searchText: nil)
-        self.setUpTableView()
+        setUpMiniPlayer()
         
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
             checkFollowStatus(self.currentUser!)
@@ -154,7 +151,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let actionProfileReuse = "actionProfileReuse"
     let uploadSoundReuse = "uploadSoundReuse"
     
-    func setUpTableView() {
+    func setUpTableView(_ miniPlayer: UIView) {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
@@ -166,12 +163,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = .white 
         self.view.addSubview(tableView)
-        
-        tableView.snp.makeConstraints { (make) -> Void in
+        self.tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view)
-            make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(miniPlayer.snp.top)
         }
     }
     
@@ -196,9 +192,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 3 {
+        if isCurrentUserProfile && soundType == "uploads" {
+            if indexPath.section == 2 {
+                self.performSegue(withIdentifier: "showUploadSound", sender: self)
+                
+            } else if indexPath.section == 3 {
+                if let player = soundList.player {
+                    player.didSelectSoundAt(indexPath.row)
+                }
+            }
+            
+        } else {
             if let player = soundList.player {
-                player.didSelectSoundAt(indexPath.row, soundList: soundList)
+                player.didSelectSoundAt(indexPath.row)
             }
         }
     }
@@ -235,6 +241,49 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    //mark: miniPlayer
+    func setUpMiniPlayer() {
+        let miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        self.view.addSubview(miniPlayerView)
+        let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+        slide.direction = .up
+        miniPlayerView.addGestureRecognizer(slide)
+        miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+        miniPlayerView.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(90)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
+        setUpTableView(miniPlayerView)
+    }
+    
+    @objc func miniPlayerWasSwiped() {
+        showPlayerViewController()
+    }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
+    }
+    
+    func showPlayerViewController() {
+        let player = Player.sharedInstance
+        if player.player != nil {
+            let modal = PlayerV2ViewController()
+            modal.player = player
+            modal.playerDelegate = self
+            let transitionDelegate = DeckTransitioningDelegate()
+            modal.transitioningDelegate = transitionDelegate
+            modal.modalPresentationStyle = .custom
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    //mark: selectedArtist
+    func selectedArtist(_ artist: Artist?) {
+        soundList.selectedArtist(artist)
+    }
+    
     //mark: sounds
     func soundsReuse(_ indexPath: IndexPath) -> SoundListTableViewCell {
         if soundList.sounds.count == 0 {
@@ -265,6 +314,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.soundTitle.isHidden = true
         cell.soundPlays.isHidden = true
         cell.soundPlaysImage.isHidden = true
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -348,7 +398,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let currentUser = self.currentUser {
             if currentUser.objectId! == userId {
                 let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
-                self.navigationItem.rightBarButtonItem = menuButton
+                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+                self.navigationItem.rightBarButtonItems = [menuButton, shareButton]
             }
             
         } else {
@@ -407,7 +458,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showSettings", sender: self)
+        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
+            PFUser.logOut()
+            self.dismiss(animated: true, completion: nil)
+        }))
+        self.present(menuAlert, animated: true, completion: nil)
     }
     
     @objc func didPressMySoundType(_ sender: UIButton) {

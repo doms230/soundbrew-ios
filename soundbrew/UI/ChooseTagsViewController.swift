@@ -21,6 +21,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidLoad()
         setUpNavigationBar()
         loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
+        checkForDynamicLink()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -39,9 +44,14 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         handleTagsForDismissal()
     }
     
-    //MARK: Profile Butotn
+    //MARK: Profile Button
     @objc func didPressProfileButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showProfile", sender: self)
+        if PFUser.current() == nil {
+            self.uiElement.signupRequired("Welcome To Soundbrew!", message: "Sign up or Sign in to view your profile and upload music to Soundbrew.", target: self)
+            
+        } else {
+            self.performSegue(withIdentifier: "showProfile", sender: self)
+        }
     }
     
     //MARK: SearchBar
@@ -55,8 +65,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             searchBarX = 50
         }
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
-        
-        let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
+        let searchTextField = searchBar.value(forKey: "searchField") as? UITextField
         searchBar.placeholder = "Search Tags"
         searchTextField?.backgroundColor = color.lightGray()
         searchBar.delegate = self
@@ -208,6 +217,38 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var featureTagScrollview: UIScrollView!
     var xPositionForFeatureTags = UIElement().leftOffset
     var selectedFeatureTagTypeIndex = 0
+    
+    func checkForDynamicLink() {
+        if let _ = self.uiElement.getUserDefault("receivedSoundId") {
+            let player = Player.sharedInstance
+            if let currentSound = player.currentSound {
+                for tag in currentSound.tags {
+                    let newTagObject = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: nil, image: nil)
+                    self.chosenTags.append(newTagObject)
+                }
+                UserDefaults.standard.removeObject(forKey: "receivedSoundId")
+                print(self.chosenTags)
+                handleTagsForDismissal()
+            }
+            
+        } else if let userId = self.uiElement.getUserDefault("receivedUserId") {
+            func loadUserInfoFromCloud(_ userId: String) {
+                let query = PFQuery(className: "_User")
+                query.getObjectInBackground(withId: userId) {
+                    (user: PFObject?, error: Error?) -> Void in
+                    if let error = error {
+                        print(error)
+                        
+                    } else if let user = user {
+                        let username = user["username"] as? String
+                        let newTagObject = Tag(objectId: nil, name: username, count: 0, isSelected: false, type: nil, image: nil)
+                        self.chosenTags.append(newTagObject)
+                        self.handleTagsForDismissal()
+                    }
+                }
+            }
+        }
+    }
     
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagsReuse) as! SoundListTableViewCell

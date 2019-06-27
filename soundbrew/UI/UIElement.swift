@@ -77,11 +77,11 @@ class UIElement {
     func signupRequired(_ title: String, message: String, target: UIViewController) {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
         
-        let settingsAction = UIAlertAction(title: "Sign up", style: .default) { (_) -> Void in
-            self.segueToView("Login", withIdentifier: "welcome", target: target)
+        let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
+            target.performSegue(withIdentifier: "showWelcome", sender: self)
         }
         alertController.addAction(settingsAction)
-        let cancelAction = UIAlertAction(title: "Continue", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
         target.present(alertController, animated: true, completion: nil)

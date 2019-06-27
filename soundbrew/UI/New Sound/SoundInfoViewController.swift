@@ -113,7 +113,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
-        processAudioForDatabase(nil)
+        if soundThatIsBeingEdited == nil {
+            processAudioForDatabase(nil)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -533,7 +535,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         self.stopAnimating()
-        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+        //self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+        self.dismiss(animated: true, completion: nil)
     }
     
     //mark: audio
@@ -683,7 +686,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["audioFile"] = soundParseFile
         //newSound["audioFileCompressed"] = soundParseFile
         //newSound["fileExtension"] = soundFileExtension
-        newSound["isRemoved"] = true 
+        //newSound["isRemoved"] = true
         newSound["songArt"] = soundArt
         newSound["tags"] = tags.map {$0.name}
         newSound.saveEventually {
@@ -723,7 +726,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     (success: Bool, error: Error?) in
                     if (success) {
                         self.stopAnimating()
-                        self.uiElement.goBackToPreviousViewController(self)
+                         self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {
                         self.stopAnimating()

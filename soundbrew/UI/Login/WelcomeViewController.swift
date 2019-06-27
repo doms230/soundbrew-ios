@@ -24,7 +24,7 @@ class WelcomeViewController: UIViewController {
         return button
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
-        self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
+        self.dismiss(animated: true, completion: nil)
     }
     
     lazy var appImage: UIImageView = {

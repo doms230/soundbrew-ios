@@ -118,34 +118,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     ])
             }
         }
-        
-        /*
-         let applicationState = UIApplication.shared.applicationState
-         if ad.secondsPlayedSinceLastAd < ad.fifteenMinutesInSeconds {
-            shouldEnableCommandCenter(true)
-            if let player = self.player {
-                if !player.isPlaying {
-                    player.play()
-                    sendSoundUpdateToUI()
-                    startTimer()
-                    Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-                        AnalyticsParameterItemID: "id-play",
-                        AnalyticsParameterItemName: "play",
-                        AnalyticsParameterContentType: "cont"
-                        ])
-                }
-            }
-            
-            //currenty, ads can only be shown when app is active and view is shown.
-        } else if ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds && applicationState == .active {
-            print("is active")
-            ad.showAd(target)
-            
-        } else if ad.secondsPlayedSinceLastAd > ad.fifteenMinutesInSeconds &&
-            applicationState == .background {
-            print("is not active")
-            shouldEnableCommandCenter(false)
-        }*/
     }
     
     func pause() {
@@ -158,6 +130,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func next() {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: nil)
         Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
             AnalyticsParameterItemID: "id-skip",
@@ -167,6 +140,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func previous() {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         if let player = self.player {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
@@ -184,8 +158,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func didSelectSoundAt(_ i: Int, soundList: SoundList) {
-        //self.sounds = soundList.sounds
+    func didSelectSoundAt(_ i: Int) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: i)
         if let tableView = self.tableView {
             tableView.reloadData()

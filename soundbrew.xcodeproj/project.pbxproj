@@ -15,7 +15,6 @@
 		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
 		F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */; };
-		F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23C621E21DC38E6005C9FF0 /* Login.storyboard */; };
 		F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */; };
 		F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F246999A22A82EEE0020497E /* AuthenticationServices.framework */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
@@ -134,7 +133,6 @@
 		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
 		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
-		F23C621E21DC38E6005C9FF0 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
 		F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSoundTagsViewController.swift; sourceTree = "<group>"; };
 		F246995222A8273E0020497E /* Swifter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Swifter.xcodeproj; path = "soundbrew/Swifter-master 2/Swifter.xcodeproj"; sourceTree = "<group>"; };
 		F246999A22A82EEE0020497E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
@@ -240,7 +238,6 @@
 		F23C620F21DC34DB005C9FF0 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				F23C621E21DC38E6005C9FF0 /* Login.storyboard */,
 				F23C621C21DC358B005C9FF0 /* WelcomeViewController.swift */,
 				F2480B5722652A31005231FD /* Returning User */,
 				F2480B5622652A19005231FD /* New User */,
@@ -594,7 +591,6 @@
 				F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */,
 				F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */,
 				F2689871215AEF9000C21663 /* Assets.xcassets in Resources */,
-				F23C621F21DC38E6005C9FF0 /* Login.storyboard in Resources */,
 				F268986F215AEF8F00C21663 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

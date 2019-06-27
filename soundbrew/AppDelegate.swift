@@ -49,18 +49,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         registerForRemoteNotification()
         
-        /*if PFUser.current() == nil {
-            let storyboard = UIStoryboard(name: "Login", bundle: nil)
-            let controller = storyboard.instantiateViewController(withIdentifier: "welcome")
-            window?.rootViewController = controller
-            
-        } else {
-            print("called this")
-        }*/
-        
-       // SKPaymentQueue.default().add(self)
-       //Payment.shared.loadSubscriptionOptions()
-        
         return true
     }
     
@@ -74,6 +62,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if let pathComponents = dynamiclink?.url?.pathComponents {
                     if pathComponents.contains("sound") {
                         self.playSound(url: url)
+                        UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
+                        /*let rootView: ChooseTagsViewController = ChooseTagsViewController()
+                        if let window = self.window {
+                            window.rootViewController = rootView
+                        }*/
+                        self.window = UIWindow(frame: UIScreen.main.bounds)
+                        
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        
+                        let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
+                        
+                        self.window?.rootViewController = initialViewController
+                        self.window?.makeKeyAndVisible()
                         
                     } else if pathComponents.contains("profile") {
                         self.loadUserInfoFromCloud(url.lastPathComponent)
@@ -106,6 +107,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let pathComponents = dynamicLink.url?.pathComponents {
                 if pathComponents.contains("sound") {
                     self.playSound(url: url)
+                    UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
+                    /*let rootView: ChooseTagsViewController = ChooseTagsViewController()
+                    if let window = self.window {
+                        window.rootViewController = rootView
+                    }*/
+                    self.window = UIWindow(frame: UIScreen.main.bounds)
+                    
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    
+                    let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
+                    
+                    self.window?.rootViewController = initialViewController
+                    self.window?.makeKeyAndVisible()
                     
                 } else if pathComponents.contains("profile") {
                     self.loadUserInfoFromCloud(url.lastPathComponent)
@@ -169,12 +183,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func loadUserInfoFromCloud(_ userId: String) {
-        if let tabBarController = self.window?.rootViewController as? UITabBarController {
-            UIElement().setUserDefault("receivedUserId", value: userId)
-            let navigationController = tabBarController.selectedViewController as? UINavigationController
-            let viewController = navigationController?.topViewController
-            viewController!.performSegue(withIdentifier: "showProfile", sender: viewController)
-        }
+        UIElement().setUserDefault("receivedUserId", value: userId)
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
+        
+        self.window?.rootViewController = initialViewController
+        self.window?.makeKeyAndVisible()
+        //let navigationController = tabBarController.selectedViewController as? UINavigationController
+        /*let viewController = navigationController?.topViewController
+        viewController!.performSegue(withIdentifier: "showProfile", sender: viewController)*/
     }
 }
 

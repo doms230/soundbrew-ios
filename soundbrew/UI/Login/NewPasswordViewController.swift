@@ -116,9 +116,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
                 
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
-                self.present(initialViewController, animated: true, completion: nil)
+                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
             }
         }
     }    

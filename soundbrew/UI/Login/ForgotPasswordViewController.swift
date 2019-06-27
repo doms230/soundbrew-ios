@@ -67,11 +67,7 @@ class ForgotPasswordViewController: UIViewController {
                 
                 let okayAction = UIAlertAction(title: "Okay", style: .default) { (_) -> Void in
                     self.emailInput.resignFirstResponder()
-                    let storyboard = UIStoryboard(name: "Login", bundle: nil)
-                    let initialViewController = storyboard.instantiateViewController(withIdentifier: "welcome")
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    //show window
-                    appDelegate.window?.rootViewController = initialViewController
+                    UIElement().goBackToPreviousViewController(self)
                 }
                 
                 alertController.addAction(okayAction)

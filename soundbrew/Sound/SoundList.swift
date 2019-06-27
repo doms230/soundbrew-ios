@@ -13,13 +13,11 @@
 import Foundation
 import UIKit
 import Parse
-import DeckTransition
 
 class SoundList: NSObject, PlayerDelegate {
     var target: UIViewController!
     var tableView: UITableView?
     var sounds = [Sound]()
-    var miniPlayerView: MiniPlayerView?
     let uiElement = UIElement()
     let color = Color()
     var profileUserId: String?
@@ -42,7 +40,6 @@ class SoundList: NSObject, PlayerDelegate {
         player = Player.sharedInstance
         player?.target = target
         player?.tableView = tableView
-        setUpMiniPlayer()
         determineTypeOfSoundToLoad(soundType)
     }
     
@@ -72,57 +69,6 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    //mark: miniPlayer
-    func setUpMiniPlayer() {
-        if let tabBarView = target.tabBarController {
-            miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-            miniPlayerView?.player = self.player
-            tabBarView.view.addSubview(miniPlayerView!)
-            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-            slide.direction = .up
-            miniPlayerView?.addGestureRecognizer(slide)
-            miniPlayerView?.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            miniPlayerView?.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(45)
-                make.right.equalTo(tabBarView.view)
-                make.left.equalTo(tabBarView.view)
-                make.bottom.equalTo(tabBarView.tabBar).offset(-(tabBarView.tabBar.frame.height))
-            }
-            
-            if let player = self.player?.player  {
-                if player.isPlaying {
-                    miniPlayerView?.playBackButton.setImage(UIImage(named: "pause_white"), for: .normal)
-                    miniPlayerView?.isHidden = false
-                    
-                } else {
-                    miniPlayerView?.playBackButton.setImage(UIImage(named: "play_white"), for: .normal)
-                }
-                miniPlayerView?.playBackButton.isEnabled = true
-                
-            } else {
-                miniPlayerView?.isHidden = true 
-            }
-        }
-    }
-    
-    @objc func miniPlayerWasSwiped() {
-        showPlayerViewController()
-    }
-    
-    @objc func miniPlayerWasPressed(_ sender: UIButton) {
-        showPlayerViewController()
-    }
-    
-    func showPlayerViewController() {
-        let modal = PlayerV2ViewController()
-        modal.player = self.player
-        modal.playerDelegate = self
-        let transitionDelegate = DeckTransitioningDelegate()
-        modal.transitioningDelegate = transitionDelegate
-        modal.modalPresentationStyle = .custom
-        target.present(modal, animated: true, completion: nil)
-    }
-    
     //mark: artist
     var selectedArtist: Artist!
     
@@ -139,16 +85,11 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func segueToProfile() {
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController
-        let navigationController = tabBarController?.selectedViewController as? UINavigationController
-        let view = navigationController?.topViewController
-        if let segueView = view {
-            segueView.performSegue(withIdentifier: "showProfile", sender: self)
-        }        
+        target.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
     //mark: sounds
-    var selectedSound: Sound!
+    var selectedSound: Sound?
     var descendingOrder = "createdAt"
     
     func soundCell(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
@@ -212,10 +153,10 @@ class SoundList: NSObject, PlayerDelegate {
                         self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
                     }))
                     
-                    /*menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
+                    menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
                         self.selectedSound = sound
                         self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
-                    }))*/
+                    }))
                     
                 } else {
                     menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
@@ -246,7 +187,9 @@ class SoundList: NSObject, PlayerDelegate {
         
         switch soundType {
         case "playlist":
-            self.loadFollows("")
+            //self.loadFollows("")
+            //self.loadLikes("", profileUserId: self.profileUserId!)
+            self.loadWorldCreatedAtSounds()
             break
             
         case "uploads":
@@ -266,12 +209,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func updateSounds() {
         self.isUpdatingData = false
-        //checking for this, because some users may not be artists... don't want people to have to click straight to their collections ... this way app will load collection automatically.
-        if self.soundType == "uploads" && self.sounds.count == 0 && !self.didLoadLikedSounds {
-            self.soundType = "likes"
-            self.determineTypeOfSoundToLoad(self.soundType)
-            
-        } else if soundType == "follows" && self.sounds.count == 0 {
+         if soundType == "follows" && self.sounds.count == 0 {
             showNoResultsLabel()
             
         } else if self.player != nil {
@@ -288,13 +226,18 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {
-        let viewController = segue.destination as! SoundInfoViewController
-        viewController.soundThatIsBeingEdited = selectedSound
+        if let selectedSound = self.selectedSound {
+            let viewController = segue.destination as! SoundInfoViewController
+            viewController.soundThatIsBeingEdited = selectedSound
+        }
     }
     
     func prepareToShowSoundAudioUpload(_ segue: UIStoryboardSegue) {
-        let viewController = segue.destination as! UploadSoundAudioViewController
-        viewController.soundThatIsBeingEdited = selectedSound
+        if let selectedSound = self.selectedSound {
+            let navigationController = segue.destination as! UINavigationController
+            let viewController = navigationController.topViewController as! UploadSoundAudioViewController
+            viewController.soundThatIsBeingEdited = selectedSound
+        }
     }
     
     func determineIfRateTheAppPopUpShouldShow() {

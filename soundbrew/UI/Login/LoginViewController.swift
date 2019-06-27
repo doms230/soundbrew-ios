@@ -158,17 +158,15 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         
         PFUser.logInWithUsername(inBackground: userJaunt, password:password) {
             (user: PFUser?, error: Error?) -> Void in
+            self.stopAnimating()
             if user != nil {
                 //associate current user with device
                 let installation = PFInstallation.current()
                 installation?["user"] = PFUser.current()
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
-                
-                self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
-                
+                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
             } else {
-                self.stopAnimating()
                 UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)
             }
         }
@@ -181,10 +179,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     @objc func didPressExit(_ sender: UIBarButtonItem) {
         emailText.resignFirstResponder()
         passwordText.resignFirstResponder()
-        let storyboard = UIStoryboard(name: "Login", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "welcome")
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        //show window
-        appDelegate.window?.rootViewController = initialViewController
+        self.dismiss(animated: true, completion: nil)
     }
 }

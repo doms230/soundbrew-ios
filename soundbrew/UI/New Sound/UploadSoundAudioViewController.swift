@@ -35,20 +35,14 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }()
     
     override func viewDidLoad() {
-        if PFUser.current() != nil {
-            showUploadSoundFileUI()
-        } else {
-            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Any music you upload will instantly show up in playlists listeners create.", target: self)
-            newSoundButton.setTitle("Sign up", for: .normal)
-            showUploadSoundButton()
-        }
+        setupNavigation()
+        showUploadSoundFileUI()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSoundInfo" {
             let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
             viewController.soundFileURL = self.soundFileURL
-            //viewController.soundParseFile = soundParseFile
         }
     }
     
@@ -63,13 +57,17 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         }
     }
     
+    func setupNavigation() {
+        let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
+        self.navigationItem.leftBarButtonItem = dismissButton
+    }
+    
+    @objc func didPressDismissButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     @objc func didPressUploadButton(_ sender: UIButton) {
-        if PFUser.current() == nil {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
-            
-        } else {
-           showUploadSoundFileUI()
-        }
+        showUploadSoundFileUI()
     }
     
     //
@@ -84,20 +82,14 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        dismiss(animated: true, completion: nil)
-        self.soundFileURL = urls[0]
-        self.performSegue(withIdentifier: "showSoundInfo", sender: self)
-        //self.showUploadSoundButton()
-        /*if self.soundThatIsBeingEdited == nil {
+        if self.soundThatIsBeingEdited == nil {
          self.soundFileURL = urls[0]
          self.performSegue(withIdentifier: "showSoundInfo", sender: self)
          self.showUploadSoundButton()
          
          } else {
          self.processAudioForDatabase(urls[0])
-         //self.showUploadSoundButton()
-         //TODO: dismiss view and show which ever tab view was showing before
-         }*/
+         }
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -109,14 +101,14 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             self.soundFileName = "audio.\(url.pathExtension)"
             let audioFile = try Data(contentsOf: url, options: .uncached)
             self.soundParseFile = PFFileObject(name: self.soundFileName, data: audioFile)
-            //self.saveAudioFile()
+            self.saveAudioFile()
             
         } catch {
             UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
         }
     }
     
-    /*func saveAudioFile() {
+    func saveAudioFile() {
         self.startAnimating()
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
@@ -126,7 +118,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             } else if let error = error {
                 print(error.localizedDescription)
                 self.showUploadSoundButton()
-                //self.errorAlert("Sound Processing Failed", message: error.localizedDescription)
+                UIElement().showAlert("Sound Processing Failed", message: error.localizedDescription, target: self)
             }
             
         }, progressBlock: {
@@ -148,8 +140,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                     (success: Bool, error: Error?) in
                     if (success) {
                         self.stopAnimating()
-                        //self.dismiss(animated: true, completion: nil)
-                        self.uiElement.goBackToPreviousViewController(self)
+                        self.dismiss(animated: true, completion: nil)
+                        //self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {
                         self.stopAnimating()
@@ -159,5 +151,5 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                 }
             }
         }
-    }*/
+    }
 }

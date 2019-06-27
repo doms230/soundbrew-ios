@@ -145,7 +145,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func didSelectSoundAt(_ row: Int) {
         if let player = soundList.player {
-            player.didSelectSoundAt(row, soundList: soundList)
+            player.didSelectSoundAt(row)
         }
     }
     

@@ -28,7 +28,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="539" y="-35"/>
+            <point key="canvasLocation" x="-448" y="-35"/>
         </scene>
         <!--Sound Info View Controller-->
         <scene sceneID="R29-0C-CbA">
@@ -40,10 +40,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
                     </view>
+                    <connections>
+                        <segue destination="3Mr-Tw-OSi" kind="show" identifier="showTags" id="b0H-yI-JaD"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-317" y="-35"/>
+            <point key="canvasLocation" x="507" y="-35"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -65,7 +68,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="539.13043478260875" y="-768.08035714285711"/>
+            <point key="canvasLocation" x="77" y="-800"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -119,7 +122,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jvL-th-QNN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1402.8985507246377" y="-768.08035714285711"/>
+            <point key="canvasLocation" x="1328" y="-800"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="M20-Wr-7YN">
@@ -138,6 +141,7 @@
                     <connections>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showPlaylist" id="Rdg-RZ-Gre"/>
                         <segue destination="vdK-at-bld" kind="presentation" identifier="showProfile" id="4si-ci-jir"/>
+                        <segue destination="kcj-NS-3Uc" kind="presentation" identifier="showWelcome" id="ayD-qA-ekX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -178,9 +182,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="DQE-st-WjY"/>
                     <connections>
-                        <segue destination="DjR-ES-ZhZ" kind="presentation" identifier="showProfile" id="3jW-Fd-CA3"/>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="3jW-Fd-CA3"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="SpB-6h-026"/>
                         <segue destination="4ef-dR-Glj" kind="show" identifier="showUploadSound" id="hAI-d0-wwO"/>
+                        <segue destination="kcj-NS-3Uc" kind="presentation" identifier="showWelcome" id="R2f-kq-OtV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -195,6 +200,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="bWL-nF-ajR">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -213,6 +219,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5ux-yi-Vqb">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -226,7 +233,7 @@
         <!--Navigation Controller-->
         <scene sceneID="LYJ-Ge-DSD">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="fKU-gR-hkK">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
@@ -234,6 +241,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="azC-XP-AEG">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -252,6 +260,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Y6S-lx-Onz">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -262,6 +271,185 @@
             </objects>
             <point key="canvasLocation" x="-1249" y="-35"/>
         </scene>
+        <!--Welcome View Controller-->
+        <scene sceneID="MDQ-uK-ba3">
+            <objects>
+                <viewController storyboardIdentifier="welcome" id="kcj-NS-3Uc" customClass="WelcomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="P2Y-se-T2G">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="h6T-O8-MIX"/>
+                    </view>
+                    <connections>
+                        <segue destination="V6A-rh-fGd" kind="show" identifier="showSignin" id="ja5-qJ-lJp"/>
+                        <segue destination="slf-Wh-dAV" kind="show" identifier="showSignup" id="oYs-Et-cgb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XLJ-gS-MoS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4761" y="-845"/>
+        </scene>
+        <!--Login View Controller-->
+        <scene sceneID="QtJ-Qo-2NW">
+            <objects>
+                <viewController id="46O-ND-fN1" customClass="LoginViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="FKY-PM-3NW">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="Y1Q-t8-oVL"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="eUJ-Aa-z3X"/>
+                    <connections>
+                        <segue destination="CaY-uy-alT" kind="show" identifier="showForgotPassword" id="xaU-Sr-d54"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5MG-DH-Ep7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7113" y="-1416"/>
+        </scene>
+        <!--Forgot Password View Controller-->
+        <scene sceneID="Kjv-Vf-Cri">
+            <objects>
+                <viewController id="CaY-uy-alT" customClass="ForgotPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dpg-QL-Jms">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="Jbr-UT-wCA"/>
+                    </view>
+                    <connections>
+                        <segue destination="Q6g-YP-P1e" kind="show" identifier="showForgotPassword" id="3aG-XJ-etp"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HzJ-fR-lS4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8025" y="-1416"/>
+        </scene>
+        <!--New Email View Controller-->
+        <scene sceneID="iXl-5T-jJ7">
+            <objects>
+                <viewController id="bxe-9G-fAJ" customClass="NewEmailViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="no3-A3-AQA">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="ccn-ee-dbe"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="kjz-iF-VBl"/>
+                    <connections>
+                        <segue destination="yvV-BG-fda" kind="show" identifier="showUsername" id="pd6-f3-rzs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x8s-PV-ewA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7112" y="-532"/>
+        </scene>
+        <!--New Username View Controller-->
+        <scene sceneID="q0D-mC-8IF">
+            <objects>
+                <viewController id="yvV-BG-fda" customClass="NewUsernameViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="khA-iK-lVD">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="768-qN-sOQ"/>
+                    </view>
+                    <connections>
+                        <segue destination="6Im-Pg-WB1" kind="show" identifier="showPassword" id="jif-j2-tUt"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZsB-HL-Agj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8025" y="-532"/>
+        </scene>
+        <!--New Password View Controller-->
+        <scene sceneID="j1s-hT-iyl">
+            <objects>
+                <viewController id="6Im-Pg-WB1" customClass="NewPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PgI-DB-Rt8">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="dwa-3F-t6U"/>
+                    </view>
+                    <connections>
+                        <segue destination="bKS-4E-iq5" kind="show" identifier="showPassword" id="7jY-dz-qLe"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0w5-Bo-Woi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9113" y="-532"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="C1p-jb-euM">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="V6A-rh-fGd" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="eqC-Kb-qq3">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="46O-ND-fN1" kind="relationship" relationship="rootViewController" id="X7V-5F-Ggi"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nu8-BF-kBo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6149" y="-1416"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Jxh-mb-fgQ">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="slf-Wh-dAV" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Kd1-5L-ESi">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="bxe-9G-fAJ" kind="relationship" relationship="rootViewController" id="Ph6-RS-ZGO"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mwa-gw-t4g" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6148" y="-532"/>
+        </scene>
+        <!--Forgot Password View Controller-->
+        <scene sceneID="HtB-ZC-GKi">
+            <objects>
+                <viewController id="Q6g-YP-P1e" customClass="ForgotPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DeU-2r-7h2">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="tww-MP-zoq"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x1G-Bz-E8n" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8980" y="-1416"/>
+        </scene>
+        <!--New Password View Controller-->
+        <scene sceneID="RKh-w3-bqD">
+            <objects>
+                <viewController id="bKS-4E-iq5" customClass="NewPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qa0-25-jen">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="qtO-Wr-gBp"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3lg-U0-n3H" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10084" y="-532"/>
+        </scene>
     </scenes>
     <resources>
         <image name="home" width="23" height="23"/>
@@ -270,8 +458,10 @@
         <image name="profile_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="XjQ-ls-dhp"/>
-        <segue reference="clB-kw-cXy"/>
-        <segue reference="LnM-xP-wsl"/>
+        <segue reference="R2f-kq-OtV"/>
+        <segue reference="hAI-d0-wwO"/>
+        <segue reference="daa-iD-mz7"/>
+        <segue reference="3jW-Fd-CA3"/>
+        <segue reference="SpB-6h-026"/>
     </inferredMetricsTieBreakers>
 </document>

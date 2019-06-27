@@ -12,8 +12,9 @@ import Parse
 import Kingfisher
 import SnapKit
 import AppCenterCrashes
+import DeckTransition
 
-class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagDelegate {
+class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagDelegate, PlayerDelegate {
     
     var soundList: SoundList!
     var searchSounds = [Sound]()
@@ -26,8 +27,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         showSounds()
-        //setupNavigationItems()
-        setUpTableView()
+        setUpMiniPlayer()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -79,16 +79,22 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     let soundReuse = "soundReuse"
     let tagsReuse = "tagsReuse"
     
-    func setUpTableView() {
+    func setUpTableView(_ miniPlayer: UIView) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
         tableView.backgroundColor = color.lightGray()   
         self.tableView.separatorStyle = .none
-        self.tableView.keyboardDismissMode = .onDrag
-        self.tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(miniPlayer.snp.top)
+        }
+        //self.tableView.frame = view.bounds
+        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -141,21 +147,68 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     func didSelectRowAt(_ row: Int) {
         if let player = soundList.player {
-            player.didSelectSoundAt(row, soundList: soundList)
+            player.didSelectSoundAt(row)
         }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
-            //soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: nil, tags: soundList.selectedTagsForFiltering, followIds: nil, searchText: nil)
             
-            if PFUser.current() == nil {
+            soundList.loadWorldCreatedAtSounds()
+            /*if PFUser.current() == nil {
                 soundList.loadWorldCreatedAtSounds()
                 
             } else {
                 soundList.loadFollowCreatedAtSounds()
-            }
+            }*/
+        }
+    }
+    
+    //mark: miniPlayer
+    func setUpMiniPlayer() {
+        let miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        self.view.addSubview(miniPlayerView)
+        let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+        slide.direction = .up
+        miniPlayerView.addGestureRecognizer(slide)
+        miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+        miniPlayerView.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(90)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
+        setUpTableView(miniPlayerView)
+    }
+    
+    @objc func miniPlayerWasSwiped() {
+        showPlayerViewController()
+    }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
+    }
+    
+    func showPlayerViewController() {
+        let player = Player.sharedInstance
+        if player.player != nil {
+            let modal = PlayerV2ViewController()
+            modal.player = player
+            modal.playerDelegate = self
+            let transitionDelegate = DeckTransitioningDelegate()
+            modal.transitioningDelegate = transitionDelegate
+            modal.modalPresentationStyle = .custom
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    //mark: selectedArtist
+    func selectedArtist(_ artist: Artist?) {
+        if let artist = artist {
+            soundList.selectedArtist(artist)
+        } else {
+            self.performSegue(withIdentifier: "showWelcome", sender: self)
         }
     }
     

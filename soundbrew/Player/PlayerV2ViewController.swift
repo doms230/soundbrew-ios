@@ -303,7 +303,21 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             manageLikeForCurrentSound()
             
         } else {
-            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Liking songs will mix them into playlists.", target: self)
+            let alertController = UIAlertController (title: "Sign Up or Sign In", message: "Liking songs will add them to your music collection on your profile.", preferredStyle: .alert)
+            
+            let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
+                self.dismiss(animated: true, completion: {() in
+                    if let playerDelegate = self.playerDelegate {
+                        playerDelegate.selectedArtist(nil)
+                    }
+                })
+            }
+            alertController.addAction(settingsAction)
+            
+            let cancelAction = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            self.present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -531,13 +545,13 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        userRelationButton.addTarget(self, action: #selector(didPressUserRelationButton(_:)), for: .touchUpInside)
+        /*userRelationButton.addTarget(self, action: #selector(didPressUserRelationButton(_:)), for: .touchUpInside)
         self.view.addSubview(userRelationButton)
         userRelationButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(30)
             make.top.equalTo(likeButton)
             make.right.equalTo(likeButton.snp.left).offset(uiElement.rightOffset)
-        }
+        }*/
         
         setSound()
     }
