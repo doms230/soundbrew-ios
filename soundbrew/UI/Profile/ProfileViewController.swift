@@ -419,8 +419,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let currentUser = self.currentUser {
             if currentUser.objectId! == userId {
                 let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
+                
                 let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
                 self.navigationItem.rightBarButtonItems = [menuButton, shareButton]
+                
+            } else {
+                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+                self.navigationItem.rightBarButtonItem = shareButton
             }
             
         } else {

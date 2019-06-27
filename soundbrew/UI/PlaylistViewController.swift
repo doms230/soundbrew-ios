@@ -196,10 +196,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             make.bottom.equalTo(self.view)
         }
         
-        /*if miniPlayerView.player?.player == nil {
-            miniPlayerView.isHidden = true
-        }*/
-        
         setUpTableView(miniPlayerView!)
     }
     

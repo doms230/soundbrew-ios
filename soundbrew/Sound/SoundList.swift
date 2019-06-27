@@ -237,19 +237,6 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func determineIfRateTheAppPopUpShouldShow() {
-        if let currentUser = PFUser.current() {
-            if sounds.count != 0 {
-                if self.soundType == "uploads" || self.soundType == "likes" {
-                    if currentUser.objectId == self.profileUserId! { //&&
-                        //self.profileUserId! != domSmithUserId  {
-                        SKStoreReviewController.requestReview()
-                    }
-                }
-            }
-        }
-    }
-    
     func newSoundObject(_ object: PFObject) -> Sound {
         let title = object["title"] as! String
         let art = object["songArt"] as! PFFileObject

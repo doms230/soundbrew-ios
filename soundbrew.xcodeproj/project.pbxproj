@@ -19,8 +19,6 @@
 		F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F246999A22A82EEE0020497E /* AuthenticationServices.framework */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
-		F24F2B7E228121FB006D1CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */; };
-		F24F2B8022812685006D1CB7 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
 		F2689871215AEF9000C21663 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2689870215AEF9000C21663 /* Assets.xcassets */; };
@@ -137,8 +135,6 @@
 		F246999A22A82EEE0020497E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
 		F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F268986E215AEF8F00C21663 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -396,8 +392,6 @@
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
 				F28A9861222FA5F200C96EED /* EditBioViewController.swift */,
-				F24F2B7F22812685006D1CB7 /* SettingsTableViewCell.swift */,
-				F24F2B7D228121FB006D1CB7 /* SettingsViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -705,7 +699,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */,
-				F24F2B8022812685006D1CB7 /* SettingsTableViewCell.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
@@ -726,7 +719,6 @@
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
 				F23C621D21DC358B005C9FF0 /* WelcomeViewController.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
-				F24F2B7E228121FB006D1CB7 /* SettingsViewController.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,

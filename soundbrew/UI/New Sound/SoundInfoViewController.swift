@@ -696,6 +696,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     let sound = self.newSoundObject(newSound)
                     self.createDynamicLink(sound)
                 }
+                
+                SKStoreReviewController.requestReview()
                 self.saveTags(tags)
                 Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
                     AnalyticsParameterItemID: "id-soundupload",
