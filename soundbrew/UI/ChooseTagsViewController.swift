@@ -21,11 +21,18 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidLoad()
         setUpNavigationBar()
         loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
-        checkForDynamicLink()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveDynamicLink), name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
+        checkForProfileDynamicLink()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        
+    @objc func didReceiveDynamicLink() {
+        let player = Player.sharedInstance
+        for tag in player.sounds[0].tags {
+            let newTagObject = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: nil, image: nil)
+            self.chosenTags.append(newTagObject)
+        }
+
+        handleTagsForDismissal()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -218,35 +225,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var xPositionForFeatureTags = UIElement().leftOffset
     var selectedFeatureTagTypeIndex = 0
     
-    func checkForDynamicLink() {
-        if let _ = self.uiElement.getUserDefault("receivedSoundId") {
-            let player = Player.sharedInstance
-            if let currentSound = player.currentSound {
-                for tag in currentSound.tags {
-                    let newTagObject = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: nil, image: nil)
-                    self.chosenTags.append(newTagObject)
-                }
-                UserDefaults.standard.removeObject(forKey: "receivedSoundId")
-                print(self.chosenTags)
-                handleTagsForDismissal()
-            }
-            
-        } else if let userId = self.uiElement.getUserDefault("receivedUserId") {
-            func loadUserInfoFromCloud(_ userId: String) {
-                let query = PFQuery(className: "_User")
-                query.getObjectInBackground(withId: userId) {
-                    (user: PFObject?, error: Error?) -> Void in
-                    if let error = error {
-                        print(error)
-                        
-                    } else if let user = user {
-                        let username = user["username"] as? String
-                        let newTagObject = Tag(objectId: nil, name: username, count: 0, isSelected: false, type: nil, image: nil)
-                        self.chosenTags.append(newTagObject)
-                        self.handleTagsForDismissal()
-                    }
-                }
-            }
+    func checkForProfileDynamicLink() {
+        if let _ = self.uiElement.getUserDefault("receivedUserId") as? String {
+            self.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
     

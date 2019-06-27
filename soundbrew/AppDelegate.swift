@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self])
         
         FirebaseApp.configure()
-        //GADMobileAds.sharedInstance().start(completionHandler: nil)
         
         SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         
@@ -62,19 +61,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if let pathComponents = dynamiclink?.url?.pathComponents {
                     if pathComponents.contains("sound") {
                         self.playSound(url: url)
-                        UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
-                        /*let rootView: ChooseTagsViewController = ChooseTagsViewController()
-                        if let window = self.window {
-                            window.rootViewController = rootView
-                        }*/
-                        self.window = UIWindow(frame: UIScreen.main.bounds)
-                        
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        
-                        let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
-                        
-                        self.window?.rootViewController = initialViewController
-                        self.window?.makeKeyAndVisible()
                         
                     } else if pathComponents.contains("profile") {
                         self.loadUserInfoFromCloud(url.lastPathComponent)
@@ -108,18 +94,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if pathComponents.contains("sound") {
                     self.playSound(url: url)
                     UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
-                    /*let rootView: ChooseTagsViewController = ChooseTagsViewController()
-                    if let window = self.window {
-                        window.rootViewController = rootView
-                    }*/
-                    self.window = UIWindow(frame: UIScreen.main.bounds)
-                    
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    
-                    let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
-                    
-                    self.window?.rootViewController = initialViewController
-                    self.window?.makeKeyAndVisible()
                     
                 } else if pathComponents.contains("profile") {
                     self.loadUserInfoFromCloud(url.lastPathComponent)
@@ -180,21 +154,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let player = Player.sharedInstance
         let objectId = url.lastPathComponent
         player.loadDynamicLinkSound(objectId)
+        showChooseTagsViewController()
     }
     
     func loadUserInfoFromCloud(_ userId: String) {
         UIElement().setUserDefault("receivedUserId", value: userId)
+        showChooseTagsViewController()
+    }
+    
+    func showChooseTagsViewController() {
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
         let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
-        
         self.window?.rootViewController = initialViewController
         self.window?.makeKeyAndVisible()
-        //let navigationController = tabBarController.selectedViewController as? UINavigationController
-        /*let viewController = navigationController?.topViewController
-        viewController!.performSegue(withIdentifier: "showProfile", sender: viewController)*/
     }
 }
 

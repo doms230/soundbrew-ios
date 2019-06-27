@@ -488,10 +488,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 let sound = [UIElement().newSoundObject(object)]
                 self.sounds = sound
                 self.setUpNextSong(false, at: 0)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
             }
         }
     }
-    
+        
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {
