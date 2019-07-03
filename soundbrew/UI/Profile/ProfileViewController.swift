@@ -12,6 +12,7 @@ import Parse
 import Kingfisher
 import SnapKit
 import DeckTransition
+import SidebarOverlay
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate {
     
@@ -27,6 +28,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var selectedIndex = 0
     var currentUser: PFUser?
 
+    var paymentType: String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -34,49 +37,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.currentUser = currentUser
         }
         
-        if let artist = profileArtist {
+        if profileArtist != nil {
             self.executeTableViewSoundListFollowStatus()
-            self.setUpNavigationButtons(artist.objectId)
+            self.setUpNavigationButtons()
             
         } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
             loadUserInfoFromCloud(userId)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
-            setUpNavigationButtons(userId)
+            setUpNavigationButtons()
             
         } else if let currentUser = self.currentUser {
             isCurrentUserProfile = true
             loadUserInfoFromCloud(currentUser.objectId!)
-            setUpNavigationButtons(currentUser.objectId!)
-            
-        } else {
-            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "You'll be able to see music you like and any sounds you've uploaded from the profile page.", target: self)
-            showUploadSoundButton()
+            setUpNavigationButtons()
         }
-    }
-    
-    lazy var signupButton: UIButton = {
-        let image = UIButton()
-        image.setTitle("Sign up", for: .normal)
-        image.titleLabel?.textColor = .black
-        image.layer.cornerRadius = 3
-        image.clipsToBounds = true
-        image.backgroundColor = Color().blue()
-        return image
-    }()
-    
-    func showUploadSoundButton() {
-        signupButton.addTarget(self, action: #selector(self.didPressSignupButton(_:)), for: .touchUpInside)
-        self.view.addSubview(signupButton)
-        signupButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(uiElement.buttonHeight)
-            make.width.equalTo(200)
-            make.top.equalTo(self.view).offset((self.view.frame.height / 2) - CGFloat(uiElement.buttonHeight))
-            make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(100))
-        }
-    }
-    
-    @objc func didPressSignupButton(_ sender: UIButton) {
-        self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -106,9 +80,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.prepareToShowSelectedArtist(segue)
             break
             
-        case "showSettings":
-            let viewController = segue.destination as! SettingsViewController
-            viewController.artist = profileArtist
+        case "showPayments":
+            let view = segue.destination as! PaymentsViewController
+            view.paymentType = paymentType
+            let backItem = UIBarButtonItem()
+            backItem.title = paymentType.capitalized
+            navigationItem.backBarButtonItem = backItem
             break
             
         default:
@@ -204,6 +181,26 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         return 1
     }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch indexPath.section {
+        case 0:
+            return profileInfoReuse()
+            
+        case 1:
+            return listHeadersReuse()
+            
+        case 2:
+            if isCurrentUserProfile && soundType == "uploads" {
+                return newSoundReuse()
+            } else {
+                return soundsReuse(indexPath)
+            }
+            
+        default:
+            return soundsReuse(indexPath)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isCurrentUserProfile && soundType == "uploads" {
             if indexPath.section == 2 {
@@ -225,26 +222,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.setUpMiniPlayer()
                 }
             }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
-            return profileInfoReuse()
-            
-        case 1:
-            return listHeadersReuse()
-            
-        case 2:
-            if isCurrentUserProfile && soundType == "uploads" {
-                return newSoundReuse()
-            } else {
-                return soundsReuse(indexPath)
-            }
-            
-        default:
-            return soundsReuse(indexPath)
         }
     }
     
@@ -414,28 +391,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
+    func shareProfile() {
+        if let artist = profileArtist {
+            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+        }
+    }
+    
     //mark: button actions
-    func setUpNavigationButtons(_ userId: String) {
-        if let currentUser = self.currentUser {
-            if currentUser.objectId! == userId {
-                let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
-                
-                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
-                self.navigationItem.rightBarButtonItems = [menuButton, shareButton]
-                
-            } else {
-                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
-                self.navigationItem.rightBarButtonItem = shareButton
-            }
+    func setUpNavigationButtons() {
+        if isCurrentUserProfile && self.currentUser != nil {
+            let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
+            self.navigationItem.rightBarButtonItem = menuButton
+            
+            let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
+            self.navigationItem.leftBarButtonItem = dismissButton
             
         } else {
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
-        }
-        
-        if profileArtist == nil {
-            let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
-            self.navigationItem.leftBarButtonItem = dismissButton
         }
     }
     
@@ -478,19 +451,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
-        if let artist = profileArtist {
-            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
-        }
+        shareProfile()
     }
     
     @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
-        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
-            PFUser.logOut()
-            self.dismiss(animated: true, completion: nil)
-        }))
-        self.present(menuAlert, animated: true, completion: nil)
+        if let container = self.so_containerViewController {
+            container.isSideViewControllerPresented = true
+        }
     }
     
     @objc func didPressMySoundType(_ sender: UIButton) {

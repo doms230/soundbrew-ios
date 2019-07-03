@@ -15,13 +15,14 @@ ${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework
 ${BUILT_PRODUCTS_DIR}/PINOperation/PINOperation.framework
 ${BUILT_PRODUCTS_DIR}/Parse/Parse.framework
 ${BUILT_PRODUCTS_DIR}/ShareInstagram/ShareInstagram.framework
+${BUILT_PRODUCTS_DIR}/SidebarOverlay/SidebarOverlay.framework
 ${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKBitmojiKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKCoreKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKCreativeKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework
+${BUILT_PRODUCTS_DIR}/Stripe/Stripe.framework
 ${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework
 ${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework
 ${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework
-${BUILT_PRODUCTS_DIR}/Zip/Zip.framework
 ${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework

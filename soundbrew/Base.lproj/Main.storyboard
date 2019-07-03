@@ -10,6 +10,21 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Add Funds View Controller-->
+        <scene sceneID="yMB-m9-2Wb">
+            <objects>
+                <viewController id="1du-u4-rT6" customClass="AddFundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="e8b-dp-1c2">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="OXq-VS-SbB"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pyG-2h-fp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1142" y="688"/>
+        </scene>
         <!--Upload Sound Audio View Controller-->
         <scene sceneID="54r-NH-38P">
             <objects>
@@ -28,7 +43,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-448" y="-35"/>
+            <point key="canvasLocation" x="-249" y="688"/>
         </scene>
         <!--Sound Info View Controller-->
         <scene sceneID="R29-0C-CbA">
@@ -46,7 +61,37 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="507" y="-35"/>
+            <point key="canvasLocation" x="-249" y="1379"/>
+        </scene>
+        <!--Container View Controller-->
+        <scene sceneID="Sfx-x4-dys">
+            <objects>
+                <viewController id="SLi-Nt-QNQ" customClass="ContainerViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xgc-0j-19W">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="IKx-id-dcd"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nfq-Si-Szj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1086" y="-1483"/>
+        </scene>
+        <!--Settings View Controller-->
+        <scene sceneID="hGd-cC-7F9">
+            <objects>
+                <viewController storyboardIdentifier="rightScreen" id="x4F-XS-TSO" customClass="SettingsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1SG-aW-yZS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="bon-at-GK8"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wfq-qW-WRs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-249" y="-1483"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -64,11 +109,12 @@
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="Lzr-CP-43Y"/>
                         <segue destination="4ef-dR-Glj" kind="presentation" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                         <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
+                        <segue destination="elo-Tc-Pq8" kind="show" identifier="showPayments" id="lGI-Ui-nIW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="77" y="-800"/>
+            <point key="canvasLocation" x="-249" y="-697"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -88,7 +134,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2322" y="-35"/>
+            <point key="canvasLocation" x="735" y="688"/>
         </scene>
         <!--Edit Bio View Controller-->
         <scene sceneID="UXW-zh-5xg">
@@ -104,7 +150,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tvS-2b-70E" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3246" y="688"/>
+            <point key="canvasLocation" x="735" y="2068"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="kGU-t6-6qU">
@@ -122,7 +168,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jvL-th-QNN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1328" y="-800"/>
+            <point key="canvasLocation" x="736" y="-697"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="M20-Wr-7YN">
@@ -140,8 +186,8 @@
                     <navigationItem key="navigationItem" id="bkc-Sl-S7V"/>
                     <connections>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showPlaylist" id="Rdg-RZ-Gre"/>
-                        <segue destination="vdK-at-bld" kind="presentation" identifier="showProfile" id="4si-ci-jir"/>
                         <segue destination="kcj-NS-3Uc" kind="presentation" identifier="showWelcome" id="ayD-qA-ekX"/>
+                        <segue destination="SLi-Nt-QNQ" kind="presentation" identifier="showProfile" id="Ui6-bU-jfw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -151,7 +197,7 @@
         <!--Navigation Controller-->
         <scene sceneID="XyK-yh-w2g">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vdK-at-bld" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="topScreen" automaticallyAdjustsScrollViewInsets="NO" id="vdK-at-bld" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="profile" selectedImage="profile_filled" id="Bi3-tx-5zH">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
@@ -168,7 +214,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q7s-df-FU1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="77" y="-1544"/>
+            <point key="canvasLocation" x="-1141" y="-713"/>
         </scene>
         <!--Home-->
         <scene sceneID="fPV-tP-H57">
@@ -209,7 +255,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nXJ-NO-8er" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1403" y="-35"/>
+            <point key="canvasLocation" x="735" y="-35"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="LMc-NU-utU">
@@ -228,7 +274,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xm3-aw-Ekz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2322" y="688"/>
+            <point key="canvasLocation" x="735" y="1379"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="LYJ-Ge-DSD">
@@ -252,6 +298,24 @@
             </objects>
             <point key="canvasLocation" x="-899" y="-2360"/>
         </scene>
+        <!--Payments View Controller-->
+        <scene sceneID="TW7-cw-zAG">
+            <objects>
+                <viewController id="elo-Tc-Pq8" customClass="PaymentsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="TO7-qN-ndB">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="ZiE-yQ-tAc"/>
+                    </view>
+                    <connections>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Gb1-aa-qAh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ajh-Ry-HME" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1142" y="-35"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="rcF-xS-UMx">
             <objects>
@@ -269,7 +333,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bcv-xe-OI8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1249" y="-35"/>
+            <point key="canvasLocation" x="-249" y="-35"/>
         </scene>
         <!--Welcome View Controller-->
         <scene sceneID="MDQ-uK-ba3">
@@ -458,10 +522,10 @@
         <image name="profile_filled" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="R2f-kq-OtV"/>
-        <segue reference="hAI-d0-wwO"/>
+        <segue reference="ayD-qA-ekX"/>
+        <segue reference="XjQ-ls-dhp"/>
         <segue reference="daa-iD-mz7"/>
-        <segue reference="3jW-Fd-CA3"/>
-        <segue reference="SpB-6h-026"/>
+        <segue reference="clB-kw-cXy"/>
+        <segue reference="Lzr-CP-43Y"/>
     </inferredMetricsTieBreakers>
 </document>

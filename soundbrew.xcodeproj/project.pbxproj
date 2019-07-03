@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
-		F203C76A225467A80050F113 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F203C769225467A80050F113 /* StoreKit.framework */; };
 		F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* SoundArtImage.swift */; };
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
@@ -30,8 +29,9 @@
 		F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */; };
 		F26898A6215B527900C21663 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26898A5215B527900C21663 /* Sound.swift */; };
 		F268992B21753A3B00C21663 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F268992A21753A3B00C21663 /* Tag.swift */; };
-		F26CFF80229F0DDB00D01627 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26CFF7F229F0DDB00D01627 /* SearchViewController.swift */; };
 		F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A9861222FA5F200C96EED /* EditBioViewController.swift */; };
+		F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BE03EC22CAD610009A5760 /* Payment.swift */; };
+		F2BE03EF22CAF46B009A5760 /* TipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BE03EE22CAF46B009A5760 /* TipViewController.swift */; };
 		F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */; };
 		F2E5081C21FFC5A200985E34 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* PlaylistViewController.swift */; };
 		F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */; };
@@ -47,6 +47,10 @@
 		F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */; };
 		F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */; };
 		F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B9A621DBFBE30024AFB6 /* Artist.swift */; };
+		F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14C722CBF99600ED157E /* ContainerViewController.swift */; };
+		F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */; };
+		F2FB14CF22CC107A00ED157E /* PaymentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14CE22CC107A00ED157E /* PaymentsViewController.swift */; };
+		F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -124,7 +128,6 @@
 		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
-		F203C769225467A80050F113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F203C76B225D7ED80050F113 /* SoundArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundArtImage.swift; sourceTree = "<group>"; };
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
@@ -149,12 +152,13 @@
 		F268988B215AEF9000C21663 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F268989B215AF88200C21663 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		F268989D215AF8F100C21663 /* UIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIElement.swift; sourceTree = "<group>"; };
-		F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTagsViewController.swift; sourceTree = "<group>"; };
+		F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ChooseTagsViewController.swift; path = "../New Group/ChooseTagsViewController.swift"; sourceTree = "<group>"; };
 		F26898A5215B527900C21663 /* Sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
 		F26898F0216B874C00C21663 /* soundbrew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = soundbrew.entitlements; sourceTree = "<group>"; };
-		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
-		F26CFF7F229F0DDB00D01627 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		F268992A21753A3B00C21663 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Tag.swift; path = "../New Group/Tag.swift"; sourceTree = "<group>"; };
 		F28A9861222FA5F200C96EED /* EditBioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBioViewController.swift; sourceTree = "<group>"; };
+		F2BE03EC22CAD610009A5760 /* Payment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payment.swift; sourceTree = "<group>"; };
+		F2BE03EE22CAF46B009A5760 /* TipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipViewController.swift; sourceTree = "<group>"; };
 		F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewUsernameViewController.swift; path = ../NewUsernameViewController.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemporaryFile.swift; sourceTree = "<group>"; };
@@ -170,6 +174,10 @@
 		F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		F2F8B9A621DBFBE30024AFB6 /* Artist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
+		F2FB14C722CBF99600ED157E /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
+		F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		F2FB14CE22CC107A00ED157E /* PaymentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsViewController.swift; sourceTree = "<group>"; };
+		F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFundsViewController.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -180,7 +188,6 @@
 			files = (
 				F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */,
 				FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */,
-				F203C76A225467A80050F113 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,7 +227,6 @@
 			isa = PBXGroup;
 			children = (
 				F246999A22A82EEE0020497E /* AuthenticationServices.framework */,
-				F203C769225467A80050F113 /* StoreKit.framework */,
 				921914671D6205F63B619F10 /* Pods_soundbrew.framework */,
 				F246995222A8273E0020497E /* Swifter.xcodeproj */,
 				A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */,
@@ -303,8 +309,6 @@
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
-				F268992A21753A3B00C21663 /* Tag.swift */,
-				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
 				F268989A215AF87200C21663 /* UI */,
@@ -346,9 +350,11 @@
 			children = (
 				F268989B215AF88200C21663 /* Color.swift */,
 				F268989D215AF8F100C21663 /* UIElement.swift */,
-				F2E5081B21FFC5A200985E34 /* PlaylistViewController.swift */,
-				F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */,
-				F26CFF7F229F0DDB00D01627 /* SearchViewController.swift */,
+				F2BE03EE22CAF46B009A5760 /* TipViewController.swift */,
+				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
+				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
+				F2FB14CD22CC106100ED157E /* Payment */,
+				F2FB14CB22CBFBFF00ED157E /* Main */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
@@ -388,12 +394,41 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
 				F28A9861222FA5F200C96EED /* EditBioViewController.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		F2FB14CB22CBFBFF00ED157E /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				F2E5081B21FFC5A200985E34 /* PlaylistViewController.swift */,
+				F2FB14D022CC142C00ED157E /* Tag */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		F2FB14CD22CC106100ED157E /* Payment */ = {
+			isa = PBXGroup;
+			children = (
+				F2BE03EC22CAD610009A5760 /* Payment.swift */,
+				F2FB14CE22CC107A00ED157E /* PaymentsViewController.swift */,
+				F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */,
+			);
+			path = Payment;
+			sourceTree = "<group>";
+		};
+		F2FB14D022CC142C00ED157E /* Tag */ = {
+			isa = PBXGroup;
+			children = (
+				F268992A21753A3B00C21663 /* Tag.swift */,
+				F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */,
+			);
+			path = Tag;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -472,6 +507,9 @@
 						CreatedOnToolsVersion = 10.0;
 						LastSwiftMigration = 1020;
 						SystemCapabilities = {
+							com.apple.ApplePay = {
+								enabled = 1;
+							};
 							com.apple.AutoFillCredentialProvider = {
 								enabled = 1;
 							};
@@ -479,7 +517,7 @@
 								enabled = 1;
 							};
 							com.apple.InAppPurchase = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.Keychain = {
 								enabled = 0;
@@ -705,7 +743,6 @@
 				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
-				F26CFF80229F0DDB00D01627 /* SearchViewController.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
 				F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */,
@@ -713,7 +750,9 @@
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
+				F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* PlaylistViewController.swift in Sources */,
+				F2FB14CF22CC107A00ED157E /* PaymentsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
 				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
@@ -721,12 +760,16 @@
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
+				F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */,
+				F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
+				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */,
+				F2BE03EF22CAF46B009A5760 /* TipViewController.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

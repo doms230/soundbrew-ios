@@ -20,7 +20,7 @@ target 'soundbrew' do
   pod 'SnapKit'
   pod 'Parse'
   pod 'NVActivityIndicatorView'
-  #pod 'SidebarOverlay'
+  pod 'SidebarOverlay'
   #pod 'TagListView'
   pod 'Kingfisher'
   pod 'Alamofire'
@@ -37,5 +37,6 @@ target 'soundbrew' do
   pod 'FacebookCore', '~> 0.5.0'
   pod 'FacebookLogin', '~> 0.5.0'
   pod 'FacebookShare', '~> 0.5.0'
-  pod 'Zip'
+  #pod 'Zip'
+  pod 'Stripe'
 end

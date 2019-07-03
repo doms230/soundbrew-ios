@@ -4,8 +4,6 @@
 //
 //  Created by Dominic  Smith on 9/25/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
-// "${PODS_ROOT}/Fabric/run"
-// $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
 
 import UIKit
 import Parse
@@ -17,6 +15,7 @@ import StoreKit
 import Firebase
 import TwitterKit
 import FacebookCore
+import Stripe
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -33,6 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         
         SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
+        let config = STPPaymentConfiguration.shared()
+        config.publishableKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
+        config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
+        config.companyName = "Soundbrew Artists"
         
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"

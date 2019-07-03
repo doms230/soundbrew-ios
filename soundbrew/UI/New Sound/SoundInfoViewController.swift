@@ -17,7 +17,7 @@ import FirebaseDynamicLinks
 import FacebookCore
 import FacebookLogin
 import FacebookShare
-import Zip
+//import Zip
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate {
     
@@ -545,7 +545,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var didStartCompressingAudio = false
     
-    func compressAudio() {
+    /*func compressAudio() {
         didStartCompressingAudio = true 
         do {
             let zipFilePath = try TemporaryFile(creatingTempDirectoryForFilename: self.soundFileURL.lastPathComponent)
@@ -562,7 +562,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } catch let error {
             print(error.localizedDescription)
         }
-    }
+    }*/
     
     func processAudioForDatabase(_ zipFilePath: TemporaryFile?) {
         do {
