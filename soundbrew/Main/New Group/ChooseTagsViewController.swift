@@ -23,6 +23,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveDynamicLink), name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
         checkForProfileDynamicLink()
+        getCustomerId()
     }
     
     @objc func didReceiveDynamicLink() {
@@ -57,7 +58,15 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         handleTagsForDismissal()
     }
     
-    //MARK: Profile Button
+    //MARK: Profile
+    func getCustomerId() {
+        if let currentUserId = PFUser.current()?.objectId {
+            let customer = Customer.shared
+            if customer.customerId == nil {
+                customer.getCustomerId(currentUserId)
+            }
+        }
+    }
     @objc func didPressProfileButton(_ sender: UIBarButtonItem) {
         if PFUser.current() == nil {
             self.uiElement.signupRequired("Welcome To Soundbrew!", message: "Sign up or Sign in to view your profile and upload music to Soundbrew.", target: self)

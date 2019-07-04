@@ -8,6 +8,7 @@
 
 import UIKit
 import Stripe
+import Parse
 
 class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
@@ -24,7 +25,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     var paymentContext: STPPaymentContext!
     
     func setupPaymentContext() {
-        let customerContext = STPCustomerContext(keyProvider: Payment.shared)
+        let customer = Customer.shared
+        let customerContext = STPCustomerContext(keyProvider: customer)
         paymentContext = STPPaymentContext(customerContext: customerContext)
         self.paymentContext.delegate = self
         self.paymentContext.hostViewController = self
@@ -44,6 +46,11 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
+        
+    }
+    
+    //
+    func addCardViewControllerDidCancel(_ addCardViewController: STPAddCardViewController) {
         
     }
     
@@ -151,6 +158,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }()
     @objc func didPressAddCardButton(_ sender: UIButton) {
         self.paymentContext.presentPaymentOptionsViewController()
+        /*if let currentUser = PFUser.current() {
+            let customer = Customer.shared
+            customer.create(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!)
+        }*/
     }
     
     lazy var cardImage: UIImageView = {

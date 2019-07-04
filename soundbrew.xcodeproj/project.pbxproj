@@ -51,6 +51,7 @@
 		F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */; };
 		F2FB14CF22CC107A00ED157E /* PaymentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14CE22CC107A00ED157E /* PaymentsViewController.swift */; };
 		F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */; };
+		F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D322CD1A1900ED157E /* Customer.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -178,6 +179,7 @@
 		F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F2FB14CE22CC107A00ED157E /* PaymentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsViewController.swift; sourceTree = "<group>"; };
 		F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFundsViewController.swift; sourceTree = "<group>"; };
+		F2FB14D322CD1A1900ED157E /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -307,11 +309,17 @@
 				F2689875215AEF9000C21663 /* Info.plist */,
 				F2689870215AEF9000C21663 /* Assets.xcassets */,
 				F2689869215AEF8F00C21663 /* AppDelegate.swift */,
+				F268989B215AF88200C21663 /* Color.swift */,
+				F268989D215AF8F100C21663 /* UIElement.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
+				F23C620F21DC34DB005C9FF0 /* Login */,
+				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
+				F2F8B9A321DBEF690024AFB6 /* Profile */,
+				F2FB14CB22CBFBFF00ED157E /* Main */,
+				F2FB14CD22CC106100ED157E /* Payment */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
-				F268989A215AF87200C21663 /* UI */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
@@ -343,23 +351,6 @@
 				F203C76B225D7ED80050F113 /* SoundArtImage.swift */,
 			);
 			path = Sound;
-			sourceTree = "<group>";
-		};
-		F268989A215AF87200C21663 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				F268989B215AF88200C21663 /* Color.swift */,
-				F268989D215AF8F100C21663 /* UIElement.swift */,
-				F2BE03EE22CAF46B009A5760 /* TipViewController.swift */,
-				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
-				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
-				F2FB14CD22CC106100ED157E /* Payment */,
-				F2FB14CB22CBFBFF00ED157E /* Main */,
-				F2F8B9A321DBEF690024AFB6 /* Profile */,
-				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
-				F23C620F21DC34DB005C9FF0 /* Login */,
-			);
-			path = UI;
 			sourceTree = "<group>";
 		};
 		F2E6E4F522A5934900B4537D /* New Group1 */ = {
@@ -394,7 +385,9 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
+				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
@@ -415,7 +408,9 @@
 		F2FB14CD22CC106100ED157E /* Payment */ = {
 			isa = PBXGroup;
 			children = (
+				F2FB14D322CD1A1900ED157E /* Customer.swift */,
 				F2BE03EC22CAD610009A5760 /* Payment.swift */,
+				F2BE03EE22CAF46B009A5760 /* TipViewController.swift */,
 				F2FB14CE22CC107A00ED157E /* PaymentsViewController.swift */,
 				F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */,
 			);
@@ -751,6 +746,7 @@
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
 				F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */,
+				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* PlaylistViewController.swift in Sources */,
 				F2FB14CF22CC107A00ED157E /* PaymentsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,

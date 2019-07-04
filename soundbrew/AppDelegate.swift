@@ -41,7 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
-            $0.server = "https://www.soundbrew.app/parse"
+           // $0.server = "https://www.soundbrew.app/parse"
+            $0.server = "http://192.168.1.68:3000/parse"
         }
         Parse.initialize(with: configuration)
 
