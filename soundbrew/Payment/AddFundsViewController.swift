@@ -30,11 +30,14 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         paymentContext = STPPaymentContext(customerContext: customerContext)
         self.paymentContext.delegate = self
         self.paymentContext.hostViewController = self
-        self.paymentContext.paymentAmount = 5000
+        self.paymentContext.paymentCurrency = "usd"
+        
     }
     
     func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
-
+        self.purchaseButton.isEnabled = paymentContext.selectedPaymentOption != nil
+        self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
+        self.cardImage.image = paymentContext.selectedPaymentOption?.image
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFailToLoadWithError error: Error) {
@@ -42,11 +45,23 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPErrorBlock) {
-        
+        if let currentUser = PFUser.current() {
+            let payment = Payment.shared
+            payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentContext.paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID)
+        }
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
-        
+        switch status {
+        case .error:
+            print(error!.localizedDescription)
+        case .success:
+            print("success")
+        case .userCancellation:
+            return // Do nothing
+        default:
+            return
+        }
     }
     
     //
@@ -87,8 +102,11 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         self.paymentProcessingFee.text = "$\(processingFee!)"
         
         var total = funds + processingFee
-        total = roundTwoDecimalPlaces(processingFee)
+        total = roundTwoDecimalPlaces(total)
         self.total.text = "$\(total)"
+        
+        let totalInCents = total * Double(100)
+        self.paymentContext.paymentAmount = Int(totalInCents)
     }
     
     func roundTwoDecimalPlaces(_ x: Double) -> Double {
@@ -158,10 +176,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }()
     @objc func didPressAddCardButton(_ sender: UIButton) {
         self.paymentContext.presentPaymentOptionsViewController()
-        /*if let currentUser = PFUser.current() {
-            let customer = Customer.shared
-            customer.create(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!)
-        }*/
     }
     
     lazy var cardImage: UIImageView = {
@@ -191,6 +205,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
     lazy var purchaseButton: UIButton = {
         let button = UIButton()
+        button.isEnabled = false
         button.backgroundColor = color.blue()
         button.setTitle("Purchase", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -199,7 +214,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }()
     
     @objc func didPressPurchaseButton(_ sender: UIButton) {
-        
+        self.paymentContext.requestPayment()
     }
     
     func setupView() {
