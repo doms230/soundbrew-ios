@@ -16,10 +16,10 @@ class Payment: NSObject {
     let uiElement = UIElement()
     static let shared = Payment()
 
-    //let baseURL = URL(string: "https://www.soundbrew.app/payments/")
-    let baseURL = URL(string: "http://192.168.1.68:3000/payments/")
+    let baseURL = URL(string: "https://www.soundbrew.app/payments/")
+    //let baseURL = URL(string: "http://192.168.1.68:3000/payments/")
     
-    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, processingFee: Int, target: UIViewController) {
+    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, completion: @escaping (Error?) -> Void) {
         let url = self.baseURL!.appendingPathComponent("charge")
         let customer = Customer.shared
         let parameters: Parameters = [
@@ -41,13 +41,11 @@ class Payment: NSObject {
                     print(json)
                     if let status = json["status"].string {
                         if status == "succeeded" {
-                            let newFunds = amount - processingFee
-                            customer.updateBalance(newFunds, objectId: objectId)
-                            self.uiElement.goBackToPreviousViewController(target)
+                            completion(nil)
                         }
                     }
                 case .failure(let error):
-                    print(error)
+                    completion(error)
                 }
         }
     }

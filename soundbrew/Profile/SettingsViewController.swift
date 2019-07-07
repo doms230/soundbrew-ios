@@ -104,11 +104,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case 0:
-            showPayments("payments")
+            showEarningsOrPayments("payments")
             break
             
         case 1:
-            showPayments("earnings")
+            showEarningsOrPayments("earnings")
             break
             
         case 2:
@@ -131,13 +131,17 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func showPayments(_ paymentType: String) {
+    func showEarningsOrPayments(_ paymentType: String) {
         if let container = self.so_containerViewController {
             container.isSideViewControllerPresented = false
             if let topView = container.topViewController as? UINavigationController {
                 if let view = topView.topViewController as? ProfileViewController {
                     view.paymentType = paymentType
-                    view.performSegue(withIdentifier: "showPayments", sender: self)
+                    if paymentType == "payments" {
+                        view.performSegue(withIdentifier: "showPayments", sender: self)
+                    } else {
+                        view.performSegue(withIdentifier: "showEarnings", sender: self)
+                    }
                 }
             }
         }
@@ -150,12 +154,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         switch indexPath.row {
         case 0:
             cell.displayNameLabel.text = "Payments"
-            //TODO: add image
+            cell.profileImage.image = UIImage(named: "payments")
             break
             
         case 1:
             cell.displayNameLabel.text = "Earnings"
-            //TODO: add image
+            cell.profileImage.image = UIImage(named: "earnings")
             break
             
         case 2:

@@ -110,6 +110,7 @@
                         <segue destination="4ef-dR-Glj" kind="presentation" identifier="showUploadSound" id="XjQ-ls-dhp"/>
                         <segue destination="Rq2-Vz-me1" kind="show" identifier="showProfile" id="ZJ9-R5-Hqk"/>
                         <segue destination="elo-Tc-Pq8" kind="show" identifier="showPayments" id="lGI-Ui-nIW"/>
+                        <segue destination="zJZ-n2-4Wd" kind="show" identifier="showEarnings" id="BKO-L0-YHL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -298,6 +299,21 @@
             </objects>
             <point key="canvasLocation" x="-899" y="-2360"/>
         </scene>
+        <!--Earnings View Controller-->
+        <scene sceneID="wwU-qi-IOl">
+            <objects>
+                <viewController id="zJZ-n2-4Wd" customClass="EarningsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3Pe-9L-Qec">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="MY4-QU-ZFk"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="C20-sp-m9d" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1935" y="-20"/>
+        </scene>
         <!--Payments View Controller-->
         <scene sceneID="TW7-cw-zAG">
             <objects>
@@ -314,7 +330,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ajh-Ry-HME" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1142" y="-35"/>
+            <point key="canvasLocation" x="-1142" y="-20"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="rcF-xS-UMx">
@@ -333,7 +349,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bcv-xe-OI8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-249" y="-35"/>
+            <point key="canvasLocation" x="-249" y="-20"/>
         </scene>
         <!--Welcome View Controller-->
         <scene sceneID="MDQ-uK-ba3">

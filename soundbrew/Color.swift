@@ -40,8 +40,9 @@ class Color {
         //return uicolorFromHex(0x378869)
     }
     
-    func blue() -> UIColor {
-        return uicolorFromHex(0x0066ff)
+    func blue() -> UIColor { 
+        return uicolorFromHex(0x1243b5)
+       // return uicolorFromHex(0x0066ff)
     }
     
     func green() -> UIColor {

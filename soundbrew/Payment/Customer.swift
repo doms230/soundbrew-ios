@@ -19,8 +19,9 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
 
     var id: String?
     var balance: Int?
-    //let baseURL = URL(string: "https://www.soundbrew.app/customers/")
-    let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
+    let starbucksIP = "172.31.99.54"
+    let baseURL = URL(string: "https://www.soundbrew.app/customers/")
+    //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         let url = self.baseURL!.appendingPathComponent("ephemeral_keys")

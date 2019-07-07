@@ -79,9 +79,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.prepareToShowSelectedArtist(segue)
             break
             
-        case "showPayments":
-            let view = segue.destination as! PaymentsViewController
-            view.paymentType = paymentType
+        case "showPayments", "showEarnings":
+            //let view = segue.destination as! PaymentsViewController
+            //view.paymentType = paymentType
             let backItem = UIBarButtonItem()
             backItem.title = paymentType.capitalized
             navigationItem.backBarButtonItem = backItem

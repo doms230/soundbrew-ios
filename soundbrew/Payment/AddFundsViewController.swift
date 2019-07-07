@@ -48,15 +48,40 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPErrorBlock) {
         if let currentUser = PFUser.current() {
             let payment = Payment.shared
-            payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentContext.paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID, processingFee: processingFee, target: self)
+            let paymentAmount = paymentContext.paymentAmount
+            payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID) { [weak self] (error) in
+                
+                guard let strongSelf = self else {
+                    // View controller was deallocated
+                    return
+                }
+                
+                guard error == nil else {
+                    // Error while requesting ride
+                    completion(error)
+                    return
+                }
+                
+                completion(nil)
+            }
+            //payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentContext.paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID, processingFee: processingFee, target: self)
+            
+            /*let newFunds = amount - processingFee
+            customer.updateBalance(newFunds, objectId: objectId)
+            self.uiElement.goBackToPreviousViewController(target)*/
         }
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
         switch status {
         case .error:
-            print(error!.localizedDescription)
+            //print(error!.localizedDescription)
+            self.uiElement.showAlert("Issue With Charge", message: error!.localizedDescription, target: self)
         case .success:
+            let newFunds = paymentContext.paymentAmount - self.processingFee
+            let customer = Customer.shared
+            customer.updateBalance(newFunds, objectId: PFUser.current()!.objectId!)
+            self.uiElement.goBackToPreviousViewController(self)
             print("success")
         case .userCancellation:
             return // Do nothing

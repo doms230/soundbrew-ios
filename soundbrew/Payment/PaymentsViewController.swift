@@ -38,20 +38,29 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //MARK: UI
+    lazy var paymentView: UIImageView = {
+        let image = UIImageView()
+        image.layer.cornerRadius = 5
+        image.clipsToBounds = true
+        image.image = UIImage(named: "background")
+        return image
+    }()
+    
     lazy var paymentLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
+        label.text = "Loading..."
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 50)
         label.textAlignment = .center
-        label.textColor = color.black()
+        label.textColor = .white
         return label
     }()
     
     lazy var paymentButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = color.lightGray()
-        button.setTitleColor(color.black(), for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
-        button.layer.cornerRadius = 3
+        button.backgroundColor = color.blue()
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        button.layer.cornerRadius = 5
         button.clipsToBounds = true
         return button
     }()
@@ -61,31 +70,36 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = color.black()
         label.numberOfLines = 0
+        label.textAlignment = .center
         return label
     }()
     
     func setupPaymentView() {
-        self.view.addSubview(paymentLabel)
-        paymentLabel.snp.makeConstraints { (make) -> Void in
+        
+        self.view.addSubview(paymentView)
+        paymentView.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(self.view.frame.height * (1/3) - 10)
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        if paymentType == "payments" {
-            paymentButton.setTitle("Add Funds", for: .normal)
-            paymentsSubLabel.text = "Add funds to tip artists for their music."
-            
-        } else {
-            paymentButton.setTitle("Add Bank Account", for: .normal)
-            paymentsSubLabel.text = "Earnings are deposited to your bank account on a weekly basis."
+        self.paymentView.addSubview(paymentLabel)
+        paymentLabel.snp.makeConstraints { (make) -> Void in
+            //make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.centerY.equalTo(paymentView)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
+        
+        paymentButton.setTitle("Add Funds", for: .normal)
+        paymentsSubLabel.text = "Add funds to tip artists for their music."
         
         self.view.addSubview(paymentButton)
         paymentButton.addTarget(target, action: #selector(didPressPaymentButton(_:)), for: .touchUpInside)
         paymentButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.top.equalTo(paymentLabel.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(paymentView.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -101,9 +115,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @objc func didPressPaymentButton(_ sender: UIButton) {
-        if paymentType == "payments" {
-            self.performSegue(withIdentifier: "showAddFunds", sender: self)
-        }
+        self.performSegue(withIdentifier: "showAddFunds", sender: self)
     }
     
     //MARK: Tableview
@@ -137,12 +149,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         tableView.separatorStyle = .none
         
-        if paymentType == "payments" {
-            cell.displayNameLabel.text = "Artists You Backed"
-            
-        } else {
-            cell.displayNameLabel.text = "Backers"
-        }
+        cell.displayNameLabel.text = "Artists You Backed"
 
         return cell
     }

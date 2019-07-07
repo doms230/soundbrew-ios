@@ -433,6 +433,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             }
                         
                             artistDelegate.newArtistInfo(artist)
+                            
+                            let customer = Customer.shared
+                            customer.update(artist.email!, name: artist.username!)
                         }
                         self.dismiss(animated: true, completion: nil)
                         
