@@ -15,10 +15,12 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     let color = Color()
     let uiElement = UIElement()
     
+    var processingFee: Int!
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupPaymentContext()
+        updateTotalAndProcessingFee(1)
     }
     
     //mark: payments
@@ -31,7 +33,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         self.paymentContext.delegate = self
         self.paymentContext.hostViewController = self
         self.paymentContext.paymentCurrency = "usd"
-        
     }
     
     func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
@@ -47,7 +48,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPErrorBlock) {
         if let currentUser = PFUser.current() {
             let payment = Payment.shared
-            payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentContext.paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID)
+            payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentContext.paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID, processingFee: processingFee, target: self)
         }
     }
     
@@ -79,7 +80,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }()
     @objc func didPressFundsSegmentButton(_ sender: UISegmentedControl) {
         var funds: Double!
-        var processingFee: Double!
+        
         switch sender.selectedSegmentIndex {
         case 0:
             funds = 1
@@ -97,9 +98,18 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             break
         }
         
+        updateTotalAndProcessingFee(funds)
+    }
+    
+    func updateTotalAndProcessingFee(_ funds: Double) {
+        var processingFee: Double!
+        
         processingFee = (funds * 0.029) + 0.30
         processingFee = roundTwoDecimalPlaces(processingFee)
+        
         self.paymentProcessingFee.text = "$\(processingFee!)"
+        let processingFeeInCents = processingFee * Double(100)
+        self.processingFee = Int(processingFeeInCents)
         
         var total = funds + processingFee
         total = roundTwoDecimalPlaces(total)

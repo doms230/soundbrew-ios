@@ -20,6 +20,15 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         setupPaymentView()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        let customer = Customer.shared
+        if let balance = customer.balance {
+            let balanceInDollars = Double(balance) / 100.00
+            let doubleStr = String(format: "%.2f", balanceInDollars)
+            paymentLabel.text = "$\(doubleStr)"
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showAddFunds" {
             let backItem = UIBarButtonItem()
@@ -32,7 +41,6 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     lazy var paymentLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
-        label.text = "$0.00"
         label.textAlignment = .center
         label.textColor = color.black()
         return label

@@ -49,7 +49,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else if let currentUser = self.currentUser {
             isCurrentUserProfile = true
             loadUserInfoFromCloud(currentUser.objectId!)
-            setUpNavigationButtons()
         }
     }
     
@@ -514,6 +513,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 var email: String?
                 if user.objectId! == PFUser.current()!.objectId {
                     email = user["email"] as? String
+                    
+                    let customer = Customer.shared
+                    if let customerId = user["customerId"] as? String {
+                        if customerId.isEmpty {
+                            customer.create(user.objectId!, email: email!, name: username!)
+                        } else {
+                            customer.id = customerId
+                        }
+                        
+                    } else {
+                        customer.create(user.objectId!, email: email!, name: username!)
+                    }
+                    
+                    if let balance = user["balance"] as? Int {
+                        customer.balance = balance
+                    } else {
+                        customer.balance = 0
+                    }
                 }
                 
                 let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil)
@@ -552,6 +569,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 self.profileArtist = artist
                 self.executeTableViewSoundListFollowStatus()
+                self.setUpNavigationButtons()
             }
         }
     }

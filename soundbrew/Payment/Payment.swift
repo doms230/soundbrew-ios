@@ -19,7 +19,7 @@ class Payment: NSObject {
     //let baseURL = URL(string: "https://www.soundbrew.app/payments/")
     let baseURL = URL(string: "http://192.168.1.68:3000/payments/")
     
-    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String) {
+    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, processingFee: Int, target: UIViewController) {
         let url = self.baseURL!.appendingPathComponent("charge")
         let customer = Customer.shared
         let parameters: Parameters = [
@@ -28,7 +28,7 @@ class Payment: NSObject {
             "description": description,
             "source": source,
             "metadata": objectId,
-            "customer": "\(customer.customerId!)",
+            "customer": "\(customer.id!)",
             "receipt_email": email
         ]
         
@@ -39,10 +39,13 @@ class Payment: NSObject {
                 case .success(let json):
                     let json = JSON(json)
                     print(json)
-                    /*if let customerId = json["id"].string {
-                        self.customerId = customerId
-                        self.saveCustomerId(objectId, customerId: customerId)
-                    }*/
+                    if let status = json["status"].string {
+                        if status == "succeeded" {
+                            let newFunds = amount - processingFee
+                            customer.updateBalance(newFunds, objectId: objectId)
+                            self.uiElement.goBackToPreviousViewController(target)
+                        }
+                    }
                 case .failure(let error):
                     print(error)
                 }
