@@ -36,6 +36,13 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
+        if paymentContext.selectedPaymentOption == nil {
+            self.purchaseButton.isEnabled = false
+            self.addCardLabel.text = "Add"
+        } else {
+            self.purchaseButton.isEnabled = true
+            self.addCardLabel.text = "Edit"
+        }
         self.purchaseButton.isEnabled = paymentContext.selectedPaymentOption != nil
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
@@ -64,11 +71,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
                 
                 completion(nil)
             }
-            //payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentContext.paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID, processingFee: processingFee, target: self)
-            
-            /*let newFunds = amount - processingFee
-            customer.updateBalance(newFunds, objectId: objectId)
-            self.uiElement.goBackToPreviousViewController(target)*/
         }
     }
     
@@ -231,7 +233,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
     lazy var addCardLabel: UILabel = {
         let label = UILabel()
-        label.text = "Add Card"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = color.blue()
         label.numberOfLines = 0
@@ -242,6 +243,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         let button = UIButton()
         button.isEnabled = false
         button.backgroundColor = color.blue()
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
         button.setTitle("Purchase", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(didPressPurchaseButton(_:)), for: .touchUpInside)

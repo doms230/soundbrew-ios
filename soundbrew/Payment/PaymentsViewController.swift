@@ -55,7 +55,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         return label
     }()
     
-    lazy var paymentButton: UIButton = {
+    lazy var addFundsButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = color.blue()
         button.setTitleColor(.white, for: .normal)
@@ -67,9 +67,8 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     
     lazy var paymentsSubLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.textColor = color.black()
-        label.numberOfLines = 0
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        label.textColor = .white
         label.textAlignment = .center
         return label
     }()
@@ -92,21 +91,21 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        paymentButton.setTitle("Add Funds", for: .normal)
-        paymentsSubLabel.text = "Add funds to tip artists for their music."
-        
-        self.view.addSubview(paymentButton)
-        paymentButton.addTarget(target, action: #selector(didPressPaymentButton(_:)), for: .touchUpInside)
-        paymentButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(paymentView.snp.bottom).offset(uiElement.topOffset)
+        self.paymentView.addSubview(paymentsSubLabel)
+        paymentsSubLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.paymentLabel.snp.top).offset(uiElement.bottomOffset)
         }
         
-        self.view.addSubview(paymentsSubLabel)
-        paymentsSubLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(paymentButton.snp.bottom)
+        addFundsButton.setTitle("Add Funds", for: .normal)
+        paymentsSubLabel.text = "Funds"
+        
+        self.view.addSubview(addFundsButton)
+        addFundsButton.addTarget(target, action: #selector(didPressPaymentButton(_:)), for: .touchUpInside)
+        addFundsButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(paymentView.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -129,7 +128,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         self.tableView.backgroundColor = .white
         self.view.addSubview(tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.paymentsSubLabel.snp.bottom)
+            make.top.equalTo(self.addFundsButton.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)
