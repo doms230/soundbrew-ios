@@ -88,14 +88,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         return searchBar
     }()
     
-    func setUpNavigationBar() {
-        var title = "Done"
-        
+    func setUpNavigationBar() {        
         if let tagType = self.tagType {
             searchBar.placeholder = "Search \(tagType.capitalized) Tags"
         } else {
             searchBar.placeholder = "Search \(featureTagTitles[selectedFeatureTagTypeIndex].capitalized) Tags"
-            title = "Create"
         }
         
         let searchBarItem = UIBarButtonItem(customView: searchBar)
@@ -107,8 +104,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.navigationItem.leftBarButtonItem = searchBarItem
         }
         
-        if tagType == nil || tagType == "more" {
-            let doneButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+        if tagType == nil {
+            let doneButton = UIBarButtonItem(image: UIImage(named: "create"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+            self.navigationItem.rightBarButtonItem = doneButton
+            
+        } else if tagType == "more" {
+            let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
             
         } else {

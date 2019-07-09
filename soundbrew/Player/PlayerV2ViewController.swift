@@ -18,8 +18,8 @@ import Photos
 import NVActivityIndicatorView
 import FirebaseAnalytics
 
-class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
-
+class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource {
+    
     let color = Color()
     let uiElement = UIElement()
     
@@ -48,6 +48,129 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+    
+    //mark: money
+    let tipAmountInCents = [10, 25, 50, 100]
+    var selectedTipAmount = 10
+    var customer = Customer.shared
+    func showSendMoney() {
+        if let sound = self.sound {
+            let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.balance ?? 0, currency: "$")
+            let alertView = UIAlertController(
+                title: "Send \(sound.artist!.username!) a Tip",
+                message: "Current Balance: \(balanceInDollars) \n\n\n\n\n\n\n\n",
+                preferredStyle: .actionSheet)
+            
+            let pickerView = UIPickerView(frame:
+                CGRect(x: 0, y: 45, width: self.view.frame.width, height: 160))
+            pickerView.dataSource = self
+            pickerView.delegate = self
+            alertView.view.addSubview(pickerView)
+            
+            let sendMoneyActionButton = UIAlertAction(title: "Send Tip", style: .default) { (_) -> Void in
+                self.sendTip(sound, tipAmount: self.selectedTipAmount)
+            }
+            alertView.addAction(sendMoneyActionButton)
+            
+             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertView.addAction(cancelAction)
+            
+            present(alertView, animated: true, completion: nil)
+        }
+    }
+    
+    func sendTip(_ sound: Sound, tipAmount: Int) {
+        if customer.balance! >= tipAmount {
+            updateArtistPayment(sound, tipAmount: tipAmount)
+            newTip(sound, tipAmount: tipAmount)
+            customer.updateBalance(-tipAmount, objectId: PFUser.current()!.objectId!)
+            
+        } else {
+            let balance = uiElement.convertCentsToDollarsAndReturnString(customer.balance ?? 0, currency: "$")
+            let tipAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+            
+            let alertView = UIAlertController(
+                title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
+                message: "The selected tip amount exceeds your Soundbrew Balance.",
+                preferredStyle: .alert)
+            
+            let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
+                self.dismiss(animated: true, completion: {() in
+                    
+                })
+            }
+            alertView.addAction(sendMoneyActionButton)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertView.addAction(cancelAction)
+            
+            present(alertView, animated: true, completion: nil)
+        }
+    }
+    
+    func updateArtistPayment(_ sound: Sound, tipAmount: Int) {
+        if let artistObjectId = sound.artist?.objectId {
+            let query = PFQuery(className: "Payment")
+            query.whereKey("userId", equalTo: artistObjectId)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if error != nil {
+                    self.newArtistPaymentRow(artistObjectId, tipAmount: tipAmount)
+                    
+                } else if let object = object {
+                    object.incrementKey("tipsSinceLastPayout", byAmount: NSNumber(value: tipAmount))
+                    object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        if error != nil {
+                            self.customer.updateBalance(tipAmount, objectId: PFUser.current()!.objectId!)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
+        let newPaymentRow = PFObject(className: "Tip")
+        newPaymentRow["userId"] = artistObjectId
+        newPaymentRow["tipsSinceLastPayout"] = tipAmount
+        newPaymentRow["tips"] = tipAmount
+        newPaymentRow.saveEventually {
+            (success: Bool, error: Error?) in
+            if error != nil {
+                self.customer.updateBalance(tipAmount, objectId: PFUser.current()!.objectId!)
+            }
+        }
+    }
+    
+    func newTip(_ sound: Sound, tipAmount: Int) {
+        let newTip = PFObject(className: "Tip")
+        newTip["fromUserId"] = PFUser.current()!.objectId!
+        newTip["toUserId"] = sound.artist?.objectId
+        newTip["amount"] = tipAmount
+        newTip["soundId"] = sound.objectId
+        newTip.saveEventually()
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return tipAmountInCents.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        let balanceInDollars = Double(tipAmountInCents[row]) / 100.00
+        let doubleStr = String(format: "%.2f", balanceInDollars)
+        return "$\(doubleStr)"
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        print(tipAmountInCents[row])
+        selectedTipAmount = tipAmountInCents[row]
     }
     
     //mark: sound
@@ -222,6 +345,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var exitButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "dismiss"), for: .normal)
+        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
@@ -249,6 +373,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         button.setTitle("Artist Name", for: .normal)
         button.setTitleColor(.darkGray, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        button.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressArtistNameButton(_ sender: UIButton) {
@@ -266,6 +391,16 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     }()
     @objc func didpressTagButton(_ sender: UIButton) {
         //TODO: add tag action
+    }
+    
+    lazy var coinButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "sendTip"), for: .normal)
+        button.addTarget(self, action: #selector(self.didPressSendMoneyButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressSendMoneyButton(_ sender: UIButton) {
+        showSendMoney()
     }
     
     lazy var userRelationButton: UIButton = {
@@ -296,6 +431,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     let likeImage = "like"
     lazy var likeButton: UIButton = {
         let button = UIButton()
+        button.addTarget(self, action: #selector(didPressLikeButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressLikeButton(_ sender: UIButton) {
@@ -324,6 +460,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var shareButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "share"), for: .normal)
+        button.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressShareButton(_ sender: UIButton) {
@@ -337,6 +474,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         slider.minimumValue = 0
         slider.tintColor = .darkGray
         slider.value = 0
+        slider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
         return slider
     }()
     
@@ -381,6 +519,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         let button = UIButton()
         button.setImage(UIImage(named: "pause"), for: .normal)
         button.isEnabled = false
+        button.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
@@ -404,6 +543,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         let button = UIButton()
         button.setImage(UIImage(named: "skip"), for: .normal)
         button.isEnabled = false
+        button.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressSkipButton(_ sender: UIButton) {
@@ -418,6 +558,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         let button = UIButton()
         button.setImage(UIImage(named: "goBack"), for: .normal)
         button.isEnabled = false
+        button.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressGoBackButton(_ sender: UIButton) {
@@ -430,12 +571,18 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.backgroundColor = .white
         
         //top views
-        exitButton.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         self.view.addSubview(exitButton)
         exitButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(25)
             make.top.equalTo(self.view).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        self.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         //sound views
@@ -455,7 +602,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }
         
         self.view.addSubview(artistName)
-        artistName.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         artistName.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songTitle.snp.bottom)
             make.left.equalTo(exitButton)
@@ -472,7 +618,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         
         //playback views
         self.view.addSubview(playBackSlider)
-        playBackSlider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
         playBackSlider.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.artistName.snp.bottom)
             make.left.equalTo(exitButton)
@@ -492,7 +637,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }
         
         self.view.addSubview(playBackButton)
-        self.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         playBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(65)
             make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
@@ -500,19 +644,10 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }
         
         self.view.addSubview(goBackButton)
-        goBackButton.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
             make.centerY.equalTo(playBackButton)
             make.centerX.equalTo(self.view).offset(-(55 + uiElement.leftOffset))
-        }
-        
-        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
-        self.view.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.centerY.equalTo(self.goBackButton)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
         /*tagButton.addTarget(self, action: #selector(didpressTagButton(_:)), for: .touchUpInside)
@@ -523,7 +658,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.goBackButton.snp.left).offset(uiElement.rightOffset)
         }*/
         
-        self.skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
@@ -537,10 +671,16 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         } else {
             likeButton.setImage(UIImage(named: likeImage), for: .normal)
         }
-        likeButton.addTarget(self, action: #selector(didPressLikeButton(_:)), for: .touchUpInside)
         self.view.addSubview(likeButton)
         likeButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
+            make.height.width.equalTo(55/2)
+            make.centerY.equalTo(self.goBackButton)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        self.view.addSubview(coinButton)
+        coinButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(55/2)
             make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }

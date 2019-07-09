@@ -270,4 +270,10 @@ class UIElement {
         
         return sound
     }
+    
+    func convertCentsToDollarsAndReturnString(_ cents: Int, currency: String) -> String {
+        let centsToDollars = Double(cents) / 100.00
+        let dollarsProperlyFormattedAsString = String(format: "%.2f", centsToDollars)
+        return "\(currency)\(dollarsProperlyFormattedAsString)"
+    }
 }

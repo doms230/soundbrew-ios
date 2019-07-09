@@ -23,9 +23,10 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidAppear(_ animated: Bool) {
         let customer = Customer.shared
         if let balance = customer.balance {
-            let balanceInDollars = Double(balance) / 100.00
-            let doubleStr = String(format: "%.2f", balanceInDollars)
-            paymentLabel.text = "$\(doubleStr)"
+            //let balanceInDollars = Double(balance) / 100.00
+            //let doubleStr = String(format: "%.2f", balanceInDollars)
+            let balanceAsDollarString = uiElement.convertCentsToDollarsAndReturnString(balance, currency: "$")
+            paymentLabel.text = "\(balanceAsDollarString)"
         }
     }
     

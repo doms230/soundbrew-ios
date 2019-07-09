@@ -79,7 +79,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     let json = JSON(json)
                     if let customerId = json["id"].string {
                         self.id = customerId
-                        self.saveCustomerId(objectId, customerId: customerId)
+                        self.saveCustomer(objectId, customerId: customerId)
                     }
                 case .failure(let error):
                     print(error)
@@ -87,7 +87,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         }
     }
     
-    func saveCustomerId(_ objectId: String, customerId: String) {
+    func saveCustomer(_ objectId: String, customerId: String) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -96,12 +96,14 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
             } else if let object = object {
                 object["customerId"] = customerId
+                object["balance"] = 0
                 object.saveEventually()
             }
         }
     }
     
-    func getCustomerId(_ objectId: String) {
+    func getCustomer(_ objectId: String) {
+        print("get customer")
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in

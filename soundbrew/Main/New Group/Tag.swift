@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import DeckTransition
+import Parse
 
 class Tag {
     var objectId: String!
@@ -35,12 +36,32 @@ class Tag {
             cell.profileImage.kf.setImage(with: URL(string: image))
             
         } else {
-            cell.profileImage.image = UIImage(named: "hashtag")
+            if type == "artist" {
+                loadArtistTagProfileImage(cell.profileImage, tag: self.name)
+                
+            } else {
+               cell.profileImage.image = UIImage(named: "hashtag")
+            }
         }
         
         cell.displayNameLabel.text = self.name 
         
         return cell
+    }
+    
+    func loadArtistTagProfileImage(_ image: UIImageView, tag: String) {
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: tag)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let object = object {
+                let imageFile = object["userImage"] as? PFFileObject
+                image.kf.setImage(with: URL(string: imageFile!.url!), placeholder: UIImage(named: "hashtag"))
+                
+            } else {
+                image.image = UIImage(named: "hashtag")
+            }
+        }
     }
 }
 
