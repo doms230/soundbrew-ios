@@ -43,8 +43,6 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var chosenSoundTagLabel: UILabel = {
         let label = UILabel()
-        label.text = "Add"
-        label.textColor = color.red()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         return label
     }()
@@ -62,8 +60,6 @@ class SoundInfoTableViewCell: UITableViewCell {
         slider.minimumValue = 0
         slider.maximumValue = 100
         slider.tintColor = color.black()
-        slider.isEnabled = false
-        slider.setThumbImage(UIImage(), for: .normal)
         return slider
     }()
     
@@ -71,6 +67,13 @@ class SoundInfoTableViewCell: UITableViewCell {
        let socialSwitch = UISwitch()
         socialSwitch.onTintColor = color.blue()
         return socialSwitch
+    }()
+    
+    lazy var artistTypeButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(.darkGray, for: .normal)
+        button.setTitle("Artist", for: .normal)
+        return button
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -86,6 +89,8 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            progressSlider.isEnabled = false
+            progressSlider.setThumbImage(UIImage(), for: .normal)
             progressSlider.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
@@ -154,7 +159,54 @@ class SoundInfoTableViewCell: UITableViewCell {
             
             break
             
-            //case ""
+        case "creditPeopleReuse":
+            self.addSubview(progressSlider)
+            self.addSubview(titleLabel)
+            self.addSubview(soundArt)
+            self.addSubview(soundTagLabel)
+            self.addSubview(artistTypeButton)
+            
+            
+            //artist profile picture
+            soundArt.layer.cornerRadius = 25
+            soundArt.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(50)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            
+            //artist name
+            soundTagLabel.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(soundArt)
+                make.left.equalTo(soundArt.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            
+            artistTypeButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(20)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(soundTagLabel)
+                make.bottom.equalTo(soundTagLabel.snp.top).offset(-(uiElement.elementOffset))
+            }
+            
+            //percentage tip
+            titleLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundTagLabel.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(soundTagLabel)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            //percentage chooser
+            progressSlider.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(titleLabel)
+                make.left.equalTo(titleLabel.snp.right)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            break
             
         default:
             break

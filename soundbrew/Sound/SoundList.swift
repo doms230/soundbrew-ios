@@ -253,7 +253,7 @@ class SoundList: NSObject, PlayerDelegate {
             likes = soundPlays
         }
         
-        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
         
         var relevancyScore = 0
         if let selectedTagsForFiltering = self.selectedTagsForFiltering {
@@ -490,7 +490,7 @@ class SoundList: NSObject, PlayerDelegate {
             } else if let user = user {
                 let artistUsername = user["username"] as? String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
                 
                 if let name = user["artistName"] as? String {
                     cell.soundArtist.text = name

@@ -56,7 +56,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     var customer = Customer.shared
     func showSendMoney() {
         if let sound = self.sound {
-            let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.balance ?? 0, currency: "$")
+            let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let alertView = UIAlertController(
                 title: "Send \(sound.artist!.username!) a Tip",
                 message: "Current Balance: \(balanceInDollars) \n\n\n\n\n\n\n\n",
@@ -81,32 +81,36 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     }
     
     func sendTip(_ sound: Sound, tipAmount: Int) {
-        if customer.balance! >= tipAmount {
+        if customer.artist!.balance! >= tipAmount {
             updateArtistPayment(sound, tipAmount: tipAmount)
             newTip(sound, tipAmount: tipAmount)
-            customer.updateBalance(-tipAmount, objectId: PFUser.current()!.objectId!)
+            customer.updateBalance(-tipAmount)
             
         } else {
-            let balance = uiElement.convertCentsToDollarsAndReturnString(customer.balance ?? 0, currency: "$")
+            let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let tipAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
             
             let alertView = UIAlertController(
                 title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
-                message: "The selected tip amount exceeds your Soundbrew Balance.",
+                message: "The selected tip amount exceeds your Soundbrew Balance. You can add funds from your profile.",
                 preferredStyle: .alert)
             
-            let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
-                self.dismiss(animated: true, completion: {() in
-                    
-                })
+            let sendMoneyActionButton = UIAlertAction(title: "Got It", style: .default) { (_) -> Void in
+                /*self.dismiss(animated: true, completion: {() in
+                    self.showAddFunds()
+                })*/
             }
-            alertView.addAction(sendMoneyActionButton)
+            //alertView.addAction(sendMoneyActionButton)
             
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: "Got It", style: .cancel, handler: nil)
             alertView.addAction(cancelAction)
             
             present(alertView, animated: true, completion: nil)
         }
+    }
+    
+    func showAddFunds() {
+
     }
     
     func updateArtistPayment(_ sound: Sound, tipAmount: Int) {
@@ -124,7 +128,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
                     object.saveEventually {
                         (success: Bool, error: Error?) in
                         if error != nil {
-                            self.customer.updateBalance(tipAmount, objectId: PFUser.current()!.objectId!)
+                            self.customer.updateBalance(tipAmount)
                         }
                     }
                 }
@@ -140,7 +144,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         newPaymentRow.saveEventually {
             (success: Bool, error: Error?) in
             if error != nil {
-                self.customer.updateBalance(tipAmount, objectId: PFUser.current()!.objectId!)
+                self.customer.updateBalance(tipAmount)
             }
         }
     }

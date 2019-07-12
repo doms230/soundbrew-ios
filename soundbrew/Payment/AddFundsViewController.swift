@@ -82,7 +82,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         case .success:
             let newFunds = paymentContext.paymentAmount - self.processingFee
             let customer = Customer.shared
-            customer.updateBalance(newFunds, objectId: PFUser.current()!.objectId!)
+            customer.updateBalance(newFunds)
             self.uiElement.goBackToPreviousViewController(self)
             print("success")
         case .userCancellation:

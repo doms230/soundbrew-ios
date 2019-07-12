@@ -60,15 +60,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let navi = segue.destination as! UINavigationController
-        let viewController: ChooseTagsViewController = navi.topViewController as! ChooseTagsViewController
-        viewController.tagDelegate = self
-        
-        if let tagType = tagType {
-            viewController.tagType = tagType
+        if segue.identifier == "showTags" {
+            let navi = segue.destination as! UINavigationController
+            let viewController: ChooseTagsViewController = navi.topViewController as! ChooseTagsViewController
+            viewController.tagDelegate = self
             
-            if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
-                viewController.chosenTags = tags
+            if let tagType = tagType {
+                viewController.tagType = tagType
+                
+                if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
+                    viewController.chosenTags = tags
+                }
             }
         }
     }
@@ -158,11 +160,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 2:
+                //cell = creditCell(indexPath)
                 cell = tagCell(indexPath, tableView: tableView)
                 break
                 
             case 3:
                 cell = socialCell(indexPath)
+                break
+                
+            case 4:
+                
                 break
                 
             default:
@@ -176,7 +183,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 2 {
+       /* if indexPath.section == 2 {
+            self.performSegue(withIdentifier: "showCreditPeople", sender: self)
+            
+        } else*/ if indexPath.section == 2 {
             switch indexPath.row {
             case 0:
                 self.tagType = "genre"
@@ -217,6 +227,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         soundTitle = cell.soundTitle
         tableView.separatorStyle = .singleLine
         
+        return cell
+    }
+    
+    //mark: credits
+    func creditCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
+           let cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell
+        cell.soundTagLabel.text = "Credit People"
+        cell.chosenSoundTagLabel.text = "▷"
+        cell.chosenSoundTagLabel.textColor = color.darkGray()
         return cell
     }
     
@@ -427,11 +446,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
                 }
                 
-                cell.chosenSoundTagLabel.textColor = color.blue()
+                cell.chosenSoundTagLabel.textColor = color.black()
                 
             } else {
                 cell.chosenSoundTagLabel.text = "Add"
-                cell.chosenSoundTagLabel.textColor = color.red()
+                cell.chosenSoundTagLabel.textColor = color.darkGray()
             }
             tableView.separatorStyle = .singleLine
         default:
@@ -446,7 +465,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.soundTagLabel.text = soundTagLabel
         if let tag = tag {
             cell.chosenSoundTagLabel.text = tag.name
-            cell.chosenSoundTagLabel.textColor = color.blue()
+            cell.chosenSoundTagLabel.textColor = color.black()
+            
+        } else {
+            cell.chosenSoundTagLabel.text = "Add"
+            cell.chosenSoundTagLabel.textColor = color.darkGray()
         }
     }
     
@@ -793,7 +816,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let tags = object["tags"] as! Array<String>
         
         let userId = object["userId"] as! String
-        let artist = Artist(objectId: userId, name: PFUser.current()?.username, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
+        let artist = Artist(objectId: userId, name: PFUser.current()?.username, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
         
         let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: 0, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: 0, tmpFile: nil)
         

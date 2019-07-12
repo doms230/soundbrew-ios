@@ -15,6 +15,7 @@ class EarningsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpView()
+        loadEarnings()
     }
     
     let uiElement = UIElement()
@@ -22,7 +23,7 @@ class EarningsViewController: UIViewController {
     
     lazy var thisWeekLabel: UILabel = {
         let label = UILabel()
-        label.text = "1/8-1/17"
+        //label.text = "1/8-1/17"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textAlignment = .center
         label.textColor = color.black()
@@ -31,7 +32,7 @@ class EarningsViewController: UIViewController {
     
     lazy var earningsLabel: UILabel = {
         let label = UILabel()
-        label.text = "$0.00"
+        label.text = "Loading..."
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
         label.textAlignment = .center
         label.textColor = color.black()
@@ -89,6 +90,28 @@ class EarningsViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+    }
+    
+    func loadEarnings() {
+        let query = PFQuery(className: "Payment")
+        query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if error != nil {
+                
+            } else if let object = object {
+                if let earningsInCents = object["tipsSinceLastPayout"] as? Int {
+                    let earningsInDollars = self.uiElement.convertCentsToDollarsAndReturnString(earningsInCents, currency: "$")
+                    self.earningsLabel.text = earningsInDollars
+                    
+                } else {
+                    self.earningsLabel.text = "$0.00"
+                }
+                
+            } else {
+                self.earningsLabel.text = "$0.00"
+            }
+        }
     }
 
     /*

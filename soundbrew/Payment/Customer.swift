@@ -17,17 +17,18 @@ import SwiftyJSON
 class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     static let shared = Customer()
 
-    var id: String?
-    var balance: Int?
+    //var id: String?
+    //var balance: Int?
     let starbucksIP = "172.31.99.54"
     let baseURL = URL(string: "https://www.soundbrew.app/customers/")
+    var artist: Artist? 
     //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         let url = self.baseURL!.appendingPathComponent("ephemeral_keys")
         Alamofire.request(url, method: .post, parameters: [
             "api_version": apiVersion,
-            "customerId": id!
+            "customerId": self.artist!.customerId!
             ], encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
@@ -42,12 +43,12 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         }
     }
     
-    func update(_ email: String, name: String) {
+    func update() {
         let url = self.baseURL!.appendingPathComponent("update")
         let parameters: Parameters = [
-            "email": "\(email)",
-            "name": "\(name)",
-            "customerId": id!]
+            "email": "\(self.artist!.email!)",
+            "name": "\(self.artist!.username!)",
+            "customerId": self.artist!.customerId!]
         
         Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             //.validate(statusCode: 200..<300)
@@ -78,7 +79,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 case .success(let json):
                     let json = JSON(json)
                     if let customerId = json["id"].string {
-                        self.id = customerId
+                        //self.id = customerId
                         self.saveCustomer(objectId, customerId: customerId)
                     }
                 case .failure(let error):
@@ -103,41 +104,81 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     }
     
     func getCustomer(_ objectId: String) {
-        print("get customer")
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
                 
-            } else if let object = object {
-                let email = object["email"] as! String
-                let username = object["username"] as! String
-                if let customerId = object["customerId"] as? String {
+            } else if let user = object {
+                let email = user["email"] as! String
+                let username = user["username"] as! String
+                
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                
+                if let customerId = user["customerId"] as? String {
                     if customerId.isEmpty {
-                        self.create(object.objectId!, email: email, name: username)
+                        self.create(user.objectId!, email: email, name: username)
                     } else {
-                        self.id = customerId
+                        //self.id = customerId
+                        artist.customerId = customerId
                     }
                     
                 } else {
-                    self.create(object.objectId!, email: email, name: username)
+                    self.create(user.objectId!, email: email, name: username)
                 }
                 
-                if let balance = object["balance"] as? Int {
-                    self.balance = balance
-                } else {
-                    self.balance = 0
+                var currentBalance = 0
+                if let balance = user["balance"] as? Int {
+                    //self.balance = balance
+                    currentBalance = balance
                 }
+                artist.balance = currentBalance
+                
+                if let followerCount = user["followerCount"] as? Int {
+                    artist.followerCount = followerCount
+                }
+                
+                if let name = user["artistName"] as? String {
+                    artist.name = name
+                }
+                
+                if let username = user["username"] as? String {
+                    artist.username = username
+                }
+                
+                if let city = user["city"] as? String {
+                    artist.city = city
+                }
+                
+                if let userImageFile = user["userImage"] as? PFFileObject {
+                    artist.image = userImageFile.url!
+                }
+                
+                if let bio = user["bio"] as? String {
+                    artist.bio = bio
+                }
+                
+                if let artistVerification = user["artistVerification"] as? Bool {
+                    artist.isVerified = artistVerification
+                }
+                
+                if let website = user["website"] as? String {
+                    artist.website = website
+                }
+                
+                self.artist = artist
+                
             }
         }
     }
     
-    func updateBalance(_ addSubFunds: Int, objectId: String) {
-        let newBalance = addSubFunds + self.balance!
-        self.balance = newBalance
+    func updateBalance(_ addSubFunds: Int) {
+        let newBalance = addSubFunds + self.artist!.balance!
+        //self.balance = newBalance
+        self.artist?.balance = newBalance
         let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: objectId) {
+        query.getObjectInBackground(withId: self.artist!.objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)

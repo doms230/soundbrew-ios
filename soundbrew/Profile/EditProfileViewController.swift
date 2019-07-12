@@ -43,8 +43,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         if artist != nil {
             setUpTableView()
             
-        } else {
-            loadUserInfoFromCloud(PFUser.current()!.objectId!)
+        } else if let CurrentArtist = Customer.shared.artist {
+            self.artist = CurrentArtist
+            self.setUpTableView()
         }
     }
     
@@ -366,7 +367,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     //MARK: Data
     func updateUserInfo() {
         self.startAnimating()
-        
+        let customer = Customer.shared
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
@@ -406,36 +407,41 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.stopAnimating()
                     if (success) {
                         if let artistDelegate = self.artistDelegate {
-                            let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, isFollowedByCurrentUser: nil, followerCount: nil)
+                            //let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
                             
                             if let followerCount = user["followerCount"] as? Int {
-                                artist.followerCount = followerCount
+                               // artist.followerCount = followerCount
+                                customer.artist?.followerCount = followerCount
                             }
                             
                             if let name =  user["artistName"] as? String {
-                                artist.name = name
+                                //artist.name = name
+                                customer.artist?.name = name
                             }
                             
                             if let city = user["city"] as? String {
-                                artist.city = city
+                                //artist.city = city
+                                customer.artist?.city = city
                             }
                             
                             if let website = user["website"] as? String {
-                                artist.website = website
+                                //artist.website = website
+                                customer.artist?.website = website
                             }
                             
                             if let bio = user["bio"] as? String {
-                                artist.bio = bio
+                                //artist.bio = bio
+                                customer.artist?.bio = bio
                             }
                             
                             if let profileImage = user["userImage"] as? PFFileObject {
-                                artist.image = profileImage.url
+                                //artist.image = profileImage.url
+                                customer.artist?.image = profileImage.url
                             }
                         
-                            artistDelegate.newArtistInfo(artist)
+                            artistDelegate.newArtistInfo(customer.artist)
                             
-                            let customer = Customer.shared
-                            customer.update(artist.email!, name: artist.username!)
+                            customer.update()
                         }
                         self.dismiss(animated: true, completion: nil)
                         
@@ -447,7 +453,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func loadUserInfoFromCloud(_ userId: String) {
+    /*func loadUserInfoFromCloud(_ userId: String) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -507,7 +513,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 
             }
         }
-    }
+    }*/
     
     func validateEmail() -> Bool {
         if emailText.text!.isEmpty || !emailText.text!.contains("@") || !emailText.text!.contains(".") {

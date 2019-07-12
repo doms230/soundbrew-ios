@@ -64,7 +64,7 @@ func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound 
     }
     
     let userId = object["userId"] as! String
-    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil)
+    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
     
     var relevancyScore = 0
     if let tagsForFiltering = tagsForFiltering {

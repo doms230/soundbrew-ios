@@ -55,8 +55,11 @@ class Tag {
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
-                let imageFile = object["userImage"] as? PFFileObject
-                image.kf.setImage(with: URL(string: imageFile!.url!), placeholder: UIImage(named: "hashtag"))
+                if let imageFile = object["userImage"] as? PFFileObject {
+                    image.kf.setImage(with: URL(string: imageFile.url!), placeholder: UIImage(named: "hashtag"))
+                } else {
+                    image.image = UIImage(named: "hashtag")
+                }
                 
             } else {
                 image.image = UIImage(named: "hashtag")

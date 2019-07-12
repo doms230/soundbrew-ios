@@ -28,7 +28,7 @@ class Payment: NSObject {
             "description": description,
             "source": source,
             "metadata": objectId,
-            "customer": "\(customer.id!)",
+            "customer": "\(customer.artist!.customerId!)",
             "receipt_email": email
         ]
         

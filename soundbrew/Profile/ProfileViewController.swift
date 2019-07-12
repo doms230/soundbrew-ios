@@ -44,9 +44,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             loadUserInfoFromCloud(userId)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
             
-        } else if let currentUser = self.currentUser {
+        } else if let currentArtist = Customer.shared.artist {
             isCurrentUserProfile = true
-            loadUserInfoFromCloud(currentUser.objectId!)
+            self.profileArtist = currentArtist
+            self.executeTableViewSoundListFollowStatus()
         }
         
         self.setUpNavigationButtons()
@@ -515,7 +516,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
                 
                 if let followerCount = user["followerCount"] as? Int {
                     artist.followerCount = followerCount

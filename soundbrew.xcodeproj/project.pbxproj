@@ -52,6 +52,7 @@
 		F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */; };
 		F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D322CD1A1900ED157E /* Customer.swift */; };
 		F2FB14D822D28D5800ED157E /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D722D28D5800ED157E /* EarningsViewController.swift */; };
+		F2FB14DA22D6469100ED157E /* CreditPeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D922D6469000ED157E /* CreditPeopleViewController.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -180,6 +181,7 @@
 		F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFundsViewController.swift; sourceTree = "<group>"; };
 		F2FB14D322CD1A1900ED157E /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		F2FB14D722D28D5800ED157E /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
+		F2FB14D922D6469000ED157E /* CreditPeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditPeopleViewController.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -378,6 +380,7 @@
 				F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
 				F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */,
+				F2FB14D922D6469000ED157E /* CreditPeopleViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";
@@ -385,8 +388,8 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
+				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
@@ -739,6 +742,7 @@
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
+				F2FB14DA22D6469100ED157E /* CreditPeopleViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
 				F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,

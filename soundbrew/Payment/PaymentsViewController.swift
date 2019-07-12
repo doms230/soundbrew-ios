@@ -22,9 +22,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidAppear(_ animated: Bool) {
         let customer = Customer.shared
-        if let balance = customer.balance {
-            //let balanceInDollars = Double(balance) / 100.00
-            //let doubleStr = String(format: "%.2f", balanceInDollars)
+        if let balance = customer.artist?.balance {
             let balanceAsDollarString = uiElement.convertCentsToDollarsAndReturnString(balance, currency: "$")
             paymentLabel.text = "\(balanceAsDollarString)"
         }
@@ -75,7 +73,6 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     }()
     
     func setupPaymentView() {
-        
         self.view.addSubview(paymentView)
         paymentView.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(self.view.frame.height * (1/3) - 10)
