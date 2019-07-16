@@ -223,9 +223,13 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     //mark: selectedArtist
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
-            soundList.selectedArtist(artist)
-        } else {
-            self.performSegue(withIdentifier: "showWelcome", sender: self)
+            if artist.objectId == "addFunds" {
+                self.performSegue(withIdentifier: "showAddFunds", sender: self)
+            } else if artist.objectId == "signup" {
+                self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else {
+                soundList.selectedArtist(artist)
+            }
         }
     }
     

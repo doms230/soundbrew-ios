@@ -95,22 +95,17 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
                 message: "The selected tip amount exceeds your Soundbrew Balance. You can add funds from your profile.",
                 preferredStyle: .alert)
             
-            let sendMoneyActionButton = UIAlertAction(title: "Got It", style: .default) { (_) -> Void in
-                /*self.dismiss(animated: true, completion: {() in
-                    self.showAddFunds()
-                })*/
+            let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
+                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                self.handleDismal(artist)
             }
-            //alertView.addAction(sendMoneyActionButton)
+            alertView.addAction(sendMoneyActionButton)
             
             let cancelAction = UIAlertAction(title: "Got It", style: .cancel, handler: nil)
             alertView.addAction(cancelAction)
             
             present(alertView, animated: true, completion: nil)
         }
-    }
-    
-    func showAddFunds() {
-
     }
     
     func updateArtistPayment(_ sound: Sound, tipAmount: Int) {
@@ -346,6 +341,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     }
     
     //mark: View
+    func handleDismal(_ artist: Artist?) {
+        self.dismiss(animated: true, completion: {() in
+            if let playerDelegate = self.playerDelegate {
+                playerDelegate.selectedArtist(artist)
+            }
+        })
+    }
+    
     lazy var exitButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "dismiss"), for: .normal)
@@ -381,11 +384,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         return button
     }()
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: {() in
-            if let playerDelegate = self.playerDelegate {
-                playerDelegate.selectedArtist(self.sound?.artist)
-            }
-        })
+        self.handleDismal(self.sound?.artist)
     }
     
     lazy var tagButton: UIButton = {
@@ -446,11 +445,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             let alertController = UIAlertController (title: "Sign Up or Sign In", message: "Liking songs will add them to your music collection on your profile.", preferredStyle: .alert)
             
             let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
-                self.dismiss(animated: true, completion: {() in
-                    if let playerDelegate = self.playerDelegate {
-                        playerDelegate.selectedArtist(nil)
-                    }
-                })
+                let artist = Artist(objectId: "signup", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                self.handleDismal(artist)
             }
             alertController.addAction(settingsAction)
             

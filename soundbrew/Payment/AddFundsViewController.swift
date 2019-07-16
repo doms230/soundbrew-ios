@@ -98,6 +98,78 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     //mark: UI
+    lazy var oneDollarAmount: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = color.blue()
+        button.setTitleColor(.white, for: .normal)
+        button.setTitle("$1", for: .normal)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
+        button.tag = 0
+        return button
+    }()
+    
+    lazy var twoDollarAmount: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = color.lightGray()
+        button.setTitleColor(color.black(), for: .normal)
+        button.setTitle("$5", for: .normal)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
+        button.tag = 1
+        return button
+    }()
+    
+    lazy var threeDollarAmount: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = color.lightGray()
+        button.setTitleColor(color.black(), for: .normal)
+        button.setTitle("$10", for: .normal)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
+        button.tag = 2
+        return button
+    }()
+    @objc func didPressFundAmountButton(_ sender: UIButton) {
+        var funds: Double!
+        
+        switch sender.tag {
+        case 0:
+            funds = 1
+            changeFundAmountColors(sender, unSelectedButton: twoDollarAmount, unSelectedButton1: threeDollarAmount)
+            break
+            
+        case 1:
+            funds = 5
+            changeFundAmountColors(sender, unSelectedButton: oneDollarAmount, unSelectedButton1: threeDollarAmount)
+            break
+            
+        case 2:
+            funds = 10
+            changeFundAmountColors(sender, unSelectedButton: twoDollarAmount, unSelectedButton1: oneDollarAmount)
+            break
+            
+        default:
+            break
+        }
+        
+        updateTotalAndProcessingFee(funds)
+    }
+    
+    func changeFundAmountColors(_ selectedButton: UIButton, unSelectedButton: UIButton, unSelectedButton1: UIButton) {
+        selectedButton.backgroundColor = color.blue()
+        selectedButton.setTitleColor(.white, for: .normal)
+        
+        unSelectedButton.backgroundColor = color.lightGray()
+        unSelectedButton.setTitleColor(color.black(), for: .normal)
+        
+        unSelectedButton1.backgroundColor = color.lightGray()
+        unSelectedButton1.setTitleColor(color.black(), for: .normal)
+    }
+    
     lazy var addFundsSegment: UISegmentedControl = {
         let segment = UISegmentedControl(items: ["$1", "$5", "$10"])
         segment.selectedSegmentIndex = 0
@@ -168,7 +240,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         return label
     }()
     
-    
     lazy var paymentProcessingFeeTitle: UILabel = {
         let label = UILabel()
         label.text = "Payment Processing Fee"
@@ -180,12 +251,11 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var paymentProcessingFee: UILabel = {
         let label = UILabel()
         label.text = "$0.33"
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
     }()
-    
     
     lazy var totalTitle: UILabel = {
         let label = UILabel()
@@ -198,7 +268,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var total: UILabel = {
         let label = UILabel()
         label.text = "$1.33"
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
@@ -206,8 +276,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
     lazy var cardButton: UIButton = {
         let button = UIButton()
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.didPressAddCardButton(_:)), for: .touchUpInside)
         return button
     }()
@@ -261,22 +329,53 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
+        let customer = Customer.shared
+        if let balance = customer.artist?.balance {
+            currentBalanceAmount.text = uiElement.convertCentsToDollarsAndReturnString(balance, currency: "$")
+        } else {
+            currentBalanceAmount.text = "$0.00"
+        }
+        
         self.view.addSubview(currentBalanceAmount)
         currentBalanceAmount.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(currentBalanceLabel)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(addFundsSegment)
-        addFundsSegment.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(currentBalanceAmount.snp.bottom).offset(uiElement.topOffset)
+        self.view.addSubview(oneDollarAmount)
+        oneDollarAmount.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(currentBalanceLabel.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        self.view.addSubview(twoDollarAmount)
+        twoDollarAmount.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(oneDollarAmount.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(threeDollarAmount)
+        threeDollarAmount.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(twoDollarAmount.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        /*self.view.addSubview(addFundsSegment)
+        addFundsSegment.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(currentBalanceAmount.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }*/
+        
         self.view.addSubview(paymentProcessingFeeTitle)
         paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(addFundsSegment.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(threeDollarAmount.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         self.view.addSubview(paymentProcessingFee)

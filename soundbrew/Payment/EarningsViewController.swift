@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import SnapKit
 
-class EarningsViewController: UIViewController {
+class EarningsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,9 +23,8 @@ class EarningsViewController: UIViewController {
     
     lazy var thisWeekLabel: UILabel = {
         let label = UILabel()
-        //label.text = "1/8-1/17"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textAlignment = .center
+        label.text = "1/8-1/17"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
         label.textColor = color.black()
         return label
     }()
@@ -33,31 +32,33 @@ class EarningsViewController: UIViewController {
     lazy var earningsLabel: UILabel = {
         let label = UILabel()
         label.text = "Loading..."
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
-        label.textAlignment = .center
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 50)
         label.textColor = color.black()
         return label
     }()
     
+    lazy var dividerLine: UIView = {
+        let line = UIView()
+        line.layer.borderWidth = 1
+        line.layer.borderColor = color.darkGray().cgColor
+        return line
+    }()
+    
     lazy var earningsScheduleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Earnings are sent via PayPal on a weekly basis."
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-        label.textAlignment = .center
+        label.text = "Earnings are sent via PayPal on a weekly basis. \n Please insure that your profile email is up to date."
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
     }()
     
-    lazy var editPaypalEmailButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Edit PayPal Email", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = color.blue()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
+    lazy var yourTipsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Your Tips"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        label.textColor = color.black()
+        return label
     }()
     
     func setUpView() {
@@ -82,14 +83,22 @@ class EarningsViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(editPaypalEmailButton)
-        editPaypalEmailButton.snp.makeConstraints { (make) -> Void in
+        self.view.addSubview(dividerLine)
+        dividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(1)
             make.top.equalTo(earningsScheduleLabel.snp.bottom).offset(uiElement.topOffset)
-            make.width.equalTo(200)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        self.view.addSubview(yourTipsLabel)
+        yourTipsLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        LoadTipouts()
     }
     
     func loadEarnings() {
@@ -114,14 +123,110 @@ class EarningsViewController: UIViewController {
         }
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    //MARK: Tableview
+    let tableView = UITableView()
+    let earningsPaymentsReuse = "earningsPaymentsReuse"
+    func setUpTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: earningsPaymentsReuse)
+        self.tableView.separatorStyle = .none
+        self.tableView.backgroundColor = .white
+        self.view.addSubview(tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.yourTipsLabel.snp.bottom)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
     }
-    */
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return soundsThatArtistTipped.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: earningsPaymentsReuse) as! ProfileTableViewCell
+        cell.selectionStyle = .none
+        tableView.separatorStyle = .none
+        
+        let sound = soundsThatArtistTipped[indexPath.row]
+        
+        loadArtist(tipperUserId[indexPath.row], cell: cell)
+        
+        //song title
+        let tipInDollars = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount[indexPath.row], currency: "$")
+        cell.bio.text = "\(tipInDollars) for \(sound.title!)"
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.uiElement.setUserDefault("receivedUserId", value: tipperUserId[indexPath.row])
+        self.performSegue(withIdentifier: "showProfile", sender: self)
+    }
+    
+    var soundsThatArtistTipped = [Sound]()
+    var tipAmount = [Int]()
+    var tipperUserId = [String]()
+    var selectedArtist: Artist!
+    
+    func LoadTipouts() {
+        var soundIds = [String]()
+        let query = PFQuery(className: "Tip")
+        query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        soundIds.append((object["soundId"] as? String)!)
+                        self.tipAmount.append((object["amount"] as? Int)!)
+                        self.tipperUserId.append(object["fromUserId"] as! String)
+                    }
+                    
+                    self.loadSounds(soundIds)
+                }
+            }
+        }
+    }
+    
+    func loadSounds(_ soundIds: [String]) {
+        print(soundIds)
+        let query = PFQuery(className: "Post")
+        query.whereKey("objectId", containedIn: soundIds)
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    print(objects.count)
+                    for object in objects {
+                        let sound = self.uiElement.newSoundObject(object)
+                        self.soundsThatArtistTipped.append(sound)
+                    }
+                    self.setUpTableView()
+                }
+            }
+        }
+    }
+    
+    func loadArtist(_ userId: String, cell: ProfileTableViewCell) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: userId) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                if let username = user["username"] as? String {
+                    cell.displayNameLabel.text = username
+                }
+                
+                if let userImageFile = user["userImage"] as? PFFileObject {
+                    cell.profileImage.kf.setImage(with: URL(string: userImageFile.url!))
+                }
+            }
+        }
+    }
 
 }
