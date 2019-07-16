@@ -21,18 +21,10 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     let uiElement = UIElement()
     let color = Color()
     
-    lazy var thisWeekLabel: UILabel = {
-        let label = UILabel()
-        label.text = "1/8-1/17"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
-        label.textColor = color.black()
-        return label
-    }()
-    
     lazy var earningsLabel: UILabel = {
         let label = UILabel()
         label.text = "Loading..."
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 50)
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
         label.textColor = color.black()
         return label
     }()
@@ -56,22 +48,15 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     lazy var yourTipsLabel: UILabel = {
         let label = UILabel()
         label.text = "Your Tips"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = color.black()
         return label
     }()
     
     func setUpView() {
-        self.view.addSubview(thisWeekLabel)
-        thisWeekLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         self.view.addSubview(earningsLabel)
         earningsLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(thisWeekLabel.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -107,6 +92,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if error != nil {
+                self.earningsLabel.text = "$0.00"
                 
             } else if let object = object {
                 if let earningsInCents = object["tipsSinceLastPayout"] as? Int {
@@ -199,7 +185,6 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
                 if let objects = objects {
-                    print(objects.count)
                     for object in objects {
                         let sound = self.uiElement.newSoundObject(object)
                         self.soundsThatArtistTipped.append(sound)
@@ -228,5 +213,4 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }
     }
-
 }

@@ -50,18 +50,16 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     lazy var paymentLabel: UILabel = {
         let label = UILabel()
         label.text = "Loading..."
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 50)
-        //label.textAlignment = .center
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
         label.textColor = color.black()
         return label
     }()
     
     lazy var paymentsSubLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = color.black()
-        //label.textAlignment = .center
-        label.text = "Funds"
+        label.text = "Current Balance"
         return label
     }()
     
@@ -74,9 +72,8 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     
     lazy var artistsUserHasTippedLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = color.black()
-        //label.textAlignment = .center
         label.text = "Artists you've tipped"
         return label
     }()
@@ -87,7 +84,6 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            //make.bottom.equalTo(self.paymentLabel.snp.top).offset(uiElement.bottomOffset)
         }
         
         self.view.addSubview(paymentLabel)
@@ -261,5 +257,6 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }
     }
-
 }
+
+

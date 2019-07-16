@@ -49,7 +49,4 @@ class Payment: NSObject {
                 }
         }
     }
-    
-    
-    
 }

@@ -100,9 +100,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     //mark: UI
     lazy var oneDollarAmount: UIButton = {
         let button = UIButton()
-        button.backgroundColor = color.blue()
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(color.black(), for: .normal)
         button.setTitle("$1", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
@@ -112,9 +112,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
     lazy var twoDollarAmount: UIButton = {
         let button = UIButton()
-        button.backgroundColor = color.lightGray()
-        button.setTitleColor(color.black(), for: .normal)
+        button.setTitleColor(color.darkGray(), for: .normal)
         button.setTitle("$5", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
@@ -124,9 +124,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
     lazy var threeDollarAmount: UIButton = {
         let button = UIButton()
-        button.backgroundColor = color.lightGray()
-        button.setTitleColor(color.black(), for: .normal)
+        button.setTitleColor(color.darkGray(), for: .normal)
         button.setTitle("$10", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
@@ -160,14 +160,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func changeFundAmountColors(_ selectedButton: UIButton, unSelectedButton: UIButton, unSelectedButton1: UIButton) {
-        selectedButton.backgroundColor = color.blue()
-        selectedButton.setTitleColor(.white, for: .normal)
-        
-        unSelectedButton.backgroundColor = color.lightGray()
-        unSelectedButton.setTitleColor(color.black(), for: .normal)
-        
-        unSelectedButton1.backgroundColor = color.lightGray()
-        unSelectedButton1.setTitleColor(color.black(), for: .normal)
+        selectedButton.setTitleColor(color.black(), for: .normal)
+        unSelectedButton.setTitleColor(color.lightGray(), for: .normal)
+        unSelectedButton1.setTitleColor(color.lightGray(), for: .normal)
     }
     
     lazy var addFundsSegment: UISegmentedControl = {
@@ -222,28 +217,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         return Double(round(100 * x)/100)
     }
     
-    lazy var currentBalanceLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Current Balance"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = color.black()
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var currentBalanceAmount: UILabel = {
-        let label = UILabel()
-        label.text = "$1.00"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
-        label.textColor = color.black()
-        label.numberOfLines = 0
-        return label
-    }()
-    
     lazy var paymentProcessingFeeTitle: UILabel = {
         let label = UILabel()
         label.text = "Payment Processing Fee"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
@@ -251,7 +228,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var paymentProcessingFee: UILabel = {
         let label = UILabel()
         label.text = "$0.33"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
@@ -260,7 +237,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var totalTitle: UILabel = {
         let label = UILabel()
         label.text = "Total"
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
@@ -268,7 +245,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var total: UILabel = {
         let label = UILabel()
         label.text = "$1.33"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
@@ -293,7 +270,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var cardNumberLastFour: UILabel = {
         let label = UILabel()
         label.text = "4422"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = color.black()
         label.numberOfLines = 0
         return label
@@ -301,7 +278,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
     lazy var addCardLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
         label.textColor = color.blue()
         label.numberOfLines = 0
         return label
@@ -323,55 +300,27 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func setupView() {
-        self.view.addSubview(currentBalanceLabel)
-        currentBalanceLabel.snp.makeConstraints { (make) -> Void in
+        
+        self.view.addSubview(oneDollarAmount)
+        oneDollarAmount.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        let customer = Customer.shared
-        if let balance = customer.artist?.balance {
-            currentBalanceAmount.text = uiElement.convertCentsToDollarsAndReturnString(balance, currency: "$")
-        } else {
-            currentBalanceAmount.text = "$0.00"
-        }
-        
-        self.view.addSubview(currentBalanceAmount)
-        currentBalanceAmount.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(currentBalanceLabel)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        self.view.addSubview(oneDollarAmount)
-        oneDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(currentBalanceLabel.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         self.view.addSubview(twoDollarAmount)
         twoDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(oneDollarAmount.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.height.width.equalTo(50)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.centerX.equalTo(self.view)
         }
         
         self.view.addSubview(threeDollarAmount)
         threeDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(twoDollarAmount.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.height.width.equalTo(50)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
-        
-        /*self.view.addSubview(addFundsSegment)
-        addFundsSegment.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(currentBalanceAmount.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }*/
         
         self.view.addSubview(paymentProcessingFeeTitle)
         paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
@@ -428,15 +377,4 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             make.bottom.equalTo(self.view)
         }
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

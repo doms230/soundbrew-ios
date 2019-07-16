@@ -159,12 +159,15 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         PFUser.logInWithUsername(inBackground: userJaunt, password:password) {
             (user: PFUser?, error: Error?) -> Void in
             self.stopAnimating()
-            if user != nil {
+            if let user = user  {
                 //associate current user with device
                 let installation = PFInstallation.current()
                 installation?["user"] = PFUser.current()
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
+                
+                Customer.shared.getCustomer(user.objectId!)
+                
                 self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
             } else {
                 UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)

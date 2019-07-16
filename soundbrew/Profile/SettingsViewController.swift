@@ -33,6 +33,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
             PFUser.logOut()
+            Customer.shared.artist = nil
             if let container = self.so_containerViewController {
                 container.isSideViewControllerPresented = false
                 if let topView = container.topViewController {
