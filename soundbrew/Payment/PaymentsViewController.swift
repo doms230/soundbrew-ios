@@ -134,7 +134,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return soundsThatArtistTipped.count
+        return soundIds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -142,28 +142,22 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         tableView.separatorStyle = .none
         
-        let sound = soundsThatArtistTipped[indexPath.row]
-        
-        loadArtist(sound.artist!.objectId, cell: cell, row: indexPath.row)
-        
-        //song title
-        let tipInDollars = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount[indexPath.row], currency: "$")
-        cell.bio.text = "\(tipInDollars) for \(sound.title!)"
+        loadSound(cell, row: indexPath.row, objectId: soundIds[indexPath.row], tipAmount: tipAmount[indexPath.row])
 
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       selectedArtist = soundsThatArtistTipped[indexPath.row].artist
+       selectedArtist = artists[indexPath.row]
         self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
-    var soundsThatArtistTipped = [Sound]()
+    var artists = [Artist]()
     var tipAmount = [Int]()
+    var soundIds = [String]()
     var selectedArtist: Artist!
     
     func LoadTipouts() {
-        var soundIds = [String]()
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
         query.findObjectsInBackground {
@@ -171,18 +165,36 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        soundIds.append((object["soundId"] as? String)!)
+                        self.soundIds.append((object["soundId"] as? String)!)
                         self.tipAmount.append((object["amount"] as? Int)!)
+                        //print(object)
                     }
                     
-                    self.loadSounds(soundIds)
+                    //self.loadSounds(soundIds)
+                    self.setUpTableView()
                 }
             }
         }
     }
     
-    func loadSounds(_ soundIds: [String]) {
-        print(soundIds)
+    func loadSound(_ cell: ProfileTableViewCell, row: Int, objectId: String, tipAmount: Int) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                let sound = self.uiElement.newSoundObject(object)
+                let tipInDollars = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                cell.bio.text = "\(tipInDollars) for \(sound.title!)"
+                
+                self.loadArtist(sound.artist!.objectId, cell: cell, row: row)
+            }
+        }
+    }
+    
+    /*func loadSounds(_ soundIds: [String]) {
         let query = PFQuery(className: "Post")
         query.whereKey("objectId", containedIn: soundIds)
         query.findObjectsInBackground {
@@ -199,7 +211,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             }
         }
-    }
+    }*/
     
     func loadArtist(_ userId: String, cell: ProfileTableViewCell, row: Int) {
         let query = PFQuery(className: "_User")
@@ -252,7 +264,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
                     artist.website = website
                 }
                 
-                self.soundsThatArtistTipped[row].artist = artist
+                self.artists.append(artist)
                 
             }
         }

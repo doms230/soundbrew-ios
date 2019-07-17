@@ -128,7 +128,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return soundsThatArtistTipped.count
+        return soundIds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -136,29 +136,23 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         tableView.separatorStyle = .none
         
-        let sound = soundsThatArtistTipped[indexPath.row]
-        
-        loadArtist(tipperUserId[indexPath.row], cell: cell)
-        
-        //song title
-        let tipInDollars = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount[indexPath.row], currency: "$")
-        cell.bio.text = "\(tipInDollars) for \(sound.title!)"
+        loadSound(cell, row: indexPath.row, objectId: soundIds[indexPath.row], tipAmount: tipAmount[indexPath.row])
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.uiElement.setUserDefault("receivedUserId", value: tipperUserId[indexPath.row])
+        selectedArtist = artists[indexPath.row]
         self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
-    var soundsThatArtistTipped = [Sound]()
+    var artists = [Artist]()
     var tipAmount = [Int]()
-    var tipperUserId = [String]()
+    var soundIds = [String]()
     var selectedArtist: Artist!
+    var tipperUserId = [String]()
     
     func LoadTipouts() {
-        var soundIds = [String]()
         let query = PFQuery(className: "Tip")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         query.findObjectsInBackground {
@@ -166,28 +160,9 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        soundIds.append((object["soundId"] as? String)!)
-                        self.tipAmount.append((object["amount"] as? Int)!)
+                        self.soundIds.append(object["soundId"] as! String)
+                        self.tipAmount.append(object["amount"] as! Int)
                         self.tipperUserId.append(object["fromUserId"] as! String)
-                    }
-                    
-                    self.loadSounds(soundIds)
-                }
-            }
-        }
-    }
-    
-    func loadSounds(_ soundIds: [String]) {
-        print(soundIds)
-        let query = PFQuery(className: "Post")
-        query.whereKey("objectId", containedIn: soundIds)
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.uiElement.newSoundObject(object)
-                        self.soundsThatArtistTipped.append(sound)
                     }
                     self.setUpTableView()
                 }
@@ -195,7 +170,24 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func loadArtist(_ userId: String, cell: ProfileTableViewCell) {
+    func loadSound(_ cell: ProfileTableViewCell, row: Int, objectId: String, tipAmount: Int) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                let sound = self.uiElement.newSoundObject(object)
+                let tipInDollars = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                cell.bio.text = "\(tipInDollars) for \(sound.title!)"
+                
+                self.loadArtist(self.tipperUserId[row], cell: cell, row: row)
+            }
+        }
+    }
+    
+    func loadArtist(_ userId: String, cell: ProfileTableViewCell, row: Int) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -203,13 +195,51 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
                 print(error)
                 
             } else if let user = user {
+                let username = user["username"] as? String
+                
+                var email: String?
+                if user.objectId! == PFUser.current()!.objectId {
+                    email = user["email"] as? String
+                }
+                
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                
+                if let followerCount = user["followerCount"] as? Int {
+                    artist.followerCount = followerCount
+                }
+                
+                if let name = user["artistName"] as? String {
+                    artist.name = name
+                }
+                
                 if let username = user["username"] as? String {
                     cell.displayNameLabel.text = username
+                    artist.username = username
+                }
+                
+                if let city = user["city"] as? String {
+                    artist.city = city
                 }
                 
                 if let userImageFile = user["userImage"] as? PFFileObject {
                     cell.profileImage.kf.setImage(with: URL(string: userImageFile.url!))
+                    artist.image = userImageFile.url!
                 }
+                
+                if let bio = user["bio"] as? String {
+                    artist.bio = bio
+                }
+                
+                if let artistVerification = user["artistVerification"] as? Bool {
+                    artist.isVerified = artistVerification
+                }
+                
+                if let website = user["website"] as? String {
+                    artist.website = website
+                }
+                
+                self.artists.append(artist)
+                
             }
         }
     }
