@@ -426,28 +426,31 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func loadLikes(_ descendingOrder: String, profileUserId: String) {
-        let query = PFQuery(className: "Like")
-        query.whereKey("userId", equalTo: profileUserId)
-        query.whereKey("isRemoved", equalTo: false)
+        let query = PFQuery(className: "Tip")
+        //let query = PFQuery(className: "Like")
+        //query.whereKey("userId", equalTo: profileUserId)
+        query.whereKey("fromUserId", equalTo: profileUserId)
+        //query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadLikedSounds = true 
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        self.likedSoundIds.append(object["postId"] as! String)
+                        //self.likedSoundIds.append(object["postId"] as! String)
+                        self.likedSoundIds.append(object["soundId"] as! String)
                     }
                 }
                 
                 if self.soundType == "likes" {
                     self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil)
                     
-                } else if self.likedSoundIds.count == 0 {
+                } /*else if self.likedSoundIds.count == 0 {
                     self.loadWorldCreatedAtSounds()
                     
                 } else {
                     self.loadLikesCreatedAtSounds()
-                }
+                }*/
                 
             } else {
                 print("Error: \(error!)")
