@@ -76,6 +76,8 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
+        
+        usernameText.becomeFirstResponder()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -101,10 +101,6 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         user.password = passwordText.text!
         user.email = emailString
         user["artistName"] = usernameString
-        //let acl = PFACL()
-        //acl.hasPublicWriteAccess = true
-        //acl.hasPublicReadAccess = true
-        //user.acl = acl
         user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
             self.stopAnimating()
             if let error = error {

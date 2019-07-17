@@ -219,6 +219,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         switch indexPath.row {
         case 0:
+            cell.editProfileInput.keyboardType = .default
             nameText = cell.editProfileInput
             inputTitle = "Name"
             if let name = artist?.name {
@@ -242,6 +243,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             break
             
         case 2:
+            cell.editProfileInput.keyboardType = .URL
             websiteText = cell.editProfileInput
             inputTitle = "Website"
             if let website = artist?.website {

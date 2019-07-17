@@ -17,6 +17,7 @@ import DeckTransition
 import Photos
 import NVActivityIndicatorView
 import FirebaseAnalytics
+import SAConfettiView
 
 class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -85,6 +86,10 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             updateArtistPayment(sound, tipAmount: tipAmount)
             newTip(sound, tipAmount: tipAmount)
             customer.updateBalance(-tipAmount)
+            //let confettiView = SAConfettiView(frame: self.view.bounds)
+            //self.view.addSubview(confettiView)
+            //confettiView.startConfetti()
+            //confettiView.stopConfetti()
             
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
@@ -190,7 +195,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             self.sound = player.currentSound
             setCurrentSoundView(self.sound!)
             self.shouldEnableSoundView(true)
-            self.checkFollowStatus()
+            //self.checkFollowStatus()
             if let soundPlayer = player.player {
                 if soundPlayer.isPlaying  {
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
@@ -213,7 +218,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             self.startTimer()
         }
         
-        if let isLiked = sound.isLiked {
+        /*if let isLiked = sound.isLiked {
             if isLiked {
                 self.likeButton.setImage(UIImage(named: self.likeRedImage), for: .normal)
                 
@@ -223,7 +228,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             
         } else {
             self.likeButton.setImage(UIImage(named: self.likeImage), for: .normal)
-        }
+        }*/
         
         if let artistName = sound.artist?.name {
             self.artistName.setTitle(artistName, for: .normal)
@@ -241,7 +246,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         self.goBackButton.isEnabled = shouldEnable
     }
     
-    func isSoundLiked() -> Bool {
+    /*func isSoundLiked() -> Bool {
         if let sound = self.sound {
             if let isLiked = sound.isLiked {
                 if isLiked {
@@ -338,7 +343,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
                 self.sound!.isLiked = false
             }
         }
-    }
+    }*/
     
     //mark: View
     func handleDismal(_ artist: Artist?) {
@@ -387,14 +392,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         self.handleDismal(self.sound?.artist)
     }
     
-    lazy var tagButton: UIButton = {
+    /*lazy var tagButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "tag"), for: .normal)
         return button
     }()
     @objc func didpressTagButton(_ sender: UIButton) {
         //TODO: add tag action
-    }
+    }*/
     
     lazy var coinButton: UIButton = {
         let button = UIButton()
@@ -406,7 +411,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         showSendMoney()
     }
     
-    lazy var userRelationButton: UIButton = {
+    /*lazy var userRelationButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "follow"), for: .normal)
         return button
@@ -455,7 +460,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             
             self.present(alertController, animated: true, completion: nil)
         }
-    }
+    }*/
     
     lazy var shareButton: UIButton = {
         let button = UIButton()
@@ -578,13 +583,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        self.view.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         //sound views
         self.view.addSubview(songArt)
         songArt.snp.makeConstraints { (make) -> Void in
@@ -665,7 +663,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             make.centerX.equalTo(self.view).offset(55 + uiElement.leftOffset)
         }
         
-        if isSoundLiked() {
+        /*if isSoundLiked() {
             likeButton.setImage(UIImage(named: likeRedImage), for: .normal)
             
         } else {
@@ -676,13 +674,22 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             make.height.width.equalTo(55/2)
             make.centerY.equalTo(self.goBackButton)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
+        }*/
         
         self.view.addSubview(coinButton)
         coinButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(55/2)
+            make.height.width.equalTo(45)
             make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(45)
+            //make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.centerY.equalTo(self.skipButton)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+           // make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         /*userRelationButton.addTarget(self, action: #selector(didPressUserRelationButton(_:)), for: .touchUpInside)
@@ -713,7 +720,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         }
     }
     
-    func incrementLikeCount(sound: Sound, incrementLikes: Bool, decrementLikes: Bool) {
+    /*func incrementLikeCount(sound: Sound, incrementLikes: Bool, decrementLikes: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -734,9 +741,9 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
                 object.saveEventually()
             }
         }
-    }
+    }*/
     
-    func followUser(_ currentUser: PFUser) {
+    /*func followUser(_ currentUser: PFUser) {
         self.sound!.artist!.isFollowedByCurrentUser = true
         self.userRelationButton.setImage(UIImage(named: "follow_green"), for: .normal)
         let newFollow = PFObject(className: "Follow")
@@ -807,6 +814,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             self.userRelationButton.isEnabled = true
             self.userRelationButton.setImage(UIImage(named: "follow"), for: .normal)
         }
-    }
+    }*/
     
 }
