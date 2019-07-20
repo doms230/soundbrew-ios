@@ -81,7 +81,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 3
+            return 4
         }
         return 1
     }
@@ -113,11 +113,27 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             break
             
         case 2:
+            editProfile()
+            break
+            
+        case 3:
             shareProfile()
             break
+        
             
         default:
             break
+        }
+    }
+    
+    func editProfile() {
+        if let container = self.so_containerViewController {
+            container.isSideViewControllerPresented = false
+            if let topView = container.topViewController as? UINavigationController {
+                if let view = topView.topViewController as? ProfileViewController {
+                    view.performSegue(withIdentifier: "showEditProfile", sender: self)
+                }
+            }
         }
     }
     
@@ -164,6 +180,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             break
             
         case 2:
+            cell.displayNameLabel.text = "Edit Profile"
+            cell.profileImage.image = UIImage(named: "edit")
+            break
+            
+        case 3:
             cell.displayNameLabel.text = "Share Profile"
             cell.profileImage.image = UIImage(named: "share")
             break

@@ -71,18 +71,6 @@ class SoundListTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var soundPlaysImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "playIcon")
-        return image
-    }()
-    
-    lazy var soundPlays: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
-        return label
-    }()
-    
     lazy var menuButton: UIButton = {
         let button = UIButton()
         return button 
@@ -114,8 +102,6 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(soundArtImage)
             self.addSubview(soundTitle)
             self.addSubview(soundArtist)
-            self.addSubview(soundPlaysImage)
-            self.addSubview(soundPlays)
             self.addSubview(dividerLine)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
@@ -125,7 +111,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
+                make.height.width.equalTo(75)
                 make.top.equalTo(soundArtImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
@@ -143,23 +129,10 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
-                //make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
                 make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
                 make.bottom.equalTo(soundArtist.snp.top).offset(-(uiElement.elementOffset))
             }
-            
-            /*soundPlaysImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(20)
-                make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(soundTitle)
-            }
-            
-            soundPlays.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundPlaysImage).offset(2)
-                make.left.equalTo(soundPlaysImage.snp.right)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }*/
             
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(1)

@@ -232,10 +232,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             inputTitle = "Username"
             if let username = artist?.username {
                 inputText = username
-                //username is required, so only want to allow user to cancel if they already have username
-                let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
-                self.navigationItem.leftBarButtonItem = cancelButton
-                
             } else {
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
             }
@@ -445,7 +441,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             
                             customer.update()
                         }
-                        self.dismiss(animated: true, completion: nil)
+                        //self.dismiss(animated: true, completion: nil)
+                        self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self)

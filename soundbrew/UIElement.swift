@@ -259,11 +259,6 @@ class UIElement {
             plays = soundPlays
         }
         
-        var likes: Int?
-        if let soundPlays = object["likes"] as? Int {
-            likes = soundPlays
-        }
-        
         var tips: Int?
         if let soundTips = object["tips"] as? Int {
             tips = soundTips

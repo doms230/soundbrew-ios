@@ -25,7 +25,7 @@ class SoundList: NSObject, PlayerDelegate {
     var collectionSoundIds = [String]()
     var followUserIds = [String]()
     var soundType: String!
-    var didLoadLikedSounds = false
+    var didLoadCollection = false
     var searchText: String?
     var domSmithUserId = "AWKPPDI4CB"
     
@@ -116,13 +116,6 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
             
-            if let plays = sound.plays {
-                cell.soundPlays.text = "\(plays)"
-                
-            } else {
-                cell.soundPlays.text = "0"
-            }
-            
             if let artist = sound.artist?.name {
                 cell.soundArtist.text = artist
                 
@@ -138,15 +131,23 @@ class SoundList: NSObject, PlayerDelegate {
         let row = sender.tag
         if sounds.indices.contains(sender.tag) {
             let sound = sounds[sender.tag]
+            
             var plays = 0
             if let soundPlays = sound.plays {
                 plays = soundPlays
             }
+            
+            var tips = 0
+            if let soundTips = sound.tips {
+                tips = soundTips
+            }
+            let tipsInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(tips, currency: "$")
+            
             var menuAlert: UIAlertController!
             
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
-                menuAlert = UIAlertController(title: "\(plays) Plays", message: nil , preferredStyle: .actionSheet)
+                menuAlert = UIAlertController(title: nil, message: "\(plays) Plays \n \(tipsInDollarString) in Tips" , preferredStyle: .actionSheet)
                     
                     menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
                         self.deleteSong(sound.objectId, row: row)
@@ -185,8 +186,6 @@ class SoundList: NSObject, PlayerDelegate {
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
         cell.soundArtist.textColor = color
-        cell.soundPlays.textColor = color
-        cell.soundPlaysImage.image = UIImage(named: playIconName)
     }
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
@@ -199,7 +198,7 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "uploads":
-            loadSounds(descendingOrder, likeIds: nil, userId: profileUserId!)
+            loadSounds(descendingOrder, collectionIds: nil, userId: profileUserId!)
             break
             
         case "collection":
@@ -353,11 +352,11 @@ class SoundList: NSObject, PlayerDelegate {
     var isUpdatingData = false
     var thereIsMoreDataToLoad = true
     
-    func loadSounds(_ descendingOrder: String, likeIds: Array<String>?, userId: String?) {
+    func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?) {
         let query = PFQuery(className: "Post")
         
-        if let likeIds = likeIds {
-            query.whereKey("objectId", containedIn: likeIds)
+        if let collectionIds = collectionIds {
+            query.whereKey("objectId", containedIn: collectionIds)
         }
         
         if let userId = userId {
@@ -403,7 +402,7 @@ class SoundList: NSObject, PlayerDelegate {
         query.whereKey("fromUserId", equalTo: profileUserId)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            self.didLoadLikedSounds = true 
+            self.didLoadCollection = true 
             if error == nil {
                 if let objects = objects {
                     for object in objects {
@@ -412,7 +411,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if self.soundType == "collection" {
-                    self.loadSounds(descendingOrder, likeIds: self.collectionSoundIds, userId: nil)
+                    self.loadSounds(descendingOrder, collectionIds: self.collectionSoundIds, userId: nil)
                     
                 }
                 
@@ -472,19 +471,27 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func deleteSong(_ objectId: String, row: Int) {
-        let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: objectId) {
-            (post: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let post = post {
-                post["isRemoved"] = true
-                post.saveEventually()
-                self.sounds.remove(at: row)
-                self.tableView?.reloadData()
+        let menuAlert = UIAlertController(title: "Remove \(self.sounds[row].title ?? "this sound") from Soundbrew?", message: nil, preferredStyle: .alert)
+        
+        menuAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        
+        menuAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+            let query = PFQuery(className: "Post")
+            query.getObjectInBackground(withId: objectId) {
+                (post: PFObject?, error: Error?) -> Void in
+                if let error = error {
+                    print(error)
+                    
+                } else if let post = post {
+                    post["isRemoved"] = true
+                    post.saveEventually()
+                    self.sounds.remove(at: row)
+                    self.tableView?.reloadData()
+                }
             }
-        }
+        }))        
+        
+        target.present(menuAlert, animated: true, completion: nil)
     }
     
     //

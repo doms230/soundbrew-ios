@@ -62,8 +62,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showEditProfile":
-            let navigationController = segue.destination as! UINavigationController
+            /*let navigationController = segue.destination as! UINavigationController
             let editProfileController = navigationController.topViewController as! EditProfileViewController
+            editProfileController.artist = profileArtist
+            editProfileController.artistDelegate = self*/
+            let editProfileController = segue.destination as! EditProfileViewController
             editProfileController.artist = profileArtist
             editProfileController.artistDelegate = self
             break
@@ -162,19 +165,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if isCurrentUserProfile && soundType == "uploads" {
-            return 4
-        }
         return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var soundListSection = 2
-        if isCurrentUserProfile && soundType == "uploads" {
-            soundListSection = 3
-        }
-        
-        if section == soundListSection && soundList.sounds.count != 0 {
+        if section == 2 && soundList.sounds.count != 0 {
             return soundList.sounds.count
         }
         
@@ -190,11 +185,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             return listHeadersReuse()
             
         case 2:
-            if isCurrentUserProfile && soundType == "uploads" {
-                return newSoundReuse()
-            } else {
-                return soundsReuse(indexPath)
-            }
+            return soundsReuse(indexPath)
             
         default:
             return soundsReuse(indexPath)
@@ -202,20 +193,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if isCurrentUserProfile && soundType == "uploads" {
-            if indexPath.section == 2 {
-                self.performSegue(withIdentifier: "showUploadSound", sender: self)
-                
-            } else if indexPath.section == 3 {
-                if let player = soundList.player {
-                    player.didSelectSoundAt(indexPath.row)
-                    if self.miniPlayerView == nil {
-                        self.setUpMiniPlayer()
-                    }
-                }
-            }
-            
-        } else {
+        if indexPath.section == 2 {
             if let player = soundList.player {
                 player.didSelectSoundAt(indexPath.row)
                 if self.miniPlayerView == nil {
@@ -229,10 +207,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             if soundList.soundType == "uploads" {
-                soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: profileArtist?.objectId)
+                soundList.loadSounds(soundList.descendingOrder, collectionIds: nil, userId: profileArtist?.objectId)
                 
             } else {
-                soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.collectionSoundIds, userId: nil)
+                soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: nil)
             }
         }
     }
@@ -302,19 +280,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func newSoundReuse() -> SoundListTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
-        cell.soundArtist.text = "Upload Sound"
-        cell.soundArtImage.backgroundColor = color.darkGray()
-        cell.soundArtImage.image = UIImage(named: "plus")
-        cell.menuButton.isHidden = true
-        cell.soundTitle.isHidden = true
-        cell.soundPlays.isHidden = true
-        cell.soundPlaysImage.isHidden = true
-        cell.selectionStyle = .none
-        return cell
-    }
-    
     //mark: profileInfo
     func profileInfoReuse() -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
@@ -348,15 +313,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
             
             if currentUser.objectId == profileArtist?.objectId {
-                
-                cell.actionButton.setTitle("Edit Profile", for: .normal)
+                cell.actionButton.setTitle("Upload Sound", for: .normal)
                 cell.actionButton.backgroundColor = .white
                 cell.actionButton.layer.borderWidth = 1
                 cell.actionButton.layer.borderColor = color.darkGray().cgColor
                 cell.actionButton.setTitleColor(color.black(), for: .normal)
-                
-                cell.newSoundButton.addTarget(self, action: #selector(didPressNewSoundButton(_:)), for: .touchUpInside)
-                cell.newSoundButton.isHidden = false
                 
             } else {
                 cell.newSoundButton.isHidden = true
@@ -430,7 +391,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc func didPressActionButton(_ sender: UIButton) {
         if let currentUser = self.currentUser {
             if currentUser.objectId == profileArtist!.objectId {
-                self.performSegue(withIdentifier: "showEditProfile", sender: self)
+                self.performSegue(withIdentifier: "showUploadSound", sender: self)
                 
             } else if let isFollowedByCurrentUser = profileArtist?.isFollowedByCurrentUser {
                 if isFollowedByCurrentUser {

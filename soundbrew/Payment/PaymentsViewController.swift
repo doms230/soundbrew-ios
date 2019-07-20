@@ -156,6 +156,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     var tipAmount = [Int]()
     var soundIds = [String]()
     var selectedArtist: Artist!
+    var tipBody = [String]()
     
     func LoadTipouts() {
         let query = PFQuery(className: "Tip")
