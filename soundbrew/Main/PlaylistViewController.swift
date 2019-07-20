@@ -33,7 +33,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
-            
         } else {
             setUpTableView(nil)
         }

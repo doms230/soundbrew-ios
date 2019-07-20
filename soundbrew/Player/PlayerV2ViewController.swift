@@ -102,7 +102,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             
             let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
                 let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
-                self.handleDismal(artist)
+                self.handleDismissal(artist)
             }
             alertView.addAction(sendMoneyActionButton)
             
@@ -195,7 +195,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             self.sound = player.currentSound
             setCurrentSoundView(self.sound!)
             self.shouldEnableSoundView(true)
-            //self.checkFollowStatus()
             if let soundPlayer = player.player {
                 if soundPlayer.isPlaying  {
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
@@ -235,7 +234,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     }
     
     //mark: View
-    func handleDismal(_ artist: Artist?) {
+    func handleDismissal(_ artist: Artist?) {
         self.dismiss(animated: true, completion: {() in
             if let playerDelegate = self.playerDelegate {
                 playerDelegate.selectedArtist(artist)
@@ -278,7 +277,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         return button
     }()
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        self.handleDismal(self.sound?.artist)
+        self.handleDismissal(self.sound?.artist)
     }
     
     lazy var coinButton: UIButton = {
@@ -288,7 +287,30 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         return button
     }()
     @objc func didPressSendMoneyButton(_ sender: UIButton) {
-        showSendMoney()
+        if let currentUser = PFUser.current() {
+            if currentUser.objectId! == sound?.artist?.objectId {
+                self.uiElement.showAlert("Love Yourself", message: "But, you can't tip yourself. 🙃", target: self)
+            } else {
+                showSendMoney()
+            }
+            
+        } else {
+            signupRequired("Welcome To Soundbrew!", message: "Sign up or Sign in to send \(self.sound?.artist?.username ?? "this artist") a tip.")
+        }
+        
+    }
+    func signupRequired(_ title: String, message: String) {
+        let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
+        
+        let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
+            let artist = Artist(objectId: "signup", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+            self.handleDismissal(artist)
+        }
+        alertController.addAction(settingsAction)
+        let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     lazy var shareButton: UIButton = {

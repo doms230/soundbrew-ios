@@ -22,7 +22,7 @@ class SoundList: NSObject, PlayerDelegate {
     let color = Color()
     var profileUserId: String?
     var player: Player?
-    var likedSoundIds = [String]()
+    var collectionSoundIds = [String]()
     var followUserIds = [String]()
     var soundType: String!
     var didLoadLikedSounds = false
@@ -138,12 +138,16 @@ class SoundList: NSObject, PlayerDelegate {
         let row = sender.tag
         if sounds.indices.contains(sender.tag) {
             let sound = sounds[sender.tag]
-            
-            let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-            menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            var plays = 0
+            if let soundPlays = sound.plays {
+                plays = soundPlays
+            }
+            var menuAlert: UIAlertController!
             
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
+                menuAlert = UIAlertController(title: "\(plays) Plays", message: nil , preferredStyle: .actionSheet)
+                    
                     menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
                         self.deleteSong(sound.objectId, row: row)
                     }))
@@ -159,16 +163,20 @@ class SoundList: NSObject, PlayerDelegate {
                     }))
                     
                 } else {
+                    menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
                     menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
                         self.selectedArtist(sound.artist)
                     }))
                 }
                 
             } else {
+                menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
                 menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
                     self.selectedArtist(sound.artist)
                 }))
             }
+            
+            menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
             target.present(menuAlert, animated: true, completion: nil)
         }
@@ -187,8 +195,6 @@ class SoundList: NSObject, PlayerDelegate {
         
         switch soundType {
         case "playlist":
-            //self.loadFollows("")
-            //self.loadLikes("", profileUserId: self.profileUserId!)
             self.loadWorldCreatedAtSounds()
             break
             
@@ -196,9 +202,9 @@ class SoundList: NSObject, PlayerDelegate {
             loadSounds(descendingOrder, likeIds: nil, userId: profileUserId!)
             break
             
-        case "likes":
+        case "collection":
             if let profileUserId = self.profileUserId {
-                self.loadLikes(descendingOrder, profileUserId: profileUserId)
+                self.loadCollection(descendingOrder, profileUserId: profileUserId)
             }
             break
             
@@ -235,39 +241,6 @@ class SoundList: NSObject, PlayerDelegate {
             let viewController = navigationController.topViewController as! UploadSoundAudioViewController
             viewController.soundThatIsBeingEdited = selectedSound
         }
-    }
-    
-    func newSoundObject(_ object: PFObject) -> Sound {
-        let title = object["title"] as! String
-        let art = object["songArt"] as! PFFileObject
-        let audio = object["audioFile"] as! PFFileObject
-        let tags = object["tags"] as! Array<String>
-        let userId = object["userId"] as! String
-        var plays: Int?
-        if let soundPlays = object["plays"] as? Int {
-            plays = soundPlays
-        }
-        
-        var likes: Int?
-        if let soundPlays = object["likes"] as? Int {
-            likes = soundPlays
-        }
-        
-        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
-        
-        var relevancyScore = 0
-        if let selectedTagsForFiltering = self.selectedTagsForFiltering {
-            for tag in tags {
-                let selectedTagNames = selectedTagsForFiltering.map {$0.name!}
-                if selectedTagNames.contains(tag) {
-                    relevancyScore += 1
-                }
-            }
-        }
-        
-        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
-        
-        return sound
     }
     
     //mark: tags filter
@@ -369,7 +342,7 @@ class SoundList: NSObject, PlayerDelegate {
                 print(error)
                 
             } else if let object = object {
-                let sound = self.newSoundObject(object)
+                let sound = self.uiElement.newSoundObject(object)
                 self.sounds.append(sound)
                 self.updateSounds()
             }
@@ -402,7 +375,7 @@ class SoundList: NSObject, PlayerDelegate {
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        let sound = self.newSoundObject(object)
+                        let sound = self.uiElement.newSoundObject(object)
                         self.sounds.append(sound)
                     }
                     
@@ -425,61 +398,27 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func loadLikes(_ descendingOrder: String, profileUserId: String) {
+    func loadCollection(_ descendingOrder: String, profileUserId: String) {
         let query = PFQuery(className: "Tip")
-        //let query = PFQuery(className: "Like")
-        //query.whereKey("userId", equalTo: profileUserId)
         query.whereKey("fromUserId", equalTo: profileUserId)
-        //query.whereKey("isRemoved", equalTo: false)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadLikedSounds = true 
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        //self.likedSoundIds.append(object["postId"] as! String)
-                        self.likedSoundIds.append(object["soundId"] as! String)
+                        self.collectionSoundIds.append(object["soundId"] as! String)
                     }
                 }
                 
-                if self.soundType == "likes" {
-                    self.loadSounds(descendingOrder, likeIds: self.likedSoundIds, userId: nil)
+                if self.soundType == "collection" {
+                    self.loadSounds(descendingOrder, likeIds: self.collectionSoundIds, userId: nil)
                     
-                } /*else if self.likedSoundIds.count == 0 {
-                    self.loadWorldCreatedAtSounds()
-                    
-                } else {
-                    self.loadLikesCreatedAtSounds()
-                }*/
+                }
                 
             } else {
                 print("Error: \(error!)")
             }
-        }
-    }
-    
-    func loadFollows(_ descendingOrder: String) {
-        if let profileUserId = self.profileUserId {
-            let query = PFQuery(className: "Follow")
-            query.whereKey("fromUserId", equalTo: profileUserId)
-            query.whereKey("isRemoved", equalTo: false)
-            query.findObjectsInBackground {
-                (objects: [PFObject]?, error: Error?) -> Void in
-                if error == nil {
-                    if let objects = objects {
-                        for object in objects {
-                            self.followUserIds.append(object["toUserId"] as! String)
-                        }
-                    }
-                    self.loadFollowCreatedAtSounds()
-                    
-                } else {
-                    print("Error: \(error!)")
-                }
-            }
-            
-        } else {
-            self.loadWorldCreatedAtSounds()
         }
     }
     
@@ -549,12 +488,6 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     //
-    var followCreatedAtSounds = [Sound]()
-    var followTopSounds = [Sound]()
-    var mixedFollowSounds = [Sound]()
-    var likesCreatedAtSounds = [Sound]()
-    var likesTopSounds = [Sound]()
-    var mixedLikedSounds = [Sound]()
     var worldCreatedAtSounds = [Sound]()
     var worldTopSounds = [Sound]()
     var mixedWorldSounds = [Sound]()
@@ -578,171 +511,6 @@ class SoundList: NSObject, PlayerDelegate {
         return mixSounds
     }
     
-    func mixAllSounds(_ mixedFollowSounds: Array<Sound>, mixedLikedSounds: Array<Sound>, mixedWorldSounds: Array<Sound>)  -> Array<Sound> {
-        var mixSounds: Array<Sound> = []
-        let totalSoundsCount = mixedFollowSounds.count + mixedLikedSounds.count + mixedWorldSounds.count
-        for i in 0..<totalSoundsCount {
-            switch i % 3 {
-            case 0:
-                if mixedFollowSounds.indices.contains(i/3) {
-                    mixSounds.append(mixedFollowSounds[i / 3])
-                }
-                break
-                
-            case 3:
-                if mixedLikedSounds.indices.contains(i/3) {
-                    mixSounds.append(mixedLikedSounds[i / 3])
-                }
-                break
-                
-            case 6:
-                if mixedWorldSounds.indices.contains(i/3) {
-                    mixSounds.append(mixedWorldSounds[i / 3])
-                }
-                break
-                
-            default:
-                break
-            }
-        }
-        
-        return mixSounds
-    }
-    
-    func loadFollowCreatedAtSounds() {
-        self.followCreatedAtSounds.removeAll()
-        self.followTopSounds.removeAll()
-        self.mixedFollowSounds.removeAll()
-        
-        self.isUpdatingData = true
-        let query = PFQuery(className: "Post")
-        query.whereKey("userId", containedIn: followUserIds)
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("createdAt")
-        query.limit = 10
-        if let tags = self.selectedTagsForFiltering {
-            let tagNames = tags.map {$0.name!}
-            query.whereKey("tags", containedIn: tagNames)
-        }
-        if sounds.count != 0 {
-            query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
-        }
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.newSoundObject(object)
-                        self.followCreatedAtSounds.append(sound)
-                    }
-                    
-                    //means current user hasn't followed anyone yet. Get their likes
-                    if self.followCreatedAtSounds.count == 0 {
-                         self.loadLikes("", profileUserId: self.profileUserId!)
-                        
-                    } else {
-                        self.followCreatedAtSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                        self.loadFollowTopSounds()
-                    }
-                }
-            }
-        }
-    }
-    
-    func loadFollowTopSounds() {
-        let query = PFQuery(className: "Post")
-        query.whereKey("userId", containedIn: followUserIds)
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("plays")
-        query.limit = 10
-        query.whereKey("objectId", notContainedIn: followCreatedAtSounds.map {$0.objectId!})
-        if let tags = self.selectedTagsForFiltering {
-            let tagNames = tags.map {$0.name!}
-            query.whereKey("tags", containedIn: tagNames)
-        }
-        if sounds.count != 0 {
-         query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
-         }
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.newSoundObject(object)
-                        self.followTopSounds.append(sound)
-                    }
-                    self.followTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                    self.mixedFollowSounds = self.mixSounds(self.followCreatedAtSounds, topSounds: self.followTopSounds)
-                    self.loadLikes("", profileUserId: self.profileUserId!)
-                }
-            }
-        }
-    }
-    
-    func loadLikesCreatedAtSounds() {
-        self.likesCreatedAtSounds.removeAll()
-        self.likesTopSounds.removeAll()
-        self.mixedLikedSounds.removeAll()
-
-        let query = PFQuery(className: "Post")
-        query.whereKey("objectId", containedIn: likedSoundIds)
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("createdAt")
-        query.limit = 10
-        query.whereKey("objectId", notContainedIn: mixedFollowSounds.map {$0.objectId!})
-        if let tags = self.selectedTagsForFiltering {
-            let tagNames = tags.map {$0.name!}
-            query.whereKey("tags", containedIn: tagNames)
-        }
-        if sounds.count != 0 {
-         query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
-         }
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.newSoundObject(object)
-                        self.likesCreatedAtSounds.append(sound)
-                    }
-                    self.likesCreatedAtSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                    self.loadLikesTopSounds()
-                }
-            }
-        }
-    }
-    
-    func loadLikesTopSounds() {
-        let query = PFQuery(className: "Post")
-        query.whereKey("objectId", containedIn: likedSoundIds)
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("plays")
-        query.whereKey("objectId", notContainedIn: mixedFollowSounds.map {$0.objectId!})
-        query.whereKey("objectId", notContainedIn: likesCreatedAtSounds.map {$0.objectId!})
-        query.limit = 10
-        if let tags = self.selectedTagsForFiltering {
-            let tagNames = tags.map {$0.name!}
-            query.whereKey("tags", containedIn: tagNames)
-        }
-        if sounds.count != 0 {
-         query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
-         }
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.newSoundObject(object)
-                        self.likesTopSounds.append(sound)
-                    }
-                    self.likesTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-                    self.mixedLikedSounds = self.mixSounds(self.likesCreatedAtSounds, topSounds: self.likesTopSounds)
-                    self.loadWorldCreatedAtSounds()
-                }
-            }
-        }
-    }
-    
     func loadWorldCreatedAtSounds() {
         self.worldCreatedAtSounds.removeAll()
         self.worldTopSounds.removeAll()
@@ -751,8 +519,6 @@ class SoundList: NSObject, PlayerDelegate {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("createdAt")
-        query.whereKey("objectId", notContainedIn: mixedFollowSounds.map {$0.objectId!})
-        query.whereKey("objectId", notContainedIn: mixedLikedSounds.map {$0.objectId!})
         query.limit = 10
         if let tags = self.selectedTagsForFiltering {
             let tagNames = tags.map {$0.name!}
@@ -766,7 +532,7 @@ class SoundList: NSObject, PlayerDelegate {
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        let sound = self.newSoundObject(object)
+                        let sound = self.uiElement.newSoundObject(object)
                         self.worldCreatedAtSounds.append(sound)
                     }
                     self.worldCreatedAtSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
@@ -780,8 +546,6 @@ class SoundList: NSObject, PlayerDelegate {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("plays")
-        query.whereKey("objectId", notContainedIn: mixedFollowSounds.map {$0.objectId!})
-        query.whereKey("objectId", notContainedIn: mixedLikedSounds.map {$0.objectId!})
         query.whereKey("objectId", notContainedIn: worldCreatedAtSounds.map {$0.objectId!})
         query.limit = 10
         if sounds.count != 0 {
@@ -796,25 +560,14 @@ class SoundList: NSObject, PlayerDelegate {
             if error == nil {
                 if let objects = objects {
                     for object in objects {
-                        let sound = self.newSoundObject(object)
+                        let sound = self.uiElement.newSoundObject(object)
                         self.worldTopSounds.append(sound)
                     }
                     self.worldTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                     self.mixedWorldSounds = self.mixSounds(self.worldCreatedAtSounds, topSounds: self.worldTopSounds)
                     
                     var newSounds: Array<Sound>!
-                    if self.mixedFollowSounds.count == 0 && self.mixedLikedSounds.count == 0 {
-                        newSounds = self.mixedWorldSounds
-                        
-                    } else if self.mixedFollowSounds.count == 0 {
-                        newSounds = self.mixSounds(self.mixedLikedSounds, topSounds: self.mixedWorldSounds)
-                        
-                    } else if self.mixedLikedSounds.count == 0 {
-                        newSounds = self.mixSounds(self.mixedFollowSounds, topSounds: self.mixedWorldSounds)
-                        
-                    } else {
-                        newSounds = self.mixAllSounds(self.mixedFollowSounds, mixedLikedSounds: self.mixedLikedSounds, mixedWorldSounds: self.mixedWorldSounds)
-                    }
+                    newSounds = self.mixedWorldSounds
                     
                     for newSound in newSounds {
                         self.sounds.append(newSound)

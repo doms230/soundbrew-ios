@@ -137,7 +137,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             soundArtist.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(soundArtImage)
+                make.centerY.equalTo(soundArtImage).offset(uiElement.topOffset)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
@@ -149,7 +149,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(soundArtist.snp.top).offset(-(uiElement.elementOffset))
             }
             
-            soundPlaysImage.snp.makeConstraints { (make) -> Void in
+            /*soundPlaysImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(20)
                 make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(soundTitle)
@@ -159,7 +159,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.top.equalTo(soundPlaysImage).offset(2)
                 make.left.equalTo(soundPlaysImage.snp.right)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
+            }*/
             
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(1)

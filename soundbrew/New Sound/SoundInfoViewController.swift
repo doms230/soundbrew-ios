@@ -716,7 +716,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (success: Bool, error: Error?) in
             if (success) {
                 if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
-                    let sound = self.newSoundObject(newSound)
+                    let sound = self.uiElement.newSoundObject(newSound)
                     self.createDynamicLink(sound)
                 }
                 
@@ -808,21 +808,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
     }
-    
-    func newSoundObject(_ object: PFObject) -> Sound {
-        let title = object["title"] as! String
-        let art = object["songArt"] as! PFFileObject
-        let audio = object["audioFile"] as! PFFileObject
-        let tags = object["tags"] as! Array<String>
-        
-        let userId = object["userId"] as! String
-        let artist = Artist(objectId: userId, name: PFUser.current()?.username, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
-        
-        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: 0, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: 0, tmpFile: nil)
-        
-        return sound
-    }
-    
     
     //mark: utility
     func soundInfoIsVerified() -> Bool {

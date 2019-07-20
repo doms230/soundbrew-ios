@@ -81,7 +81,7 @@ class UIElement {
             target.performSegue(withIdentifier: "showWelcome", sender: self)
         }
         alertController.addAction(settingsAction)
-        let cancelAction = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
         target.present(alertController, animated: true, completion: nil)
@@ -264,9 +264,14 @@ class UIElement {
             likes = soundPlays
         }
         
+        var tips: Int?
+        if let soundTips = object["tips"] as? Int {
+            tips = soundTips
+        }
+        
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
         
-        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
+        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil, tips: tips)
         
         return sound
     }

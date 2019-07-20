@@ -232,7 +232,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 soundList.loadSounds(soundList.descendingOrder, likeIds: nil, userId: profileArtist?.objectId)
                 
             } else {
-                soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.likedSoundIds, userId: nil)
+                soundList.loadSounds(soundList.descendingOrder, likeIds: soundList.collectionSoundIds, userId: nil)
             }
         }
     }
@@ -289,7 +289,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             if soundList.soundType == "uploads" {
                 cell.headerTitle.text = "No releases yet."
-                
             } else {
                 cell.headerTitle.text = "Nothing in their collection yet."
             }
@@ -467,8 +466,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.soundType = "uploads"
             soundType = "uploads"
         } else {
-            soundList.soundType = "likes"
-            soundType = "likes"
+            soundList.soundType = "collection"
+            soundType = "collection"
         }
         
         if currentSoundType != soundList.soundType {

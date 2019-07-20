@@ -26,8 +26,9 @@ class Sound {
     var isLiked: Bool?
     var likes: Int?
     var tmpFile: TemporaryFile?
+    var tips: Int?
     
-    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?, isLiked: Bool?, likes: Int?, tmpFile: TemporaryFile?) {
+    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?, isLiked: Bool?, likes: Int?, tmpFile: TemporaryFile?, tips: Int?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -44,6 +45,7 @@ class Sound {
         self.isLiked = isLiked
         self.likes = likes
         self.tmpFile = tmpFile
+        self.tips = tips
     }
 }
 
@@ -63,6 +65,11 @@ func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound 
         likes = soundPlays
     }
     
+    var tips: Int?
+    if let soundTips = object["tips"] as? Int {
+        tips = soundTips
+    }
+    
     let userId = object["userId"] as! String
     let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
     
@@ -76,7 +83,7 @@ func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound 
         }
     }
     
-    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil)
+    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil, tips: tips)
     
     return sound
 }
