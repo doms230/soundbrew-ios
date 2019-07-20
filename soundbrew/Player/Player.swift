@@ -235,9 +235,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func updateUI(_ sound: Sound) {
         currentSound = sound
         setBackgroundAudioViews(sound)
-        if let currentUser = PFUser.current() {
-            self.loadLikeInfo(sound.objectId, userId: currentUser.objectId!, i: currentSoundIndex)
-            
+        if let currentUserId = PFUser.current()?.objectId {
+            self.loadTipInfo(sound.objectId, userId: currentUserId, i: currentSoundIndex)
         } else {
             self.sendSoundUpdateToUI()
         }
@@ -507,23 +506,23 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func loadLikeInfo(_ postId: String, userId: String, i: Int) {
-        let query = PFQuery(className: "Like")
-        query.whereKey("postId", equalTo: postId)
-        query.whereKey("userId", equalTo: userId)
-        query.whereKey("isRemoved", equalTo: false)
+    func loadTipInfo(_ postId: String, userId: String, i: Int) {
+        let query = PFQuery(className: "Tip")
+        query.whereKey("soundId", equalTo: postId)
+        query.whereKey("fromUserId", equalTo: userId)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
-                self.sounds[i].isLiked = false
+                self.sounds[i].didTip = false
                 
             } else if object != nil {
-                self.sounds[i].isLiked = true
+                self.sounds[i].didTip = true
             }
             self.sendSoundUpdateToUI()
         }
     }
+    
 }
 
 protocol PlayerDelegate {

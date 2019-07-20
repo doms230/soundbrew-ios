@@ -101,7 +101,6 @@ PODS:
     - Bolts/Tasks (~> 1.9)
   - PINCache (2.3)
   - PINOperation (1.1.1)
-  - SAConfettiView (0.1.8)
   - ShareInstagram (1.6)
   - SidebarOverlay (4.2.2)
   - SnapKit (5.0.0)
@@ -132,7 +131,6 @@ DEPENDENCIES:
   - Kingfisher
   - NVActivityIndicatorView
   - Parse
-  - SAConfettiView
   - ShareInstagram
   - SidebarOverlay
   - SnapKit
@@ -167,7 +165,6 @@ SPEC REPOS:
     - Parse
     - PINCache
     - PINOperation
-    - SAConfettiView
     - ShareInstagram
     - SidebarOverlay
     - SnapKit
@@ -202,7 +199,6 @@ SPEC CHECKSUMS:
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
-  SAConfettiView: c87031a2280659261b730fce3669fb10e73636ee
   ShareInstagram: 787136afff8d1fbe899b1c3e5450560694071dff
   SidebarOverlay: a5365455a2f9d54f70d0765764ca1a2806b1b11d
   SnapKit: fd22d10eb9aff484d79a8724eab922c1ddf89bcf
@@ -212,6 +208,6 @@ SPEC CHECKSUMS:
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
 
-PODFILE CHECKSUM: 904e809d6be3c8515bbcf9e0e45d7e559161dcbe
+PODFILE CHECKSUM: f0dc7ddf99ce13df86e0209455985454d583b31e
 
 COCOAPODS: 1.7.1

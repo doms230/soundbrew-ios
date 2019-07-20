@@ -39,5 +39,4 @@ target 'soundbrew' do
   pod 'FacebookShare', '~> 0.5.0'
   #pod 'Zip'
   pod 'Stripe'
-  pod 'SAConfettiView'
 end

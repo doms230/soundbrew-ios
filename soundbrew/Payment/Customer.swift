@@ -17,8 +17,6 @@ import SwiftyJSON
 class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     static let shared = Customer()
 
-    //var id: String?
-    //var balance: Int?
     let starbucksIP = "172.31.99.54"
     let baseURL = URL(string: "https://www.soundbrew.app/customers/")
     var artist: Artist? 
@@ -79,7 +77,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 case .success(let json):
                     let json = JSON(json)
                     if let customerId = json["id"].string {
-                        //self.id = customerId
                         self.saveCustomer(objectId, customerId: customerId)
                         self.artist?.customerId = customerId
                     }
@@ -121,7 +118,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     if customerId.isEmpty {
                         self.create(user.objectId!, email: email, name: username)
                     } else {
-                        //self.id = customerId
                         artist.customerId = customerId
                     }
                     
@@ -131,7 +127,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
                 var currentBalance = 0
                 if let balance = user["balance"] as? Int {
-                    //self.balance = balance
                     currentBalance = balance
                 }
                 artist.balance = currentBalance
@@ -176,7 +171,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     
     func updateBalance(_ addSubFunds: Int) {
         let newBalance = addSubFunds + self.artist!.balance!
-        //self.balance = newBalance
         self.artist?.balance = newBalance
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: self.artist!.objectId) {
@@ -190,5 +184,4 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             }
         }
     }
-
 }

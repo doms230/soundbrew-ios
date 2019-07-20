@@ -23,12 +23,11 @@ class Sound {
     var createdAt: Date!
     var relevancyScore: Int!
     var artist: Artist?
-    var isLiked: Bool?
-    var likes: Int?
     var tmpFile: TemporaryFile?
     var tips: Int?
+    var didTip: Bool?
     
-    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?, isLiked: Bool?, likes: Int?, tmpFile: TemporaryFile?, tips: Int?) {
+    init(objectId: String!, title: String!, artURL: String!, artImage: UIImage?, artFile: PFFileObject!, tags: Array<String>!, createdAt: Date!, plays: Int?, audio: PFFileObject!, audioURL: String, relevancyScore: Int!, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tips: Int?, didTip: Bool?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -42,10 +41,9 @@ class Sound {
         self.relevancyScore = relevancyScore
         self.audioData = audioData
         self.artist = artist
-        self.isLiked = isLiked
-        self.likes = likes
         self.tmpFile = tmpFile
         self.tips = tips
+        self.didTip = didTip
     }
 }
 
@@ -58,11 +56,6 @@ func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound 
     var plays: Int?
     if let soundPlays = object["plays"] as? Int {
         plays = soundPlays
-    }
-    
-    var likes: Int?
-    if let soundPlays = object["likes"] as? Int {
-        likes = soundPlays
     }
     
     var tips: Int?
@@ -83,7 +76,7 @@ func newSoundObject(_ object: PFObject, tagsForFiltering: Array<Tag>?) -> Sound 
         }
     }
     
-    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, isLiked: nil, likes: likes, tmpFile: nil, tips: tips)
+    let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: relevancyScore, audioData: nil, artist: artist, tmpFile: nil, tips: tips, didTip: nil)
     
     return sound
 }
