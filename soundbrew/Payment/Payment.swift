@@ -42,7 +42,10 @@ class Payment: NSObject {
                     if let status = json["status"].string {
                         if status == "succeeded" {
                             completion(nil)
+                            
                         }
+                    } else {
+                        
                     }
                 case .failure(let error):
                     completion(error)

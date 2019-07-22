@@ -86,6 +86,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             self.player!.sounds[self.player!.currentSoundIndex].didTip = true
             self.sound?.didTip = true
             
+            SKStoreReviewController.requestReview()
+            
             customer.updateBalance(-tipAmount)
             updateArtistPayment(sound, tipAmount: tipAmount)
             newTip(sound, tipAmount: tipAmount)
@@ -158,7 +160,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         newTip["toUserId"] = sound.artist?.objectId
         newTip["amount"] = tipAmount
         newTip["soundId"] = sound.objectId
-        newTip.saveEventually()
+        newTip.saveEventually{
+            (success: Bool, error: Error?) in
+            if success {
+                //TODO: self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
+            }
+        }
     }
     
     func incrementTipAmount(_ sound: Sound, tipAmount: Int) {

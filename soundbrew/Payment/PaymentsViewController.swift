@@ -161,6 +161,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     func LoadTipouts() {
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
+        query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {

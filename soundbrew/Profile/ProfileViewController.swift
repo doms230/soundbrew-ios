@@ -39,18 +39,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if profileArtist != nil {
             self.executeTableViewSoundListFollowStatus()
+            self.setUpNavigationButtons(false)
             
         } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
             loadUserInfoFromCloud(userId)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
-            
+            self.setUpNavigationButtons(true)
+    
         } else if let currentArtist = Customer.shared.artist {
             isCurrentUserProfile = true
             self.profileArtist = currentArtist
             self.executeTableViewSoundListFollowStatus()
+            self.setUpNavigationButtons(true)
         }
-        
-        self.setUpNavigationButtons()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -62,10 +63,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showEditProfile":
-            /*let navigationController = segue.destination as! UINavigationController
-            let editProfileController = navigationController.topViewController as! EditProfileViewController
-            editProfileController.artist = profileArtist
-            editProfileController.artistDelegate = self*/
             let editProfileController = segue.destination as! EditProfileViewController
             editProfileController.artist = profileArtist
             editProfileController.artistDelegate = self
@@ -84,8 +81,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case "showPayments", "showEarnings":
-            //let view = segue.destination as! PaymentsViewController
-            //view.paymentType = paymentType
             let backItem = UIBarButtonItem()
             backItem.title = paymentType.capitalized
             navigationItem.backBarButtonItem = backItem
@@ -358,17 +353,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: button actions
-    func setUpNavigationButtons() {
+    func setUpNavigationButtons(_ shouldShowDismissButton: Bool) {
         if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
             
-            let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
-            self.navigationItem.leftBarButtonItem = dismissButton
-            
         } else {
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
+        }
+        
+        if shouldShowDismissButton {
+            let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
+            self.navigationItem.leftBarButtonItem = dismissButton
         }
     }
     

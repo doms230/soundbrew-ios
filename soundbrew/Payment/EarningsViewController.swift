@@ -38,7 +38,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     
     lazy var earningsScheduleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Earnings are sent via PayPal on a weekly basis. \n Please insure that your profile email is up to date."
+        label.text = "A 15% fee will be deducted from your earnings. \n Earnings are sent via PayPal on a weekly basis. \n Please insure that your profile email is up to date."
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = color.black()
         label.numberOfLines = 0
@@ -155,6 +155,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     func LoadTipouts() {
         let query = PFQuery(className: "Tip")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+        query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {

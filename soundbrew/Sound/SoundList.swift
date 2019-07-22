@@ -147,7 +147,7 @@ class SoundList: NSObject, PlayerDelegate {
             
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
-                menuAlert = UIAlertController(title: nil, message: "\(plays) Plays \n \(tipsInDollarString) in Tips" , preferredStyle: .actionSheet)
+                menuAlert = UIAlertController(title: "\(plays) Plays \n \(tipsInDollarString) in Tips", message: nil, preferredStyle: .actionSheet)
                     
                     menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
                         self.deleteSong(sound.objectId, row: row)
@@ -223,8 +223,6 @@ class SoundList: NSObject, PlayerDelegate {
         }
         
         self.tableView?.reloadData()
-        
-        //determineIfRateTheAppPopUpShouldShow()
     }
     
     func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {
@@ -412,7 +410,6 @@ class SoundList: NSObject, PlayerDelegate {
                 
                 if self.soundType == "collection" {
                     self.loadSounds(descendingOrder, collectionIds: self.collectionSoundIds, userId: nil)
-                    
                 }
                 
             } else {
