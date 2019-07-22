@@ -77,8 +77,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
         switch status {
         case .error:
-            //print(error!.localizedDescription)
-            self.uiElement.showAlert("Issue With Charge", message: error!.localizedDescription, target: self)
+            self.uiElement.showAlert("Payment was Declined", message: "", target: self)
         case .success:
             let newFunds = paymentContext.paymentAmount - self.processingFee
             let customer = Customer.shared
@@ -300,21 +299,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func setupView() {
-        
-        self.view.addSubview(oneDollarAmount)
-        oneDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        self.view.addSubview(twoDollarAmount)
-        twoDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.centerX.equalTo(self.view)
-        }
-        
         self.view.addSubview(threeDollarAmount)
         threeDollarAmount.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(50)
@@ -322,6 +306,19 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        self.view.addSubview(twoDollarAmount)
+        twoDollarAmount.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(threeDollarAmount)
+            make.right.equalTo(threeDollarAmount.snp.left).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(oneDollarAmount)
+        oneDollarAmount.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(threeDollarAmount)
+            make.right.equalTo(twoDollarAmount.snp.left).offset(uiElement.rightOffset)
+        }
         self.view.addSubview(paymentProcessingFeeTitle)
         paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(threeDollarAmount.snp.bottom).offset(uiElement.topOffset)

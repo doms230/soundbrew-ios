@@ -96,9 +96,7 @@ class WelcomeViewController: UIViewController {
         
         self.view.addSubview(signupButton)
         signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
-        
-       // self.view.addSubview(googleButton)
-        
+                
         self.view.addSubview(termsButton)
         termsButton.addTarget(self, action: #selector(termsAction(_:)), for: .touchUpInside)
 

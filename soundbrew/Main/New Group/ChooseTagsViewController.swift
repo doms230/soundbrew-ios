@@ -309,6 +309,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 
             } else {
                 self.filteredTags.removeAll()
+                self.tableView.reloadData()
                 loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: searchBar.text)
             }
         }

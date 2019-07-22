@@ -101,7 +101,6 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "soundInfoReuse":
-            //self.addSubview(soundArtLabel)
             self.addSubview(soundArt)
             self.addSubview(soundTitle)
             
@@ -132,19 +131,12 @@ class SoundInfoTableViewCell: UITableViewCell {
             chosenSoundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundTagLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(soundTagLabel)
             }
             break
             
         case "soundSocialReuse":
-            //self.addSubview(titleLabel)
             self.addSubview(soundTagLabel)
             self.addSubview(socialSwitch)
-            
-            /*titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }*/
             
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -166,7 +158,6 @@ class SoundInfoTableViewCell: UITableViewCell {
             self.addSubview(soundTagLabel)
             self.addSubview(artistTypeButton)
             
-            
             //artist profile picture
             soundArt.layer.cornerRadius = 25
             soundArt.snp.makeConstraints { (make) -> Void in
@@ -175,14 +166,12 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            
             //artist name
             soundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(soundArt)
                 make.left.equalTo(soundArt.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            
             
             artistTypeButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(20)
@@ -203,7 +192,6 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.centerY.equalTo(titleLabel)
                 make.left.equalTo(titleLabel.snp.right)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             break

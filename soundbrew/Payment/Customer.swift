@@ -49,7 +49,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             "customerId": self.artist!.customerId!]
         
         Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            //.validate(statusCode: 200..<300)
+            .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 switch responseJSON.result {
                 case .success(let json):

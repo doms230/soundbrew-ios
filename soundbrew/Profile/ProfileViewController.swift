@@ -64,7 +64,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch segue.identifier {
         case "showEditProfile":
             let editProfileController = segue.destination as! EditProfileViewController
-            editProfileController.artist = profileArtist
             editProfileController.artistDelegate = self
             break
             
@@ -299,8 +298,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
             if let website = artist.website {
-                cell.website.setTitle(website, for: .normal)
-                cell.website.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
+                //cell.website.setTitle(website, for: .normal)
+                cell.website.text = website 
+                cell.websiteView.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
             }
         }
         

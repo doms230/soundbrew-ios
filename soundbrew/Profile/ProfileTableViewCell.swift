@@ -86,7 +86,14 @@ class ProfileTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var website: UIButton = {
+    lazy var website: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.textColor = color.blue()
+        return label
+    }()
+    
+    lazy var websiteView: UIButton = {
         let button = UIButton()
         button.setTitleColor(color.blue(), for: .normal)
         return button
@@ -129,7 +136,6 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     lazy var editProfileInput: UITextField = {
         let textField = UITextField()
-        //textField.placeholder = "Name"
         textField.borderStyle = .none
         textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         textField.textColor = color.black()
@@ -153,7 +159,6 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var editBioText: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        //label.numberOfLines = 0
         label.textColor = color.black()
         return label
     }()
@@ -174,7 +179,8 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(displayNameLabel)
             self.addSubview(city)
             self.addSubview(bio)
-            self.addSubview(website)
+            self.addSubview(websiteView)
+            self.websiteView.addSubview(website)
             self.addSubview(actionButton)
             
             profileImage.layer.cornerRadius = 75/2
@@ -208,16 +214,22 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(displayNameLabel)
             }
             
-            website.snp.makeConstraints { (make) -> Void in
+            websiteView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(city.snp.bottom)
                 make.left.equalTo(displayNameLabel)
-                //make.right.equalTo(displayName)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
+            
+            website.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(websiteView)
+                make.left.equalTo(websiteView)
+                make.right.equalTo(websiteView)
+                make.bottom.equalTo(websiteView)
+            }
+            
             break
             
-            
-                    
         case "searchTagViewReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)

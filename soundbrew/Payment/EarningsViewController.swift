@@ -53,25 +53,38 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         return label
     }()
     
+    lazy var infoButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "info"), for: .normal)
+        button.addTarget(self, action: #selector(didPressInfoButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressInfoButton(_ sender: UIButton) {
+        let alertController = UIAlertController (title: "Info", message: "Earnings are sent via PayPal on a weekly basis. \n\n Please insure that your profile email is the email you use to receive PayPal payments. \n\n A 15% Soundbrew fee will be deducted from your earnings. ", preferredStyle: .alert)
+        let okayAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
+        alertController.addAction(okayAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     func setUpView() {
-        self.view.addSubview(earningsLabel)
-        earningsLabel.snp.makeConstraints { (make) -> Void in
+        self.view.addSubview(infoButton)
+        infoButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(earningsScheduleLabel)
-        earningsScheduleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(earningsLabel.snp.bottom).offset(uiElement.topOffset)
+        self.view.addSubview(earningsLabel)
+        earningsLabel.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(infoButton)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.right.equalTo(infoButton.snp.left).offset(uiElement.rightOffset)
         }
         
         self.view.addSubview(dividerLine)
         dividerLine.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(1)
-            make.top.equalTo(earningsScheduleLabel.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(earningsLabel.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }

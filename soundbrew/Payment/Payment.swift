@@ -33,20 +33,14 @@ class Payment: NSObject {
         ]
         
         Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            //.validate(statusCode: 200..<300)
+            .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
                     print(json)
-                    if let status = json["status"].string {
-                        if status == "succeeded" {
-                            completion(nil)
-                            
-                        }
-                    } else {
-                        
-                    }
+                    completion(nil)
+                    
                 case .failure(let error):
                     completion(error)
                 }

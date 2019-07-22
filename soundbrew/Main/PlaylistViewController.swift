@@ -168,14 +168,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
-            
             soundList.loadWorldCreatedAtSounds()
-            /*if PFUser.current() == nil {
-                soundList.loadWorldCreatedAtSounds()
-                
-            } else {
-                soundList.loadFollowCreatedAtSounds()
-            }*/
         }
     }
     

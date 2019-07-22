@@ -99,7 +99,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             
             let alertView = UIAlertController(
                 title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
-                message: "The selected tip amount exceeds your Soundbrew Balance. You can add funds from your profile.",
+                message: "The selected tip amount exceeds your Soundbrew Balance.",
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
@@ -163,7 +163,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         newTip.saveEventually{
             (success: Bool, error: Error?) in
             if success {
-                //TODO: self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
+                self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
             }
         }
     }
@@ -197,7 +197,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        print(tipAmountInCents[row])
         selectedTipAmount = tipAmountInCents[row]
     }
     

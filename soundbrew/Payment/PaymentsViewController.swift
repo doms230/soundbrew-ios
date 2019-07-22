@@ -55,14 +55,6 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         return label
     }()
     
-    lazy var paymentsSubLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = color.black()
-        label.text = "Current Balance"
-        return label
-    }()
-    
     lazy var dividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 1
@@ -79,16 +71,9 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     }()
     
     func setupPaymentView() {
-        self.view.addSubview(paymentsSubLabel)
-        paymentsSubLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         self.view.addSubview(paymentLabel)
         paymentLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(paymentsSubLabel.snp.bottom)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -195,25 +180,6 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }
     }
-    
-    /*func loadSounds(_ soundIds: [String]) {
-        let query = PFQuery(className: "Post")
-        query.whereKey("objectId", containedIn: soundIds)
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    print(objects.count)
-                    for object in objects {
-                        let sound = self.uiElement.newSoundObject(object)
-                        self.soundsThatArtistTipped.append(sound)
-                        print(sound)
-                    }
-                    self.setUpTableView()
-                }
-            }
-        }
-    }*/
     
     func loadArtist(_ userId: String, cell: ProfileTableViewCell, row: Int) {
         let query = PFQuery(className: "_User")

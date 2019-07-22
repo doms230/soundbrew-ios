@@ -160,7 +160,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 2:
-                //cell = creditCell(indexPath)
                 cell = tagCell(indexPath, tableView: tableView)
                 break
                 
@@ -169,7 +168,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
                 
             case 4:
-                
                 break
                 
             default:
@@ -183,10 +181,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       /* if indexPath.section == 2 {
-            self.performSegue(withIdentifier: "showCreditPeople", sender: self)
-            
-        } else*/ if indexPath.section == 2 {
+        if indexPath.section == 2 {
             switch indexPath.row {
             case 0:
                 self.tagType = "genre"
@@ -230,15 +225,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         return cell
     }
     
-    //mark: credits
-    func creditCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
-           let cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell
-        cell.soundTagLabel.text = "Credit People"
-        cell.chosenSoundTagLabel.text = "▷"
-        cell.chosenSoundTagLabel.textColor = color.darkGray()
-        return cell
-    }
-    
     //mark: social
     func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var socialTitle: String!
@@ -275,11 +261,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func createDynamicLink(_ sound: Sound) {
-        let title = sound.title!
-        let description = "\(sound.title!) by \(sound.artist!.name!)"
-        let imageURL = sound.artURL!
-        let objectId = sound.objectId!
+    func createDynamicLink(_ title: String, artistName: String, artURL: String, objectId: String) {
+        let title = title
+        let description = "\(title) by \(artistName)"
+        let imageURL = artURL
+        let objectId = objectId
         
         guard let link = URL(string: "https://soundbrew.app/sound/\(objectId)") else { return }
         let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
@@ -295,10 +281,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 print(error)
             } else if let url = url {
                 if self.shouldPostLinkToFacebook {
-                    self.postToFacebook(url, sound: sound)
+                    self.postToFacebook(url)
                 }
                 if self.shouldPostLinkToTwitter {
-                    self.postTweet(url, sound: sound)
+                    self.postTweet(url, title: title)
                 }
             }
         }
@@ -335,7 +321,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func postToFacebook(_ url: URL, sound: Sound) {
+    func postToFacebook(_ url: URL) {
         let content = LinkShareContent(url: url)
         
         let shareDialog = ShareDialog(content: content)
@@ -387,11 +373,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
-    func postTweet(_ url: URL, sound: Sound) {
+    func postTweet(_ url: URL, title: String) {
         if let userID = self.twitterUserID {
             let client = TWTRAPIClient(userID: userID)
             let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "Listen to \(sound.title!) on #soundbrew \(url)"]
+            let params = ["status": "Listen to \(title) on #soundbrew \(url)"]
             var clientError : NSError?
             let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
             client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
@@ -450,7 +436,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else {
                 cell.chosenSoundTagLabel.text = "Add"
-                cell.chosenSoundTagLabel.textColor = color.darkGray()
+                cell.chosenSoundTagLabel.textColor = color.red()
             }
             tableView.separatorStyle = .singleLine
         default:
@@ -469,7 +455,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         } else {
             cell.chosenSoundTagLabel.text = "Add"
-            cell.chosenSoundTagLabel.textColor = color.darkGray()
+            cell.chosenSoundTagLabel.textColor = color.red()
         }
     }
     
@@ -716,8 +702,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (success: Bool, error: Error?) in
             if (success) {
                 if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
-                    let sound = self.uiElement.newSoundObject(newSound)
-                    self.createDynamicLink(sound)
+                    let title = newSound["title"] as! String
+                    let art = newSound["songArt"] as! PFFileObject
+                    self.createDynamicLink(title, artistName: PFUser.current()!.username!, artURL: art.url!, objectId: newSound.objectId!)
                 }
                 
                 SKStoreReviewController.requestReview()

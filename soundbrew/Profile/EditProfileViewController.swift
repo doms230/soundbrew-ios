@@ -40,12 +40,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         setUpViews()
         
-        if artist != nil {
-            setUpTableView()
-            
-        } else if let CurrentArtist = Customer.shared.artist {
+        if let CurrentArtist = Customer.shared.artist {
             self.artist = CurrentArtist
             self.setUpTableView()
+        } else {
+            self.uiElement.goBackToPreviousViewController(self)
         }
     }
     
@@ -405,35 +404,30 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.stopAnimating()
                     if (success) {
                         if let artistDelegate = self.artistDelegate {
-                            //let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: user["username"] as? String, website: nil, bio: nil, email: user["email"] as? String, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                            customer.artist?.username = (user["username"] as! String)
+                            customer.artist?.email = (user["email"] as! String)
                             
                             if let followerCount = user["followerCount"] as? Int {
-                               // artist.followerCount = followerCount
                                 customer.artist?.followerCount = followerCount
                             }
                             
                             if let name =  user["artistName"] as? String {
-                                //artist.name = name
                                 customer.artist?.name = name
                             }
                             
                             if let city = user["city"] as? String {
-                                //artist.city = city
                                 customer.artist?.city = city
                             }
                             
                             if let website = user["website"] as? String {
-                                //artist.website = website
                                 customer.artist?.website = website
                             }
                             
                             if let bio = user["bio"] as? String {
-                                //artist.bio = bio
                                 customer.artist?.bio = bio
                             }
                             
                             if let profileImage = user["userImage"] as? PFFileObject {
-                                //artist.image = profileImage.url
                                 customer.artist?.image = profileImage.url
                             }
                         
@@ -441,7 +435,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             
                             customer.update()
                         }
-                        //self.dismiss(animated: true, completion: nil)
+                        
                         self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {
@@ -451,68 +445,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
         }
     }
-    
-    /*func loadUserInfoFromCloud(_ userId: String) {
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                let username = user["username"] as? String
-                
-                var email: String?
-                if user.objectId! == PFUser.current()!.objectId {
-                    email = user["email"] as? String
-                }
-                
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil)
-                
-                if let followerCount = user["followerCount"] as? Int {
-                    artist.followerCount = followerCount
-                }
-                
-                if let name = user["artistName"] as? String {
-                    artist.name = name
-                }
-                
-                if let username = user["username"] as? String {
-                    if username.contains("@") {
-                        artist.username = nil
-                        
-                    } else {
-                        artist.username = username
-                    }
-                }
-                
-                if let city = user["city"] as? String {
-                    artist.city = city
-                }
-                
-                if let userImageFile = user["userImage"] as? PFFileObject {
-                    artist.image = userImageFile.url!
-                }
-                
-                if let bio = user["bio"] as? String {
-                    artist.bio = bio
-                }
-                
-                if let artistVerification = user["artistVerification"] as? Bool {
-                    artist.isVerified = artistVerification
-                }
-                
-                if let website = user["website"] as? String {
-                    artist.website = website
-                }
-                
-                self.artist = artist
-
-                self.setUpTableView()
-                
-            }
-        }
-    }*/
     
     func validateEmail() -> Bool {
         if emailText.text!.isEmpty || !emailText.text!.contains("@") || !emailText.text!.contains(".") {

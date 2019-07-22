@@ -90,10 +90,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if indexPath.section == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsTitleReuse) as! ProfileTableViewCell
             cell.selectionStyle = .none
-            if let currentUsername = PFUser.current()?.username {
-                cell.displayNameLabel.text = currentUsername
-                tableView.separatorStyle = .singleLine
-            }
+            cell.displayNameLabel.text = "Settings"
             return cell
             
         } else {
@@ -103,26 +100,28 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0:
-            showEarningsOrPayments("payments")
-            break
-            
-        case 1:
-            showEarningsOrPayments("earnings")
-            break
-            
-        case 2:
-            editProfile()
-            break
-            
-        case 3:
-            shareProfile()
-            break
-        
-            
-        default:
-            break
+        if indexPath.section == 1 {
+            switch indexPath.row {
+            case 0:
+                showEarningsOrPayments("funds")
+                break
+                
+            case 1:
+                showEarningsOrPayments("earnings")
+                break
+                
+            case 2:
+                editProfile()
+                break
+                
+            case 3:
+                shareProfile()
+                break
+                
+                
+            default:
+                break
+            }
         }
     }
     
@@ -154,7 +153,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if let topView = container.topViewController as? UINavigationController {
                 if let view = topView.topViewController as? ProfileViewController {
                     view.paymentType = paymentType
-                    if paymentType == "payments" {
+                    if paymentType == "funds" {
                         view.performSegue(withIdentifier: "showPayments", sender: self)
                     } else {
                         view.performSegue(withIdentifier: "showEarnings", sender: self)
@@ -170,7 +169,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.tableView.separatorStyle = .none
         switch indexPath.row {
         case 0:
-            cell.displayNameLabel.text = "Payments"
+            cell.displayNameLabel.text = "Funds"
             cell.profileImage.image = UIImage(named: "payments")
             break
             
