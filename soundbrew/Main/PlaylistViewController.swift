@@ -27,6 +27,9 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         showSounds()
+        
+        let filterTagsButton = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(didPressFilterTagsButton))
+        self.navigationItem.rightBarButtonItem = filterTagsButton
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -272,6 +275,10 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         
         xPositionForTags = xPositionForTags + Int(tagButton.frame.width)
         scrollview.contentSize = CGSize(width: xPositionForTags, height: 35)
+    }
+    
+    @objc func didPressFilterTagsButton() {
+        
     }
 }
 

@@ -56,18 +56,29 @@ class SoundListTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.layer.borderWidth = 1
         image.layer.borderColor = color.darkGray().cgColor
+        image.layer.cornerRadius = 3
+        image.clipsToBounds = true
+        image.contentMode = ContentMode.scaleAspectFill
         return image
     }()
     
     lazy var soundTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        label.numberOfLines = 2
         return label
     }()
     
     lazy var soundArtist: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        return label
+    }()
+    
+    lazy var soundDate: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.textColor = color.darkGray()
         return label
     }()
     
@@ -102,36 +113,31 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(soundArtImage)
             self.addSubview(soundTitle)
             self.addSubview(soundArtist)
+            self.addSubview(soundDate)
             self.addSubview(dividerLine)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(80)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.height.width.equalTo(125)
+                make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(75)
+            soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundArtImage)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            menuImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(15)
-                make.top.equalTo(menuButton)
-                make.right.equalTo(menuButton)
             }
             
             soundArtist.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(soundArtImage).offset(uiElement.topOffset)
+                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(soundTitle)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.right.equalTo(soundTitle)
             }
             
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
-                make.bottom.equalTo(soundArtist.snp.top).offset(-(uiElement.elementOffset))
+            soundDate.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(soundTitle)
             }
             
             dividerLine.snp.makeConstraints { (make) -> Void in
@@ -142,6 +148,18 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self)
             }
             
+            menuButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(75)
+                make.top.equalTo(soundArtImage.snp.bottom).offset(uiElement.bottomOffset - 10)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            menuImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.top.equalTo(menuButton)
+                make.right.equalTo(menuButton)
+            }
+        
             break
             
         case "shareReuse":

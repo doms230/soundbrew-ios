@@ -122,6 +122,8 @@ class SoundList: NSObject, PlayerDelegate {
             } else {
                 loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
             }
+            
+            cell.soundDate.text = "\(sound.createdAt)"
         }
         
         return cell

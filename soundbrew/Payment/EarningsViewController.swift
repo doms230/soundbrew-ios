@@ -23,7 +23,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     
     lazy var earningsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Loading..."
+        label.text = "$1,000"
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
         label.textColor = color.black()
         return label
@@ -110,7 +110,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
             } else if let object = object {
                 if let earningsInCents = object["tipsSinceLastPayout"] as? Int {
                     let earningsInDollars = self.uiElement.convertCentsToDollarsAndReturnString(earningsInCents, currency: "$")
-                    self.earningsLabel.text = earningsInDollars
+                    //TODO self.earningsLabel.text = earningsInDollars
                     
                 } else {
                     self.earningsLabel.text = "$0.00"
@@ -123,6 +123,10 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     //MARK: Tableview
+    var testTips = ["$1.00 for RARE", "$0.50 for My Word", "$1.00 for My Word", "$0.10 for Rare", "$1.00 for Illuminated Illusions", "$0.10 for RARE", "$0.50", "$0.50 for My Word", "$0.25 for Illuminated Illusions", "$0.10 Illuminated Illusions", "$0.25 My Word", "$1.00 for RARE"]
+    var testNames = ["Teaonna", "Sasha", "Jorge", "Christina", "Dominic", "Sarah", "Lauren", "Nicole", "Dave", "Janie", "", ""]
+    var testImages = ["testImage", "testImage1", "testImage2", "testImage3", "testImage4", "testImage5", "testImage6", "testImage7", "testImage8", "testImage9", "testImage10", "testImage11", "testImage12"]
+    
     let tableView = UITableView()
     let earningsPaymentsReuse = "earningsPaymentsReuse"
     func setUpTableView() {
@@ -141,7 +145,8 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return soundIds.count
+        //return soundIds.count
+        return testTips.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -149,14 +154,16 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         tableView.separatorStyle = .none
         
-        loadSound(cell, row: indexPath.row, objectId: soundIds[indexPath.row], tipAmount: tipAmount[indexPath.row])
-        
+        //loadSound(cell, row: indexPath.row, objectId: soundIds[indexPath.row], tipAmount: tipAmount[indexPath.row])
+        cell.profileImage.image = UIImage(named: testImages[indexPath.row])
+        cell.bio.text = testTips[indexPath.row]
+        cell.displayNameLabel.text = testNames[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedArtist = artists[indexPath.row]
-        self.performSegue(withIdentifier: "showProfile", sender: self)
+        //selectedArtist = artists[indexPath.row]
+        //self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
     var artists = [Artist]()
