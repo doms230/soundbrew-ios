@@ -16,30 +16,6 @@ class ProfileTableViewCell: UITableViewCell {
     
     var isSearchActive = false
     
-    lazy var firstListType: UIButton = {
-        let button = UIButton()
-        button.setTitle("Releases", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(color.black(), for: .normal)
-        return button
-    }()
-    
-    lazy var secondListType: UIButton = {
-        let button = UIButton()
-        button.setTitle("Collection", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(.lightGray, for: .normal)
-        return button
-    }()
-    
-    lazy var thirdListType: UIButton = {
-        let button = UIButton()
-        button.setTitle("Collection", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(.lightGray, for: .normal)
-        return button
-    }()
-    
     //profile
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
@@ -181,7 +157,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(bio)
             self.addSubview(websiteView)
             self.websiteView.addSubview(website)
-            self.addSubview(actionButton)
+            //self.addSubview(actionButton)
             
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
@@ -190,35 +166,29 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            actionButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(30)
-                make.centerY.equalTo(profileImage)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
-            }
-            
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(profileImage)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            bio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
+            city.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(profileImage).offset(uiElement.topOffset)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
-            city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(bio.snp.bottom)
-                make.left.equalTo(displayNameLabel)
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(city.snp.top)
+            }
+            
+            bio.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(profileImage)
                 make.right.equalTo(displayNameLabel)
             }
             
             websiteView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(city.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
+                make.top.equalTo(bio.snp.bottom)
+                make.left.equalTo(profileImage)
+                make.right.equalTo(displayNameLabel)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             website.snp.makeConstraints { (make) -> Void in
@@ -387,25 +357,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            break
-            
-        case "listTypeHeaderReuse":
-            self.addSubview(firstListType)
-            self.addSubview(secondListType)
-            
-            firstListType.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(self)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self)
-            }
-            
-            secondListType.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(firstListType)
-                make.left.equalTo(firstListType.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(firstListType)
-            }
             break
             
         case "earningsPaymentsReuse":

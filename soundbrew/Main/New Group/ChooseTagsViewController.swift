@@ -21,11 +21,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidLoad()
         setUpNavigationBar()
         loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveDynamicLink), name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
-        checkForProfileDynamicLink()
+        //NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveDynamicLink), name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
+        //checkForProfileDynamicLink()
     }
     
-    @objc func didReceiveDynamicLink() {
+    /*@objc func didReceiveDynamicLink() {
         let player = Player.sharedInstance
         for tag in player.sounds[0].tags {
             let newTagObject = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: nil, image: nil)
@@ -33,7 +33,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
 
         handleTagsForDismissal()
-    }
+    }*/
     
     override func viewDidAppear(_ animated: Bool) {
         if chosenTags.count != 0 && self.tableView != nil {
@@ -73,11 +73,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     lazy var searchBar: UISearchBar = {
         var minusWidth: CGFloat =  10
         var searchBarX: CGFloat = 0
-        if self.tagType == nil {
-            minusWidth = 150
-            searchBarX = 50
-            
-        } else if self.tagType == "more" {
+        if self.tagType == nil || self.tagType == "more" {
             minusWidth = 100
         }
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
@@ -96,22 +92,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
         let searchBarItem = UIBarButtonItem(customView: searchBar)
-        if tagType == nil {
-            let profileButton = UIBarButtonItem(image: UIImage(named: "profile_nav"), style: .plain, target: self, action: #selector(self.didPressProfileButton(_:)))
-            self.navigationItem.leftBarButtonItems = [profileButton, searchBarItem]
-            
-        } else {
-            self.navigationItem.leftBarButtonItem = searchBarItem
-        }
         
-        if tagType == nil {
-            let doneButton = UIBarButtonItem(image: UIImage(named: "create"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
-            self.navigationItem.rightBarButtonItem = doneButton
-            
-        } else if tagType == "more" {
+        self.navigationItem.leftBarButtonItem = searchBarItem
+        
+        if tagType == nil || tagType == "more" {
             let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
-            
         } else {
             searchBar.setShowsCancelButton(true, animated: true)
         }
@@ -426,13 +412,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             tagDelegate.receivedTags(chosenTags)
         }
-        
-        if tagType == nil {
-            self.performSegue(withIdentifier: "showPlaylist", sender: self)
-            
-        } else {
-            self.dismiss(animated: true, completion: nil)
-        }
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {

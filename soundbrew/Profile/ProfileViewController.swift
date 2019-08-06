@@ -39,18 +39,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if profileArtist != nil {
             self.executeTableViewSoundListFollowStatus()
-            self.setUpNavigationButtons(false)
+            self.setUpNavigationButtons()
             
         } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
             loadUserInfoFromCloud(userId)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
-            self.setUpNavigationButtons(true)
+            self.setUpNavigationButtons()
     
         } else if let currentArtist = Customer.shared.artist {
             isCurrentUserProfile = true
             self.profileArtist = currentArtist
             self.executeTableViewSoundListFollowStatus()
-            self.setUpNavigationButtons(true)
+            self.setUpNavigationButtons()
         }
     }
     
@@ -126,7 +126,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let tableView = UITableView()
     let reuse = "soundReuse"
     let profileReuse = "profileReuse"
-    let listTypeHeaderReuse = "listTypeHeaderReuse"
     let noSoundsReuse = "noSoundsReuse"
     let actionProfileReuse = "actionProfileReuse"
     let uploadSoundReuse = "uploadSoundReuse"
@@ -136,7 +135,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: actionProfileReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: listTypeHeaderReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadSoundReuse)
@@ -158,12 +156,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 1 {
+            return "Releases"
+        }
+        
+        return ""
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 && soundList.sounds.count != 0 {
+        if section == 1 && soundList.sounds.count != 0 {
             return soundList.sounds.count
         }
         
@@ -171,17 +177,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        if indexPath.section == 0 {
             return profileInfoReuse()
-            
-        case 1:
-            return listHeadersReuse()
-            
-        case 2:
-            return soundsReuse(indexPath)
-            
-        default:
+        } else {
             return soundsReuse(indexPath)
         }
     }
@@ -198,7 +196,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             if soundList.soundType == "uploads" {
                 soundList.loadSounds(soundList.descendingOrder, collectionIds: nil, userId: profileArtist?.objectId)
@@ -304,45 +301,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         }
         
-        if let currentUser = self.currentUser {
-            cell.actionButton.addTarget(self, action: #selector(didPressActionButton(_:)), for: .touchUpInside)
-            
-            if currentUser.objectId == profileArtist?.objectId {
-                cell.actionButton.setTitle("Upload Sound", for: .normal)
-                cell.actionButton.backgroundColor = .white
-                cell.actionButton.layer.borderWidth = 1
-                cell.actionButton.layer.borderColor = color.darkGray().cgColor
-                cell.actionButton.setTitleColor(color.black(), for: .normal)
-                
-            } else {
-                cell.newSoundButton.isHidden = true
-                
-                if let isFollowedByCurrentUser = profileArtist!.isFollowedByCurrentUser {
-                    if isFollowedByCurrentUser {
-                        cell.actionButton.setTitle("Following", for: .normal)
-                        cell.actionButton.backgroundColor = color.darkGray()
-                        cell.actionButton.setTitleColor(color.black(), for: .normal)
-                        
-                    } else {
-                        cell.actionButton.setTitle("Follow", for: .normal)
-                        cell.actionButton.backgroundColor = color.blue()
-                        cell.actionButton.setTitleColor(.white, for: .normal)
-                    }
-                    
-                } else {
-                    cell.actionButton.setTitle("Follow", for: .normal)
-                    cell.actionButton.backgroundColor = color.blue()
-                    cell.actionButton.setTitleColor(.white, for: .normal)
-                }
-                
-                cell.actionButton.layer.borderWidth = 0
-            }
-            
-        } else {
-            cell.actionButton.isHidden = true
-            cell.newSoundButton.isHidden = true
-        }
-        
         return cell
     }
     
@@ -353,7 +311,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: button actions
-    func setUpNavigationButtons(_ shouldShowDismissButton: Bool) {
+    func setUpNavigationButtons() {
         if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
@@ -361,11 +319,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else {
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
-        }
-        
-        if shouldShowDismissButton {
-            let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
-            self.navigationItem.leftBarButtonItem = dismissButton
         }
     }
     
@@ -385,28 +338,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressActionButton(_ sender: UIButton) {
-        if let currentUser = self.currentUser {
-            if currentUser.objectId == profileArtist!.objectId {
-                self.performSegue(withIdentifier: "showUploadSound", sender: self)
-                
-            } else if let isFollowedByCurrentUser = profileArtist?.isFollowedByCurrentUser {
-                if isFollowedByCurrentUser {
-                    unFollowerUser(currentUser)
-                    
-                } else {
-                    followUser(currentUser)
-                }
-                
-            } else {
-                followUser(currentUser)
-            }
-            
-        } else {
-            self.uiElement.segueToView("Login", withIdentifier: "welcome", target: self)
-        }
-    }
-    
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
         shareProfile()
     }
@@ -415,46 +346,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let container = self.so_containerViewController {
             container.isSideViewControllerPresented = true
         }
-    }
-    
-    @objc func didPressMySoundType(_ sender: UIButton) {
-        let currentSoundType = soundList.soundType
-        
-        if sender.tag == 0 {
-            soundList.soundType = "uploads"
-            soundType = "uploads"
-        } else {
-            soundList.soundType = "collection"
-            soundType = "collection"
-        }
-        
-        if currentSoundType != soundList.soundType {
-            self.tableView.reloadData()
-            soundList.determineTypeOfSoundToLoad(soundList.soundType)
-        }
-    }
-    
-    //mark: headers
-    func listHeadersReuse() -> ProfileTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: listTypeHeaderReuse) as! ProfileTableViewCell
-        cell.selectionStyle = .none
-        
-        cell.firstListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-        cell.firstListType.tag = 0
-        
-        cell.secondListType.addTarget(self, action: #selector(didPressMySoundType(_:)), for: .touchUpInside)
-        cell.secondListType.tag = 1
-        
-        if soundList.soundType == "uploads" {
-            cell.firstListType.setTitleColor(color.black(), for: .normal)
-            cell.secondListType.setTitleColor(color.darkGray(), for: .normal)
-            
-        } else {
-            cell.firstListType.setTitleColor(color.darkGray(), for: .normal)
-            cell.secondListType.setTitleColor(color.black(), for: .normal)
-        }
-        
-        return cell
     }
     
     //Mark: Data

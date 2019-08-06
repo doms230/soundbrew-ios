@@ -28,8 +28,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         showSounds()
         
-        let filterTagsButton = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(didPressFilterTagsButton))
-        self.navigationItem.rightBarButtonItem = filterTagsButton
+        setUpFilterTagsButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -62,6 +61,13 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             
         case "showUploadSound":
             soundList.prepareToShowSoundAudioUpload(segue)
+            break
+            
+        case "showTags":
+            let navi = segue.destination as! UINavigationController
+            let viewController: ChooseTagsViewController = navi.topViewController as! ChooseTagsViewController
+            viewController.tagDelegate = self
+            viewController.chosenTags = selectedTagsForFiltering
             break
             
         default:
@@ -232,16 +238,22 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     var selectedTagsForFiltering = [Tag]()
     var xPositionForTags = 0
     
+    func setUpFilterTagsButton() {
+        let filterTagsButton = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(didPressFilterTagsButton))
+        self.navigationItem.rightBarButtonItem = filterTagsButton
+    }
+    
+    @objc func didPressFilterTagsButton() {
+        self.performSegue(withIdentifier: "showTags", sender: self)
+    }
+    
     func receivedTags(_ value: Array<Tag>?) {
-        if let tags = value {
-            selectedTagsForFiltering = tags
-            soundList = SoundList(target: self, tableView: tableView, soundType: "discover", userId: nil, tags: tags, searchText: nil)
-            
+        if let newSelectedTags = value {
+            selectedTagsForFiltering = newSelectedTags
         } else {
             selectedTagsForFiltering.removeAll()
         }
-        
-        self.tableView.reloadData()
+        self.showSounds()
     }
     
     func tagCell(_ indexPath: IndexPath) -> UITableViewCell {
@@ -275,10 +287,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         
         xPositionForTags = xPositionForTags + Int(tagButton.frame.width)
         scrollview.contentSize = CGSize(width: xPositionForTags, height: 35)
-    }
-    
-    @objc func didPressFilterTagsButton() {
-        
     }
 }
 

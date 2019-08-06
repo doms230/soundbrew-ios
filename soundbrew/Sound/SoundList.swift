@@ -236,8 +236,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func prepareToShowSoundAudioUpload(_ segue: UIStoryboardSegue) {
         if let selectedSound = self.selectedSound {
-            let navigationController = segue.destination as! UINavigationController
-            let viewController = navigationController.topViewController as! UploadSoundAudioViewController
+            let viewController = segue.destination as! UploadSoundAudioViewController
             viewController.soundThatIsBeingEdited = selectedSound
         }
     }

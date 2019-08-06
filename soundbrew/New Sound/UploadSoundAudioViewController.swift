@@ -35,7 +35,6 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }()
     
     override func viewDidLoad() {
-        setupNavigation()
         showUploadSoundFileUI()
     }
     
@@ -55,15 +54,6 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             make.top.equalTo(self.view).offset((self.view.frame.height / 2) - CGFloat(uiElement.buttonHeight))
             make.left.equalTo(self.view).offset((self.view.frame.width / 2) - CGFloat(100))
         }
-    }
-    
-    func setupNavigation() {
-        let dismissButton = UIBarButtonItem(image: UIImage(named: "dismiss"), style: .plain, target: self, action: #selector(self.didPressDismissButton(_:)))
-        self.navigationItem.leftBarButtonItem = dismissButton
-    }
-    
-    @objc func didPressDismissButton(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressUploadButton(_ sender: UIButton) {
@@ -140,8 +130,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                     (success: Bool, error: Error?) in
                     if (success) {
                         self.stopAnimating()
-                        self.dismiss(animated: true, completion: nil)
-                        //self.uiElement.goBackToPreviousViewController(self)
+                        self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {
                         self.stopAnimating()
