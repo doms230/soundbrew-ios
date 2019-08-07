@@ -38,6 +38,7 @@
 		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
 		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
 		F2EA85752244110B005D6153 /* SoundList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA85742244110B005D6153 /* SoundList.swift */; };
+		F2F122D722FA4A4B002DA196 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122D622FA4A4B002DA196 /* SearchViewController.swift */; };
 		F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
 		F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */; };
@@ -52,6 +53,7 @@
 		F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */; };
 		F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D322CD1A1900ED157E /* Customer.swift */; };
 		F2FB14D822D28D5800ED157E /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D722D28D5800ED157E /* EarningsViewController.swift */; };
+		F2FB14E622FA335500ED157E /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14E522FA335500ED157E /* CollectionViewController.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -166,6 +168,7 @@
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
 		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		F2EA85742244110B005D6153 /* SoundList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundList.swift; sourceTree = "<group>"; };
+		F2F122D622FA4A4B002DA196 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundListTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
 		F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFundsViewController.swift; sourceTree = "<group>"; };
 		F2FB14D322CD1A1900ED157E /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		F2FB14D722D28D5800ED157E /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
+		F2FB14E522FA335500ED157E /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -303,7 +307,7 @@
 		F2689868215AEF8F00C21663 /* soundbrew */ = {
 			isa = PBXGroup;
 			children = (
-				F2E6E4F522A5934900B4537D /* New Group1 */,
+				F2E6E4F522A5934900B4537D /* d */,
 				F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */,
 				F26898F0216B874C00C21663 /* soundbrew.entitlements */,
 				F2689875215AEF9000C21663 /* Info.plist */,
@@ -313,6 +317,7 @@
 				F268989D215AF8F100C21663 /* UIElement.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
+				F2FB14E522FA335500ED157E /* CollectionViewController.swift */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
@@ -320,6 +325,7 @@
 				F2FB14CD22CC106100ED157E /* Payment */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
+				F2F122D622FA4A4B002DA196 /* SearchViewController.swift */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
@@ -353,12 +359,12 @@
 			path = Sound;
 			sourceTree = "<group>";
 		};
-		F2E6E4F522A5934900B4537D /* New Group1 */ = {
+		F2E6E4F522A5934900B4537D /* d */ = {
 			isa = PBXGroup;
 			children = (
 				F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */,
 			);
-			path = "New Group1";
+			path = d;
 			sourceTree = "<group>";
 		};
 		F2EA6F51220BDE89007FA614 /* Player */ = {
@@ -735,6 +741,7 @@
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
+				F2F122D722FA4A4B002DA196 /* SearchViewController.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
@@ -760,6 +767,7 @@
 				F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
+				F2FB14E622FA335500ED157E /* CollectionViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,

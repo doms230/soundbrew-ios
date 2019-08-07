@@ -181,7 +181,7 @@
                         <segue destination="3Mr-Tw-OSi" kind="relationship" relationship="viewControllers" id="sBe-M4-6h3"/>
                         <segue destination="cbO-N5-Etc" kind="relationship" relationship="viewControllers" id="70X-dO-icU"/>
                         <segue destination="4ef-dR-Glj" kind="relationship" relationship="viewControllers" id="ccd-sE-dZb"/>
-                        <segue destination="mpg-Ld-wKM" kind="relationship" relationship="viewControllers" id="7Ep-eH-VKJ"/>
+                        <segue destination="D9F-Kl-XwJ" kind="relationship" relationship="viewControllers" id="7Ep-eH-VKJ"/>
                         <segue destination="SLi-Nt-QNQ" kind="relationship" relationship="viewControllers" id="s3D-zM-pMy"/>
                     </connections>
                 </tabBarController>
@@ -330,10 +330,10 @@
             </objects>
             <point key="canvasLocation" x="-4613" y="-1213"/>
         </scene>
-        <!--View Controller-->
+        <!--Search View Controller-->
         <scene sceneID="zpo-FJ-VIH">
             <objects>
-                <viewController id="nr8-Z3-hTM" sceneMemberID="viewController">
+                <viewController id="nr8-Z3-hTM" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VNx-2U-dZL">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -341,6 +341,9 @@
                         <viewLayoutGuide key="safeArea" id="HnP-hi-n8c"/>
                     </view>
                     <navigationItem key="navigationItem" id="eFG-26-bQi"/>
+                    <connections>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ndJ-az-u77"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rmD-Xx-2Z4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -546,23 +549,24 @@
             </objects>
             <point key="canvasLocation" x="-1451" y="-1858"/>
         </scene>
-        <!--View Controller-->
+        <!--Collection View Controller-->
         <scene sceneID="qwK-R6-Jl7">
             <objects>
-                <viewController id="mpg-Ld-wKM" sceneMemberID="viewController">
+                <viewController id="mpg-Ld-wKM" customClass="CollectionViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VP1-IL-pMh">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Wk0-J5-4FK"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="" image="collection_nav" selectedImage="collection_nav_filled" id="76f-hM-bxP">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
-                    </tabBarItem>
+                    <navigationItem key="navigationItem" id="c4F-aX-L3Q"/>
+                    <connections>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ior-SH-LjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4587" y="216"/>
+            <point key="canvasLocation" x="-3678.2608695652175" y="215.625"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="MYB-ah-fqD">
@@ -585,6 +589,27 @@
             </objects>
             <point key="canvasLocation" x="-4586.9565217391309" y="-502.23214285714283"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ivk-k4-ubP">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="" image="collection_nav" selectedImage="collection_nav_filled" id="76f-hM-bxP">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x5d-dt-OWZ">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="mpg-Ld-wKM" kind="relationship" relationship="rootViewController" id="Pvy-Db-oMY"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cNU-w4-GFb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-4588.4057971014499" y="215.625"/>
+        </scene>
     </scenes>
     <resources>
         <image name="collection_nav" width="34.5" height="34.5"/>
@@ -600,7 +625,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
-        <segue reference="5zy-Bo-ugT"/>
+        <segue reference="ndJ-az-u77"/>
         <segue reference="LnM-xP-wsl"/>
         <segue reference="ttO-Wg-wls"/>
     </inferredMetricsTieBreakers>

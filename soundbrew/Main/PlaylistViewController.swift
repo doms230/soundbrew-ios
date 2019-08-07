@@ -17,35 +17,22 @@ import DeckTransition
 class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagDelegate, PlayerDelegate {
     
     var soundList: SoundList!
-    var searchSounds = [Sound]()
-    var searchUsers = [Artist]()
-    var searchTags = [Tag]()
     let uiElement = UIElement()
     let color = Color()
-    var playlistType = "discover"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        showSounds()
-        
         setUpFilterTagsButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        showSounds()
+        
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
         } else {
             setUpTableView(nil)
-        }
-        
-        if soundList != nil {
-            var tags: Array<Tag>?
-            if selectedTagsForFiltering.count != 0 {
-                tags = selectedTagsForFiltering
-            }
-            
-            soundList = SoundList(target: self, tableView: tableView, soundType: "playlist", userId: PFUser.current()?.objectId, tags: tags, searchText: nil)
         }
     }
     
@@ -115,6 +102,19 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        var soundSection = 0
+        if selectedTagsForFiltering.count != 0 {
+            soundSection = 1
+        }
+        
+        if section == soundSection {
+            return "Discover"
+        }
+        
+        return ""
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

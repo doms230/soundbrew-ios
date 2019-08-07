@@ -200,13 +200,17 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "uploads":
-            loadSounds(descendingOrder, collectionIds: nil, userId: profileUserId!)
+            loadSounds(descendingOrder, collectionIds: nil, userId: profileUserId!, searchText: nil)
             break
             
         case "collection":
             if let profileUserId = self.profileUserId {
                 self.loadCollection(descendingOrder, profileUserId: profileUserId)
             }
+            break
+            
+        case "search":
+            loadSounds("plays", collectionIds: nil, userId: nil, searchText: searchText)
             break
             
         default:
@@ -219,7 +223,7 @@ class SoundList: NSObject, PlayerDelegate {
         if self.player != nil {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             self.tableView?.isHidden = false
-            target.view.bringSubviewToFront(tableView!)
+            //target.view.bringSubviewToFront(tableView!)
             self.player!.sounds = self.sounds
             self.player!.fetchAudioData(0, prepareAndPlay: false)
         }
@@ -351,15 +355,25 @@ class SoundList: NSObject, PlayerDelegate {
     var isUpdatingData = false
     var thereIsMoreDataToLoad = true
     
-    func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?) {
+    func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?, searchText: String?) {
         let query = PFQuery(className: "Post")
         
         if let collectionIds = collectionIds {
             query.whereKey("objectId", containedIn: collectionIds)
+            //query.whereKey("objectId", containsAllObjectsIn: collectionIds)
         }
         
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
+        }
+        
+        if let searchText = searchText {
+            query.whereKey("title", matchesRegex: searchText)
+            query.whereKey("title", matchesRegex: searchText.lowercased())
+            query.limit = 10
+            
+        } else {
+            query.limit = 50
         }
         
         if sounds.count != 0 {
@@ -367,7 +381,6 @@ class SoundList: NSObject, PlayerDelegate {
         }
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder(descendingOrder)
-        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -399,6 +412,9 @@ class SoundList: NSObject, PlayerDelegate {
     func loadCollection(_ descendingOrder: String, profileUserId: String) {
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: profileUserId)
+       // query.whereKey("soundId", notContainedIn: self.collectionSoundIds)
+        //query.limit = 50
+        query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadCollection = true 
@@ -410,7 +426,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if self.soundType == "collection" {
-                    self.loadSounds(descendingOrder, collectionIds: self.collectionSoundIds, userId: nil)
+                    self.loadSounds(descendingOrder, collectionIds: self.collectionSoundIds, userId: nil, searchText: nil)
                 }
                 
             } else {

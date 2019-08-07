@@ -200,6 +200,37 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
+        case "searchProfileReuse":
+            self.addSubview(profileImage)
+            self.addSubview(displayNameLabel)
+            self.addSubview(city)
+            self.addSubview(username)
+            
+            profileImage.layer.cornerRadius = 25
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(50)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            //username
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            //city 
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
+                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
+            }
+            
+            break
+            
         case "searchTagViewReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
