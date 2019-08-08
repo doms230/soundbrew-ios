@@ -23,11 +23,10 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpFilterTagsButton()
+        showSounds()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        showSounds()
-        
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
