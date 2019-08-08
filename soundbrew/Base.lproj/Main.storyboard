@@ -285,7 +285,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="zSX-76-e2Z"/>
                     <connections>
-                        <segue destination="PaH-jC-wog" kind="show" id="AaU-Nw-Vla"/>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="AaU-Nw-Vla"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F4u-qB-maU" userLabel="First Responder" sceneMemberID="firstResponder"/>

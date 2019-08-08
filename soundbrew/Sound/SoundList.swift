@@ -123,7 +123,7 @@ class SoundList: NSObject, PlayerDelegate {
                 loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
             }
             
-            cell.soundDate.text = "\(sound.createdAt)"
+            cell.soundDate.text = "\(sound.createdAt!)"
         }
         
         return cell

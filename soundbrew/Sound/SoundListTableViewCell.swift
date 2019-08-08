@@ -64,7 +64,7 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var soundTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 16)
         label.numberOfLines = 2
         return label
     }()
@@ -117,7 +117,7 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(dividerLine)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(125)
+                make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }

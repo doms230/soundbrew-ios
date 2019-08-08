@@ -48,9 +48,9 @@ class TagTableViewCell: UITableViewCell {
         self.addSubview(tagsScrollview)
         
         tagTypeButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self)
-            make.left.equalTo(self)
-            make.right.equalTo(self)
+            make.top.equalTo(self).offset(uiElement.topOffset)
+            make.left.equalTo(self).offset(uiElement.leftOffset)
+            make.right.equalTo(self).offset(uiElement.rightOffset)
         }
         
         TagTypeTitle.snp.makeConstraints { (make) -> Void in
@@ -61,7 +61,7 @@ class TagTableViewCell: UITableViewCell {
         }
         
         tagsScrollview.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(75)
+            make.height.equalTo(130)
             make.top.equalTo(tagTypeButton.snp.bottom)
             make.left.equalTo(self)
             make.right.equalTo(self)
