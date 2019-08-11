@@ -104,17 +104,20 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         for tag in tags {
             let tagButton = UIButton()
-            //tagButton.setImage(UIImage(named: "hashtag"), for: .normal)
-            tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
-            /*if let tagImage = tag.image {
-             tagButton.kf.setImage(with: URL(string: tagImage), for: .normal)
+            if let tagImage = tag.image {
+                tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal)
              } else {
-             tagButton.setImage(UIImage(named: "hashtag"), for: .normal)
-             }*/
+             tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
+             }
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
             tagButton.tag = row
             tagButton.setTitle(tag.name, for: .normal)
+            tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+            tagButton.setTitleColor(.white, for: .normal)
+            tagButton.contentHorizontalAlignment = .left
+            tagButton.contentVerticalAlignment = .bottom
+            tagButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: CGFloat(uiElement.topOffset), right: 0)
             tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
             scrollview.addSubview(tagButton)
             tagButton.snp.makeConstraints { (make) -> Void in
@@ -124,6 +127,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
                 make.bottom.equalTo(scrollview)
             }
+           // self.loadTagImage(tag.name, tagButton: tagButton)
             
             /*let tagTitleView = UIView()
             tagTitleView.backgroundColor = UIColor(white: 1, alpha: 0.5)
@@ -148,6 +152,21 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
             scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
+        }
+    }
+    
+    func loadTagImage(_ tag: String, tagButton: UIButton) {
+        let query = PFQuery(className: "Post")
+        query.whereKey("tags", contains: tag)
+        query.whereKey("isRemoved", equalTo: false)
+        query.addDescendingOrder("plays")
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object != nil && error == nil {
+                if let image = object?["songArt"] as? PFFileObject {
+                    tagButton.kf.setBackgroundImage(with: URL(string: image.url!), for: .normal)
+                }
+            }
         }
     }
     
@@ -190,7 +209,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             query.whereKey("type", equalTo: type)
         }
         query.addDescendingOrder("count")
-        query.limit = 10
+        query.limit = 5
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
