@@ -127,46 +127,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
                 make.bottom.equalTo(scrollview)
             }
-           // self.loadTagImage(tag.name, tagButton: tagButton)
-            
-            /*let tagTitleView = UIView()
-            tagTitleView.backgroundColor = UIColor(white: 1, alpha: 0.5)
-            tagButton.addSubview(tagTitleView)
-            tagTitleView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(tagButton)
-                make.left.equalTo(tagButton)
-                make.right.equalTo(tagButton)
-                //make.bottom.equalTo(tagButton)
-            }
-            
-            let tagTitle = UILabel()
-            tagTitle.text = tag.name
-            tagTitle.textColor = .white
-            tagTitleView.addSubview(tagTitle)
-            tagTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(tagTitleView).offset(uiElement.elementOffset)
-                make.left.equalTo(tagTitleView).offset(uiElement.elementOffset)
-                make.right.equalTo(tagTitleView).offset(-(uiElement.elementOffset))
-                //make.bottom.equalTo(tagTitleView).offset(-(uiElement.elementOffset))
-            }*/
             
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
             scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
-        }
-    }
-    
-    func loadTagImage(_ tag: String, tagButton: UIButton) {
-        let query = PFQuery(className: "Post")
-        query.whereKey("tags", contains: tag)
-        query.whereKey("isRemoved", equalTo: false)
-        query.addDescendingOrder("plays")
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if object != nil && error == nil {
-                if let image = object?["songArt"] as? PFFileObject {
-                    tagButton.kf.setBackgroundImage(with: URL(string: image.url!), for: .normal)
-                }
-            }
         }
     }
     
