@@ -30,7 +30,7 @@ class SoundList: NSObject, PlayerDelegate {
     var searchText: String?
     var domSmithUserId = "AWKPPDI4CB"
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?, searchText: String?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?, searchText: String?, descendingOrder: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
@@ -38,6 +38,9 @@ class SoundList: NSObject, PlayerDelegate {
         self.profileUserId = userId
         self.selectedTagsForFiltering = tags
         self.searchText = searchText
+        if let descendingOrder = descendingOrder {
+            self.descendingOrder = descendingOrder
+        }
         player = Player.sharedInstance
         player?.target = target
         player?.tableView = tableView
@@ -196,6 +199,10 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = true
         
         switch soundType {
+        case "chart":
+            loadSounds(descendingOrder, collectionIds: nil, userId: nil, searchText: nil, followIds: nil)
+            break
+            
         case "playlist":
             self.loadWorldCreatedAtSounds()
             break

@@ -355,7 +355,7 @@
             </objects>
             <point key="canvasLocation" x="-4613" y="-1213"/>
         </scene>
-        <!--Following View Controller-->
+        <!--Following-->
         <scene sceneID="ONb-vr-0dI">
             <objects>
                 <viewController id="UtP-Uh-9hz" customClass="FollowingViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -365,7 +365,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="QKF-iJ-HXz"/>
                     </view>
-                    <navigationItem key="navigationItem" id="ZUc-A1-nE7"/>
+                    <navigationItem key="navigationItem" title="Following" id="ZUc-A1-nE7"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="xvi-B0-pE3"/>
                     </connections>
@@ -574,7 +574,7 @@
             </objects>
             <point key="canvasLocation" x="-1657" y="-1632"/>
         </scene>
-        <!--Collection View Controller-->
+        <!--Your Collection-->
         <scene sceneID="qwK-R6-Jl7">
             <objects>
                 <viewController id="mpg-Ld-wKM" customClass="CollectionViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -584,7 +584,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Wk0-J5-4FK"/>
                     </view>
-                    <navigationItem key="navigationItem" id="c4F-aX-L3Q"/>
+                    <navigationItem key="navigationItem" title="Your Collection" id="c4F-aX-L3Q"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
                     </connections>
@@ -651,7 +651,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="xvi-B0-pE3"/>
+        <segue reference="gLy-U4-3xr"/>
         <segue reference="217-ix-XIX"/>
         <segue reference="A7h-oS-bzS"/>
     </inferredMetricsTieBreakers>

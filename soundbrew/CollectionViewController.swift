@@ -44,7 +44,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
             self.tableView.reloadData()
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: "collection", userId: PFUser.current()?.objectId, tags: nil, searchText: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "collection", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil)
     }
     
     //mark: tableview
@@ -71,10 +71,6 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Your Collection"
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

@@ -44,7 +44,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             self.tableView.reloadData()
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: "follow", userId: PFUser.current()?.objectId, tags: nil, searchText: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "follow", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil)
     }
     
     //mark: tableview
@@ -71,10 +71,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Following"
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

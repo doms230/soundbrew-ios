@@ -322,6 +322,7 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F2FB14E522FA335500ED157E /* CollectionViewController.swift */,
+				F2EFDEFA23025B50008A157B /* FollowingViewController.swift */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
@@ -329,7 +330,6 @@
 				F2FB14CD22CC106100ED157E /* Payment */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
-				F2EFDEFA23025B50008A157B /* FollowingViewController.swift */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";

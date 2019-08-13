@@ -68,11 +68,13 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let soundReuse = "soundReuse"
     let searchProfileReuse = "searchProfileReuse"
     let filterSoundsReuse = "filterSoundsReuse"
+    let chartsReuse = "chartsReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
+        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: chartsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
@@ -82,22 +84,11 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.view.addSubview(self.tableView)
     }
     
-    /*func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if isSearchActive {
-            if section == 0 {
-                return "Accounts"
-            } else {
-                return "Sounds"
-            }
-        }
-        return ""
-    }*/
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        if isSearchActive {
+        /*if isSearchActive {
             return 2
-        }
-        return 1
+        }*/
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -113,6 +104,9 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     return 0
                 }
             }
+            
+        } else if section == 0 {
+          return 1
         }
         return featureTagTypes.count
     }
@@ -147,6 +141,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     return soundList.soundCell(indexPath, cell: cell)
                 }
             }
+            
+        } else if indexPath.section == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: chartsReuse) as! TagTableViewCell
+            cell.newChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
+            cell.newChartsButton.tag = 0
+            
+            cell.topChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
+            cell.topChartsButton.tag = 1
+            return cell
         }
         return featureTagCell(indexPath)
     }
@@ -178,6 +181,15 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    @objc func didPressChartsButton(_ sender: UIButton) {
+        let tag = Tag(objectId: nil, name: "new", count: 0, isSelected: false, type: nil, image: nil)
+        if sender.tag == 1 {
+            tag.name = "top"
+        }
+        self.selectedTag = tag
+        self.performSegue(withIdentifier: "showSounds", sender: self)
+    }
+    
     //mark: tags
     var featureTagTypes = ["genre", "mood", "activity", "city", "all"]
     var topGenreTags = [Tag]()
@@ -185,6 +197,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var topActivityTags = [Tag]()
     var topCityTags = [Tag]()
     var topAllTags = [Tag]()
+    var chartTags = [Tag]()
     var featureTagScrollview: UIScrollView!
     var selectedTag: Tag!
     var selectedTagType: String!
@@ -402,7 +415,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if searchType == 0 {
             searchUsers(searchBar.text!)
         } else {
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil)
         }
         
         if tableView == nil {
