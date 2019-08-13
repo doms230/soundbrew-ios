@@ -370,12 +370,8 @@ class SoundList: NSObject, PlayerDelegate {
         if let searchText = searchText {
             query.whereKey("title", matchesRegex: searchText)
             query.whereKey("title", matchesRegex: searchText.lowercased())
-            query.limit = 10
-            
-        } else {
-            query.limit = 50
         }
-        
+        query.limit = 50
         if sounds.count != 0 {
             query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
         }

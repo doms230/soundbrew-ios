@@ -20,31 +20,19 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpNavigationBar()
-        loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
-        //NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveDynamicLink), name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
-        //checkForProfileDynamicLink()
+        loadTags(tagType, searchText: nil)
     }
     
-    /*@objc func didReceiveDynamicLink() {
-        let player = Player.sharedInstance
-        for tag in player.sounds[0].tags {
-            let newTagObject = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: nil, image: nil)
-            self.chosenTags.append(newTagObject)
-        }
-
-        handleTagsForDismissal()
-    }*/
-    
     override func viewDidAppear(_ animated: Bool) {
-        if chosenTags.count != 0 && self.tableView != nil {
-            resetScrollviewAndAddChosenTagsBack()
-        }
+        let backItem = UIBarButtonItem()
+        backItem.title = "Back"
+        navigationItem.backBarButtonItem = backItem
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showPlaylist" {
+        if segue.identifier == "showSounds" {
             let backItem = UIBarButtonItem()
-            backItem.title = "Your Playlist"
+            backItem.title = self.chosenTags[0].name
             navigationItem.backBarButtonItem = backItem
             
             let topviewController = segue.destination as! PlaylistViewController
@@ -57,23 +45,13 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         handleTagsForDismissal()
     }
     
-    //MARK: Profile
-    @objc func didPressProfileButton(_ sender: UIBarButtonItem) {
-        if PFUser.current() == nil {
-            self.uiElement.signupRequired("Welcome To Soundbrew!", message: "Sign up or Sign in to view your profile and upload music to Soundbrew.", target: self)
-            
-        } else {
-            self.performSegue(withIdentifier: "showProfile", sender: self)
-        }
-    }
-    
     //MARK: SearchBar
     var searchIsActive = false
     
     lazy var searchBar: UISearchBar = {
         var minusWidth: CGFloat =  10
         var searchBarX: CGFloat = 0
-        if self.tagType == nil || self.tagType == "more" {
+        if self.tagType == "more" || self.isSelectingTagsForPlaylist {
             minusWidth = 100
         }
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
@@ -87,30 +65,32 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func setUpNavigationBar() {        
         if let tagType = self.tagType {
             searchBar.placeholder = "Search \(tagType.capitalized) Tags"
-        } else {
-            searchBar.placeholder = "Search \(featureTagTitles[selectedFeatureTagTypeIndex].capitalized) Tags"
         }
         
         let searchBarItem = UIBarButtonItem(customView: searchBar)
         
-        self.navigationItem.leftBarButtonItem = searchBarItem
-        
-        if tagType == nil || tagType == "more" {
+        if isSelectingTagsForPlaylist {
+            self.navigationItem.rightBarButtonItem = searchBarItem
+            
+        } else if tagType == "more" {
             let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
+            self.navigationItem.leftBarButtonItem = searchBarItem
+            
         } else {
             searchBar.setShowsCancelButton(true, animated: true)
+            self.navigationItem.leftBarButtonItem = searchBarItem
         }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text!.isEmpty {
             searchIsActive = false
-            loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: nil)
+            loadTags(tagType, searchText: nil)
             
         } else {
             searchIsActive = true
-            loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: searchText)
+            loadTags(tagType, searchText: searchText)
         }
     }
     
@@ -186,20 +166,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tagType == nil && indexPath.section == 0 {
-            return featureTagCell(indexPath)
-        }
-        
         return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tagType != nil && indexPath.section == 1 {
-            didSelectRowAt(indexPath.row)
-            
-        } else {
-            didSelectRowAt(indexPath.row)
-        }
+        didSelectRowAt(indexPath.row)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func didSelectRowAt(_ row: Int) {
@@ -208,6 +180,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: tags
+    var isSelectingTagsForPlaylist = false
+    
     var tagDelegate: TagDelegate?
     let moreTags = "moreTags"
     
@@ -224,80 +198,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func checkForProfileDynamicLink() {
         if let _ = self.uiElement.getUserDefault("receivedUserId") as? String {
             self.performSegue(withIdentifier: "showProfile", sender: self)
-        }
-    }
-    
-    func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: tagsReuse) as! SoundListTableViewCell
-        cell.selectionStyle = .none
-        
-        if featureTagScrollview == nil {
-            xPositionForFeatureTags = uiElement.leftOffset
-            
-            featureTagScrollview = cell.tagsScrollview
-            for i in 0..<featureTagTitles.count {
-                addSelectedTags(featureTagScrollview, name: featureTagTitles[i], index: i)
-            }
-        }
-
-        return cell
-    }
-    
-    func addSelectedTags(_ scrollview: UIScrollView, name: String, index: Int) {
-        //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(name)
-        
-        var titleColor = color.black()
-        var backgroundColor = color.darkGray()
-        if index == 0 {
-            backgroundColor = color.blue()
-            titleColor = .white
-            
-        } else {
-            titleColor = color.black()
-            backgroundColor = color.darkGray()
-        }
-        
-        let buttonHeight = 30
-        
-        let tagButton = UIButton()
-        tagButton.frame = CGRect(x: xPositionForFeatureTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: buttonHeight)
-        tagButton.setTitle( name.capitalized, for: .normal)
-        tagButton.setTitleColor(titleColor, for: .normal)
-        tagButton.backgroundColor = backgroundColor
-        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        tagButton.layer.cornerRadius = 3
-        tagButton.tag = index
-        tagButton.addTarget(self, action: #selector(self.didPressFeatureTagButton(_:)), for: .touchUpInside)
-        scrollview.addSubview(tagButton)
-        
-        xPositionForFeatureTags = xPositionForFeatureTags + Int(tagButton.frame.width) + uiElement.leftOffset
-        scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
-    }
-    
-    @objc func didPressFeatureTagButton(_ sender: UIButton) {
-        if sender.tag != selectedFeatureTagTypeIndex {
-            let currentSelectedButton = featureTagScrollview.subviews[selectedFeatureTagTypeIndex] as! UIButton
-            currentSelectedButton.backgroundColor = color.darkGray()
-            currentSelectedButton.setTitleColor(color.black(), for: .normal)
-            
-            let newSelectedButton = featureTagScrollview.subviews[sender.tag] as! UIButton
-            newSelectedButton.backgroundColor = color.blue()
-            newSelectedButton.setTitleColor(.white, for: .normal)
-            
-            selectedFeatureTagTypeIndex = sender.tag
-            self.searchBar.placeholder = "Search \(featureTagTitles[selectedFeatureTagTypeIndex].capitalized) Tags"
-            self.searchBar.text = ""
-            self.searchBar.resignFirstResponder()
-            
-            if sender.tag == 6 {
-                self.filteredTags = self.tags
-                
-            } else {
-                self.filteredTags.removeAll()
-                self.tableView.reloadData()
-                loadTags(tagType, selectedFeatureType: selectedFeatureTagTypeIndex, searchText: searchBar.text)
-            }
         }
     }
     
@@ -341,7 +241,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func addChooseTagsLabel() {
         if let type = tagType {
-            self.chooseTagsLabel.text = "Select \(type.capitalized) Tag"
+            if type == "all" {
+                self.chooseTagsLabel.text = "Select Tag"
+            } else {
+                self.chooseTagsLabel.text = "Select \(type.capitalized) Tag"
+            }
         }
         self.chosenTagsScrollview.addSubview(chooseTagsLabel)
         chooseTagsLabel.snp.makeConstraints { (make) -> Void in
@@ -358,8 +262,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             if self.filteredTags[i].objectId == tag.objectId {
                 positionToRemoveTag = i
                 self.chosenTags.append(self.filteredTags[i])
-                let index = self.chosenTags.count - 1
-                self.addChosenTagButton(tag.name, tag: index)
+                if !self.isSelectingTagsForPlaylist {
+                    let index = self.chosenTags.count - 1
+                    self.addChosenTagButton(tag.name, tag: index)
+                }
             }
         }
         
@@ -405,14 +311,17 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func handleTagsForDismissal() {
-        if let tagDelegate = self.tagDelegate {
+        if self.isSelectingTagsForPlaylist {
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+            
+        } else if let tagDelegate = self.tagDelegate {
             var chosenTags: Array<Tag>?
             if self.chosenTags.count != 0 {
                 chosenTags = self.chosenTags
             }
             tagDelegate.receivedTags(chosenTags)
+            self.dismiss(animated: true, completion: nil)
         }
-        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressRemoveSelectedTag(_ sender: UIButton) {
@@ -455,7 +364,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func loadTags(_ type: String?, selectedFeatureType: Int, searchText: String?) {
+    func loadTags(_ type: String?, searchText: String?) {
         let query = PFQuery(className: "Tag")
         
         if let text = searchText {
@@ -469,9 +378,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             } else {
                 query.whereKey("type", equalTo: type)
             }
-            
-        } else if selectedFeatureType != 5 {
-            query.whereKey("type", equalTo: featureTagTitles[selectedFeatureType])
         }
         
         query.addDescendingOrder("count")
@@ -517,7 +423,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                 }
                 
-                if self.tagType != nil && searchText != nil {
+                if self.tagType != nil && searchText != nil && !self.isSelectingTagsForPlaylist {
                     self.checkIfTagSearchTextExists()
                 }
                 

@@ -19,6 +19,13 @@ class TagTableViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var viewAllLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.text = "View All"
+        return label
+    }()
+    
     lazy var tagTypeButton: UIButton = {
         let button = UIButton()
         return button
@@ -45,6 +52,7 @@ class TagTableViewCell: UITableViewCell {
         
         self.addSubview(tagTypeButton)
         self.tagTypeButton.addSubview(TagTypeTitle)
+        self.tagTypeButton.addSubview(viewAllLabel)
         self.addSubview(tagsScrollview)
         
         tagTypeButton.snp.makeConstraints { (make) -> Void in
@@ -53,10 +61,16 @@ class TagTableViewCell: UITableViewCell {
             make.right.equalTo(self).offset(uiElement.rightOffset)
         }
         
+        viewAllLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(tagTypeButton)
+            make.right.equalTo(tagTypeButton)
+            make.bottom.equalTo(tagTypeButton)
+        }
+        
         TagTypeTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(tagTypeButton)
             make.left.equalTo(tagTypeButton)
-            make.right.equalTo(tagTypeButton)
+            make.right.equalTo(viewAllLabel.snp.left).offset(uiElement.rightOffset)
             make.bottom.equalTo(tagTypeButton)
         }
         

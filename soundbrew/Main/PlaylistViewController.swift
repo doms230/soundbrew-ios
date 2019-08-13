@@ -14,7 +14,7 @@ import SnapKit
 import AppCenterCrashes
 import DeckTransition
 
-class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TagDelegate, PlayerDelegate {
+class PlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
     
     var soundList: SoundList!
     let uiElement = UIElement()
@@ -22,7 +22,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpFilterTagsButton()
+        //setUpFilterTagsButton()
         showSounds()
     }
     
@@ -49,12 +49,12 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             soundList.prepareToShowSoundAudioUpload(segue)
             break
             
-        case "showTags":
+        /*case "showTags":
             let navi = segue.destination as! UINavigationController
             let viewController: ChooseTagsViewController = navi.topViewController as! ChooseTagsViewController
             viewController.tagDelegate = self
             viewController.chosenTags = selectedTagsForFiltering
-            break
+            break*/
             
         default:
             break 
@@ -78,13 +78,13 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     //mark: tableview
     var tableView = UITableView()
     let soundReuse = "soundReuse"
-    let tagsReuse = "tagsReuse"
+   // let tagsReuse = "tagsReuse"
     
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
+        //tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
         tableView.backgroundColor = color.lightGray()   
         self.tableView.separatorStyle = .none
         
@@ -103,29 +103,43 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        var soundSection = 0
+    /*func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        /*var soundSection = 0
         if selectedTagsForFiltering.count != 0 {
             soundSection = 1
         }
         
         if section == soundSection {
-            return "Discover"
-        }
+            return "#\(selectedTagsForFiltering[0])"
+        }*/
         
-        return ""
+        return "#\(selectedTagsForFiltering[0].name ?? "")"
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
+    {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 30))
+        headerView.backgroundColor = .white
+        
+        let label = UILabel(frame: CGRect(x: uiElement.leftOffset, y: 0, width: Int(tableView.bounds.size.width), height: 30))
+        
+        label.textColor = .black
+        label.text = "#\(selectedTagsForFiltering[0].name ?? "")"
+        headerView.addSubview(label)
+        
+        return headerView
+    }*/
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        if selectedTagsForFiltering.count != 0 {
+        /*if selectedTagsForFiltering.count != 0 {
             return 2
-        }
+        }*/
         
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var soundSection = 0
+        /*var soundSection = 0
         
         if selectedTagsForFiltering.count != 0 {
             soundSection = 1
@@ -133,13 +147,13 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         
         if section == soundSection {
             return soundList.sounds.count
-        }
+        }*/
         
-        return 1
+        return soundList.sounds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if selectedTagsForFiltering.count != 0 {
+        /*if selectedTagsForFiltering.count != 0 {
             if indexPath.section == 0 {
                 return tagCell(indexPath)
                 
@@ -151,17 +165,23 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+        return soundList.soundCell(indexPath, cell: cell)*/
+        
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+        cell.backgroundColor = .white
         return soundList.soundCell(indexPath, cell: cell)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //only one section if user decided to not choose any tags for their playlist 
-        if selectedTagsForFiltering.count != 0 && indexPath.section == 1 {
+        /*if selectedTagsForFiltering.count != 0 && indexPath.section == 1 {
             didSelectRowAt(indexPath.row)
             
         } else if selectedTagsForFiltering.count == 0 && indexPath.section == 0 {
             didSelectRowAt(indexPath.row)
-        }
+        }*/
+        
+        didSelectRowAt(indexPath.row)
     }
     
     func didSelectRowAt(_ row: Int) {
@@ -235,6 +255,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     //mark: tags
     var selectedTagsForFiltering = [Tag]()
+    /*var selectedTagsForFiltering = [Tag]()
     var xPositionForTags = 0
     
     func setUpFilterTagsButton() {
@@ -253,9 +274,9 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
             selectedTagsForFiltering.removeAll()
         }
         self.showSounds()
-    }
+    }*/
     
-    func tagCell(_ indexPath: IndexPath) -> UITableViewCell {
+    /*func tagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: tagsReuse) as! SoundListTableViewCell
         cell.selectionStyle = .none
         cell.backgroundColor = color.lightGray()
@@ -269,9 +290,9 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         return cell
-    }
+    }*/
     
-    func addSelectedTags(_ scrollview: UIScrollView, tag: Tag, index: Int) {
+    /*func addSelectedTags(_ scrollview: UIScrollView, tag: Tag, index: Int) {
         let name = "\(tag.name!)"
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(name)
@@ -286,6 +307,6 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         
         xPositionForTags = xPositionForTags + Int(tagButton.frame.width)
         scrollview.contentSize = CGSize(width: xPositionForTags, height: 35)
-    }
+    }*/
 }
 

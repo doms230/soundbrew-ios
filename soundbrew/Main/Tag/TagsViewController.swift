@@ -11,47 +11,174 @@ import Parse
 import SnapKit
 import Kingfisher
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     let color = Color()
     let uiElement = UIElement()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupSearchBar()
         for featureTagType in featureTagTypes {
             loadTags(featureTagType)
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        let backItem = UIBarButtonItem()
+        backItem.title = "Back"
+        navigationItem.backBarButtonItem = backItem
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showSounds" {
+        switch segue.identifier {
+        case "showProfile":
+            soundList.prepareToShowSelectedArtist(segue)
+            break
+            
+        case "showEditSoundInfo":
+            soundList.prepareToShowSoundInfo(segue)
+            break
+            
+        case "showUploadSound":
+            soundList.prepareToShowSoundAudioUpload(segue)
+            break
+            
+        case "showTags":
+            let desi = segue.destination as! ChooseTagsViewController
+            desi.tagType = selectedTagType
+            desi.isSelectingTagsForPlaylist = true
+            break
+            
+        case "showSounds":
             let topviewController = segue.destination as! PlaylistViewController
             topviewController.selectedTagsForFiltering.append(self.selectedTag)
+            let backItem = UIBarButtonItem()
+            backItem.title = self.selectedTag.name
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        default:
+            break
         }
     }
-
+    
     //mark: tableview
     var tableView: UITableView!
     let reuse = "reuse"
+    let soundReuse = "soundReuse"
+    let searchProfileReuse = "searchProfileReuse"
+    let filterSoundsReuse = "filterSoundsReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         self.tableView.separatorStyle = .none
+        self.tableView.keyboardDismissMode = .onDrag
         self.tableView.frame = view.bounds
         self.view.addSubview(self.tableView)
     }
     
+    /*func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if isSearchActive {
+            if section == 0 {
+                return "Accounts"
+            } else {
+                return "Sounds"
+            }
+        }
+        return ""
+    }*/
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if isSearchActive {
+            return 2
+        }
+        return 1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if isSearchActive {
+            if section == 0 {
+                return 1
+            } else {
+                if searchType == 0 {
+                    return searchUsers.count
+                } else if soundList != nil {
+                    return soundList.sounds.count
+                } else {
+                    return 0
+                }
+            }
+        }
         return featureTagTypes.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if isSearchActive {
+            if indexPath.section == 0 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
+                cell.newButton.setTitle("Artists", for: .normal)
+                cell.newButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
+                cell.newButton.tag = 0
+                
+                cell.popularButton.setTitle("Music", for: .normal)
+                cell.popularButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
+                cell.popularButton.tag = 1
+                
+                if searchType == 0 {
+                    cell.newButton.setTitleColor(color.black(), for: .normal)
+                    cell.popularButton.setTitleColor(color.darkGray(), for: .normal)
+                    
+                } else {
+                    cell.newButton.setTitleColor(color.darkGray(), for: .normal)
+                    cell.popularButton.setTitleColor(color.black(), for: .normal)
+                }
+                return cell
+                
+            } else {
+                if searchType == 0 {
+                    return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
+                } else {
+                    let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+                    return soundList.soundCell(indexPath, cell: cell)
+                }
+            }
+        }
         return featureTagCell(indexPath)
     }
     
-    //tags
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if isSearchActive && indexPath.section == 1 {
+            tableView.cellForRow(at: indexPath)?.isSelected = false
+            if searchType == 0 {
+                soundList.selectedArtist = searchUsers[indexPath.row]
+                self.performSegue(withIdentifier: "showProfile", sender: self)
+            } else {
+                didSelectSoundAt(row: indexPath.row)
+            }
+        }
+    }
+    
+    func didSelectSoundAt(row: Int) {
+        if let player = soundList.player {
+            player.didSelectSoundAt(row)
+            tableView.reloadData()
+        }
+    }
+    
+    @objc func didPressSearchTypeButton(_ sender: UIButton) {
+       let currentSearchType = self.searchType
+        self.searchType = sender.tag
+        if currentSearchType != self.searchType {
+            self.tableView.reloadData()
+        }
+    }
+    
+    //mark: tags
     var featureTagTypes = ["genre", "mood", "activity", "city", "all"]
     var topGenreTags = [Tag]()
     var topMoodTags = [Tag]()
@@ -60,11 +187,14 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var topAllTags = [Tag]()
     var featureTagScrollview: UIScrollView!
     var selectedTag: Tag!
+    var selectedTagType: String!
     
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! TagTableViewCell
         cell.selectionStyle = .none
-        cell.TagTypeTitle.text = featureTagTypes[indexPath.row].capitalized
+        cell.tagTypeButton.tag = indexPath.row
+        cell.TagTypeTitle.text = "\(featureTagTypes[indexPath.row].capitalized)"
+        cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllTagsButton(_:)), for: .touchUpInside)
         
         switch indexPath.row {
         case 0:
@@ -96,6 +226,18 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
+    @objc func didPressViewAllTagsButton(_ sender: UIButton) {
+        let selectedTagType = featureTagTypes[sender.tag]
+        
+        //want to insure that feature tag types like activity, mood, etc aren't shown
+        if selectedTagType == "all" {
+            self.selectedTagType = "more"
+        } else {
+            self.selectedTagType = featureTagTypes[sender.tag]
+        }
+        self.performSegue(withIdentifier: "showTags", sender: self)
+    }
+    
     func addTags(_ scrollview: UIScrollView, tags: Array<Tag>, row: Int) {
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonHeight = 130
@@ -104,11 +246,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         for tag in tags {
             let tagButton = UIButton()
-            if let tagImage = tag.image {
+            tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
+            /*if let tagImage = tag.image {
                 tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal)
              } else {
              tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
-             }
+             }*/
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
             tagButton.tag = row
@@ -170,6 +313,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let query = PFQuery(className: "Tag")
         if type != "all" {
             query.whereKey("type", equalTo: type)
+        } else {
+             query.whereKey("type", notContainedIn: self.featureTagTypes)
         }
         query.addDescendingOrder("count")
         query.limit = 5
@@ -227,6 +372,147 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             } else {
                 print("Error: \(error!)")
                 self.uiElement.showAlert("Oops", message: "\(error!)", target: self)
+            }
+        }
+    }
+    
+    //mark: search
+    var isSearchActive = false
+    var searchSounds = [Sound]()
+    var searchUsers = [Artist]()
+    var soundList: SoundList!
+    var searchType = 0
+    
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 5, height: 10))
+        searchBar.placeholder = "Artists & Music"
+        
+        let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
+        searchTextField?.backgroundColor = color.lightGray()
+        searchBar.delegate = self
+        return searchBar
+    }()
+    
+    func setupSearchBar() {
+        let leftNavBarButton = UIBarButtonItem(customView: searchBar)
+        self.navigationItem.leftBarButtonItem = leftNavBarButton
+    }
+    
+    func search() {
+        if searchType == 0 {
+            searchUsers(searchBar.text!)
+        } else {
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!)
+        }
+        
+        if tableView == nil {
+            setUpTableView()
+            
+        } else {
+            self.tableView.reloadData()
+        }
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        isSearchActive = true
+        self.tableView.reloadData()
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if !searchText.isEmpty {
+            search()
+            
+        } else {
+            if searchType == 0 {
+                self.searchUsers.removeAll()
+            } else {
+                self.soundList.sounds.removeAll()
+            }
+            self.tableView.reloadData()
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.text = ""
+        self.searchBar.resignFirstResponder()
+        isSearchActive = false
+        self.tableView.reloadData()
+    }
+    
+    func searchUsers(_ text: String) {
+        self.searchUsers.removeAll()
+        
+        let nameQuery = PFQuery(className: "_User")
+        nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
+        nameQuery.whereKey("artistName", matchesRegex: text)
+        
+        let usernameQuery = PFQuery(className: "_User")
+        usernameQuery.whereKey("username", matchesRegex: text.lowercased())
+        
+        let cityQuery = PFQuery(className: "_User")
+        cityQuery.whereKey("city", matchesRegex: text.lowercased())
+        
+        let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery, cityQuery])
+        query.limit = 50
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for user in objects {
+                        let username = user["username"] as? String
+                        
+                        var email: String?
+                        
+                        if let currentUser = PFUser.current() {
+                            if currentUser.objectId! == user.objectId! {
+                                email = user["email"] as? String
+                            }
+                        }
+                        
+                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                        
+                        if let followerCount = user["followerCount"] as? Int {
+                            artist.followerCount = followerCount
+                        }
+                        
+                        if let name = user["artistName"] as? String {
+                            artist.name = name
+                        }
+                        
+                        if let username = user["username"] as? String {
+                            artist.username = username
+                        }
+                        
+                        if let city = user["city"] as? String {
+                            artist.city = city
+                        }
+                        
+                        if let userImageFile = user["userImage"] as? PFFileObject {
+                            artist.image = userImageFile.url!
+                        }
+                        
+                        if let bio = user["bio"] as? String {
+                            artist.bio = bio
+                        }
+                        
+                        if let artistVerification = user["artistVerification"] as? Bool {
+                            artist.isVerified = artistVerification
+                        }
+                        
+                        if let website = user["website"] as? String {
+                            artist.website = website
+                        }
+                        
+                        self.searchUsers.append(artist)
+                    }
+                }
+                
+                self.tableView.reloadData()
+                
+            } else {
+                print("Error: \(error!)")
             }
         }
     }

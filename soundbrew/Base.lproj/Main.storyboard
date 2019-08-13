@@ -60,7 +60,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2736" y="-1213"/>
+            <point key="canvasLocation" x="-2836" y="-1213"/>
         </scene>
         <!--Container View Controller-->
         <scene sceneID="Sfx-x4-dys">
@@ -163,10 +163,13 @@
                         <viewLayoutGuide key="safeArea" id="C2O-ih-25I"/>
                     </view>
                     <navigationItem key="navigationItem" id="bkc-Sl-S7V"/>
+                    <connections>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="FZs-ab-ofk"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-609" y="-1858"/>
+            <point key="canvasLocation" x="-684" y="-1998"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Oz9-Vl-g3k">
@@ -179,9 +182,8 @@
                     </tabBar>
                     <connections>
                         <segue destination="3Mr-Tw-OSi" kind="relationship" relationship="viewControllers" id="sBe-M4-6h3"/>
-                        <segue destination="cbO-N5-Etc" kind="relationship" relationship="viewControllers" id="70X-dO-icU"/>
-                        <segue destination="4ef-dR-Glj" kind="relationship" relationship="viewControllers" id="ccd-sE-dZb"/>
                         <segue destination="D9F-Kl-XwJ" kind="relationship" relationship="viewControllers" id="7Ep-eH-VKJ"/>
+                        <segue destination="4ef-dR-Glj" kind="relationship" relationship="viewControllers" id="ccd-sE-dZb"/>
                         <segue destination="SLi-Nt-QNQ" kind="relationship" relationship="viewControllers" id="s3D-zM-pMy"/>
                     </connections>
                 </tabBarController>
@@ -230,7 +232,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2786" y="-2016"/>
+            <point key="canvasLocation" x="-2694" y="-2369"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="LMc-NU-utU">
@@ -255,7 +257,7 @@
         <scene sceneID="LYJ-Ge-DSD">
             <objects>
                 <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="fKU-gR-hkK">
+                    <tabBarItem key="tabBarItem" title="" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -286,6 +288,10 @@
                     <navigationItem key="navigationItem" id="zSX-76-e2Z"/>
                     <connections>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="AaU-Nw-Vla"/>
+                        <segue destination="Wod-6r-vBx" kind="show" identifier="showTags" id="ny7-0k-lik"/>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="qF7-cv-MYn"/>
+                        <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="A7h-oS-bzS"/>
+                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="217-ix-XIX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F4u-qB-maU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -347,25 +353,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bcv-xe-OI8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-4613" y="-1213"/>
-        </scene>
-        <!--Search View Controller-->
-        <scene sceneID="zpo-FJ-VIH">
-            <objects>
-                <viewController id="nr8-Z3-hTM" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="VNx-2U-dZL">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="HnP-hi-n8c"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="eFG-26-bQi"/>
-                    <connections>
-                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ndJ-az-u77"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rmD-Xx-2Z4" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-3676.811594202899" y="-502.23214285714283"/>
         </scene>
         <!--Welcome View Controller-->
         <scene sceneID="MDQ-uK-ba3">
@@ -565,7 +552,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MW3-lR-ovp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1451" y="-1858"/>
+            <point key="canvasLocation" x="-1657" y="-1632"/>
         </scene>
         <!--Collection View Controller-->
         <scene sceneID="qwK-R6-Jl7">
@@ -585,27 +572,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ior-SH-LjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3678.2608695652175" y="215.625"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="MYB-ah-fqD">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cbO-N5-Etc" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="search" selectedImage="search_filled" id="ndn-Bs-zJe">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
-                    </tabBarItem>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="hRi-of-qRE">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="nr8-Z3-hTM" kind="relationship" relationship="rootViewController" id="1Wf-HI-yWI"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iBc-hs-5XD" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-4586.9565217391309" y="-502.23214285714283"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ivk-k4-ubP">
@@ -642,8 +608,10 @@
         <image name="search_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ate-Yt-ICi"/>
-        <segue reference="iDR-Ll-dSf"/>
-        <segue reference="Dx3-fw-EG5"/>
+        <segue reference="AaU-Nw-Vla"/>
+        <segue reference="ny7-0k-lik"/>
+        <segue reference="qF7-cv-MYn"/>
+        <segue reference="217-ix-XIX"/>
+        <segue reference="A7h-oS-bzS"/>
     </inferredMetricsTieBreakers>
 </document>
