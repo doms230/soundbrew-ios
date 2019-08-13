@@ -23,6 +23,7 @@ class SoundList: NSObject, PlayerDelegate {
     var profileUserId: String?
     var player: Player?
     var collectionSoundIds = [String]()
+
     var followUserIds = [String]()
     var soundType: String!
     var didLoadCollection = false
@@ -200,7 +201,7 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "uploads":
-            loadSounds(descendingOrder, collectionIds: nil, userId: profileUserId!, searchText: nil)
+            loadSounds(descendingOrder, collectionIds: nil, userId: profileUserId!, searchText: nil, followIds: nil)
             break
             
         case "collection":
@@ -210,7 +211,13 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "search":
-            loadSounds("plays", collectionIds: nil, userId: nil, searchText: searchText)
+            loadSounds("plays", collectionIds: nil, userId: nil, searchText: searchText, followIds: nil)
+            break
+            
+        case "follow":
+            if let profileUserId = self.profileUserId {
+                self.loadFollowing(descendingOrder, profileUserId: profileUserId)
+            }
             break
             
         default:
@@ -355,12 +362,16 @@ class SoundList: NSObject, PlayerDelegate {
     var isUpdatingData = false
     var thereIsMoreDataToLoad = true
     
-    func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?, searchText: String?) {
+    func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?) {
         let query = PFQuery(className: "Post")
         
         if let collectionIds = collectionIds {
             query.whereKey("objectId", containedIn: collectionIds)
             //query.whereKey("objectId", containsAllObjectsIn: collectionIds)
+        }
+        
+        if let followIds = followIds {
+            query.whereKey("userId", containedIn: followIds)
         }
         
         if let userId = userId {
@@ -422,7 +433,34 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if self.soundType == "collection" {
-                    self.loadSounds(descendingOrder, collectionIds: self.collectionSoundIds, userId: nil, searchText: nil)
+                    self.loadSounds(descendingOrder, collectionIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil)
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
+    func loadFollowing(_ descendingOrder: String, profileUserId: String) {
+        let query = PFQuery(className: "Follow")
+        query.whereKey("fromUserId", equalTo: profileUserId)
+        query.whereKey("isRemoved", equalTo: false)
+        // query.whereKey("soundId", notContainedIn: self.collectionSoundIds)
+        //query.limit = 50
+        query.addDescendingOrder("createdAt")
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            self.didLoadCollection = true
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        self.followUserIds.append(object["toUserId"] as! String)
+                    }
+                }
+                
+                if self.soundType == "follow" {
+                    self.loadSounds(descendingOrder, collectionIds: nil, userId: nil, searchText: nil, followIds: self.followUserIds)
                 }
                 
             } else {

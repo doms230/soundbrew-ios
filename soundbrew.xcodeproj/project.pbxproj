@@ -38,7 +38,7 @@
 		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
 		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
 		F2EA85752244110B005D6153 /* SoundList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA85742244110B005D6153 /* SoundList.swift */; };
-		F2F122D722FA4A4B002DA196 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122D622FA4A4B002DA196 /* SearchViewController.swift */; };
+		F2EFDEFB23025B50008A157B /* FollowingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EFDEFA23025B50008A157B /* FollowingViewController.swift */; };
 		F2F122D922FBCA50002DA196 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122D822FBCA50002DA196 /* TagsViewController.swift */; };
 		F2F122DB22FBCA78002DA196 /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122DA22FBCA78002DA196 /* TagTableViewCell.swift */; };
 		F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */; };
@@ -170,7 +170,7 @@
 		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
 		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		F2EA85742244110B005D6153 /* SoundList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundList.swift; sourceTree = "<group>"; };
-		F2F122D622FA4A4B002DA196 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		F2EFDEFA23025B50008A157B /* FollowingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingViewController.swift; sourceTree = "<group>"; };
 		F2F122D822FBCA50002DA196 /* TagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
 		F2F122DA22FBCA78002DA196 /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundListTableViewCell.swift; sourceTree = "<group>"; };
@@ -329,7 +329,7 @@
 				F2FB14CD22CC106100ED157E /* Payment */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
-				F2F122D622FA4A4B002DA196 /* SearchViewController.swift */,
+				F2EFDEFA23025B50008A157B /* FollowingViewController.swift */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
@@ -747,7 +747,6 @@
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
-				F2F122D722FA4A4B002DA196 /* SearchViewController.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
@@ -755,6 +754,7 @@
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
 				F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
+				F2EFDEFB23025B50008A157B /* FollowingViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,

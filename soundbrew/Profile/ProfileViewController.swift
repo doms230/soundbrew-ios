@@ -198,10 +198,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             if soundList.soundType == "uploads" {
-                soundList.loadSounds(soundList.descendingOrder, collectionIds: nil, userId: profileArtist?.objectId, searchText: nil)
+                soundList.loadSounds(soundList.descendingOrder, collectionIds: nil, userId: profileArtist?.objectId, searchText: nil, followIds: nil)
                 
             } else {
-                soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: nil, searchText: nil)
+                soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: nil, searchText: nil, followIds: nil)
             }
         }
     }
