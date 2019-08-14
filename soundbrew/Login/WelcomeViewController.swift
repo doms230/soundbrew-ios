@@ -144,4 +144,8 @@ class WelcomeViewController: UIViewController {
     @objc func termsAction(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
     }
+    
+    @objc func loginWithTwitter(_ sender: UIButton) {
+
+    }
 }

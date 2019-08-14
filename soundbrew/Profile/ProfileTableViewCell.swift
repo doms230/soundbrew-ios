@@ -157,7 +157,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(bio)
             self.addSubview(websiteView)
             self.websiteView.addSubview(website)
-            //self.addSubview(actionButton)
+            self.addSubview(actionButton)
             
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in

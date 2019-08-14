@@ -278,11 +278,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.chosenTags.append(tag)
         }
         
-        if tagType == nil || tagType == "more" {
-            self.tableView.reloadData()
+        if isSelectingTagsForPlaylist || tagType != "more" {
+            handleTagsForDismissal()
             
         } else {
-            handleTagsForDismissal()
+            self.tableView.reloadData()
         }
     }
     
