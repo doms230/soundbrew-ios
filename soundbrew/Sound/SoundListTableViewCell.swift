@@ -27,7 +27,7 @@ class SoundListTableViewCell: UITableViewCell {
         let button = UIButton()
         button.setTitle("Recent", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(color.black(), for: .normal)
+        button.setTitleColor(.white, for: .normal)
         return button
     }()
     
@@ -35,7 +35,7 @@ class SoundListTableViewCell: UITableViewCell {
         let button = UIButton()
         button.setTitle("Top", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(.lightGray, for: .normal)
+        button.setTitleColor(.darkGray, for: .normal)
         return button
     }()
     
@@ -48,14 +48,14 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var dividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 1
-        line.layer.borderColor = color.darkGray().cgColor
+        line.layer.borderColor = color.black().cgColor
         return line
     }()
     
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
         image.layer.borderWidth = 1
-        image.layer.borderColor = color.darkGray().cgColor
+        image.layer.borderColor = UIColor.black.cgColor
         image.layer.cornerRadius = 3
         image.clipsToBounds = true
         image.contentMode = ContentMode.scaleAspectFill
@@ -65,6 +65,7 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var soundTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 16)
+        label.textColor = .white
         label.numberOfLines = 2
         return label
     }()
@@ -72,6 +73,7 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var soundArtist: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.textColor = .white 
         return label
     }()
     
@@ -120,6 +122,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self)
             }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
@@ -140,18 +143,19 @@ class SoundListTableViewCell: UITableViewCell {
                 make.right.equalTo(soundTitle)
             }
             
-            dividerLine.snp.makeConstraints { (make) -> Void in
+           /* dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(1)
                 make.top.equalTo(soundArtImage.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
-            }
+            }*/
             
             menuButton.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(75)
                 make.top.equalTo(soundArtImage.snp.bottom).offset(uiElement.bottomOffset - 10)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+               // make.bottom.equalTo(self)
             }
             
             menuImage.snp.makeConstraints { (make) -> Void in

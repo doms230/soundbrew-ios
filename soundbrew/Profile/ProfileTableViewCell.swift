@@ -20,7 +20,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
         image.layer.borderWidth = 1
-        image.layer.borderColor = color.lightGray().cgColor
+        image.layer.borderColor = UIColor.black.cgColor
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
@@ -31,6 +31,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var displayNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
+        label.textColor = .white
         return label
     }()
     
@@ -38,6 +39,7 @@ class ProfileTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.numberOfLines = 0
+        label.textColor = .white
         return label
     }()
     
@@ -45,6 +47,7 @@ class ProfileTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.numberOfLines = 0
+        label.textColor = .white
         return label
     }()
     
@@ -100,7 +103,7 @@ class ProfileTableViewCell: UITableViewCell {
         label.text = "Change Profile Photo"
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
         label.textAlignment = .center
-        label.textColor = color.black()
+        label.textColor = .white
         return label
     }()
     
@@ -114,7 +117,7 @@ class ProfileTableViewCell: UITableViewCell {
         let textField = UITextField()
         textField.borderStyle = .none
         textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        textField.textColor = color.black()
+        textField.textColor = .white
         textField.clearButtonMode = .whileEditing
         return textField
     }()
@@ -135,7 +138,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var editBioText: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.textColor = color.black()
+        label.textColor = .white
         return label
     }()
     
@@ -143,7 +146,7 @@ class ProfileTableViewCell: UITableViewCell {
         let label = UILabel()
         label.text = "Private Information"
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        label.textColor = color.black()
+        label.textColor = .white 
         return label
     }()
     

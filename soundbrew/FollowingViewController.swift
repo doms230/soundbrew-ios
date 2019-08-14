@@ -21,6 +21,9 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -58,6 +61,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.backgroundColor = color.lightGray()
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
+        self.tableView.backgroundColor = color.black()
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -83,7 +87,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        cell.backgroundColor = .white
+        cell.backgroundColor = color.black()
         return soundList.soundCell(indexPath, cell: cell)
     }
     

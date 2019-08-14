@@ -179,6 +179,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" red="0.22352941176470587" green="0.22352941176470587" blue="0.22352941176470587" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="selectedImageTintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBar>
                     <connections>
                         <segue destination="3Mr-Tw-OSi" kind="relationship" relationship="viewControllers" id="sBe-M4-6h3"/>
@@ -260,6 +262,7 @@
                 <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="azC-XP-AEG">
@@ -651,8 +654,8 @@
     <inferredMetricsTieBreakers>
         <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="gLy-U4-3xr"/>
-        <segue reference="217-ix-XIX"/>
-        <segue reference="A7h-oS-bzS"/>
+        <segue reference="ate-Yt-ICi"/>
+        <segue reference="iDR-Ll-dSf"/>
+        <segue reference="Dx3-fw-EG5"/>
     </inferredMetricsTieBreakers>
 </document>

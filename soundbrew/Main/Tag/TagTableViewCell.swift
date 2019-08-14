@@ -16,6 +16,7 @@ class TagTableViewCell: UITableViewCell {
     lazy var TagTypeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        label.textColor = .white 
         return label
     }()
     
@@ -23,6 +24,7 @@ class TagTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.text = "View All"
+        label.textColor = .white
         return label
     }()
     

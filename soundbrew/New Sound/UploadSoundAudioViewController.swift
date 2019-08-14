@@ -17,7 +17,7 @@ import NVActivityIndicatorView
 class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable {
     
     let uiElement = UIElement()
-    
+    let color = Color()
     var soundParseFile: PFFileObject!
     var soundFileName: String!
     var soundFileURL: URL!
@@ -35,6 +35,9 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }()
     
     override func viewDidLoad() {
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         showUploadSoundFileUI()
     }
     

@@ -19,6 +19,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
         setUpNavigationBar()
         loadTags(tagType, searchText: nil)
     }
@@ -57,8 +58,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
         let searchTextField = searchBar.value(forKey: "searchField") as? UITextField
         searchBar.placeholder = "Search Tags"
-        searchTextField?.backgroundColor = color.lightGray()
+        searchTextField?.backgroundColor = color.black()
         searchBar.delegate = self
+        
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         return searchBar
     }()
     
@@ -141,6 +144,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
+        tableView.backgroundColor = color.black()
         view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
@@ -206,8 +210,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     lazy var chooseTagsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Select Tags For Your Playlist"
-        label.textColor = color.black()
+        label.text = "Select Tags"
+        label.textColor = .white
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         return label
@@ -215,6 +219,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     lazy var chosenTagsScrollview: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.backgroundColor = color.black()
         return scrollView
     }()
     

@@ -31,7 +31,7 @@ class Tag {
     func cell(_ tableView: UITableView, reuse: String) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         cell.selectionStyle = .gray
-        
+        cell.backgroundColor = Color().black()
         if let image = self.image {
             cell.profileImage.kf.setImage(with: URL(string: image))
             

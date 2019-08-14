@@ -106,11 +106,11 @@ class SoundList: NSObject, PlayerDelegate {
                     changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
                     
                 } else {
-                    changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
+                    changeArtistSongColor(cell, color: .white, playIconName: "playIcon")
                 }
                 
             } else {
-                changeArtistSongColor(cell, color: color.black(), playIconName: "playIcon")
+                changeArtistSongColor(cell, color: .white, playIconName: "playIcon")
             }
             
             cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)

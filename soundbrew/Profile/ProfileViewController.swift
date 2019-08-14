@@ -32,7 +32,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         if let currentUser = PFUser.current(){
             self.currentUser = currentUser
         }
@@ -139,8 +141,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: uploadSoundReuse)
         self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = .white
-        
+        self.tableView.backgroundColor = color.black()
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -255,7 +256,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func soundsReuse(_ indexPath: IndexPath) -> SoundListTableViewCell {
         if soundList.sounds.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            
+            cell.backgroundColor = color.black()
             if soundList.soundType == "uploads" {
                 cell.headerTitle.text = "No releases yet."
             } else {
@@ -266,6 +267,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
             profileSounds = soundList.sounds
             return soundList.soundCell(indexPath, cell: cell) as! SoundListTableViewCell
         }
@@ -276,7 +278,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
         
         cell.selectionStyle = .none
-        
+        cell.backgroundColor = color.black()
         if let artist = self.profileArtist {
             if let artistImage = artist.image {
                 cell.profileImage.kf.setImage(with: URL(string: artistImage))

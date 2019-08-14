@@ -18,6 +18,8 @@ class SoundInfoTableViewCell: UITableViewCell {
        let image = UIButton()
         image.setTitle("Add Art", for: .normal)
         image.titleLabel?.textColor = .black
+        image.layer.borderWidth = 1
+        image.layer.borderColor = UIColor.black.cgColor
         image.layer.cornerRadius = 3
         image.clipsToBounds = true
         image.backgroundColor = .lightGray
@@ -29,6 +31,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         let textField = UITextField()
         textField.placeholder = "Add Title"
         textField.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        textField.textColor = .white
         //textField.borderStyle = .roundedRect
         textField.borderStyle = .none
         return textField
@@ -38,6 +41,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.text = "Tags"
+        label.textColor = .white
         return label
     }()
     
@@ -49,7 +53,7 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         return label
     }()
@@ -59,7 +63,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         slider.value = 0
         slider.minimumValue = 0
         slider.maximumValue = 100
-        slider.tintColor = color.black()
+        slider.tintColor = .white 
         return slider
     }()
     

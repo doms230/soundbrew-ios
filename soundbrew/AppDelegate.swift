@@ -24,8 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        UITabBar.appearance().barTintColor = .white
-        UITabBar.appearance().tintColor = Color().black()
+        UITabBar.appearance().barTintColor = Color().black()
+        UITabBar.appearance().tintColor = .white
+        UITabBar.appearance().backgroundColor = Color().black()
         
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self])
         

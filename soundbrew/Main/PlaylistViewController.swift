@@ -22,6 +22,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
         showSounds()
     }
     
@@ -86,7 +87,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.backgroundColor = color.lightGray()
+        tableView.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         
         if let miniPlayer = miniPlayer {
@@ -114,7 +115,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        cell.backgroundColor = .white
+        cell.backgroundColor = color.black()
         return soundList.soundCell(indexPath, cell: cell)
     }
     

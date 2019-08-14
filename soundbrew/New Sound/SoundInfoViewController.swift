@@ -109,7 +109,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundProgressReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundSocialReuse)
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
@@ -176,7 +176,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         cell.selectionStyle = .none
-        
+        cell.backgroundColor = color.black()
         return cell
     }
     
@@ -432,7 +432,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
                 }
                 
-                cell.chosenSoundTagLabel.textColor = color.black()
+                cell.chosenSoundTagLabel.textColor = .white
                 
             } else {
                 cell.chosenSoundTagLabel.text = "Add"
@@ -451,7 +451,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.soundTagLabel.text = soundTagLabel
         if let tag = tag {
             cell.chosenSoundTagLabel.text = tag.name
-            cell.chosenSoundTagLabel.textColor = color.black()
+            cell.chosenSoundTagLabel.textColor = .white 
             
         } else {
             cell.chosenSoundTagLabel.text = "Add"

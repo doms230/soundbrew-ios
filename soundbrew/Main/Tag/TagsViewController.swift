@@ -17,6 +17,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         setupSearchBar()
         for featureTagType in featureTagTypes {
             loadTags(featureTagType)
@@ -71,6 +73,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     let chartsReuse = "chartsReuse"
     func setUpTableView() {
         tableView = UITableView()
+        tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
@@ -115,6 +118,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if isSearchActive {
             if indexPath.section == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
+                cell.backgroundColor = color.black()
                 cell.newButton.setTitle("Artists", for: .normal)
                 cell.newButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
                 cell.newButton.tag = 0
@@ -144,6 +148,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         } else if indexPath.section == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: chartsReuse) as! TagTableViewCell
+            cell.selectionStyle = .none
+            cell.backgroundColor = color.black()
             cell.newChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
             cell.newChartsButton.tag = 0
             
@@ -205,6 +211,8 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! TagTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
+        cell.tagsScrollview.backgroundColor = color.black()
         cell.tagTypeButton.tag = indexPath.row
         cell.TagTypeTitle.text = "\(featureTagTypes[indexPath.row].capitalized)"
         cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllTagsButton(_:)), for: .touchUpInside)
@@ -401,8 +409,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         searchBar.placeholder = "Artists & Music"
         
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
-        searchTextField?.backgroundColor = color.lightGray()
+        searchTextField?.backgroundColor = color.black()
         searchBar.delegate = self
+        
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         return searchBar
     }()
     
