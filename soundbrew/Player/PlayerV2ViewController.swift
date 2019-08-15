@@ -30,6 +30,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         if let sound = self.player?.currentSound {
             self.sound = sound 
             setupNotificationCenter()
@@ -301,14 +302,14 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
-        image.backgroundColor = .white
+        image.backgroundColor = color.black()
         return image
     }()
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
         label.text = "Sound Title"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.textAlignment = .center
         return label
@@ -317,7 +318,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     lazy var artistName: UIButton = {
         let button = UIButton()
         button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(.darkGray, for: .normal)
+        button.setTitleColor(.lightGray, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         button.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         return button
@@ -404,7 +405,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     lazy var playBackCurrentTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -412,7 +413,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     lazy var playBackTotalTime: UILabel = {
         let label = UILabel()
         label.text = "0 s"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
         return label
     }()
@@ -470,7 +471,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     }
     
     func setUpView() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = color.black()
         
         //top views
         self.view.addSubview(exitButton)

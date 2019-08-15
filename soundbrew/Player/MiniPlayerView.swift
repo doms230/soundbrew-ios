@@ -22,7 +22,7 @@ class MiniPlayerView: UIButton {
     lazy var songTitle: UILabel = {
         let label = UILabel()
         label.text = "Welcome"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         return label
     }()
@@ -30,7 +30,7 @@ class MiniPlayerView: UIButton {
     lazy var artistName: UILabel = {
         let label = UILabel()
         label.text = "Press Play"
-        label.textColor = color.black()
+        label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         return label
     }()
@@ -44,7 +44,7 @@ class MiniPlayerView: UIButton {
     
     lazy var activitySpinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
-        spinner.color = color.black()
+        spinner.color = .white
         spinner.startAnimating()
         spinner.isHidden = true
         return spinner
@@ -84,9 +84,7 @@ class MiniPlayerView: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .white
-        self.layer.borderWidth = 1
-        self.layer.borderColor = color.darkGray().cgColor
+        self.backgroundColor = color.black()
         setupNotificationCenter()
         player = Player.sharedInstance
     }
@@ -100,14 +98,14 @@ class MiniPlayerView: UIButton {
             self.addSubview(playBackButton)
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
             playBackButton.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(50)
+                make.width.height.equalTo(30)
                 make.centerY.equalTo(self)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             self.addSubview(activitySpinner)
             activitySpinner.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(50)
+                make.width.height.equalTo(30)
                 make.centerY.equalTo(self)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
@@ -115,7 +113,7 @@ class MiniPlayerView: UIButton {
             
             self.addSubview(songArt)
             songArt.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(80)
+                make.width.equalTo(40)
                 make.top.equalTo(self).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
