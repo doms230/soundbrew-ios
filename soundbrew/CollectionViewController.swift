@@ -27,18 +27,46 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        showSounds()
+        
+        if PFUser.current() == nil {
+            showWelcome()
+        } else {
+            showSounds()
+        }
         
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
-        } else {
+        } else if PFUser.current() != nil {
             setUpTableView(nil)
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         soundList.prepareToShowSelectedArtist(segue)
+    }
+    
+    //login
+    var login: Login!
+    
+    func showWelcome() {
+        login = Login(target: self)
+        login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
+        login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
+        login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
+        login.welcomeView(explanationString: "Songs you like will appear here!", explanationImageString: "heart")
+    }
+    
+    @objc func signInAction(_ sender: UIButton) {
+        login.signInAction()
+    }
+    
+    @objc func signupAction(_ sender: UIButton) {
+        login.signupAction()
+    }
+    
+    @objc func loginWithTwitterAction(_ sender: UIButton) {
+        login.loginWithTwitterAction()
     }
     
     func showSounds() {

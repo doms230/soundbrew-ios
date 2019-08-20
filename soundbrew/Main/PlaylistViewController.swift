@@ -148,6 +148,7 @@ class PlaylistViewController: UIViewController, UITableViewDelegate, UITableView
         slide.direction = .up
         miniPlayerView!.addGestureRecognizer(slide)
         miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+        miniPlayerView!.backgroundColor = .clear 
         miniPlayerView!.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.right.equalTo(self.view)

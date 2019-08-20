@@ -38,6 +38,8 @@
                     <navigationItem key="navigationItem" id="M5X-po-2VR"/>
                     <connections>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showSoundInfo" id="LnM-xP-wsl"/>
+                        <segue destination="46O-ND-fN1" kind="show" identifier="showsignin" id="7HA-id-CZ7"/>
+                        <segue destination="bxe-9G-fAJ" kind="show" identifier="showsignup" id="CS4-UW-TbD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -111,6 +113,8 @@
                         <segue destination="zJZ-n2-4Wd" kind="show" identifier="showEarnings" id="JZC-PW-c4W"/>
                         <segue destination="elo-Tc-Pq8" kind="show" identifier="showPayments" id="97q-93-bGT"/>
                         <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="CdJ-ew-HPh"/>
+                        <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="Pi7-qj-CXZ"/>
+                        <segue destination="46O-ND-fN1" kind="show" identifier="showsignin" id="cT0-pf-EzT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -371,30 +375,13 @@
                     <navigationItem key="navigationItem" title="Following" id="ZUc-A1-nE7"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="xvi-B0-pE3"/>
+                        <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="h3u-aT-JAs"/>
+                        <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="OGJ-1Z-zjV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWh-XQ-3VH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3752.1739130434785" y="-505.58035714285711"/>
-        </scene>
-        <!--Welcome View Controller-->
-        <scene sceneID="MDQ-uK-ba3">
-            <objects>
-                <viewController storyboardIdentifier="welcome" id="kcj-NS-3Uc" customClass="WelcomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="P2Y-se-T2G">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="h6T-O8-MIX"/>
-                    </view>
-                    <connections>
-                        <segue destination="V6A-rh-fGd" kind="show" identifier="showSignin" id="ja5-qJ-lJp"/>
-                        <segue destination="slf-Wh-dAV" kind="show" identifier="showSignup" id="oYs-Et-cgb"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="XLJ-gS-MoS" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="8401.4492753623199" y="-845.08928571428567"/>
         </scene>
         <!--Login View Controller-->
         <scene sceneID="QtJ-Qo-2NW">
@@ -413,7 +400,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5MG-DH-Ep7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8931.8840579710159" y="-1416.2946428571429"/>
+            <point key="canvasLocation" x="1623" y="-1274"/>
         </scene>
         <!--Forgot Password View Controller-->
         <scene sceneID="Kjv-Vf-Cri">
@@ -431,7 +418,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HzJ-fR-lS4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9843.4782608695659" y="-1416.2946428571429"/>
+            <point key="canvasLocation" x="2461" y="-1274"/>
         </scene>
         <!--New Email View Controller-->
         <scene sceneID="iXl-5T-jJ7">
@@ -450,7 +437,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x8s-PV-ewA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8931.8840579710159" y="-532.36607142857144"/>
+            <point key="canvasLocation" x="1622" y="-532"/>
         </scene>
         <!--New Username View Controller-->
         <scene sceneID="q0D-mC-8IF">
@@ -468,7 +455,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZsB-HL-Agj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9843.4782608695659" y="-532.36607142857144"/>
+            <point key="canvasLocation" x="2461" y="-532"/>
         </scene>
         <!--New Password View Controller-->
         <scene sceneID="j1s-hT-iyl">
@@ -486,45 +473,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0w5-Bo-Woi" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10931.884057971016" y="-532.36607142857144"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="C1p-jb-euM">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="V6A-rh-fGd" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="eqC-Kb-qq3">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="46O-ND-fN1" kind="relationship" relationship="rootViewController" id="X7V-5F-Ggi"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="nu8-BF-kBo" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7968.115942028986" y="-1416.2946428571429"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="Jxh-mb-fgQ">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="slf-Wh-dAV" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Kd1-5L-ESi">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" red="0.10980392160000001" green="0.10980392160000001" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="bxe-9G-fAJ" kind="relationship" relationship="rootViewController" id="Ph6-RS-ZGO"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="mwa-gw-t4g" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7968.115942028986" y="-532.36607142857144"/>
+            <point key="canvasLocation" x="3377" y="-532"/>
         </scene>
         <!--Forgot Password View Controller-->
         <scene sceneID="HtB-ZC-GKi">
@@ -539,7 +488,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x1G-Bz-E8n" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10798.550724637682" y="-1416.2946428571429"/>
+            <point key="canvasLocation" x="3378" y="-1274"/>
         </scene>
         <!--New Password View Controller-->
         <scene sceneID="RKh-w3-bqD">
@@ -554,7 +503,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3lg-U0-n3H" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11901.44927536232" y="-532.36607142857144"/>
+            <point key="canvasLocation" x="4271" y="-532"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="WTx-3Q-WJ0">
@@ -590,6 +539,8 @@
                     <navigationItem key="navigationItem" title="Your Collection" id="c4F-aX-L3Q"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
+                        <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="eam-Zm-lDh"/>
+                        <segue destination="bxe-9G-fAJ" kind="show" identifier="showsignup" id="43Z-81-daK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ior-SH-LjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -652,10 +603,12 @@
         <image name="search_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="CS4-UW-TbD"/>
+        <segue reference="7HA-id-CZ7"/>
         <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="ate-Yt-ICi"/>
-        <segue reference="iDR-Ll-dSf"/>
+        <segue reference="gLy-U4-3xr"/>
+        <segue reference="LnM-xP-wsl"/>
         <segue reference="Dx3-fw-EG5"/>
     </inferredMetricsTieBreakers>
 </document>

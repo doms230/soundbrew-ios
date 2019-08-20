@@ -46,7 +46,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         if soundThatIsBeingEdited == nil {
-            TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
             getTwitterUserID()
             
             if let userId = PFUser.current()?.objectId {
@@ -344,6 +343,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func getTwitterUserID() {
         let store = TWTRTwitter.sharedInstance().sessionStore
+        
         if let userId = store.session()?.userID {
             self.twitterUserID = userId
         }
@@ -377,7 +377,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let userID = self.twitterUserID {
             let client = TWTRAPIClient(userID: userID)
             let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "Listen to \(title) on #soundbrew \(url)"]
+            let params = ["status": "Listen to \(title) on @sound_brew \(url)"]
             var clientError : NSError?
             let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
             client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in

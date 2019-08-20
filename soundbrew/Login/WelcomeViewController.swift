@@ -14,9 +14,7 @@ class WelcomeViewController: UIViewController {
     let color = Color()
     let uiElement = UIElement()
     
-    var image: UIImage!
-    var retreivedImage: PFFileObject!
-    let screenSize: CGRect = UIScreen.main.bounds
+    
     
     lazy var exitButton: UIButton = {
         let button = UIButton()

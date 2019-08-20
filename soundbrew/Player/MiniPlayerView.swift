@@ -84,7 +84,7 @@ class MiniPlayerView: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = color.black()
+        self.backgroundColor = .clear
         setupNotificationCenter()
         player = Player.sharedInstance
     }

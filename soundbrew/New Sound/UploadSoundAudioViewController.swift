@@ -38,7 +38,12 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
-        showUploadSoundFileUI()
+        
+        if PFUser.current() == nil {
+            showWelcome()
+        } else {
+            showUploadSoundFileUI()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -46,6 +51,29 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
             viewController.soundFileURL = self.soundFileURL
         }
+    }
+    
+    //login
+    var login: Login!
+    
+    func showWelcome() {
+        login = Login(target: self)
+        login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
+        login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
+        login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
+        login.welcomeView(explanationString: "From here, you'll be able to upload and tag your music!", explanationImageString: "sound")
+    }
+    
+    @objc func signInAction(_ sender: UIButton) {
+        login.signInAction()
+    }
+    
+    @objc func signupAction(_ sender: UIButton) {
+        login.signupAction()
+    }
+    
+    @objc func loginWithTwitterAction(_ sender: UIButton) {
+        login.loginWithTwitterAction()
     }
     
     func showUploadSoundButton() {

@@ -27,18 +27,46 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        showSounds()
+        if PFUser.current() == nil {
+            showWelcome()
+        } else {
+            showSounds()
+        }
         
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
-        } else {
+        } else if PFUser.current() != nil {
             setUpTableView(nil)
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        soundList.prepareToShowSelectedArtist(segue)
+        if segue.identifier == "showProfile" {
+            soundList.prepareToShowSelectedArtist(segue)
+        }
+    }
+    
+    var login: Login!
+    
+    func showWelcome() {
+       login = Login(target: self)
+        login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
+        login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
+        login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
+        login.welcomeView(explanationString: "Sounds from artists you follow will appear here!", explanationImageString: "home_color")
+    }
+    
+    @objc func signInAction(_ sender: UIButton) {
+        login.signInAction()
+    }
+    
+    @objc func signupAction(_ sender: UIButton) {
+        login.signupAction()
+    }
+    
+    @objc func loginWithTwitterAction(_ sender: UIButton) {
+        login.loginWithTwitterAction()
     }
     
     func showSounds() {
@@ -105,7 +133,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             //soundList.loadCollection("createdAt", profileUserId: PFUser.current()!.objectId!)
         }
@@ -125,9 +152,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-50)
-        }
-        
-        setUpTableView(miniPlayerView!)
+        }        
     }
     
     @objc func miniPlayerWasSwiped() {

@@ -28,6 +28,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 30)
         label.text = "Sign In"
+        label.textColor = .white 
         label.numberOfLines = 0
         return label
     }()
@@ -69,8 +70,9 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let exitItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressExit(_:)))
-        self.navigationItem.leftBarButtonItem = exitItem
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         
         let forogtPasswordItem = UIBarButtonItem(title: "Forgot Password", style: .plain, target: self, action: #selector(didPressForgotPassword(_:)))
         self.navigationItem.rightBarButtonItem = forogtPasswordItem
@@ -167,8 +169,8 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?.saveEventually()
                 
                 Customer.shared.getCustomer(user.objectId!)
-                
-                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+                self.uiElement.goBackToPreviousViewController(self)
+                //self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
             } else {
                 UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)
             }

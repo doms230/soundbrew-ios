@@ -49,7 +49,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.signOut.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset + uiElement.bottomOffset)
+            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset + uiElement.bottomOffset + uiElement.bottomOffset)
         }
         
         setUpTableView()
