@@ -23,6 +23,10 @@ class Login: NSObject, PFUserAuthenticationDelegate {
     let uiElement = UIElement()
     
     var target: UIViewController!
+    var authToken: String?
+    var authTokenSecret: String?
+    var twitterUsername: String?
+    var twitterID: String?
     
     init(target: UIViewController) {
         self.target = target
@@ -50,8 +54,9 @@ class Login: NSObject, PFUserAuthenticationDelegate {
         let button = UIButton()
         button.setTitle("Sign In", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = color.lightGray()
+        button.setTitleColor(.white, for: .normal)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         return button
@@ -165,58 +170,50 @@ class Login: NSObject, PFUserAuthenticationDelegate {
     }
     
     func signInAction() {
-        target.performSegue(withIdentifier: "showSignin", sender: self)
+        target.performSegue(withIdentifier: "showSignin", sender: target)
     }
     
     func signupAction() {
-        target.performSegue(withIdentifier: "showSignup", sender: self)
+        target.performSegue(withIdentifier: "showSignup", sender: target)
     }
     
     func loginWithTwitterAction() {
-
         let store = TWTRTwitter.sharedInstance().sessionStore
-        
-        /*if let session = store.session() {
-            store.logOutUserID(session.userID)
-            TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
-                if let session = session {
-                    //self.twitterUserID = session.userID
-                    self.login(session.userID, token: session.authToken, username: session.userName)
-                    print(session)
-                } else if let error = error {
-                    print("error: \(error.localizedDescription)");
-                    //sender.isOn = false
-                }
-            })
-        }*/
-        
-        
         if let session = store.session() {
-            self.login(session.userID, token: session.authToken, username: "")
-            print(session.userID)
-        } else {
-            TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
-                if let session = session {
-                    //self.twitterUserID = session.userID
-                    self.login(session.userID, token: session.authToken, username: session.userName)
-                    print(session)
-                } else if let error = error {
-                    print("error: \(error.localizedDescription)");
-                    //sender.isOn = false
-                }
-            })
+            store.logOutUserID(session.userID)
+        }
+        
+        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+            if let session = session {
+                self.checkIfUserExists(session.userID, authToken: session.authToken, authTokenSecret: session.authTokenSecret, username: session.userName)
+                
+            } else if let error = error {
+                print("error: \(error.localizedDescription)");
+                //sender.isOn = false
+            }
+        })
+    }
+    
+    func checkIfUserExists(_ userID: String, authToken: String, authTokenSecret: String, username: String?) {
+        let query = PFQuery(className: "_User")
+        query.whereKey("twitterID", equalTo: userID)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object != nil && error == nil {
+                self.PFauthenticateWithTwitter(userID, auth_token: authToken, auth_token_secret: authTokenSecret, username: username)
+            } else {
+                self.twitterID = userID
+                self.authToken = authToken
+                self.authTokenSecret = authTokenSecret
+                self.twitterUsername = username
+                self.target.performSegue(withIdentifier: "showSignup", sender: self.target)
+            }
         }
     }
     
-    func login(_ userId: String, token: String, username: String) {
-        //TODO: code below is dodgy ... the BFTask part
+    func PFauthenticateWithTwitter(_ userId: String, auth_token: String, auth_token_secret: String, username: String?) {
         
-        // Perform any operations on signed in user here.
-        //let userId = user.userID                  // For client-side use only!
-        //let idToken = user.authentication.idToken // Safe to send to the server
-        //let email = user.profile.email
-        PFUser.register(self, forAuthType: "twitter")
-        PFUser.logInWithAuthType(inBackground: "twitter", authData: ["id": userId, "access_token": token]).continueOnSuccessWith(block: {
+        PFUser.logInWithAuthType(inBackground: "twitter", authData: ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]).continueOnSuccessWith(block: {
             (ignored: BFTask!) -> AnyObject? in
             
             let parseUser = PFUser.current()
@@ -224,22 +221,9 @@ class Login: NSObject, PFUserAuthenticationDelegate {
             installation?["user"] = parseUser
             installation?["userId"] = parseUser?.objectId
             installation?.saveEventually()
-            parseUser?.username = username
-            parseUser?.saveEventually{
-                (success: Bool, error: Error?) -> Void in
-                if success {
-                    print("success")
-                    
-                } else {
-                    print(error)
-                    //UIElement().showAlert("Oops", message: "Account already exists for this email address.", target: (self.window?.rootViewController)!)
-                    if PFUser.current() != nil {
-                        PFUser.logOut()
-                    }
-                    
-                }
-            }
             
+            Customer.shared.getCustomer(parseUser!.objectId!)
+            print("asdfasdfasd")
             return AnyObject.self as AnyObject
         })
     }

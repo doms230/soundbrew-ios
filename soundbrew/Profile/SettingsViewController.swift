@@ -12,9 +12,13 @@ import SidebarOverlay
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
+    let color = Color()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
        setupLogOutButton()
     }
     
@@ -23,25 +27,48 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let button = UIButton()
         button.setTitle("Sign Out", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        button.setTitleColor(Color().black(), for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(self.didPressSignoutButton(_:)), for: .touchUpInside)
         return button
     }()
     
     @objc func didPressSignoutButton(_ sender: UIButton) {
+        /*if let container = self.so_containerViewController {
+            container.isSideViewControllerPresented = false
+            if let topView = container.topViewController as? ProfileViewController {
+                topView.dismiss(animated: true, completion: nil)
+                topView.didPressSignoutButton()
+            }
+        }*/
+        
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
+            self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
             if let container = self.so_containerViewController {
                 container.isSideViewControllerPresented = false
                 if let topView = container.topViewController {
                     topView.dismiss(animated: true, completion: nil)
-                }                
+                }
             }
         }))
         self.present(menuAlert, animated: true, completion: nil)
+        
+       /* let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
+            PFUser.logOut()
+            Customer.shared.artist = nil
+            if let container = self.so_containerViewController {
+                container.isSideViewControllerPresented = false
+                if let topView = container.topViewController as? ProfileViewController {
+                    topView.dismiss(animated: true, completion: nil)
+                }                
+            }
+        }))
+        self.present(menuAlert, animated: true, completion: nil)*/
     }
     
     func setupLogOutButton() {
@@ -49,7 +76,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.signOut.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset + uiElement.bottomOffset + uiElement.bottomOffset)
+            make.bottom.equalTo(self.view).offset(-50)
         }
         
         setUpTableView()
@@ -65,7 +92,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: settingsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: settingsTitleReuse)
         self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = .white
+        self.tableView.backgroundColor = color.black()
         self.view.addSubview(tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.uiElement.uiViewTopOffset(self))
@@ -89,6 +116,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsTitleReuse) as! ProfileTableViewCell
+            cell.backgroundColor = color.black()
             cell.selectionStyle = .none
             cell.displayNameLabel.text = "Settings"
             return cell
@@ -166,6 +194,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func settingsItemReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         switch indexPath.row {
         case 0:

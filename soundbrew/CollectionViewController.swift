@@ -43,7 +43,9 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        soundList.prepareToShowSelectedArtist(segue)
+        if segue.identifier == "showProfile" {
+            soundList.prepareToShowSelectedArtist(segue)
+        }
     }
     
     //login

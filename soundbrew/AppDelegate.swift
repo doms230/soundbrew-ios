@@ -18,7 +18,11 @@ import FacebookCore
 import Stripe
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDelegate {
+    func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
+        return true 
+    }
+    
 
     var window: UIWindow?
 
@@ -50,6 +54,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //$0.server = "http://192.168.1.68:3000/parse"
         }
         Parse.initialize(with: configuration)
+        
+        PFUser.register(self, forAuthType: "twitter")
 
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)

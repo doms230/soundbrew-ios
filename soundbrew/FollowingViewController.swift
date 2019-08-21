@@ -12,6 +12,7 @@ import Kingfisher
 import SnapKit
 import AppCenterCrashes
 import DeckTransition
+import TwitterKit
 
 class FollowingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
     
@@ -44,6 +45,9 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showProfile" {
             soundList.prepareToShowSelectedArtist(segue)
+            
+        } else if segue.identifier == "showSignup" {
+           uiElement.prepareNewUserSegue(segue, authToken: self.login.authToken, authTokenSecret: self.login.authTokenSecret, twitterUsername: self.login.twitterUsername, twitterID: self.login.twitterID)
         }
     }
     

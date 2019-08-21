@@ -14,11 +14,16 @@ import SnapKit
 class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     let color = Color()
     let uiElement = UIElement()
+    var authToken: String?
+    var authTokenSecret: String?
+    var twitterUsername: String?
+    var twitterID: String?
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
         label.text = "What's Your Email?"
+        label.textColor = .white 
         label.numberOfLines = 0
         return label
     }()
@@ -49,10 +54,15 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad(){
         super.viewDidLoad()
         
-        self.title = "Email | 1/3"
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         
-        let exitItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(NewEmailViewController.exitAction(_:)))
-        self.navigationItem.leftBarButtonItem = exitItem
+        if authToken != nil {
+            self.title = "Email | 1/2"
+        } else {
+            self.title = "Email | 1/3"
+        }
         
         self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
@@ -84,6 +94,10 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController = segue.destination as! NewUsernameViewController
         viewController.emailString = emailText.text!
+        viewController.authToken = self.authToken
+        viewController.authTokenSecret = self.authTokenSecret
+        viewController.twitterID = self.twitterID
+        viewController.twitterUsername = self.twitterUsername
     }
     
     @objc func next(_ sender: UIButton){
@@ -118,15 +132,5 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
                 self.performSegue(withIdentifier: "showUsername", sender: self)
             }
         }
-    }
-    
-    @objc func exitAction(_ sender: UIButton) {
-        emailText.resignFirstResponder()
-        //passwordText.resignFirstResponder()
-        let storyboard = UIStoryboard(name: "Login", bundle: nil)
-        let controller = storyboard.instantiateViewController(withIdentifier: "welcome") as UIViewController
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        //show window
-        appDelegate.window?.rootViewController = controller
     }
 }

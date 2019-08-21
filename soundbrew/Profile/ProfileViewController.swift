@@ -13,6 +13,7 @@ import Kingfisher
 import SnapKit
 import DeckTransition
 import SidebarOverlay
+import TwitterKit
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate {
     
@@ -55,6 +56,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.setUpNavigationButtons()
             
         } else {
+            self.title = "Your Profile"
             showWelcome()
         }
     }
@@ -95,7 +97,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    //login
+    //mark: login | logout
     var login: Login!
     
     func showWelcome() {
@@ -141,13 +143,35 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if player.player != nil {
             setUpMiniPlayer()
             
-        } else {
+        } else if PFUser.current() != nil {
             setUpTableView(nil)
+            
+        } else {
+            showWelcome()
         }
         
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
             checkFollowStatus(self.currentUser!)
         }
+    }
+    
+    func didPressSignoutButton() {
+        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
+            self.tableView.removeFromSuperview()
+            self.showWelcome()
+            
+            PFUser.logOut()
+            Customer.shared.artist = nil
+            let store = TWTRTwitter.sharedInstance().sessionStore
+            
+            if let session = store.session() {
+                store.logOutUserID(session.userID)
+            }
+
+        }))
+        self.present(menuAlert, animated: true, completion: nil)
     }
     
     //MARK: Tableview
@@ -348,10 +372,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
         }
-    }
-    
-    @objc func didPressDismissButton(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressNewSoundButton(_ sender: UIButton) {

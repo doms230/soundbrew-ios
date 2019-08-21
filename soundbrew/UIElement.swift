@@ -276,4 +276,12 @@ class UIElement {
         let dollarsProperlyFormattedAsString = String(format: "%.2f", centsToDollars)
         return "\(currency)\(dollarsProperlyFormattedAsString)"
     }
+    
+    func prepareNewUserSegue(_ segue: UIStoryboardSegue, authToken: String?, authTokenSecret: String?, twitterUsername: String?, twitterID: String?) {
+         let newEmail = segue.destination as! NewEmailViewController
+        newEmail.authToken = authToken
+        newEmail.authTokenSecret = authTokenSecret
+        newEmail.twitterUsername = twitterUsername
+        newEmail.twitterID = twitterID
+    }
 }

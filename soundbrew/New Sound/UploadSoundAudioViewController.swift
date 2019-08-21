@@ -34,7 +34,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         return image
     }()
     
-    override func viewDidLoad() {
+    override func viewDidLoad() {        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
@@ -53,7 +53,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         }
     }
     
-    //login
+    //mark: login
     var login: Login!
     
     func showWelcome() {

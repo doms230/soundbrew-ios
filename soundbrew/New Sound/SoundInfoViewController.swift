@@ -346,6 +346,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if let userId = store.session()?.userID {
             self.twitterUserID = userId
+            shouldPostLinkToTwitter = true
+            if self.tableView != nil {
+                self.tableView.reloadData()
+            }
         }
     }
     
@@ -545,7 +549,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.stopAnimating()
         //self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
-        self.dismiss(animated: true, completion: nil)
+        //self.dismiss(animated: true, completion: nil)
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
     //mark: audio

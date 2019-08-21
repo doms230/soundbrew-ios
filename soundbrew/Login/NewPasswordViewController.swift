@@ -21,6 +21,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
         label.text = "Choose a Password"
+        label.textColor = .white 
         label.numberOfLines = 0
         return label
     }()
@@ -50,6 +51,10 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         
         self.title = "Password | 3/3"
         
