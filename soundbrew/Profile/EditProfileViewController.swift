@@ -15,7 +15,7 @@ import Kingfisher
 class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate {
     
     let uiElement = UIElement()
-    
+    let color = Color()
     func newArtistInfo(_ value: Artist?) {
     }
     
@@ -37,6 +37,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         
         setUpViews()
         
@@ -103,6 +106,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPrivateInfoReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editBioReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: spaceReuse)
+        tableView.backgroundColor = color.black()
         tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
@@ -133,6 +137,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             tableView.separatorStyle = .singleLine
             tableView.separatorInset = .zero
             cell.selectionStyle = .none
+           // cell.backgroundColor = color.black()
             
             profileImage = cell.profileImage
             if let image = artist?.image {
@@ -154,7 +159,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 4:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
-            cell.backgroundColor = .white
+            //cell.backgroundColor = .white
             cell.selectionStyle = .none
             tableView.separatorStyle = .singleLine
             tableView.separatorInset = .zero
@@ -172,7 +177,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 5:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
-            cell.backgroundColor = .white
+            //cell.backgroundColor = color.black()
             cell.selectionStyle = .none
             tableView.separatorStyle = .none
             break
@@ -180,7 +185,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         default:
             break
         }
-        
+        cell.backgroundColor = color.black()
         return cell
     }
     

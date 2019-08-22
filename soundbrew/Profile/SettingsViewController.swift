@@ -76,7 +76,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.signOut.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-50)
+            make.bottom.equalTo(self.view).offset(-50 + -(uiElement.bottomOffset))
         }
         
         setUpTableView()
@@ -124,7 +124,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         } else {
             return settingsItemReuse(indexPath)
         }
-        
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -196,6 +195,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         cell.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
+        cell.profileImage.layer.borderColor = color.black().cgColor
         switch indexPath.row {
         case 0:
             cell.displayNameLabel.text = "Funds"

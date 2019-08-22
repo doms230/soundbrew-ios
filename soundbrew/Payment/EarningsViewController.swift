@@ -40,7 +40,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         let label = UILabel()
         label.text = "A 15% fee will be deducted from your earnings. \n Earnings are sent via PayPal on a weekly basis. \n Please insure that your profile email is up to date."
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.textColor = color.black()
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()
@@ -49,7 +49,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         let label = UILabel()
         label.text = "Your Tips"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = color.black()
+        label.textColor = .white
         return label
     }()
     
@@ -134,7 +134,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: earningsPaymentsReuse)
         self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = .white
+        self.tableView.backgroundColor = color.black()
         self.view.addSubview(tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.yourTipsLabel.snp.bottom)
@@ -152,6 +152,7 @@ class EarningsViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: earningsPaymentsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
         tableView.separatorStyle = .none
         
         //loadSound(cell, row: indexPath.row, objectId: soundIds[indexPath.row], tipAmount: tipAmount[indexPath.row])

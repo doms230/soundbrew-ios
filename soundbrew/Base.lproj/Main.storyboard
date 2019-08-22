@@ -136,6 +136,7 @@
                     <navigationItem key="navigationItem" id="3A4-h1-0pg"/>
                     <connections>
                         <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditBio" id="t1V-yP-gW0"/>
+                        <segue destination="W2D-HU-YWf" kind="show" identifier="showTags" id="Pro-Wr-Tmr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -156,7 +157,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tvS-2b-70E" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3726" y="3101"/>
+            <point key="canvasLocation" x="-3752" y="3172"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="M20-Wr-7YN">
@@ -254,7 +255,10 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5ux-yi-Vqb">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -531,6 +535,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -627,8 +632,9 @@
         <image name="search_filled" width="34.5" height="34.5"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="Pro-Wr-Tmr"/>
         <segue reference="CS4-UW-TbD"/>
-        <segue reference="7HA-id-CZ7"/>
+        <segue reference="h3u-aT-JAs"/>
         <segue reference="FZs-ab-ofk"/>
         <segue reference="YJM-4e-UbW"/>
         <segue reference="5zy-Bo-ugT"/>

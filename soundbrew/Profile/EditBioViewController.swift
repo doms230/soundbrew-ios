@@ -11,10 +11,15 @@ import UIKit
 class EditBioViewController: UIViewController, UITextViewDelegate {
     
     let uiElement = UIElement()
+    let color = Color()
     var artistDelegate: ArtistDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         
         setUpDoneButton()
         
@@ -54,7 +59,8 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     lazy var inputBio: UITextView = {
         let label = UITextView()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.textColor = Color().black()
+        label.textColor = .white
+        label.backgroundColor = color.black()
         return label
     }()
     

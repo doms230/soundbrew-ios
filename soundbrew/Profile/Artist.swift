@@ -101,7 +101,7 @@ class Artist {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         
         cell.selectionStyle = .gray
-        
+        cell.backgroundColor = Color().black()
         if let artistImage = self.image {
             cell.profileImage.kf.setImage(with: URL(string: artistImage))
             

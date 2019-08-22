@@ -88,9 +88,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        /*if isSearchActive {
-            return 2
-        }*/
         return 2
     }
     
@@ -128,12 +125,12 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.popularButton.tag = 1
                 
                 if searchType == 0 {
-                    cell.newButton.setTitleColor(color.black(), for: .normal)
-                    cell.popularButton.setTitleColor(color.darkGray(), for: .normal)
+                    cell.newButton.setTitleColor(.white, for: .normal)
+                    cell.popularButton.setTitleColor(.darkGray, for: .normal)
                     
                 } else {
-                    cell.newButton.setTitleColor(color.darkGray(), for: .normal)
-                    cell.popularButton.setTitleColor(color.black(), for: .normal)
+                    cell.newButton.setTitleColor(.darkGray, for: .normal)
+                    cell.popularButton.setTitleColor(.white, for: .normal)
                 }
                 return cell
                 
@@ -142,6 +139,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
                 } else {
                     let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+                    cell.backgroundColor = color.black()
                     return soundList.soundCell(indexPath, cell: cell)
                 }
             }
@@ -410,6 +408,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
         searchTextField?.backgroundColor = color.black()
+        searchTextField?.textColor = .white
         searchBar.delegate = self
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)

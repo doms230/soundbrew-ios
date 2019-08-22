@@ -17,6 +17,9 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         setupPaymentView()
         setUpNavigationView()
     }
@@ -51,7 +54,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         let label = UILabel()
         label.text = "Loading..."
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 40)
-        label.textColor = color.black()
+        label.textColor = .white
         return label
     }()
     
@@ -65,7 +68,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     lazy var artistsUserHasTippedLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = color.black()
+        label.textColor = .white
         label.text = "Artists you've tipped"
         return label
     }()
@@ -108,7 +111,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: earningsPaymentsReuse)
         self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = .white
+        self.tableView.backgroundColor = color.black()
         self.view.addSubview(tableView)
         self.tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.artistsUserHasTippedLabel.snp.bottom)
@@ -125,6 +128,7 @@ class PaymentsViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: earningsPaymentsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
         tableView.separatorStyle = .none
         
         loadSound(cell, row: indexPath.row, objectId: soundIds[indexPath.row], tipAmount: tipAmount[indexPath.row])

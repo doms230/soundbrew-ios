@@ -220,7 +220,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         let label = UILabel()
         label.text = "Payment Processing Fee"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = color.black()
+        label.textColor = .white 
         label.numberOfLines = 0
         return label
     }()
@@ -228,7 +228,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         let label = UILabel()
         label.text = "$0.33"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
-        label.textColor = color.black()
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()
@@ -237,7 +237,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         let label = UILabel()
         label.text = "Total"
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.textColor = color.black()
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()
@@ -245,7 +245,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         let label = UILabel()
         label.text = "$1.33"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
-        label.textColor = color.black()
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()
@@ -270,7 +270,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         let label = UILabel()
         label.text = "4422"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = color.black()
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()
@@ -299,6 +299,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     func setupView() {
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
+        
         self.view.addSubview(threeDollarAmount)
         threeDollarAmount.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(50)
