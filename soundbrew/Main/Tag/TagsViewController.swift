@@ -287,7 +287,6 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 make.width.equalTo(buttonWidth)
                 make.top.equalTo(scrollview)
                 make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
-                make.bottom.equalTo(scrollview)
             }
             
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset

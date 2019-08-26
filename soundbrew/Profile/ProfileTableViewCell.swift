@@ -97,6 +97,15 @@ class ProfileTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var seperatorLine: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.borderColor = UIColor.darkGray.cgColor
+        view.layer.borderWidth = 0.5
+        view.clipsToBounds = true
+        return view
+    }()
+    
     //EditProfile
     lazy var editProfileLabel: UILabel = {
         let label = UILabel()
@@ -161,7 +170,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(websiteView)
             self.websiteView.addSubview(website)
             self.addSubview(actionButton)
-            
+            self.addSubview(seperatorLine)
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(75)
@@ -191,7 +200,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(bio.snp.bottom)
                 make.left.equalTo(profileImage)
                 make.right.equalTo(displayNameLabel)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             website.snp.makeConstraints { (make) -> Void in
@@ -199,6 +207,14 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(websiteView)
                 make.right.equalTo(websiteView)
                 make.bottom.equalTo(websiteView)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(website.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
             }
             
             break

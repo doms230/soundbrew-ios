@@ -61,7 +61,7 @@ class TagTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        if reuseIdentifier == "reuse" {
+        if reuseIdentifier == "reuse" || reuseIdentifier == "profileSoundReuse" {
             self.addSubview(tagTypeButton)
             self.tagTypeButton.addSubview(TagTypeTitle)
             self.tagTypeButton.addSubview(viewAllLabel)
@@ -87,7 +87,11 @@ class TagTableViewCell: UITableViewCell {
             }
             
             tagsScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(130)
+                if reuseIdentifier == "profileSoundReuse" {
+                  make.height.equalTo(210)
+                } else {
+                    make.height.equalTo(150)
+                }
                 make.top.equalTo(tagTypeButton.snp.bottom)
                 make.left.equalTo(self)
                 make.right.equalTo(self)

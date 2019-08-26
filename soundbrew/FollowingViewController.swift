@@ -58,7 +58,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
         login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
         login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
-        login.welcomeView(explanationString: "Sounds from artists you follow will appear here!", explanationImageString: "home_color")
+        login.welcomeView(explanationString: "The latest sounds from artists you follow will appear here!", explanationImageString: "home_color")
     }
     
     @objc func signInAction(_ sender: UIButton) {

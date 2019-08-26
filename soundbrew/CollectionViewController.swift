@@ -56,7 +56,7 @@ class CollectionViewController: UIViewController, UITableViewDelegate, UITableVi
         login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
         login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
         login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
-        login.welcomeView(explanationString: "Songs you like will appear here!", explanationImageString: "heart")
+        login.welcomeView(explanationString: "Updates such as new tips and follows will appear here!", explanationImageString: "heart")
     }
     
     @objc func signInAction(_ sender: UIButton) {

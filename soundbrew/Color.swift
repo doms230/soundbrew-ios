@@ -22,7 +22,8 @@ class Color {
     }
     
     func black() -> UIColor {
-        return uicolorFromHex(0x393939)
+        //return uicolorFromHex(0x393939)
+        return uicolorFromHex(0x180d22)
     }
     
     func tan() -> UIColor {
