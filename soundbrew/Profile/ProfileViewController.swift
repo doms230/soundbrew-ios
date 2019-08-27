@@ -28,7 +28,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var profileSounds = [Sound]()
     var selectedIndex = 0
     var currentUser: PFUser?
-
+    var player: Player?
     var paymentType: String!
     
     override func viewDidLoad() {
@@ -105,7 +105,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
         login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
         login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
-        login.welcomeView(explanationString: "Your sound uploads and collection will appear here!", explanationImageString: "smiley")
+        login.welcomeView(explanationString: "Music you upload and collect will appear here!", explanationImageString: "smiley")
     }
     
     @objc func signInAction(_ sender: UIButton) {
@@ -137,10 +137,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         }
         
-        //soundList = SoundList(target: self, tableView: tableView, soundType: "uploads", userId: profileArtist?.objectId, tags: nil, searchText: nil, descendingOrder: nil)
-        
-        let player = Player.sharedInstance
-        if player.player != nil {
+        player = Player.sharedInstance
+        player?.target = self
+        player?.tableView = tableView
+        if self.player?.player != nil {
             setUpMiniPlayer()
             
         } else if PFUser.current() != nil {
@@ -225,28 +225,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-   /* func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section != - {
-            if let player = soundList.player {
-                player.didSelectSoundAt(indexPath.row)
-                if self.miniPlayerView == nil {
-                    self.setUpMiniPlayer()
-                }
-            }
-        }
-    }*/
-    
-    /*func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
-            if soundList.soundType == "uploads" {
-                soundList.loadSounds(soundList.descendingOrder, collectionIds: nil, userId: profileArtist?.objectId, searchText: nil, followIds: nil)
-                
-            } else {
-                soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: nil, searchText: nil, followIds: nil)
-            }
-        }
-    }*/
-    
     //mark: miniPlayer
     var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
@@ -297,8 +275,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var artistCollection = [Sound]()
     var collectionSoundIds = [String]()
     var didloadReleases = false
+    var didAttachReleasesToScrollview = false
     var didLoadCollection = false
-    
+    var didAttachCollectionToScrollview = false
+
     func soundsReuse(_ indexPath: IndexPath) -> TagTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundReuse) as! TagTableViewCell
         cell.backgroundColor = color.black()
@@ -315,12 +295,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         } else {
             cell.TagTypeTitle.text = "Collection"
-            if artistCollection.count == 0 && didLoadCollection {
+            if artistCollection.count == 0 && didLoadCollection  {
                 cell.viewAllLabel.isHidden = true
                 addNoSounds(cell.tagsScrollview, title: "Nothing in their collection yet.")
             } else {
                 cell.viewAllLabel.isHidden = false
-               addSounds(cell.tagsScrollview, sounds: artistCollection, row: 1)
+                addSounds(cell.tagsScrollview, sounds: artistCollection, row: 1)
             }
         }
         
@@ -351,15 +331,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let buttonWidth = 150
         var xPositionForFeatureTags = UIElement().leftOffset
         
-        for sound in sounds {
-            let soundButton = UIButton()
-            soundButton.kf.setBackgroundImage(with: URL(string: sound.artURL), for: .normal)
-            soundButton.layer.cornerRadius = 5
-            soundButton.clipsToBounds = true
-            soundButton.tag = row
-            soundButton.addTarget(self, action: #selector(self.didPressSoundButton(_:)), for: .touchUpInside)
-            scrollview.addSubview(soundButton)
-            soundButton.snp.makeConstraints { (make) -> Void in
+        //for sound in sounds {
+        for i in 0..<sounds.count {
+            let sound = sounds[i]
+            
+            let soundArt = UIImageView()
+            soundArt.kf.setImage(with: URL(string: sound.artURL))
+            soundArt.contentMode = .scaleAspectFill
+            soundArt.layer.cornerRadius = 5
+            soundArt.clipsToBounds = true
+            scrollview.addSubview(soundArt)
+            soundArt.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(buttonHeight)
                 make.top.equalTo(scrollview)
                 make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
@@ -371,9 +353,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             titleLabel.textColor = .white
             scrollview.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundButton.snp.bottom)
-                make.left.equalTo(soundButton)
-                make.right.equalTo(soundButton)
+                make.top.equalTo(soundArt.snp.bottom)
+                make.left.equalTo(soundArt)
+                make.right.equalTo(soundArt)
             }
             
             let artistLabel = UILabel()
@@ -383,8 +365,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             scrollview.addSubview(artistLabel)
             artistLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(titleLabel.snp.bottom)
-                make.left.equalTo(soundButton)
-                make.right.equalTo(soundButton)
+                make.left.equalTo(soundArt)
+                make.right.equalTo(soundArt)
             }
             
             let dateLabel = UILabel()
@@ -394,9 +376,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             scrollview.addSubview(dateLabel)
             dateLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistLabel.snp.bottom)
-                make.left.equalTo(soundButton)
-                make.right.equalTo(soundButton)
-                //make.bottom.equalTo(scrollview)
+                make.left.equalTo(soundArt)
+                make.right.equalTo(soundArt)
+            }
+            
+            let soundViewButton = UIButton()
+            if row == 0 {
+                //releases
+                soundViewButton.addTarget(self, action: #selector(self.didPressReleaseSound(_:)), for: .touchUpInside)
+            } else {
+                //collection
+                soundViewButton.addTarget(self, action: #selector(self.didPressCollectionSound(_:)), for: .touchUpInside)
+            }
+            soundViewButton.tag = i
+            scrollview.addSubview(soundViewButton)
+            soundViewButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(scrollview)
+                make.left.equalTo(soundArt)
+                make.right.equalTo(soundArt)
+                make.bottom.equalTo(dateLabel.snp.bottom)
             }
             
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
@@ -404,17 +402,22 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressSoundButton(_ sender: UIButton) {
-
+    @objc func didPressReleaseSound(_ sender: UIButton) {
+        didSelectSound(artistReleases, row: sender.tag)
     }
     
-    func determineSelectedTag(selectedTagTitle: String, tags: Array<Tag>) {
-       /* for tag in tags {
-            if selectedTagTitle == tag.name {
-                self.selectedTag = tag
-                self.performSegue(withIdentifier: "showSounds", sender: self)
+    @objc func didPressCollectionSound(_ sender: UIButton) {
+        didSelectSound(artistCollection, row: sender.tag)
+    }
+    
+    func didSelectSound(_ sounds: Array<Sound>, row: Int) {
+        if let player = self.player {
+            player.sounds = sounds
+            player.didSelectSoundAt(row)
+            if self.miniPlayerView == nil {
+                self.setUpMiniPlayer()
             }
-        }*/
+        }
     }
     
     func loadCollection(_ profileUserId: String) {

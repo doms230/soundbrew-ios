@@ -117,11 +117,12 @@
                         <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="CdJ-ew-HPh"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="Pi7-qj-CXZ"/>
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="cT0-pf-EzT"/>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hQD-bY-Uhw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2836" y="940"/>
+            <point key="canvasLocation" x="-2881" y="940"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -633,12 +634,12 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Pro-Wr-Tmr"/>
-        <segue reference="CS4-UW-TbD"/>
-        <segue reference="h3u-aT-JAs"/>
-        <segue reference="FZs-ab-ofk"/>
+        <segue reference="Pi7-qj-CXZ"/>
+        <segue reference="cT0-pf-EzT"/>
+        <segue reference="hQD-bY-Uhw"/>
         <segue reference="YJM-4e-UbW"/>
-        <segue reference="5zy-Bo-ugT"/>
-        <segue reference="LnM-xP-wsl"/>
-        <segue reference="ttO-Wg-wls"/>
+        <segue reference="ate-Yt-ICi"/>
+        <segue reference="iDR-Ll-dSf"/>
+        <segue reference="Dx3-fw-EG5"/>
     </inferredMetricsTieBreakers>
 </document>
