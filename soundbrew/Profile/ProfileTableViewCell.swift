@@ -171,6 +171,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.websiteView.addSubview(website)
             self.addSubview(actionButton)
             self.addSubview(seperatorLine)
+            
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(75)
@@ -178,27 +179,33 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
+            actionButton.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(profileImage)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(profileImage)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
             city.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(profileImage).offset(uiElement.topOffset)
+                make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(city.snp.top)
-            }
-            
             bio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(profileImage)
+                make.top.equalTo(city.snp.bottom)
+                make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
             websiteView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(bio.snp.bottom)
-                make.left.equalTo(profileImage)
+                make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             

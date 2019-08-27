@@ -14,6 +14,7 @@ import Kingfisher
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     let color = Color()
     let uiElement = UIElement()
+    var soundType: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,8 +54,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         case "showSounds":
             let viewController = segue.destination as! SoundsViewController
-            viewController.selectedTagsForFiltering.append(self.selectedTag)
-            viewController.soundType = "discover"
+            viewController.selectedTagForFiltering = self.selectedTag
+            viewController.soundType = soundType
             
             let backItem = UIBarButtonItem()
             backItem.title = self.selectedTag.name
@@ -64,6 +65,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         default:
             break
         }
+    }
+    
+    func showSounds(_ selectedTag: Tag, soundType: String) {
+        self.selectedTag = selectedTag
+        self.soundType = soundType
+        self.performSegue(withIdentifier: "showSounds", sender: self)
     }
     
     //mark: tableview
@@ -192,8 +199,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if sender.tag == 1 {
             tag.name = "top"
         }
-        self.selectedTag = tag
-        self.performSegue(withIdentifier: "showSounds", sender: self)
+        showSounds(tag, soundType: "chart")
     }
     
     //mark: tags
@@ -323,8 +329,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func determineSelectedTag(selectedTagTitle: String, tags: Array<Tag>) {
         for tag in tags {
             if selectedTagTitle == tag.name {
-                self.selectedTag = tag
-                self.performSegue(withIdentifier: "showSounds", sender: self)
+                showSounds(tag, soundType: "discover")
             }
         }
     }

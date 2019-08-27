@@ -70,6 +70,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showEditProfile":
+            let backItem = UIBarButtonItem()
+            backItem.title = "Edit Profile"
+            navigationItem.backBarButtonItem = backItem
+            
             let editProfileController = segue.destination as! EditProfileViewController
             editProfileController.artistDelegate = self
             break
@@ -160,7 +164,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
-            checkFollowStatus(self.currentUser!)
+            checkFollowStatus()
         }
     }
     
@@ -530,18 +534,63 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.website.text = website 
                 cell.websiteView.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
             }
+            
+            cell.actionButton.addTarget(self, action: #selector(self.didPressActionButton(_:)), for: .touchUpInside)
+            if let currentUserID = PFUser.current()?.objectId {
+                if currentUserID == self.profileArtist!.objectId {
+                    cell.actionButton.setTitle("Edit Profile", for: .normal)
+                    cell.actionButton.backgroundColor = color.black()
+                    cell.actionButton.setTitleColor(.white, for: .normal)
+                    cell.actionButton.layer.borderColor = color.lightGray().cgColor
+                    cell.actionButton.layer.borderWidth = 1
+                    cell.actionButton.clipsToBounds = true
+                    cell.actionButton.tag = 0
+                } else if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
+                    if isFollowedByCurrentUser {
+                        cell.actionButton.setTitle("Following", for: .normal)
+                        cell.actionButton.backgroundColor = color.lightGray()
+                        cell.actionButton.setTitleColor(color.black(), for: .normal)
+                        cell.actionButton.tag = 1
+                    } else {
+                        cell.actionButton.setTitle("Follow", for: .normal)
+                        cell.actionButton.backgroundColor = color.blue()
+                        cell.actionButton.setTitleColor(.white, for: .normal)
+                        cell.actionButton.tag = 2
+                    }
+                }
+            } else {
+                cell.actionButton.setTitle("Follow", for: .normal)
+                cell.actionButton.backgroundColor = color.blue()
+                cell.actionButton.setTitleColor(.white, for: .normal)
+                cell.actionButton.tag = 3
+            }
         }
         
         return cell
     }
     
-    func shareProfile() {
-        if let artist = profileArtist {
-            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+    //mark: button actions
+    @objc func didPressActionButton(_ sender: UIButton) {
+        switch sender.tag {
+        case 0:
+            self.performSegue(withIdentifier: "showEditProfile", sender: self)
+            break
+            
+        case 1:
+            updateFollowStatus(false)
+            break
+            
+        case 2:
+            updateFollowStatus(true)
+            break
+            
+        default:
+            self.uiElement.showAlert("Sign up Required.", message: "Following artists on Soundbrew is the easiest way to keep up with their latest releases!", target: self)
+            break
         }
     }
     
-    //mark: button actions
+    
     func setUpNavigationButtons() {
         if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
@@ -553,12 +602,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressNewSoundButton(_ sender: UIButton) {
-        if self.currentUser != nil {
-            self.performSegue(withIdentifier: "showUploadSound", sender: self)
-        }
-    }
-    
     @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.profileArtist?.website {
             UIApplication.shared.open(URL(string: website)!, options: [:], completionHandler: nil)
@@ -566,7 +609,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
-        shareProfile()
+        if let artist = profileArtist {
+            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+        }
     }
     
     @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
@@ -646,86 +691,134 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func followUser(_ currentUser: PFUser) {
+    func newFollowRow() {
         self.profileArtist!.isFollowedByCurrentUser = true
         self.tableView.reloadData()
-        let newFollow = PFObject(className: "Follow")
-        newFollow["fromUserId"] = currentUser.objectId
-        newFollow["toUserId"] = profileArtist!.objectId
-        newFollow["isRemoved"] = false
-        newFollow.saveEventually {
-            (success: Bool, error: Error?) in
-            if success && error == nil {
-                self.incrementFollowerCount(artist: self.profileArtist!, incrementFollows: true, decrementFollows: false)
-                self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
-                
-            } else {
-                self.profileArtist!.isFollowedByCurrentUser = false
-                self.tableView.reloadData()
+        if let currentUser = PFUser.current(){
+            let newFollow = PFObject(className: "Follow")
+            newFollow["fromUserId"] = currentUser.objectId
+            newFollow["toUserId"] = profileArtist!.objectId
+            newFollow["isRemoved"] = false
+            newFollow.saveEventually {
+                (success: Bool, error: Error?) in
+                if success && error == nil {
+                    self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: true)
+                    self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
+                    
+                } else {
+                    self.profileArtist!.isFollowedByCurrentUser = false
+                    self.tableView.reloadData()
+                }
             }
         }
     }
     
-    func unFollowerUser(_ currentUser: PFUser) {
-        self.profileArtist!.isFollowedByCurrentUser = false
+    func updateFollowStatus(_ shouldFollowArtist: Bool) {
+        if shouldFollowArtist {
+            self.profileArtist!.isFollowedByCurrentUser = true
+        } else {
+            self.profileArtist!.isFollowedByCurrentUser = false
+        }
         self.tableView.reloadData()
-        let query = PFQuery(className: "Follow")
-        query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
-        query.whereKey("isRemoved", equalTo: false)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if error != nil {
-                self.profileArtist!.isFollowedByCurrentUser = true
-                self.tableView.reloadData()
-                
-            } else if let object = object {
-                object["isRemoved"] = true
-                object.saveEventually {
-                    (success: Bool, error: Error?) in
-                    if success && error == nil {
-                        self.incrementFollowerCount(artist: self.profileArtist!, incrementFollows: false, decrementFollows: true)
+        
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Follow")
+            query.whereKey("fromUserId", equalTo: currentUserID)
+            query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if error != nil {
+                    if shouldFollowArtist {
+                        self.newFollowRow()
+                    }
+                    
+                } else if let object = object {
+                    var shouldRemove = true
+                    if shouldFollowArtist {
+                        shouldRemove = false
+                    }
+                    object["isRemoved"] = shouldRemove
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        if success && error == nil {
+                            var incrementFollows = false
+                            if shouldFollowArtist {
+                                incrementFollows = true
+                            }
+                            self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: incrementFollows)
+                        }
                     }
                 }
             }
         }
     }
     
-    func checkFollowStatus(_ currentUser: PFUser) {
-        let query = PFQuery(className: "Follow")
-        query.whereKey("fromUserId", equalTo: currentUser.objectId!)
-        query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
-        query.whereKey("isRemoved", equalTo: false)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if object != nil && error == nil {
-                self.profileArtist?.isFollowedByCurrentUser = true
-                
-            } else {
-                self.profileArtist?.isFollowedByCurrentUser = false
+    func checkFollowStatus() {
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Follow")
+            query.whereKey("fromUserId", equalTo: currentUserID)
+            query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
+            query.whereKey("isRemoved", equalTo: false)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    self.profileArtist?.isFollowedByCurrentUser = true
+                    
+                } else {
+                    self.profileArtist?.isFollowedByCurrentUser = false
+                }
+                self.tableView.reloadData()
             }
-            
-            self.tableView.reloadData()
         }
     }
     
-    func incrementFollowerCount(artist: Artist, incrementFollows: Bool, decrementFollows: Bool) {
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: artist.objectId) {
+    func updateFollowerCount(artist: Artist, incrementFollows: Bool) {
+        let query = PFQuery(className: "Stats")
+        query.whereKey("userId", equalTo: artist.objectId!)
+        query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
+            if error != nil {
+                self.newStatsRow(1, following: 0, userId: artist.objectId)
                 
             } else if let object = object {
                 if incrementFollows {
-                    object.incrementKey("followerCount")
+                    object.incrementKey("followers")
                     
-                } else if decrementFollows {
-                    object.incrementKey("followerCount", byAmount: -1)
+                } else {
+                    object.incrementKey("followers", byAmount: -1)
                 }
                 
                 object.saveEventually()
             }
         }
+        
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Stats")
+            query.whereKey("userId", equalTo: currentUserID)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if error != nil {
+                    self.newStatsRow(0, following: 1, userId: currentUserID)
+                    
+                } else if let object = object {
+                    if incrementFollows {
+                        object.incrementKey("following")
+                        
+                    } else {
+                        object.incrementKey("following", byAmount: -1)
+                    }
+                    
+                    object.saveEventually()
+                }
+            }
+        }
+    }
+    
+    func newStatsRow(_ followers: Int, following: Int, userId: String) {
+        let newFollow = PFObject(className: "Stats")
+        newFollow["followers"] = followers
+        newFollow["following"] = following
+        newFollow["userId"] = userId
+        newFollow.saveEventually()
     }
 }

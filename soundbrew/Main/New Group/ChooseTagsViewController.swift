@@ -37,7 +37,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             navigationItem.backBarButtonItem = backItem
             
             let viewController = segue.destination as! SoundsViewController
-            viewController.selectedTagsForFiltering = self.chosenTags
+            viewController.selectedTagForFiltering = self.chosenTags[0]
             viewController.soundType = "discover"
         }
     }

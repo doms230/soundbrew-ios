@@ -65,9 +65,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func setUpViews() {
-        self.title = "Edit Profile"
-        
+    func setUpViews() {        
         let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
     }

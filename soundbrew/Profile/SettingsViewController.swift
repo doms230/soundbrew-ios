@@ -164,14 +164,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func shareProfile() {
-        if let container = self.so_containerViewController {
+        /*if let container = self.so_containerViewController {
             container.isSideViewControllerPresented = false
             if let topView = container.topViewController as? UINavigationController {
                 if let view = topView.topViewController as? ProfileViewController {
                     view.shareProfile()
                 }
             }
-        }
+        }*/
     }
     
     func showEarningsOrPayments(_ paymentType: String) {

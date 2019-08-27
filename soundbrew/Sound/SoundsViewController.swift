@@ -63,20 +63,15 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         var descendingOrder: String?
-        var tags: Array<Tag>?
-        if selectedTagsForFiltering.count != 0 {
-            tags = selectedTagsForFiltering
-            if soundType == "chart" {
-                tags = nil
-                if selectedTagsForFiltering[0].name == "new" {
-                    descendingOrder = "createdAt"
-                } else {
-                    descendingOrder = "plays"
-                }
+        if soundType == "chart" {
+            if selectedTagForFiltering.name == "new" {
+                descendingOrder = "createdAt"
+            } else {
+                descendingOrder = "plays"
             }
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: tags, searchText: nil, descendingOrder: descendingOrder)
+        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: descendingOrder)
     }
     
     //mark: tableview
@@ -194,6 +189,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     //mark: tags
-    var selectedTagsForFiltering = [Tag]()
+    var selectedTagForFiltering: Tag! 
 }
 

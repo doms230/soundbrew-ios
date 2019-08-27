@@ -30,13 +30,13 @@ class SoundList: NSObject, PlayerDelegate {
     var searchText: String?
     var domSmithUserId = "AWKPPDI4CB"
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Array<Tag>?, searchText: String?, descendingOrder: String?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
         self.soundType = soundType
         self.profileUserId = userId
-        self.selectedTagsForFiltering = tags
+        self.selectedTagForFiltering = tags
         self.searchText = searchText
         if let descendingOrder = descendingOrder {
             self.descendingOrder = descendingOrder
@@ -260,95 +260,8 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     //mark: tags filter
-    var selectedTagsForFiltering: Array<Tag>?
-    var soundFilter: String!
-    var xPositionForTags = UIElement().leftOffset
-    var soundOrder: String!
-    
-    func soundFilterOptions(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
-        cell.selectionStyle = .none
-        cell.newButton.addTarget(self, action: #selector(self.didPressSoundOrderButton(_:)), for: .touchUpInside)
-        cell.newButton.tag = 0
-        cell.popularButton.addTarget(self, action: #selector(self.didPressSoundOrderButton(_:)), for: .touchUpInside)
-        cell.popularButton.tag = 1
-        if let filter = uiElement.getUserDefault("filter") as? String {
-            if filter == "recent" {
-                soundOrder = "recent"
-                cell.newButton.setTitleColor(color.black(), for: .normal)
-                cell.popularButton.setTitleColor(color.darkGray(), for: .normal)
-                
-            } else {
-                soundOrder = "popular"
-                cell.popularButton.setTitleColor(color.black(), for: .normal)
-                cell.newButton.setTitleColor(color.darkGray(), for: .normal)
-            }
-            
-        } else {
-            soundOrder = "recent"
-        }
-        
-        cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview() })
-        xPositionForTags = uiElement.leftOffset
-        if let tags = self.selectedTagsForFiltering {
-            if tags.count != 0 {
-                for tag in tags {
-                    self.addSelectedTags(cell.tagsScrollview, tagName: tag.name)
-                }
-                
-            } else {
-                self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
-            }
-            
-        } else if cell.tagsScrollview.subviews.count == 0 {
-            self.addSelectedTags(cell.tagsScrollview, tagName: "Filter")
-        }
-        
-        return cell
-    }
-    @objc func didPressSoundOrderButton(_ sender: UIButton) {
-        let currentSoundOrder = soundOrder
-        if sender.tag == 0 {
-            soundOrder = "recent"
-            self.uiElement.setUserDefault("filter", value: "recent")
-            
-        } else {
-            soundOrder = "popular"
-            self.uiElement.setUserDefault("filter", value: "popular")
-        }
-        
-        if currentSoundOrder != soundOrder {
-            if let tableview = self.tableView {
-                sounds.removeAll()
-                tableview.reloadData()
-            }
-            determineTypeOfSoundToLoad(soundType)
-        }
-    }
-    
-    func addSelectedTags(_ scrollview: UIScrollView, tagName: String) {
-        let buttonTitleWithX = "\(tagName)"
-        //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonTitleWidth = uiElement.determineChosenTagButtonTitleWidth(buttonTitleWithX)
-        
-        let tagButton = UIButton()
-        tagButton.frame = CGRect(x: xPositionForTags, y: uiElement.elementOffset, width: buttonTitleWidth, height: 30)
-        tagButton.setTitle(tagName, for: .normal)
-        tagButton.setTitleColor(color.black(), for: .normal)
-        tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        tagButton.layer.cornerRadius = 5
-        tagButton.layer.borderWidth = 1
-        tagButton.layer.borderColor = color.darkGray().cgColor
-        tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
-        scrollview.addSubview(tagButton)
-        
-        xPositionForTags = xPositionForTags + Int(tagButton.frame.width) + uiElement.elementOffset
-        scrollview.contentSize = CGSize(width: xPositionForTags, height: 35)
-    }
-    
-    @objc func didPressTagButton(_ sender: UIButton) {
-        target.performSegue(withIdentifier: "showTags", sender: self)
-    }
-    
+    var selectedTagForFiltering: Tag!
+
     //mark: data
     func loadSound(_ objectId: String) {
         let query = PFQuery(className: "Post")
@@ -582,9 +495,8 @@ class SoundList: NSObject, PlayerDelegate {
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("createdAt")
         query.limit = 10
-        if let tags = self.selectedTagsForFiltering {
-            let tagNames = tags.map {$0.name!}
-            query.whereKey("tags", containedIn: tagNames)
+        if let tag = self.selectedTagForFiltering {
+            query.whereKey("tags", contains: tag.name)
         }
         if sounds.count != 0 {
          query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
@@ -613,9 +525,8 @@ class SoundList: NSObject, PlayerDelegate {
         if sounds.count != 0 {
          query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
          }
-        if let tags = self.selectedTagsForFiltering {
-            let tagNames = tags.map {$0.name!}
-            query.whereKey("tags", containedIn: tagNames)
+        if let tag = self.selectedTagForFiltering {
+            query.whereKey("tags", contains: tag.name)
         }
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
