@@ -1,5 +1,5 @@
 //
-//  TagsViewController.swift
+//  SearchViewController.swift
 //  soundbrew
 //
 //  Created by Dominic  Smith on 8/7/19.
@@ -11,7 +11,7 @@ import Parse
 import SnapKit
 import Kingfisher
 
-class TagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     let color = Color()
     let uiElement = UIElement()
     
@@ -52,8 +52,10 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             break
             
         case "showSounds":
-            let topviewController = segue.destination as! SoundsViewController
-            topviewController.selectedTagsForFiltering.append(self.selectedTag)
+            let viewController = segue.destination as! SoundsViewController
+            viewController.selectedTagsForFiltering.append(self.selectedTag)
+            viewController.soundType = "discover"
+            
             let backItem = UIBarButtonItem()
             backItem.title = self.selectedTag.name
             navigationItem.backBarButtonItem = backItem

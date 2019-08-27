@@ -19,6 +19,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var soundList: SoundList!
     let uiElement = UIElement()
     let color = Color()
+    var soundType: String!
+    var userId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,14 +62,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.tableView.reloadData()
         }
         
-        var soundType = "playlist"
         var descendingOrder: String?
         var tags: Array<Tag>?
         if selectedTagsForFiltering.count != 0 {
             tags = selectedTagsForFiltering
-            if selectedTagsForFiltering[0].objectId == nil {
+            if soundType == "chart" {
                 tags = nil
-                soundType = "chart"
                 if selectedTagsForFiltering[0].name == "new" {
                     descendingOrder = "createdAt"
                 } else {
@@ -76,7 +76,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: PFUser.current()?.objectId, tags: tags, searchText: nil, descendingOrder: descendingOrder)
+        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: tags, searchText: nil, descendingOrder: descendingOrder)
     }
     
     //mark: tableview
@@ -134,7 +134,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
-        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad && soundType == "discover" {
             soundList.loadWorldCreatedAtSounds()
         }
     }

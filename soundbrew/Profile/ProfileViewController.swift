@@ -92,6 +92,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             navigationItem.backBarButtonItem = backItem
             break
             
+        case "showSounds":
+            let backItem = UIBarButtonItem()
+            backItem.title = showSoundsTitle
+            navigationItem.backBarButtonItem = backItem
+            
+            let viewController = segue.destination as! SoundsViewController
+            viewController.soundType = selectedSoundType
+            viewController.userId = profileArtist?.objectId
+            break
         default:
             break
         }
@@ -275,10 +284,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var artistCollection = [Sound]()
     var collectionSoundIds = [String]()
     var didloadReleases = false
-    var didAttachReleasesToScrollview = false
     var didLoadCollection = false
-    var didAttachCollectionToScrollview = false
-
+    var showSoundsTitle: String!
+    var selectedSoundType: String!
+    
     func soundsReuse(_ indexPath: IndexPath) -> TagTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundReuse) as! TagTableViewCell
         cell.backgroundColor = color.black()
@@ -289,6 +298,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.viewAllLabel.isHidden = true
                 addNoSounds(cell.tagsScrollview, title: "No Releases Yet.")
             } else {
+                cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
+                cell.tagTypeButton.tag = 0
                 cell.viewAllLabel.isHidden = false
                 addSounds(cell.tagsScrollview, sounds: artistReleases, row: 0)
             }
@@ -299,6 +310,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.viewAllLabel.isHidden = true
                 addNoSounds(cell.tagsScrollview, title: "Nothing in their collection yet.")
             } else {
+                cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
+                cell.tagTypeButton.tag = 1
                 cell.viewAllLabel.isHidden = false
                 addSounds(cell.tagsScrollview, sounds: artistCollection, row: 1)
             }
@@ -308,8 +321,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressViewAllSoundsButton(_ sender: UIButton) {
-        //TODO
-        self.performSegue(withIdentifier: "showTags", sender: self)
+        if let artist = self.profileArtist {
+            if sender.tag == 0 {
+                showSoundsTitle = "\(artist.username!)'s Releases"
+                selectedSoundType = "uploads"
+            } else {
+                showSoundsTitle = "\(artist.username!)'s Collection"
+                selectedSoundType = "collection"
+            }
+        }
+        self.performSegue(withIdentifier: "showSounds", sender: self)
     }
     
     func addNoSounds(_ scrollview: UIScrollView, title: String) {

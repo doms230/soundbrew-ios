@@ -203,7 +203,7 @@ class SoundList: NSObject, PlayerDelegate {
             loadSounds(descendingOrder, collectionIds: nil, userId: nil, searchText: nil, followIds: nil)
             break
             
-        case "playlist":
+        case "discover":
             self.loadWorldCreatedAtSounds()
             break
             
