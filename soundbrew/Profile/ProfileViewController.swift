@@ -396,7 +396,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             let dateLabel = UILabel()
             dateLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-            dateLabel.text = "\(sound.createdAt!)"
+            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt)
+            dateLabel.text = formattedDate
             dateLabel.textColor = .lightGray
             scrollview.addSubview(dateLabel)
             dateLabel.snp.makeConstraints { (make) -> Void in
@@ -589,7 +590,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
         }
     }
-    
     
     func setUpNavigationButtons() {
         if isCurrentUserProfile && self.currentUser != nil {

@@ -124,6 +124,13 @@ class UIElement {
         return textWithWhiteSpaceTrimmed.lowercased()
     }
     
+    //mark: date and time
+    func formatDateAndReturnString(_ date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd,yyyy"
+        return dateFormatter.string(from: date)
+    }
+    
     func formatTime(_ durationInSeconds: Double ) -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]

@@ -127,7 +127,8 @@ class SoundList: NSObject, PlayerDelegate {
                 loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
             }
             
-            cell.soundDate.text = "\(sound.createdAt!)"
+            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt)
+            cell.soundDate.text = formattedDate
         }
         
         return cell
@@ -192,6 +193,7 @@ class SoundList: NSObject, PlayerDelegate {
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
         cell.soundArtist.textColor = color
+        cell.soundDate.textColor = color
     }
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
