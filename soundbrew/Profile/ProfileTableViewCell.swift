@@ -112,7 +112,7 @@ class ProfileTableViewCell: UITableViewCell {
         label.text = "Change Profile Photo"
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
         label.textAlignment = .center
-        label.textColor = .white
+        label.textColor = color.blue()
         return label
     }()
     
@@ -313,7 +313,7 @@ class ProfileTableViewCell: UITableViewCell {
         case "editProfileImageReuse":
             self.addSubview(profileImage)
             self.addSubview(editProfileLabel)
-            
+            self.addSubview(seperatorLine)
             profileImage.layer.cornerRadius = 50
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
@@ -325,19 +325,26 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(editProfileLabel.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
             }
             break
             
         case "editProfileInfoReuse":
             self.addSubview(editProfileTitle)
             self.addSubview(editProfileInput)
-            
+            self.addSubview(seperatorLine)
             editProfileTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             editProfileInput.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editProfileTitle)
@@ -345,16 +352,25 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            break
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(editProfileInput.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(editProfileInput)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
             
+            break
+        //TODO: see if this is still being used ... might need to delete
         case "editProfileCityReuse":
             self.addSubview(editProfileTitle)
             self.addSubview(userCity)
+            self.addSubview(seperatorLine)
             editProfileTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+               // make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             userCity.snp.makeConstraints { (make) -> Void in
@@ -363,23 +379,32 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(userCity.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(userCity)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
+            
             break
             
         case "editBioReuse":
             self.addSubview(editBioText)
             self.addSubview(editBioTitle)
             self.addSubview(rightArrow)
+            self.addSubview(seperatorLine)
             editBioTitle.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(80)
+                make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             rightArrow.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
                 make.centerY.equalTo(self)
-                make.right.equalTo(self).offset(-(uiElement.elementOffset))
+                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             editBioText.snp.makeConstraints { (make) -> Void in
@@ -388,6 +413,14 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(rightArrow.snp.left).offset(uiElement.rightOffset)
                 //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(editBioText.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(editBioText)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
 
             break
             
@@ -395,7 +428,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(privateInformationLabel)
             self.addSubview(editProfileTitle)
             self.addSubview(editProfileInput)
-            
+            self.addSubview(seperatorLine)
             privateInformationLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
@@ -403,15 +436,22 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             editProfileTitle.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(80)
+                make.width.equalTo(100)
                 make.top.equalTo(privateInformationLabel.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             editProfileInput.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editProfileTitle)
                 make.left.equalTo(editProfileTitle.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(editProfileInput.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(editProfileInput)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
             }
             
             break
