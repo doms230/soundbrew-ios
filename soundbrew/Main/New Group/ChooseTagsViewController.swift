@@ -36,7 +36,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             backItem.title = self.chosenTags[0].name
             navigationItem.backBarButtonItem = backItem
             
-            let topviewController = segue.destination as! PlaylistViewController
+            let topviewController = segue.destination as! SoundsViewController
             topviewController.selectedTagsForFiltering = self.chosenTags
         }
     }

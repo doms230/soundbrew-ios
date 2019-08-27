@@ -52,7 +52,7 @@ class TagsViewController: UIViewController, UITableViewDelegate, UITableViewData
             break
             
         case "showSounds":
-            let topviewController = segue.destination as! PlaylistViewController
+            let topviewController = segue.destination as! SoundsViewController
             topviewController.selectedTagsForFiltering.append(self.selectedTag)
             let backItem = UIBarButtonItem()
             backItem.title = self.selectedTag.name
