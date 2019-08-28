@@ -55,7 +55,7 @@
 		F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */; };
 		F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D322CD1A1900ED157E /* Customer.swift */; };
 		F2FB14D822D28D5800ED157E /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D722D28D5800ED157E /* EarningsViewController.swift */; };
-		F2FB14E622FA335500ED157E /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14E522FA335500ED157E /* CollectionViewController.swift */; };
+		F2FB14E622FA335500ED157E /* UpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14E522FA335500ED157E /* UpdatesViewController.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -187,7 +187,7 @@
 		F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFundsViewController.swift; sourceTree = "<group>"; };
 		F2FB14D322CD1A1900ED157E /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		F2FB14D722D28D5800ED157E /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
-		F2FB14E522FA335500ED157E /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
+		F2FB14E522FA335500ED157E /* UpdatesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesViewController.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -410,7 +410,7 @@
 			children = (
 				F2F122D822FBCA50002DA196 /* SearchViewController.swift */,
 				F2EFDEFA23025B50008A157B /* FollowingViewController.swift */,
-				F2FB14E522FA335500ED157E /* CollectionViewController.swift */,
+				F2FB14E522FA335500ED157E /* UpdatesViewController.swift */,
 				F2FB14D022CC142C00ED157E /* Tag */,
 			);
 			path = Main;
@@ -774,7 +774,7 @@
 				F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
-				F2FB14E622FA335500ED157E /* CollectionViewController.swift in Sources */,
+				F2FB14E622FA335500ED157E /* UpdatesViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,

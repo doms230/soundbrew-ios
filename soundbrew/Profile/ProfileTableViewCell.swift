@@ -32,6 +32,7 @@ class ProfileTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
         label.textColor = .white
+        label.numberOfLines = 0
         return label
     }()
     
@@ -54,7 +55,8 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var city: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .darkGray 
+        label.textColor = .darkGray
+        label.numberOfLines = 0
         return label
     }()
     
@@ -275,6 +277,43 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
+            
+            break
+            
+        case "updatesReuse":
+            self.addSubview(profileImage)
+            self.addSubview(displayNameLabel)
+            self.addSubview(username)
+            self.addSubview(city)
+            
+            profileImage.layer.cornerRadius = 25
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(50)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            //person username
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage.snp.top)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            //message
+            /*username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayNameLabel)
+                make.left.equalTo(displayNameLabel.snp.right)
+                //make.right.equalTo(self).offset(uiElement.rightOffset)
+            }*/
+            
+            city.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+               // make.bottom.equalTo(self)
+            }
+            
             
             break
             

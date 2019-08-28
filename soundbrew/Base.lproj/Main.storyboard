@@ -550,7 +550,7 @@
         <!--Your Collection-->
         <scene sceneID="qwK-R6-Jl7">
             <objects>
-                <viewController id="mpg-Ld-wKM" customClass="CollectionViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="mpg-Ld-wKM" customClass="UpdatesViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VP1-IL-pMh">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -573,7 +573,7 @@
         <scene sceneID="ivk-k4-ubP">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="collection_nav" selectedImage="collection_nav_filled" id="76f-hM-bxP">
+                    <tabBarItem key="tabBarItem" title="" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -621,8 +621,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="collection_nav" width="34.5" height="34.5"/>
-        <image name="collection_nav_filled" width="34.5" height="34.5"/>
+        <image name="heart_filled_nav" width="34.5" height="34.5"/>
+        <image name="heart_nav" width="34.5" height="34.5"/>
         <image name="home" width="34.5" height="34.5"/>
         <image name="home_filled" width="34.5" height="34.5"/>
         <image name="new_nav" width="37.5" height="37.5"/>
@@ -634,11 +634,11 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Pro-Wr-Tmr"/>
-        <segue reference="Pi7-qj-CXZ"/>
+        <segue reference="43Z-81-daK"/>
         <segue reference="cT0-pf-EzT"/>
         <segue reference="hQD-bY-Uhw"/>
         <segue reference="YJM-4e-UbW"/>
-        <segue reference="xvi-B0-pE3"/>
+        <segue reference="gLy-U4-3xr"/>
         <segue reference="iDR-Ll-dSf"/>
         <segue reference="Dx3-fw-EG5"/>
     </inferredMetricsTieBreakers>
