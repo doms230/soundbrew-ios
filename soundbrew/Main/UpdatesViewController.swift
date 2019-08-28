@@ -110,8 +110,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let artist = Artist(objectId: self.updates[indexPath.row].userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
-        selectedArtist = artist
+        selectedArtist = updates[indexPath.row].artist
         self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
@@ -179,17 +178,20 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.backgroundColor = color.black()
         let update = self.updates[indexPath.row]
         
-        if let image = update.userImage {
+        if let image = update.artist.image {
             cell.profileImage.kf.setImage(with: URL(string: image))
+            let name = self.getName(update.artist)
             if update.soundId != nil {
                 let tipAmountInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(update.tipAmount!, currency: "$")
-                cell.displayNameLabel.text = "\(update.username!) tipped you \(tipAmountInDollarString) for \(update.soundName!)."
+                cell.displayNameLabel.text = "\(name) tipped you \(tipAmountInDollarString) for \(update.soundName!)."
+                cell.displayNameLabel.textColor = color.green()
             } else {
-                cell.displayNameLabel.text = "\(update.username!) followed you."
+                cell.displayNameLabel.text = "\(name) followed you."
+                cell.displayNameLabel.textColor = .white
             }
             
         } else {
-            loadUserInfoFromCloud(update.userObjectId, cell: cell, indexPath: indexPath)
+            loadUserInfoFromCloud(update.artist.objectId, cell: cell, indexPath: indexPath)
         }
         
         //createdAt
@@ -197,7 +199,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         return cell
     }
-    
+
     func loadUserInfoFromCloud(_ userId: String, cell: ProfileTableViewCell, indexPath: IndexPath) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: userId) {
@@ -207,24 +209,57 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
             } else if let user = user {
                 let username = user["username"] as? String
-                if !username!.contains("@") {
-                    self.updates[indexPath.row].username = username
-                } else if let name = user["artistName"] as? String {
-                    self.updates[indexPath.row].username = name
-                } else {
-                    self.updates[indexPath.row].username = "name"
+                
+                var email: String?
+                if user.objectId! == PFUser.current()!.objectId {
+                    email = user["email"] as? String
+                }
+                
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                
+                if let followerCount = user["followerCount"] as? Int {
+                    artist.followerCount = followerCount
+                }
+                
+                if let name = user["artistName"] as? String {
+                    artist.name = name
+                }
+                
+                if let username = user["username"] as? String {
+                    if !username.contains("@") {
+                        artist.username = username
+                    }
+                }
+                
+                if let city = user["city"] as? String {
+                    artist.city = city
                 }
                 
                 if let userImageFile = user["userImage"] as? PFFileObject {
                     cell.profileImage.kf.setImage(with: URL(string: userImageFile.url!))
-                    self.updates[indexPath.row].userImage = userImageFile.url
+                    artist.image = userImageFile.url!
                 }
-            }
-            
-            if let soundId = self.updates[indexPath.row].soundId {
-                self.loadSound(soundId, cell: cell, indexPath: indexPath)
-            } else {
-                cell.displayNameLabel.text = "\(self.updates[indexPath.row].username!) followed you."
+                
+                if let bio = user["bio"] as? String {
+                    artist.bio = bio
+                }
+                
+                if let artistVerification = user["artistVerification"] as? Bool {
+                    artist.isVerified = artistVerification
+                }
+                
+                if let website = user["website"] as? String {
+                    artist.website = website
+                }
+                
+                self.updates[indexPath.row].artist = artist
+                if let soundId = self.updates[indexPath.row].soundId {
+                    self.loadSound(soundId, cell: cell, indexPath: indexPath)
+                } else {
+                    let name = self.getName(artist)
+                    cell.displayNameLabel.text = "\(name) followed you."
+                    cell.displayNameLabel.textColor = .white
+                }
             }
         }
     }
@@ -239,13 +274,25 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else if let object = object {
                 let title = object["title"] as! String
                 let tipAmountInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(self.updates[indexPath.row].tipAmount!, currency: "$")
-                cell.displayNameLabel.text = "\(self.updates[indexPath.row].username!) tipped you \(tipAmountInDollarString) for \(title)."
+                let name = self.getName(self.updates[indexPath.row].artist)
+                cell.displayNameLabel.text = "\(name) tipped you \(tipAmountInDollarString) for \(title)."
+                cell.displayNameLabel.textColor = self.color.green()
                 self.updates[indexPath.row].soundName = title
             }
         }
     }
     
+    func getName(_ artist: Artist) -> String {
+        if let username = artist.username {
+            return username
+        } else if let artistName = artist.name {
+            return artistName
+        }
+        return ""
+    }
+    
     func loadNewFollows() {
+        self.updates.removeAll()
         let query = PFQuery(className: "Follow")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
@@ -256,7 +303,8 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if let objects = objects {
                     for object in objects {
                         let userObjectId = object["fromUserId"] as! String
-                        let update = Update(object.createdAt!, userObjectId: userObjectId, username: nil, userImage: nil, tipAmount: nil, soundId: nil, soundName: nil)
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                        let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil)
                         self.updates.append(update)
                     }
                 }
@@ -280,7 +328,8 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                         let userObjectId = object["fromUserId"] as! String
                         let tipAmount = object["amount"] as! Int
                         let soundId = object["soundId"] as! String
-                        let update =  Update(object.createdAt!, userObjectId: userObjectId, username: nil, userImage: nil, tipAmount: tipAmount, soundId: soundId, soundName: nil)
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                        let update = Update(object.createdAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil)
                         self.updates.append(update)
                     }
                 }
@@ -298,18 +347,14 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
 
 class Update {
     var createdAt: Date!
-    var userObjectId: String!
-    var username: String?
-    var userImage: String?
+    var artist: Artist!
     var tipAmount: Int?
     var soundId: String?
     var soundName: String?
     
-    init(_ createdAt: Date, userObjectId: String, username: String?, userImage: String?, tipAmount: Int?, soundId: String?, soundName: String?) {
+    init(_ createdAt: Date, artist: Artist, tipAmount: Int?, soundId: String?, soundName: String?) {
         self.createdAt = createdAt
-        self.userObjectId = userObjectId
-        self.username = username
-        self.userImage = userImage
+        self.artist = artist
         self.tipAmount = tipAmount
         self.soundId = soundId
         self.soundName = soundName

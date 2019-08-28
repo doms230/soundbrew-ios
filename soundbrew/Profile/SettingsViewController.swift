@@ -19,7 +19,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
-       setupLogOutButton()
+        setupBottomButtons()
     }
     
     //Mark: sign out
@@ -33,14 +33,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }()
     
     @objc func didPressSignoutButton(_ sender: UIButton) {
-        /*if let container = self.so_containerViewController {
-            container.isSideViewControllerPresented = false
-            if let topView = container.topViewController as? ProfileViewController {
-                topView.dismiss(animated: true, completion: nil)
-                topView.didPressSignoutButton()
-            }
-        }*/
-        
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
@@ -55,28 +47,63 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }))
         self.present(menuAlert, animated: true, completion: nil)
-        
-       /* let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
-            PFUser.logOut()
-            Customer.shared.artist = nil
-            if let container = self.so_containerViewController {
-                container.isSideViewControllerPresented = false
-                if let topView = container.topViewController as? ProfileViewController {
-                    topView.dismiss(animated: true, completion: nil)
-                }                
-            }
-        }))
-        self.present(menuAlert, animated: true, completion: nil)*/
     }
     
-    func setupLogOutButton() {
-        self.view.addSubview(signOut)
-        self.signOut.snp.makeConstraints { (make) -> Void in
+    lazy var provideFeedbackButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Provide Feedback", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(self.didPressProvideFeedbackButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func didPressProvideFeedbackButton(_ sender: UIButton) {
+        UIApplication.shared.open(URL(string: "https://www.soundbrew.app/support")!, options: [:], completionHandler: nil)
+    }
+    
+    lazy var connectWithUsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Connect With Us", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(self.didPressConnectWithUsButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func didPressConnectWithUsButton(_ sender: UIButton) {
+        let menuAlert = UIAlertController(title: "Connect With Us", message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "Twitter", style: .default, handler: { action in
+        UIApplication.shared.open(URL(string: "https://www.twitter.com/sound_brew")!, options: [:], completionHandler: nil)
+        }))
+        menuAlert.addAction(UIAlertAction(title: "Instagram", style: .default, handler: { action in
+            UIApplication.shared.open(URL(string: "https://www.instagram.com/sound_brew")!, options: [:], completionHandler: nil)
+        }))
+        self.present(menuAlert, animated: true, completion: nil)
+    }
+    
+    func setupBottomButtons() {
+        
+        self.view.addSubview(provideFeedbackButton)
+        self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-50 + -(uiElement.bottomOffset))
+            make.bottom.equalTo(self.view).offset(-50 + uiElement.bottomOffset)
+        }
+        
+        self.view.addSubview(connectWithUsButton)
+        self.connectWithUsButton.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(provideFeedbackButton)
+            make.right.equalTo(provideFeedbackButton)
+            make.bottom.equalTo(provideFeedbackButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        self.view.addSubview(signOut)
+        self.signOut.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(provideFeedbackButton)
+            make.right.equalTo(provideFeedbackButton)
+            make.bottom.equalTo(connectWithUsButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         setUpTableView()
@@ -108,7 +135,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 4
+            return 2
         }
         return 1
     }
@@ -138,11 +165,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 2:
-                editProfile()
+                
                 break
                 
             case 3:
-                shareProfile()
+                
                 break
                 
                 
@@ -150,28 +177,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
             }
         }
-    }
-    
-    func editProfile() {
-        if let container = self.so_containerViewController {
-            container.isSideViewControllerPresented = false
-            if let topView = container.topViewController as? UINavigationController {
-                if let view = topView.topViewController as? ProfileViewController {
-                    view.performSegue(withIdentifier: "showEditProfile", sender: self)
-                }
-            }
-        }
-    }
-    
-    func shareProfile() {
-        /*if let container = self.so_containerViewController {
-            container.isSideViewControllerPresented = false
-            if let topView = container.topViewController as? UINavigationController {
-                if let view = topView.topViewController as? ProfileViewController {
-                    view.shareProfile()
-                }
-            }
-        }*/
     }
     
     func showEarningsOrPayments(_ paymentType: String) {
