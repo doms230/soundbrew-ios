@@ -320,6 +320,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         let query = PFQuery(className: "Tip")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         query.limit = 25
+        query.addDescendingOrder("updatedAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -329,7 +330,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                         let tipAmount = object["amount"] as! Int
                         let soundId = object["soundId"] as! String
                         let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
-                        let update = Update(object.createdAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil)
+                        let update = Update(object.updatedAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil)
                         self.updates.append(update)
                     }
                 }

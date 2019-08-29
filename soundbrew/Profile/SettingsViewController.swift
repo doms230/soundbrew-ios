@@ -84,7 +84,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func setupBottomButtons() {
-        
         self.view.addSubview(provideFeedbackButton)
         self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)

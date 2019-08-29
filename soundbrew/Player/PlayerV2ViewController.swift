@@ -5,7 +5,7 @@
 // Created by Dominic  Smith on 2/6/19.
 // Copyright © 2019 Dominic  Smith. All rights reserved.
 //
-// mark: View, Share
+// mark: View, Share, tips
 
 import UIKit
 import SCSDKCreativeKit
@@ -18,7 +18,7 @@ import Photos
 import NVActivityIndicatorView
 import FirebaseAnalytics
 
-class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource {
+class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let color = Color()
     let uiElement = UIElement()
@@ -32,10 +32,13 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         super.viewDidLoad()
         
         if let sound = self.player?.currentSound {
-            self.sound = sound 
+            self.sound = sound
+            player?.target = self
             setupNotificationCenter()
             setUpView()
-            player?.target = self 
+            if let currentUserId = PFUser.current()?.objectId {
+                ListenerToArtistTipRelation(sound, tipAmount: nil, currentUserId: currentUserId)
+            }
         }
     }
     
@@ -51,48 +54,25 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
-    //mark: money
-    let tipAmountInCents = [10, 25, 50, 100]
-    var selectedTipAmount = 10
+    //mark: tips
+    let selectedTipAmount = 25
+    var amountCurrentUserHastipped = 0
     var customer = Customer.shared
-    func showSendMoney() {
-        if let sound = self.sound {
-            let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
-            let alertView = UIAlertController(
-                title: "Tip \(sound.artist!.username!)",
-                message: "Current Balance: \(balanceInDollars) \n\n\n\n\n\n\n\n",
-                preferredStyle: .actionSheet)
-            
-            let pickerView = UIPickerView(frame:
-                CGRect(x: 0, y: 45, width: self.view.frame.width, height: 160))
-            pickerView.dataSource = self
-            pickerView.delegate = self
-            alertView.view.addSubview(pickerView)
-            
-            let sendMoneyActionButton = UIAlertAction(title: "Send Tip", style: .default) { (_) -> Void in
-                self.sendTip(sound, tipAmount: self.selectedTipAmount)
-            }
-            alertView.addAction(sendMoneyActionButton)
-            
-             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            alertView.addAction(cancelAction)
-            
-            present(alertView, animated: true, completion: nil)
-        }
-    }
     
     func sendTip(_ sound: Sound, tipAmount: Int) {
         if customer.artist!.balance! >= tipAmount {
+            SKStoreReviewController.requestReview()
+            self.amountCurrentUserHastipped = tipAmount + self.amountCurrentUserHastipped
+            let amountInDollars = uiElement.convertCentsToDollarsAndReturnString(self.amountCurrentUserHastipped, currency: "$")
+            self.tipAmountButton.setTitle(amountInDollars, for: .normal)
             self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             self.player!.sounds[self.player!.currentSoundIndex].didTip = true
             self.sound?.didTip = true
             
-            SKStoreReviewController.requestReview()
-            
             customer.updateBalance(-tipAmount)
             updateArtistPayment(sound, tipAmount: tipAmount)
-            newTip(sound, tipAmount: tipAmount)
-            incrementTipAmount(sound, tipAmount: tipAmount)
+            ListenerToArtistTipRelation(sound, tipAmount: tipAmount, currentUserId: PFUser.current()!.objectId!)
+            incrementPostTipAmount(sound, tipAmount: tipAmount)
             
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
@@ -140,7 +120,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     }
     
     func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
-        let newPaymentRow = PFObject(className: "Tip")
+        let newPaymentRow = PFObject(className: "Payment")
         newPaymentRow["userId"] = artistObjectId
         newPaymentRow["tipsSinceLastPayout"] = tipAmount
         newPaymentRow["tips"] = tipAmount
@@ -155,7 +135,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         }
     }
     
-    func newTip(_ sound: Sound, tipAmount: Int) {
+    func newTipRow(_ sound: Sound, tipAmount: Int) {
         let newTip = PFObject(className: "Tip")
         newTip["fromUserId"] = PFUser.current()!.objectId!
         newTip["toUserId"] = sound.artist?.objectId
@@ -169,7 +149,39 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         }
     }
     
-    func incrementTipAmount(_ sound: Sound, tipAmount: Int) {
+    func ListenerToArtistTipRelation(_ sound: Sound, tipAmount: Int?, currentUserId: String) {
+        if let artistObjectId = sound.artist?.objectId {
+            let query = PFQuery(className: "Tip")
+            query.whereKey("fromUserId", equalTo: currentUserId)
+            query.whereKey("toUserId", equalTo: artistObjectId)
+            query.whereKey("soundId", equalTo: sound.objectId!)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    if let tipAmount = tipAmount {
+                        object.incrementKey("amount", byAmount: NSNumber(value: tipAmount))
+                        object.saveEventually{
+                            (success: Bool, error: Error?) in
+                            if success {
+                                self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
+                            } else if error != nil {
+                                self.amountCurrentUserHastipped = self.amountCurrentUserHastipped - tipAmount
+                            }
+                        }
+                    } else {
+                        let amountCurrentUserHastipped = object["amount"] as! Int
+                        let tipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(amountCurrentUserHastipped, currency: "$")
+                        self.tipAmountButton.setTitle(tipAmountString, for: .normal)
+                        self.amountCurrentUserHastipped = amountCurrentUserHastipped
+                    }
+                } else if let tipAmount = tipAmount {
+                    self.newTipRow(sound, tipAmount: tipAmount)
+                }
+            }
+        }
+    }
+    
+    func incrementPostTipAmount(_ sound: Sound, tipAmount: Int) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -183,7 +195,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         }
     }
     
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    /*func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
@@ -199,7 +211,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedTipAmount = tipAmountInCents[row]
-    }
+    }*/
     
     //mark: sound
     @objc func didReceiveSound(){
@@ -299,6 +311,27 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
         self.dismiss(animated: true, completion: nil)
     }
     
+    lazy var appTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Soundbrew"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var tipAmountButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("$0.00", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        button.addTarget(self, action: #selector(didPressTipAmountButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressTipAmountButton(_ sender: UIButton) {
+        
+    }
+    
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
@@ -338,7 +371,10 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             if currentUser.objectId! == sound?.artist?.objectId {
                 self.uiElement.showAlert("Love Yourself", message: "But, you can't tip yourself. 🙃", target: self)
             } else {
-                showSendMoney()
+                //showSendMoney()
+                if let sound = self.sound {
+                    sendTip(sound, tipAmount: selectedTipAmount)
+                }
             }
             
         } else {
@@ -479,6 +515,20 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable, UIP
             make.height.width.equalTo(25)
             make.top.equalTo(self.view).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        self.view.addSubview(tipAmountButton)
+        tipAmountButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(exitButton)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(appTitle)
+        appTitle.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(exitButton)
+            make.centerX.equalTo(self.view)
+           // make.left.equalTo(exitButton.snp.right).offset(uiElement.leftOffset)
+            //make.right.equalTo(tipAmountButton.snp.left).offset(uiElement.rightOffset)
         }
         
         //sound views
