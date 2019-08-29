@@ -176,6 +176,9 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
                     }
                 } else if let tipAmount = tipAmount {
                     self.newTipRow(sound, tipAmount: tipAmount)
+                } else {
+                    self.tipAmountButton.setTitle("$0.00", for: .normal)
+                    self.amountCurrentUserHastipped = 0
                 }
             }
         }
@@ -194,24 +197,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             }
         }
     }
-    
-    /*func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return tipAmountInCents.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        let balanceInDollars = Double(tipAmountInCents[row]) / 100.00
-        let doubleStr = String(format: "%.2f", balanceInDollars)
-        return "$\(doubleStr)"
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedTipAmount = tipAmountInCents[row]
-    }*/
     
     //mark: sound
     @objc func didReceiveSound(){
@@ -244,6 +229,10 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
     
     func setCurrentSoundView(_ sound: Sound) {
         self.songTitle.text = sound.title
+        
+        if let currentUserId = PFUser.current()?.objectId {
+            self.ListenerToArtistTipRelation(sound, tipAmount: nil, currentUserId: currentUserId)
+        }
         
         self.songArt.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "appy"))
         
@@ -329,7 +318,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
         return button
     }()
     @objc func didPressTipAmountButton(_ sender: UIButton) {
-        
+        //TODO
     }
     
     lazy var songArt: UIImageView = {
@@ -525,10 +514,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
         
         self.view.addSubview(appTitle)
         appTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(exitButton)
             make.centerX.equalTo(self.view)
-           // make.left.equalTo(exitButton.snp.right).offset(uiElement.leftOffset)
-            //make.right.equalTo(tipAmountButton.snp.left).offset(uiElement.rightOffset)
+            make.centerY.equalTo(exitButton)
         }
         
         //sound views
