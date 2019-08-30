@@ -521,7 +521,8 @@ class SoundList: NSObject, PlayerDelegate {
     func loadWorldTopSounds() {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("plays")
+        //query.addDescendingOrder("plays")
+        query.addDescendingOrder("tips")
         query.whereKey("objectId", notContainedIn: worldCreatedAtSounds.map {$0.objectId!})
         query.limit = 10
         if sounds.count != 0 {

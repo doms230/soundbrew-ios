@@ -67,7 +67,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if selectedTagForFiltering.name == "new" {
                 descendingOrder = "createdAt"
             } else {
-                descendingOrder = "plays"
+                //descendingOrder = "plays"
+                descendingOrder = "tips"
             }
         }
         
