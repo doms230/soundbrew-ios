@@ -358,7 +358,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let sound = sounds[i]
             
             let soundArt = UIImageView()
-            soundArt.kf.setImage(with: URL(string: sound.artURL))
+            soundArt.kf.setImage(with: URL(string: sound.artURL!))
             soundArt.contentMode = .scaleAspectFill
             soundArt.layer.cornerRadius = 5
             soundArt.clipsToBounds = true
@@ -393,7 +393,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             let dateLabel = UILabel()
             dateLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt)
+            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             dateLabel.text = formattedDate
             dateLabel.textColor = .lightGray
             scrollview.addSubview(dateLabel)

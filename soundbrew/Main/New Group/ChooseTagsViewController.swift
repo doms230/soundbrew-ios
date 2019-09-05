@@ -68,7 +68,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func setUpNavigationBar() {        
         if let tagType = self.tagType {
-            searchBar.placeholder = "Search \(tagType.capitalized) Tags"
+            searchBar.placeholder = "\(tagType.capitalized) Tags"
         }
         
         let searchBarItem = UIBarButtonItem(customView: searchBar)

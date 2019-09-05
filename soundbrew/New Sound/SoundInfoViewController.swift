@@ -27,15 +27,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var artistName: String?
     
     let color = Color()
-    var soundArt: PFFileObject?
-    var soundArtButton: UIButton!
     var soundArtDidFinishProcessing = false
-    
     var soundTitle: UITextField!
-    
-    var soundParseFile: PFFileObject!
-    var soundFileURL: URL!
-    var soundFileExtension: String!
     var soundParseFileDidFinishProcessing = false
     var didPressUploadButton = false
     
@@ -45,15 +38,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if soundThatIsBeingEdited == nil {
-            getTwitterUserID()
-            
-            if let userId = PFUser.current()?.objectId {
-                loadCurrentUserCity(userId)
-                loadArtistTag()
-            }
-        }
-        
+        getTwitterUserID()
+        getSelectedTags()
         setUpViews()
         setUpTableView()
     }
@@ -76,22 +62,47 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: views
     func setUpViews() {
-        var title = "UPLOAD"
         var shouldUploadButtonBeEnabled = true
-        if soundThatIsBeingEdited != nil {
-            title = "UPDATE"
-            
-        } else {
+        if soundThatIsBeingEdited?.objectId == nil {
             shouldUploadButtonBeEnabled = false
         }
         
-        uploadButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(self.didPressUpload(_:)))
+        uploadButton = UIBarButtonItem(title: "Release", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
+        
+        self.navigationItem.hidesBackButton = true
+        let backButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(didPressCancelButton(_:)))
+        self.navigationItem.leftBarButtonItem = backButton
     }
     
     @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
+        self.soundThatIsBeingEdited?.title = self.soundTitle.text
+        if let sound = self.soundThatIsBeingEdited {
+            if sound.isDraft! {
+                showDraftOrDiscardMessage()
+            } else {
+                self.uiElement.goBackToPreviousViewController(self)
+            }
+        }
+    }
+    
+    func showDraftOrDiscardMessage() {
+        let menuAlert = UIAlertController(title: "If you go back now, edits to your new release will be discarded.", message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "Save Draft", style: .default, handler: { action in
+            if let sound = self.soundThatIsBeingEdited {
+                if sound.objectId == nil {
+                    self.createSound(sound, isDraft: true)
+                } else {
+                    self.updateSound(sound, isDraft: true)
+                }
+            }
+        }))
+        menuAlert.addAction(UIAlertAction(title: "Discard", style: .default, handler: { action in
+            self.uiElement.goBackToPreviousViewController(self)
+        }))
+        self.present(menuAlert, animated: true, completion: nil)
     }
     
     //MARK: Tableview
@@ -114,22 +125,29 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
-        if soundThatIsBeingEdited == nil {
+        if soundThatIsBeingEdited?.objectId == nil {
             processAudioForDatabase(nil)
         }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if soundThatIsBeingEdited == nil {
-            return 4
+        if soundThatIsBeingEdited?.objectId != nil {
+            return 3
         }
-        return 1
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 {
+        var tagSection = 2
+        var socialSection = 3
+        if soundThatIsBeingEdited?.objectId != nil {
+            tagSection = 1
+            socialSection = 2
+        }
+        
+        if section == tagSection {
             return 4
-        } else if section == 3 {
+        } else if section == socialSection {
             return 2
         }
         
@@ -139,39 +157,38 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: SoundInfoTableViewCell!
         
-        if indexPath.section == 0 && soundThatIsBeingEdited != nil {
-            cell = soundTitleImageCell()
+        var titleSection = 1
+        var tagSection = 2
+        var socialSection = 3
+        
+        if soundThatIsBeingEdited?.objectId != nil {
+            titleSection = 0
+            tagSection = 1
+            socialSection = 2
+        }
+        
+        switch indexPath.section {
+        case 0:
+            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
+            self.progressSliderTitle = cell.titleLabel
+            self.progressSlider = cell.progressSlider
+            tableView.separatorStyle = .none
+            break
             
-        } else {
-            switch indexPath.section {
-            case 0:
-                cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
-                self.progressSliderTitle = cell.titleLabel
-                self.progressSlider = cell.progressSlider
-                tableView.separatorStyle = .none
-                /*if !didStartCompressingAudio {
-                    compressAudio()
-                }*/
-                break
-                
-            case 1:
-                cell = soundTitleImageCell()
-                break
-                
-            case 2:
-                cell = tagCell(indexPath, tableView: tableView)
-                break
-                
-            case 3:
-                cell = socialCell(indexPath)
-                break
-                
-            case 4:
-                break
-                
-            default:
-                break
-            }
+        case titleSection:
+            cell = soundTitleImageCell()
+            break
+            
+        case tagSection:
+            cell = tagCell(indexPath, tableView: tableView)
+            break
+            
+        case socialSection:
+            cell = socialCell(indexPath)
+            break
+            
+        default:
+            break
         }
         
         cell.selectionStyle = .none
@@ -180,7 +197,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 2 {
+        var tagSection = 2
+        if self.soundThatIsBeingEdited?.objectId != nil {
+            tagSection = 1
+        }
+        
+        if indexPath.section == tagSection {
             switch indexPath.row {
             case 0:
                 self.tagType = "genre"
@@ -211,11 +233,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
         
         if let sound = soundThatIsBeingEdited {
-            cell.soundArt.kf.setImage(with: URL(string: sound.artURL), for: .normal)
-            cell.soundTitle.text = sound.title
+            if let soundArtURL = sound.artURL {
+                cell.soundArt.kf.setImage(with: URL(string: soundArtURL), for: .normal)
+            } else if let soundArtImage = sound.artImage {
+                cell.soundArt.setImage(soundArtImage, for: .normal)
+            }
+            
+            if let soundTitle = sound.title {
+                cell.soundTitle.text = soundTitle
+            }
         }
         
-        soundArtButton = cell.soundArt
         cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
         
         soundTitle = cell.soundTitle
@@ -411,6 +439,21 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var artistTag: Tag?
     var tagsToUpdateInChooseTagsViewController: Array<Tag>?
     
+    func getSelectedTags() {
+        if let soundTags = soundThatIsBeingEdited?.tags {
+            for tag in soundTags {
+                loadTag(tag, type: nil)
+            }
+        }
+        
+        if let currentUser = Customer.shared.artist {
+            loadCurrentUserCity(currentUser.objectId)
+            if let username = currentUser.username {
+                loadTag(username, type: "artist")
+            }
+        }
+    }
+    
     func tagCell(_ indexPath: IndexPath, tableView: UITableView) -> SoundInfoTableViewCell {
        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell
         
@@ -446,7 +489,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         default:
             break
         }
-        
         
         return cell
     }
@@ -492,7 +534,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.reloadData()
     }
     
-    func getTags() -> Array<Tag> {
+    func combineSelectedTags() -> Array<Tag> {
         var tags = [Tag]()
         if let moreTags = self.moreTags {
             tags = moreTags
@@ -517,6 +559,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let artistTag = self.artistTag{
             tags.append(artistTag)
         }
+        
+        self.soundThatIsBeingEdited?.tags = tags.map {$0.name}
         
         return tags
     }
@@ -546,60 +590,80 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 newTag.saveEventually()
             }
         }
-        
-        self.stopAnimating()
-        //self.uiElement.segueToView("Main", withIdentifier: "main", target: self)
-        //self.dismiss(animated: true, completion: nil)
-        self.navigationController?.popToRootViewController(animated: true)
+        self.finishUp(true)
+    }
+    
+    func loadTag(_ tag: String, type: String?) {
+        let query = PFQuery(className: "Tag")
+        query.whereKey("tag", equalTo: tag)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            var retreivedTag: Tag!
+            var retreivedType: String?
+            if let object = object {
+                if let type = object["type"] as? String {
+                    retreivedType = type
+                }
+                retreivedTag = Tag(objectId: object.objectId, name: object["tag"] as? String, count: 0, isSelected: false, type: retreivedType, image: nil)
+                
+            } else {
+                if let type = type {
+                    retreivedType = type
+                }
+                retreivedTag = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: retreivedType, image: nil)
+            }
+            
+            if let type = retreivedType {
+                switch type {
+                case "genre":
+                    self.genreTag = retreivedTag
+                    break
+                    
+                case "city":
+                    self.cityTag = retreivedTag
+                    break
+                    
+                case "mood":
+                    self.moodTag = retreivedTag
+                    break
+                    
+                case "activity":
+                    self.activityTag = retreivedTag
+                    break
+                    
+                case "artist":
+                    self.artistTag = retreivedTag
+                    break
+                    
+                default:
+                    self.moreTags?.append(retreivedTag)
+                    break
+                }
+            }
+            if self.tableView != nil {
+                self.tableView.reloadData()
+            }
+        }
     }
     
     //mark: audio
     var progressSlider: UISlider!
     var progressSliderTitle: UILabel!
     
-    var didStartCompressingAudio = false
-    
-    /*func compressAudio() {
-        didStartCompressingAudio = true 
-        do {
-            let zipFilePath = try TemporaryFile(creatingTempDirectoryForFilename: self.soundFileURL.lastPathComponent)
-            try Zip.zipFiles(paths: [self.soundFileURL], zipFilePath: zipFilePath.fileURL, password: nil, progress: { (progress) -> () in
-                self.progressSliderTitle.text = "Compressing Audio..."
-                self.progressSlider.value = Float(progress)
-                print("audio compression progress: \(progress)")
-                
-                if progress >= 1 {
-                    self.processAudioForDatabase(zipFilePath)
-                }
-            })
-            
-        } catch let error {
-            print(error.localizedDescription)
-        }
-    }*/
-    
     func processAudioForDatabase(_ zipFilePath: TemporaryFile?) {
         do {
-            //self.soundFileExtension = "\(zipFilePath.fileURL.pathExtension)"
-            let audioFile = try Data(contentsOf: soundFileURL, options: .uncached)
-            self.soundParseFile = PFFileObject(name: "audio.\(self.soundFileURL.lastPathComponent)", data: audioFile)
-            self.saveAudioFile()
-            /*DispatchQueue.main.async {
-                do {
-                    try zipFilePath.deleteDirectory()
-                    
-                } catch let error {
-                    print("error deleting temp file: \(error)")
-                }
-            }*/
-            
-        } catch {
-            //UIElement().showAlert("Oops", message: "There was an issue with your upload.", target: self)
-            //TODO segue back to last view so they can upload sound
+            if let soundFileString = soundThatIsBeingEdited?.audioURL {
+                let soundFileURL = URL(string: soundFileString)
+                let audioFile = try Data(contentsOf: soundFileURL!, options: .uncached)
+                self.soundThatIsBeingEdited?.audio = PFFileObject(name: "audio.\(soundFileURL!.lastPathComponent)", data: audioFile)
+                self.saveAudioFile(self.soundThatIsBeingEdited!.audio!)
+            }
+        } catch let error {
+            self.errorAlert("Oops", message: "There was an issue with your audio processing: \(error)")
         }
     }
     
-    func saveAudioFile() {
+    func saveAudioFile(_ soundParseFile: PFFileObject) {
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
@@ -609,6 +673,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else if let error = error {
                 self.errorAlert("Sound Processing Failed", message: error.localizedDescription)
+                
             }
             
         }, progressBlock: {
@@ -633,27 +698,30 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
         
-        soundArtButton.setImage(image, for: .normal)
-        
-        let proPic = image.jpegData(compressionQuality: 0.5)
-        soundArt = PFFileObject(name: "soundArt.jpeg", data: proPic!)
-        soundArt?.saveInBackground({
-            (succeeded: Bool, error: Error?) -> Void in
-            if succeeded {
-                self.soundArtDidFinishProcessing = true
-                
-                if self.didPressUploadButton && self.soundParseFileDidFinishProcessing {
-                    self.saveSound()
+        if let sound = self.soundThatIsBeingEdited {
+            sound.artImage = image
+            self.tableView.reloadData()
+            
+            let proPic = image.jpegData(compressionQuality: 0.5)
+            self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)
+            self.soundThatIsBeingEdited?.artFile!.saveInBackground({
+                (succeeded: Bool, error: Error?) -> Void in
+                if succeeded {
+                    self.soundArtDidFinishProcessing = true
+                    
+                    if self.didPressUploadButton && self.soundParseFileDidFinishProcessing {
+                        self.createSound(sound, isDraft: false)
+                    }
+                    
+                } else if let error = error {
+                    self.errorAlert("Art Processing Failed", message: error.localizedDescription)
                 }
                 
-            } else if let error = error {
-                self.errorAlert("Art Processing Failed", message: error.localizedDescription)
-            }
-            
-        }, progressBlock: {
-            (percentDone: Int32) -> Void in
-            // Update your progress spinner here. percentDone will be between 0 and 100.
-        })
+            }, progressBlock: {
+                (percentDone: Int32) -> Void in
+                // Update your progress spinner here. percentDone will be between 0 and 100.
+            })
+        }
         
         dismiss(animated: true, completion: nil)
     }
@@ -673,17 +741,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //
-    @objc func didPressUpload(_ sender: UIBarButtonItem) {
-        if soundInfoIsVerified() {
-            self.startAnimating()
-            
-            if let sound = soundThatIsBeingEdited {
-                updateSound(sound.objectId)
-                
-            } else {
-                if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
-                    saveSound()
-                    
+    @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
+        self.soundThatIsBeingEdited?.title = self.soundTitle.text
+        if let sound = soundThatIsBeingEdited {
+            if soundInfoIsVerified(sound) {
+                if sound.objectId != nil {
+                    updateSound(sound, isDraft: false)
+                } else if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
+                    createSound(sound, isDraft: false)
                 } else {
                     didPressUploadButton = true
                 }
@@ -692,34 +757,40 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
 
     //mark: data
-    func saveSound() {
-        let tags = getTags()
+    func createSound(_ sound: Sound, isDraft: Bool) {
+        self.startAnimating()
+        let tags = combineSelectedTags()
         let newSound = PFObject(className: "Post")
-        newSound["userId"] = PFUser.current()!.objectId!
-        newSound["title"] = soundTitle.text
-        newSound["audioFile"] = soundParseFile
-        //newSound["audioFileCompressed"] = soundParseFile
-        //newSound["fileExtension"] = soundFileExtension
-        //newSound["isRemoved"] = true
-        newSound["songArt"] = soundArt
-        newSound["tags"] = tags.map {$0.name}
+        newSound["userId"] = sound.artist!.objectId
+        if let title = sound.title {
+            newSound["title"] = title
+        }
+        newSound["audioFile"] = sound.audio!
+        if let artFile = sound.artFile {
+            newSound["songArt"] = artFile
+        }
+        newSound["tags"] = sound.tags
+        newSound["isDraft"] = isDraft
+        newSound["isRemoved"] = isDraft
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
-                if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
-                    let title = newSound["title"] as! String
-                    let art = newSound["songArt"] as! PFFileObject
-                    self.createDynamicLink(title, artistName: PFUser.current()!.username!, artURL: art.url!, objectId: newSound.objectId!)
+                if isDraft {
+                    self.finishUp(false)
+                } else {
+                    if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
+                        let title = newSound["title"] as! String
+                        let art = newSound["songArt"] as! PFFileObject
+                        self.createDynamicLink(title, artistName: PFUser.current()!.username!, artURL: art.url!, objectId: newSound.objectId!)
+                    }
+                    
+                    self.saveTags(tags)
+                    Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
+                        AnalyticsParameterItemID: "id-soundupload",
+                        AnalyticsParameterItemName: "sound upload",
+                        AnalyticsParameterContentType: "soundupload"
+                        ])
                 }
-                
-                SKStoreReviewController.requestReview()
-                self.saveTags(tags)
-                Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-                    AnalyticsParameterItemID: "id-soundupload",
-                    AnalyticsParameterItemName: "sound upload",
-                    AnalyticsParameterContentType: "soundupload"
-                    ])
-                
             } else if let error = error {
                 self.stopAnimating()
                 self.uiElement.showAlert("We Couldn't Post Your Sound", message: error.localizedDescription, target: self)
@@ -727,23 +798,33 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func updateSound(_ objectId: String) {
+    func updateSound(_ sound: Sound, isDraft: Bool) {
+        let tags = combineSelectedTags()
         let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: objectId) {
+        query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
                 
             } else if let object = object {
-                if let soundArt = self.soundArt {
+                if let soundArt = sound.artFile {
                     object["songArt"] = soundArt
                 }
-                object["title"] = self.soundTitle.text
+                if let title = sound.title {
+                    object["title"] = title
+                }
+                
+                object["tags"] = tags.map {$0.name}
+                object["isDraft"] = isDraft
+                object["isRemoved"] = isDraft
                 object.saveEventually {
                     (success: Bool, error: Error?) in
                     if (success) {
-                        self.stopAnimating()
-                         self.uiElement.goBackToPreviousViewController(self)
+                        if isDraft {
+                            self.finishUp(false)
+                        } else {
+                            self.finishUp(true)
+                        }
                         
                     } else if let error = error {
                         self.stopAnimating()
@@ -764,70 +845,31 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if let user = user {
                 if let city = user["city"] as? String {
                     if !city.isEmpty {
-                        self.loadCityTag(city.lowercased())
+                        //self.loadCityTag(city.lowercased())
+                        self.loadTag(city.lowercased(), type: "city")
                     }
                 }
             }
         }
     }
     
-    func loadCityTag(_ city: String) {
-        let query = PFQuery(className: "Tag")
-        query.whereKey("tag", equalTo: city)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if object != nil && error == nil {
-                self.cityTag = Tag(objectId: object?.objectId, name: object!["tag"] as? String, count: 0, isSelected: false, type: "city", image: nil)
-                
-            } else {
-                self.cityTag = Tag(objectId: nil, name: city, count: 0, isSelected: false, type: "city", image: nil)
-            }
-        }
-    }
-    
-    func loadArtistTag() {
-        if let artistUsername = PFUser.current()?.username {
-            let query = PFQuery(className: "Tag")
-            query.whereKey("tag", equalTo: artistUsername)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
-                    self.artistTag = Tag(objectId: object?.objectId, name: object!["tag"] as? String, count: 0, isSelected: false, type: "artist", image: nil)
-                    
-                } else {
-                    self.artistTag = Tag(objectId: nil, name: artistUsername, count: 0, isSelected: false, type: "artist", image: nil)
-                }
-            }
-        }
-    }
-    
     //mark: utility
-    func soundInfoIsVerified() -> Bool {
-        if soundTitle.text!.isEmpty {
-            showAttributedPlaceholder(soundTitle, text: "Title Required")
-            
-        } else if soundThatIsBeingEdited == nil {
-            if soundArt == nil {
+    func soundInfoIsVerified(_ sound: Sound) -> Bool {
+        if let sound = soundThatIsBeingEdited {
+            if sound.title!.isEmpty {
+                showAttributedPlaceholder(soundTitle, text: "Title Required")
+                
+            } else if sound.artFile == nil {
                 uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
-                
-            } else if genreTag == nil {
+            }else if genreTag == nil {
                 uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
-                
-            } else if activityTag == nil {
-                uiElement.showAlert("Sound Activity is Required", message: "Tap the 'add activity tag' button to choose", target: self)
-                
-            } else if moodTag == nil {
+            } else if moodTag == nil  {
                 uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
-                
-            } else if artistTag == nil {
-                uiElement.showAlert("Similar Artist is Required", message: "Tap the 'add Similar artist tag' button to choose", target: self)
-                
+            } else if activityTag == nil  {
+                uiElement.showAlert("Sound Activity is Required", message: "Tap the 'add activity tag' button to choose", target: self)
             } else {
                 return true
             }
-            
-        } else {
-            return true
         }
         
         return false
@@ -846,5 +888,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         alertController.addAction(settingsAction)
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func finishUp(_ shouldAskForReview: Bool) {
+        self.stopAnimating()
+        if shouldAskForReview {
+            SKStoreReviewController.requestReview()
+        }
+        self.uiElement.goBackToPreviousViewController(self)
     }
 }

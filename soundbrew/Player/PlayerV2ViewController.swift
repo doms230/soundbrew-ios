@@ -36,6 +36,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             player?.target = self
             setupNotificationCenter()
             setUpView()
+            
             if let currentUserId = PFUser.current()?.objectId {
                 ListenerToArtistTipRelation(sound, tipAmount: nil, currentUserId: currentUserId)
             }
@@ -66,8 +67,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             let amountInDollars = uiElement.convertCentsToDollarsAndReturnString(self.amountCurrentUserHastipped, currency: "$")
             self.tipAmountButton.setTitle(amountInDollars, for: .normal)
             self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-            self.player!.sounds[self.player!.currentSoundIndex].didTip = true
-            self.sound?.didTip = true
             
             customer.updateBalance(-tipAmount)
             updateArtistPayment(sound, tipAmount: tipAmount)
@@ -80,7 +79,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             
             let alertView = UIAlertController(
                 title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
-                message: "The selected tip amount exceeds your Soundbrew Balance.",
+                message: "The tip amount exceeds your Soundbrew Balance.",
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
@@ -129,8 +128,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             if error != nil {
                 self.customer.updateBalance(tipAmount)
                 self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
-                self.player!.sounds[self.player!.currentSoundIndex].didTip = false
-                self.sound?.didTip = false
             }
         }
     }
@@ -144,6 +141,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
         newTip.saveEventually{
             (success: Bool, error: Error?) in
             if success {
+                self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
             }
         }
@@ -163,6 +161,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
                         object.saveEventually{
                             (success: Bool, error: Error?) in
                             if success {
+                                self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
                                 self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
                             } else if error != nil {
                                 self.amountCurrentUserHastipped = self.amountCurrentUserHastipped - tipAmount
@@ -186,7 +185,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
     
     func incrementPostTipAmount(_ sound: Sound, tipAmount: Int) {
         let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: sound.objectId) {
+        query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
@@ -234,7 +233,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             self.ListenerToArtistTipRelation(sound, tipAmount: nil, currentUserId: currentUserId)
         }
         
-        self.songArt.kf.setImage(with: URL(string: sound.artURL), placeholder: UIImage(named: "appy"))
+        self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "appy"))
         
         if let duration = self.player?.player?.duration {
             self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
@@ -250,29 +249,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             self.artistName.setTitle(placeHolder, for: .normal)
             loadUserInfoFromCloud(sound.artist!.objectId)
         }
-        
-        if let didTip = sound.didTip {
-            if didTip {
-                self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-            } else {
-                self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            }
-            
-        } else {
-            self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
-        }
-    }
-    
-    func didTipArtist() -> Bool {
-        if let sound = self.sound {
-            if let didTip = sound.didTip {
-                if didTip {
-                    return true
-                }
-            }
-        }
-        
-        return false
     }
     
     func shouldEnableSoundView(_ shouldEnable: Bool) {
@@ -318,7 +294,15 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
         return button
     }()
     @objc func didPressTipAmountButton(_ sender: UIButton) {
-        //TODO
+        let alertView = UIAlertController(
+            title: nil,
+            message: "You've tipped \(sound!.artist!.username!) \(sender.titleLabel!.text!) for \(sound!.title!)",
+            preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
+        alertView.addAction(cancelAction)
+        
+        present(alertView, animated: true, completion: nil)
     }
     
     lazy var songArt: UIImageView = {
@@ -580,12 +564,6 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
             make.height.width.equalTo(55)
             make.centerY.equalTo(playBackButton)
             make.centerX.equalTo(self.view).offset(55 + uiElement.leftOffset)
-        }
-        
-        if didTipArtist() {
-            tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-        } else {
-            tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
         }
         
         self.view.addSubview(tipButton)

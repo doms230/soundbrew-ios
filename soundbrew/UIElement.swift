@@ -145,10 +145,10 @@ class UIElement {
         var description: String!
         var imageURL = ""
         if let sound = sound {
-            title = sound.title
+            title = sound.title!
             description = "\(sound.title!) by \(sound.artist!.name!)"
-            imageURL = sound.artURL
-            objectId = sound.objectId
+            imageURL = sound.artURL!
+            objectId = sound.objectId!
             
         } else if let artist = artist {
             objectId = artist.objectId
@@ -250,31 +250,55 @@ class UIElement {
     }
     
     func sendAlert(_ message: String, toUserId: String) {
-        Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
+        /*Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
             //print(response.response as Any)
-        }
+        }*/
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let title = object["title"] as! String
-        let art = object["songArt"] as! PFFileObject
+        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: nil, relevancyScore: 0, audioData: nil, artist: nil, tmpFile: nil, tips: nil, isDraft: nil)
+        
+        if let createdAt = object.createdAt {
+            sound.createdAt = createdAt
+        }
+        
+        if let objectId = object.objectId {
+            sound.objectId = objectId
+        }
+        
         let audio = object["audioFile"] as! PFFileObject
-        let tags = object["tags"] as! Array<String>
+        sound.audio = audio
+        
+        if let title = object["title"] as? String {
+            if title == "" {
+                sound.title = "Untitled"
+            } else {
+               sound.title = title
+            }
+        } else {
+            sound.title = "Untitled"
+        }
+        
+        if let art = object["songArt"] as? PFFileObject {
+            sound.artFile = art
+        }
+        
+        if let tags = object["tags"] as? Array<String> {
+            sound.tags = tags
+        }
+        
+        if let plays = object["plays"] as? Int {
+            sound.plays = plays
+        }
+        
+        if let tips = object["tips"] as? Int {
+            sound.tips = tips
+        }
+        
         let userId = object["userId"] as! String
-        var plays: Int?
-        if let soundPlays = object["plays"] as? Int {
-            plays = soundPlays
-        }
-        
-        var tips: Int?
-        if let soundTips = object["tips"] as? Int {
-            tips = soundTips
-        }
-        
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
         
-        let sound = Sound(objectId: object.objectId, title: title, artURL: art.url!, artImage: nil, artFile: art, tags: tags, createdAt: object.createdAt!, plays: plays, audio: audio, audioURL: audio.url!, relevancyScore: 0, audioData: nil, artist: artist, tmpFile: nil, tips: tips, didTip: nil)
-                
+        sound.artist = artist
         return sound
     }
     

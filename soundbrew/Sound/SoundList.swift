@@ -116,7 +116,11 @@ class SoundList: NSObject, PlayerDelegate {
             cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
             cell.menuButton.tag = indexPath.row
             
-            cell.soundArtImage.kf.setImage(with: URL(string: sound.artURL))
+            if let soundURL = sound.artURL {
+                cell.soundArtImage.kf.setImage(with: URL(string: soundURL))
+            } else {
+                cell.soundArtImage.image = UIImage(named: "sound")
+            }
             
             cell.soundTitle.text = sound.title
             
@@ -127,7 +131,7 @@ class SoundList: NSObject, PlayerDelegate {
                 loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
             }
             
-            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt)
+            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
         }
         
@@ -156,18 +160,13 @@ class SoundList: NSObject, PlayerDelegate {
                 if sound.artist!.objectId == currentUser.objectId {
                 menuAlert = UIAlertController(title: "\(plays) Plays \n \(tipsInDollarString) in Tips", message: nil, preferredStyle: .actionSheet)
                     
+                    menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
+                        self.selectedSound = sound
+                        self.target.performSegue(withIdentifier: "showSoundInfo", sender: self)
+                    }))
+                    
                     menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
-                        self.deleteSong(sound.objectId, row: row)
-                    }))
-                    
-                    menuAlert.addAction(UIAlertAction(title: "Edit Sound Info", style: .default, handler: { action in
-                        self.selectedSound = sound
-                        self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
-                    }))
-                    
-                    menuAlert.addAction(UIAlertAction(title: "Edit Sound Audio", style: .default, handler: { action in
-                        self.selectedSound = sound
-                        self.target.performSegue(withIdentifier: "showUploadSound", sender: self)
+                        self.deleteSong(sound.objectId!, row: row)
                     }))
                     
                 } else {
@@ -229,6 +228,12 @@ class SoundList: NSObject, PlayerDelegate {
             }
             break
             
+        case "drafts":
+            if let userId = self.profileUserId {
+                self.loadSounds(descendingOrder, collectionIds: nil, userId: userId, searchText: nil, followIds: nil)
+            }
+            break
+            
         default:
             break
         }
@@ -255,10 +260,10 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func prepareToShowSoundAudioUpload(_ segue: UIStoryboardSegue) {
-        if let selectedSound = self.selectedSound {
+        /*if let selectedSound = self.selectedSound {
             let viewController = segue.destination as! UploadSoundAudioViewController
             viewController.soundThatIsBeingEdited = selectedSound
-        }
+        }*/
     }
     
     //mark: tags filter
@@ -308,7 +313,14 @@ class SoundList: NSObject, PlayerDelegate {
         if sounds.count != 0 {
             query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
         }
-        query.whereKey("isRemoved", notEqualTo: true)
+        
+        if self.soundType == "drafts" {
+            query.whereKey("isDraft", equalTo: true)
+            
+        } else {
+           query.whereKey("isRemoved", notEqualTo: true)
+        }
+        
         query.addDescendingOrder(descendingOrder)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

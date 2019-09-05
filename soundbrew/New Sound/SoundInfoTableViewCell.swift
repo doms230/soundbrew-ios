@@ -32,7 +32,8 @@ class SoundInfoTableViewCell: UITableViewCell {
         textField.placeholder = "Add Title"
         textField.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         textField.textColor = .white
-        //textField.borderStyle = .roundedRect
+        textField.attributedPlaceholder = NSAttributedString(string: "Add Title",
+                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         textField.borderStyle = .none
         return textField
     }()

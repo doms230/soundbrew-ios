@@ -203,7 +203,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     //mark: tags
-    var featureTagTypes = ["genre", "mood", "activity", "city", "all"]
+    var featureTagTypes = ["genre","city", "mood", "activity", "more"]
     var topGenreTags = [Tag]()
     var topMoodTags = [Tag]()
     var topActivityTags = [Tag]()
@@ -230,18 +230,20 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             break
             
         case 1:
-            //mood
-            addTags(cell.tagsScrollview, tags: topMoodTags, row: 1)
+            //city
+            addTags(cell.tagsScrollview, tags: topCityTags, row: 3)
+            
             break
             
         case 2:
-            //activity
-            addTags(cell.tagsScrollview, tags: topActivityTags, row: 2)
+            //mood
+            addTags(cell.tagsScrollview, tags: topMoodTags, row: 1)
+            
             break
             
         case 3:
-            //"city"
-            addTags(cell.tagsScrollview, tags: topCityTags, row: 3)
+            //activity
+            addTags(cell.tagsScrollview, tags: topActivityTags, row: 2)
             break
             
         default:

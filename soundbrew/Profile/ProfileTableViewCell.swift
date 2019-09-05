@@ -314,16 +314,14 @@ class ProfileTableViewCell: UITableViewCell {
                // make.bottom.equalTo(self)
             }
             
-            
             break
             
         case "settingsReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
             
-            profileImage.layer.borderColor = UIColor.white.cgColor
             profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
+                make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)

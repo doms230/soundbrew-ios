@@ -43,7 +43,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         let sound = sounds[currentSoundIndex]
         var audioURL: URL?
         var soundObjectId: String?
-        if let getAudioURL = URL(string: sound.audioURL) {
+        if let getAudioURL = URL(string: sound.audioURL ?? "") {
             audioURL = getAudioURL
         }
         
@@ -233,11 +233,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func updateUI(_ sound: Sound) {
         currentSound = sound
         setBackgroundAudioViews(sound)
-        if let currentUserId = PFUser.current()?.objectId {
-            self.loadTipInfo(sound.objectId, userId: currentUserId, i: currentSoundIndex)
-        } else {
-            self.sendSoundUpdateToUI()
-        }
+        self.sendSoundUpdateToUI()
     }
     
     func incrementPlaylistPositionAndReturnSound() -> Sound {
@@ -266,7 +262,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func fetchAudioData(_ position: Int, prepareAndPlay: Bool) {
-        self.sounds[position].audio.getDataInBackground {
+        self.sounds[position].audio!.getDataInBackground {
             (audioData: Data?, error: Error?) -> Void in
             if let error = error?.localizedDescription {
                 print(error)
@@ -349,7 +345,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func incrementPlayCount(_ sound: Sound) {
         let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: sound.objectId) {
+        query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
@@ -453,19 +449,21 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func setBackgroundAudioViews(_ sound: Sound) {
-        sound.artFile.getDataInBackground { (imageData: Data?, error: Error?) in
-            if let error = error {
-                print(error.localizedDescription)
-                
-            } else if let imageData = imageData {
-                let image = UIImage(data:imageData)
-                sound.artImage = image
-                
-                if (sound.artist?.name) != nil {
-                    self.setBackgroundAudioNowPlaying(self.player, sound: sound)
+        if let artFile = sound.artFile {
+            artFile.getDataInBackground { (imageData: Data?, error: Error?) in
+                if let error = error {
+                    print(error.localizedDescription)
                     
-                } else {
-                    self.loadUserInfoFromCloud(sound.artist!.objectId, i: self.currentSoundIndex)
+                } else if let imageData = imageData {
+                    let image = UIImage(data:imageData)
+                    sound.artImage = image
+                    
+                    if (sound.artist?.name) != nil {
+                        self.setBackgroundAudioNowPlaying(self.player, sound: sound)
+                        
+                    } else {
+                        self.loadUserInfoFromCloud(sound.artist!.objectId, i: self.currentSoundIndex)
+                    }
                 }
             }
         }
@@ -503,24 +501,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
         }
     }
-    
-    func loadTipInfo(_ postId: String, userId: String, i: Int) {
-        let query = PFQuery(className: "Tip")
-        query.whereKey("soundId", equalTo: postId)
-        query.whereKey("fromUserId", equalTo: userId)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                self.sounds[i].didTip = false
-                
-            } else if object != nil {
-                self.sounds[i].didTip = true
-            }
-            self.sendSoundUpdateToUI()
-        }
-    }
-    
 }
 
 protocol PlayerDelegate {
