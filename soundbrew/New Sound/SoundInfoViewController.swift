@@ -168,13 +168,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         switch indexPath.section {
-        case 0:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
-            self.progressSliderTitle = cell.titleLabel
-            self.progressSlider = cell.progressSlider
-            tableView.separatorStyle = .none
-            break
-            
         case titleSection:
             cell = soundTitleImageCell()
             break
@@ -188,6 +181,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         default:
+            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
+            self.progressSliderTitle = cell.titleLabel
+            self.progressSlider = cell.progressSlider
+            tableView.separatorStyle = .none
             break
         }
         
@@ -744,7 +741,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
         self.soundThatIsBeingEdited?.title = self.soundTitle.text
         if let sound = soundThatIsBeingEdited {
-            if soundInfoIsVerified(sound) {
+            if isSoundInfoCorrect(sound) {
                 if sound.objectId != nil {
                     updateSound(sound, isDraft: false)
                 } else if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
@@ -854,12 +851,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: utility
-    func soundInfoIsVerified(_ sound: Sound) -> Bool {
+    func isSoundInfoCorrect(_ sound: Sound) -> Bool {
         if let sound = soundThatIsBeingEdited {
             if sound.title!.isEmpty {
                 showAttributedPlaceholder(soundTitle, text: "Title Required")
-                
-            } else if sound.artFile == nil {
+            } else if sound.artFile == nil && sound.artURL == nil {
                 uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
             }else if genreTag == nil {
                 uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
@@ -871,7 +867,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 return true
             }
         }
-        
         return false
     }
     
