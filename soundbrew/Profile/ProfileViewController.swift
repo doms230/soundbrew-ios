@@ -475,6 +475,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         query.limit = 5
         query.whereKey("isRemoved", notEqualTo: true)
+        query.whereKey("isDraft", notEqualTo: true)
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

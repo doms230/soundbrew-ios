@@ -268,6 +268,7 @@ class UIElement {
         
         let audio = object["audioFile"] as! PFFileObject
         sound.audio = audio
+        sound.audioURL = audio.url!
         
         if let title = object["title"] as? String {
             if title == "" {
@@ -280,7 +281,7 @@ class UIElement {
         }
         
         if let art = object["songArt"] as? PFFileObject {
-            sound.artFile = art
+            sound.artURL = art.url
         }
         
         if let tags = object["tags"] as? Array<String> {
