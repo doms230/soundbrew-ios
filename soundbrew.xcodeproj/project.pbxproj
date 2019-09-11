@@ -13,7 +13,6 @@
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
-		F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */; };
 		F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F246999A22A82EEE0020497E /* AuthenticationServices.framework */; };
 		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
@@ -136,7 +135,6 @@
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
 		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
-		F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSoundTagsViewController.swift; sourceTree = "<group>"; };
 		F246995222A8273E0020497E /* Swifter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Swifter.xcodeproj; path = "soundbrew/Swifter-master 2/Swifter.xcodeproj"; sourceTree = "<group>"; };
 		F246999A22A82EEE0020497E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
@@ -352,10 +350,10 @@
 			isa = PBXGroup;
 			children = (
 				F26898A5215B527900C21663 /* Sound.swift */,
-				F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */,
-				F2EA85742244110B005D6153 /* SoundList.swift */,
 				F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */,
+				F2EA85742244110B005D6153 /* SoundList.swift */,
 				F203C76B225D7ED80050F113 /* SoundArtImage.swift */,
+				F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -384,7 +382,6 @@
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
 				F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
-				F246993822A6CAFF0020497E /* NewSoundTagsViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";
@@ -750,7 +747,6 @@
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
-				F246993922A6CAFF0020497E /* NewSoundTagsViewController.swift in Sources */,
 				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
 				F2EFDEFB23025B50008A157B /* FollowingViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,

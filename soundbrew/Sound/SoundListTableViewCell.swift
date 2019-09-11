@@ -95,6 +95,24 @@ class SoundListTableViewCell: UITableViewCell {
         return image
     }()
     
+    lazy var tippersButton: UIButton = {
+        let button = UIButton()
+        return button
+    }()
+    
+    lazy var tippersImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "profile_icon")
+        return image
+    }()
+    
+    lazy var tippersLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.textColor = .white
+        return label
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -118,8 +136,13 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(soundDate)
             self.addSubview(dividerLine)
             
+            //adding seperate stuff because doesn't size right as one button.
+            self.addSubview(tippersButton)
+            //self.tippersButton.addSubview(tippersImage)
+            self.tippersButton.addSubview(tippersLabel)
+            
             soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
+                make.height.width.equalTo(115)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self)
@@ -143,14 +166,6 @@ class SoundListTableViewCell: UITableViewCell {
                 make.right.equalTo(soundTitle)
             }
             
-           /* dividerLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(1)
-                make.top.equalTo(soundArtImage.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }*/
-            
             menuButton.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(75)
                 make.top.equalTo(soundArtImage.snp.bottom).offset(uiElement.bottomOffset - 10)
@@ -162,6 +177,27 @@ class SoundListTableViewCell: UITableViewCell {
                 make.height.width.equalTo(15)
                 make.top.equalTo(menuButton)
                 make.right.equalTo(menuButton)
+            }
+            
+            tippersButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(75)
+                make.top.equalTo(menuButton).offset(uiElement.bottomOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(menuButton.snp.left)
+                //make.bottom.equalTo(soundArtImage.snp.bottom)
+            }
+            
+            /*tippersImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(25)
+                make.top.equalTo(tippersButton)
+                make.left.equalTo(tippersButton)
+            }*/
+            
+            tippersLabel.snp.makeConstraints { (make) -> Void in
+               // make.centerY.equalTo(tippersImage)
+                make.top.equalTo(tippersButton)
+                make.left.equalTo(tippersButton)
+                make.right.equalTo(tippersButton)
             }
         
             break

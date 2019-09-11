@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import DeckTransition
 
-class FollowersFollowingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PlayerDelegate {
+class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PlayerDelegate {
 
     let color = Color()
     let uiElement = UIElement()

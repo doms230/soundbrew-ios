@@ -133,9 +133,24 @@ class SoundList: NSObject, PlayerDelegate {
             
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
+            
+            if let tippers = sound.tippers {
+                var tipLabel = "Tippers"
+                if tippers == 1 {
+                    tipLabel = "Tipper"
+                }
+                
+                cell.tippersLabel.text = "\(tippers) \(tipLabel)"
+            } else {
+                cell.tippersLabel.text = "0 Tippers"
+            }
         }
         
         return cell
+    }
+    
+    @objc func didPressTippersButton(_ sender: UIButton) {
+        
     }
     
     @objc func didPressMenuButton(_ sender: UIButton) {

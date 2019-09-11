@@ -101,10 +101,10 @@
             </objects>
             <point key="canvasLocation" x="-1784" y="390"/>
         </scene>
-        <!--Followers Following View Controller-->
+        <!--People View Controller-->
         <scene sceneID="qm0-cr-3uq">
             <objects>
-                <viewController id="Btf-EX-uKz" customClass="FollowersFollowingViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

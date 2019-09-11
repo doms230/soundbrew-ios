@@ -108,7 +108,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             backItem.title = followerOrFollowing.capitalized
             navigationItem.backBarButtonItem = backItem
             
-            let viewController = segue.destination as! FollowersFollowingViewController
+            let viewController = segue.destination as! PeopleViewController
             viewController.loadType = followerOrFollowing
             break
             
