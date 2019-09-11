@@ -25,10 +25,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
-        showSounds()
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        showSounds()
+        
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
@@ -46,6 +47,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         case "showEditSoundInfo":
             soundList.prepareToShowSoundInfo(segue)
             break
+            
+        case "showTippers":
+            soundList.prepareToShowTippers(segue)
             
         default:
             break 
@@ -126,8 +130,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
-        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad && soundType == "discover" {
-            soundList.loadWorldCreatedAtSounds()
+        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
+            if soundType == "discover" {
+                soundList.loadWorldCreatedAtSounds()
+            } else {
+                //soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: userId, searchText: nil, followIds: soundList.followUserIds)
+            }
         }
     }
     

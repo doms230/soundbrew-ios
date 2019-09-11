@@ -22,8 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
         return true 
     }
-    
-
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -83,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                         self.playSound(url: url)
                         
                     } else if pathComponents.contains("profile") {
-                        self.loadUserInfoFromCloud(url.lastPathComponent)
+                        self.receivedUserId(url.lastPathComponent)
                     }
                 }
             }
@@ -116,7 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                     UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
                     
                 } else if pathComponents.contains("profile") {
-                    self.loadUserInfoFromCloud(url.lastPathComponent)
+                    self.receivedUserId(url.lastPathComponent)
                 }
             }
             
@@ -174,20 +172,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         let player = Player.sharedInstance
         let objectId = url.lastPathComponent
         player.loadDynamicLinkSound(objectId)
-        showChooseTagsViewController()
+        showMainViewController()
     }
     
-    func loadUserInfoFromCloud(_ userId: String) {
+    func receivedUserId(_ userId: String) {
         UIElement().setUserDefault("receivedUserId", value: userId)
-        showChooseTagsViewController()
+        showMainViewController()
     }
     
-    func showChooseTagsViewController() {
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "main")
-        self.window?.rootViewController = initialViewController
-        self.window?.makeKeyAndVisible()
+    func showMainViewController() {
+        let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "tabBar") as! UITabBarController
+        window!.rootViewController = tabBarController
     }
 }
 

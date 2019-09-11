@@ -22,7 +22,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         setUpNavigationBar()
-        loadTags(tagType, searchText: nil)
+        loadTags(tagType, searchText: nil)        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -206,12 +206,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var featureTagScrollview: UIScrollView!
     var xPositionForFeatureTags = UIElement().leftOffset
     var selectedFeatureTagTypeIndex = 0
-    
-    func checkForProfileDynamicLink() {
-        if let _ = self.uiElement.getUserDefault("receivedUserId") as? String {
-            self.performSegue(withIdentifier: "showProfile", sender: self)
-        }
-    }
     
     var chosenTags = [Tag]()
     var xPositionForChosenTags = UIElement().leftOffset

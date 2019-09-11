@@ -173,6 +173,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
             checkFollowStatus()
         }
+        
+        self.loadCollection(self.profileArtist!.objectId)
+        self.loadSounds(nil, userId: self.profileArtist?.objectId)
     }
     
     func didPressSignoutButton() {
@@ -223,9 +226,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
-        
-        self.loadCollection(self.profileArtist!.objectId)
-        self.loadSounds(nil, userId: self.profileArtist?.objectId)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -601,7 +601,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         default:
-            self.uiElement.showAlert("Sign up Required.", message: "Following artists on Soundbrew is the easiest way to keep up with their latest releases!", target: self)
+            self.uiElement.showAlert("Sign up Required.", message: "Follow other artists to keep up with their latests releases!", target: self)
             break
         }
     }
@@ -669,6 +669,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 print(error)
                 
             } else if let user = user {
+                print(user)
                 let username = user["username"] as? String
                 
                 var email: String?
@@ -677,10 +678,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
                 let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                
-                if let followerCount = user["followerCount"] as? Int {
-                    artist.followerCount = followerCount
-                }
                 
                 if let name = user["artistName"] as? String {
                     artist.name = name

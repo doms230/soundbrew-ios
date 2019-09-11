@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import DeckTransition
 
-class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PlayerDelegate {
+class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     let color = Color()
     let uiElement = UIElement()
@@ -18,6 +18,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     var artists = [Artist]()
     
     var loadType: String!
+    var sound: Sound!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +27,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
         
-        loadFollowersFollowing(loadType)
+        if sound == nil {
+            loadFollowersFollowing(loadType)
+        } else {
+            loadTippers()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -44,26 +49,15 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     //MARK: Tableview
     let tableView = UITableView()
     let searchTagViewReuse = "searchTagViewReuse"
-    func setUpTableView(_ miniPlayer: UIView?) {
+    func setUpTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = color.black()
-        if let miniPlayer = miniPlayer {
-            self.view.addSubview(tableView)
-            self.tableView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.right.equalTo(self.view)
-                make.bottom.equalTo(miniPlayer.snp.top)
-            }
-            
-        } else {
-            self.tableView.frame = view.bounds
-            self.view.addSubview(tableView)
-        }
+        self.tableView.frame = view.bounds
+        self.view.addSubview(tableView)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -86,46 +80,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.cellForRow(at: indexPath)?.isSelected = false
         selectedArtist = self.artists[indexPath.row]
         self.performSegue(withIdentifier: "showProfile", sender: self)
-    }
-    
-    //mark: miniPlayer
-    var miniPlayerView: MiniPlayerView?
-    func setUpMiniPlayer() {
-        miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        self.view.addSubview(miniPlayerView!)
-        let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-        slide.direction = .up
-        miniPlayerView!.addGestureRecognizer(slide)
-        miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-        miniPlayerView!.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.right.equalTo(self.view)
-            make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
-        }
-        
-        setUpTableView(miniPlayerView!)
-    }
-    
-    @objc func miniPlayerWasSwiped() {
-        showPlayerViewController()
-    }
-    
-    @objc func miniPlayerWasPressed(_ sender: UIButton) {
-        showPlayerViewController()
-    }
-    
-    func showPlayerViewController() {
-        let player = Player.sharedInstance
-        if player.player != nil {
-            let modal = PlayerV2ViewController()
-            modal.player = player
-            modal.playerDelegate = self
-            let transitionDelegate = DeckTransitioningDelegate()
-            modal.transitioningDelegate = transitionDelegate
-            modal.modalPresentationStyle = .custom
-            self.present(modal, animated: true, completion: nil)
-        }
     }
     
     //mark: selectedArtist
@@ -168,12 +122,34 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     }
                 }
                 
-                let player = Player.sharedInstance
-                if player.player != nil {
-                    self.setUpMiniPlayer()
-                } else if PFUser.current() != nil {
-                    self.setUpTableView(nil)
+                self.setUpTableView()
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
+    func loadTippers() {
+        let query = PFQuery(className: "Tip")
+        query.whereKey("soundId", equalTo: sound.objectId!)
+        query.limit = 50
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let userId = object["fromUserId"] as? String
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                        
+                        let userIds = self.artists.map {$0.objectId}
+                        if !userIds.contains(userId) {
+                            self.artists.append(artist)
+                        }
+                    }
                 }
+                
+                self.setUpTableView()
                 
             } else {
                 print("Error: \(error!)")

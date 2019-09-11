@@ -1,5 +1,5 @@
 //
-//  SoundArtImage.swift
+//  InstagramStoriesArtImage.Swift
 //  soundbrew
 //
 //  Created by Dominic  Smith on 4/9/19.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import SnapKit
 
-class SoundArtImage: UIView {
+class InstagramStoriesArtImage: UIView {
     
     let color = Color()
     let uiElement = UIElement()

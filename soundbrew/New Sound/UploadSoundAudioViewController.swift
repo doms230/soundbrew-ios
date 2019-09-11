@@ -202,6 +202,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-49)
         }
+        
+        setUpTableView(miniPlayerView)
     }
     
     @objc func miniPlayerWasSwiped() {

@@ -134,6 +134,8 @@ class SoundList: NSObject, PlayerDelegate {
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
             
+            cell.tippersButton.addTarget(self, action: #selector(didPressTippersButton(_:)), for: .touchUpInside)
+            cell.tippersButton.tag = indexPath.row
             if let tippers = sound.tippers {
                 var tipLabel = "Tippers"
                 if tippers == 1 {
@@ -150,7 +152,13 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     @objc func didPressTippersButton(_ sender: UIButton) {
-        
+        self.selectedSound = sounds[sender.tag]
+        target.performSegue(withIdentifier: "showTippers", sender: self)
+    }
+    
+    func prepareToShowTippers(_ segue: UIStoryboardSegue) {
+        let viewController = segue.destination as! PeopleViewController
+        viewController.sound = selectedSound
     }
     
     @objc func didPressMenuButton(_ sender: UIButton) {
@@ -299,6 +307,9 @@ class SoundList: NSObject, PlayerDelegate {
     var thereIsMoreDataToLoad = true
     
     func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?) {
+        
+        isUpdatingData = true 
+        
         let query = PFQuery(className: "Post")
         
         if let collectionIds = collectionIds {

@@ -153,7 +153,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             installation?["user"] = parseUser
             installation?["userId"] = parseUser?.objectId
             installation?.saveEventually()
-            self.followSoundbrewTwitterAccount()
             self.updateUserInfo()
             
             return AnyObject.self as AnyObject
@@ -193,28 +192,4 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             }
         }
     }
-    
-    func followSoundbrewTwitterAccount() {
-        if let userID = self.twitterID {
-            let client = TWTRAPIClient(userID: userID)
-            let statusesShowEndpoint = "https://api.twitter.com/1.1/friendships/create.json"
-            let params = [ "Name": "Soundbrew", "screen_name": "sound_brew"]
-            var clientError : NSError?
-            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
-            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
-                if let connectionError = connectionError {
-                    print("Error: \(connectionError)")
-                }
-                do {
-                    if let data = data {
-                        let json = try JSONSerialization.jsonObject(with: data, options: [])
-                        print("json: \(json)")
-                    }
-                } catch let jsonError as NSError {
-                    print("json error: \(jsonError.localizedDescription)")
-                }
-            }
-        }
-    }
-
 }

@@ -42,6 +42,7 @@
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="7HA-id-CZ7"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="CS4-UW-TbD"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="jCE-No-XFc"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="eKw-d2-ktB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -99,7 +100,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wfq-qW-WRs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1784" y="390"/>
+            <point key="canvasLocation" x="-1930" y="927"/>
         </scene>
         <!--People View Controller-->
         <scene sceneID="qm0-cr-3uq">
@@ -117,7 +118,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1119" y="927"/>
+            <point key="canvasLocation" x="1380" y="592"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -202,7 +203,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="Oz9-Vl-g3k">
             <objects>
-                <tabBarController id="Lj6-sG-10O" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="tabBar" id="Lj6-sG-10O" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="n2K-Hs-RAB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -263,6 +264,7 @@
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="Dx3-fw-EG5"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="iDR-Ll-dSf"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="0mA-lO-wOD"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="d1u-up-vYK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -395,6 +397,7 @@
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="h3u-aT-JAs"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="OGJ-1Z-zjV"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="mvo-CV-XcF"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="PpL-DV-h1t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWh-XQ-3VH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -643,9 +646,10 @@
         <segue reference="7HA-id-CZ7"/>
         <segue reference="hQD-bY-Uhw"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="qF7-cv-MYn"/>
-        <segue reference="LnM-xP-wsl"/>
+        <segue reference="Nhf-bc-kRf"/>
+        <segue reference="d1u-up-vYK"/>
+        <segue reference="iDR-Ll-dSf"/>
         <segue reference="Dx3-fw-EG5"/>
-        <segue reference="mvo-CV-XcF"/>
+        <segue reference="0mA-lO-wOD"/>
     </inferredMetricsTieBreakers>
 </document>

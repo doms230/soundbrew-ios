@@ -24,6 +24,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         for featureTagType in featureTagTypes {
             loadTags(featureTagType)
         }
+        
+        checkForProfileDynamicLink()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -631,6 +633,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 print("Error: \(error!)")
             }
+        }
+    }
+    
+    
+    //mark: dynamic link
+    func checkForProfileDynamicLink() {
+        if let _ = self.uiElement.getUserDefault("receivedUserId") as? String {
+            self.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
 }

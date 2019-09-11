@@ -198,7 +198,7 @@ class UIElement {
     let shareAppURL = "https://www.soundbrew.app/ios"
     
     func imageForSharing(_ sound: Sound) -> UIImage {
-        let soundArtImage = SoundArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 610))
+        let soundArtImage = InstagramStoriesArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 610))
         soundArtImage.soundArt.image = sound.artImage
         soundArtImage.soundTitle.text = sound.title
         soundArtImage.artistName.text = sound.artist!.name

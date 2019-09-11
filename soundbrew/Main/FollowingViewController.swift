@@ -43,11 +43,21 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showProfile" {
+        switch segue.identifier {
+        case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
+            break
             
-        } else if segue.identifier == "showSignup" {
-           uiElement.prepareNewUserSegue(segue, authToken: self.login.authToken, authTokenSecret: self.login.authTokenSecret, twitterUsername: self.login.twitterUsername, twitterID: self.login.twitterID)
+        case "showSignup":
+            uiElement.prepareNewUserSegue(segue, authToken: self.login.authToken, authTokenSecret: self.login.authTokenSecret, twitterUsername: self.login.twitterUsername, twitterID: self.login.twitterID)
+            break
+            
+        case "showTippers":
+            soundList.prepareToShowTippers(segue)
+            break
+            
+        default:
+            break
         }
     }
     
@@ -156,7 +166,9 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-49)
-        }        
+        }
+        
+        setUpTableView(miniPlayerView)
     }
     
     @objc func miniPlayerWasSwiped() {
