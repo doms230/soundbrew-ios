@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
-		F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* SoundArtImage.swift */; };
+		F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */; };
+		F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */; };
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
@@ -131,7 +132,8 @@
 		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
-		F203C76B225D7ED80050F113 /* SoundArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundArtImage.swift; sourceTree = "<group>"; };
+		F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramStoriesArtImage.swift; sourceTree = "<group>"; };
+		F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapchatStoriesArtImage.swift; sourceTree = "<group>"; };
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
 		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
@@ -352,8 +354,9 @@
 				F26898A5215B527900C21663 /* Sound.swift */,
 				F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */,
 				F2EA85742244110B005D6153 /* SoundList.swift */,
-				F203C76B225D7ED80050F113 /* SoundArtImage.swift */,
 				F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */,
+				F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */,
+				F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -737,7 +740,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F203C76C225D7ED80050F113 /* SoundArtImage.swift in Sources */,
+				F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
@@ -758,6 +761,7 @@
 				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
+				F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */,
 				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,

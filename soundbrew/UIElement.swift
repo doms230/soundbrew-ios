@@ -25,7 +25,7 @@ class UIElement {
     let userImageHeightWidth = 40
     let elementOffset = 5
     let titleLabelFontSize: CGFloat = 25
-    
+    let color = Color()
     let mainFont = "HelveticaNeue"
     
     func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
@@ -197,8 +197,8 @@ class UIElement {
     //mark: share
     let shareAppURL = "https://www.soundbrew.app/ios"
     
-    func imageForSharing(_ sound: Sound) -> UIImage {
-        let soundArtImage = InstagramStoriesArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 610))
+    func snapchatImageForSharing(_ sound: Sound) -> UIImage {
+        let soundArtImage = SnapchatStoriesArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 150))
         soundArtImage.soundArt.image = sound.artImage
         soundArtImage.soundTitle.text = sound.title
         soundArtImage.artistName.text = sound.artist!.name
@@ -207,7 +207,7 @@ class UIElement {
     }
     
     func shareToSnapchat(_ sound: Sound) {
-        let snapchatImage = imageForSharing(sound)
+        let snapchatImage = snapchatImageForSharing(sound)
         let snap = SCSDKNoSnapContent()
         snap.sticker = SCSDKSnapSticker(stickerImage: snapchatImage)
         snap.attachmentUrl = shareAppURL
@@ -219,10 +219,20 @@ class UIElement {
         })
     }
     
+    
+    func instagramImageForSharing(_ sound: Sound) -> UIImage {
+        let soundArtImage = InstagramStoriesArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 610))
+        soundArtImage.soundArt.image = sound.artImage
+        soundArtImage.soundTitle.text = sound.title
+        soundArtImage.artistName.text = sound.artist!.name
+        soundArtImage.updateConstraints()
+        return soundArtImage.asImage()
+    }
+    
     func shareToInstagram(_ sound: Sound) {
         let share = ShareImageInstagram()
-        let igImage = imageForSharing(sound)
-        share.postToInstagramStories(image: igImage, backgroundTopColorHex: "0x393939" , backgroundBottomColorHex: "0x393939", deepLink: shareAppURL)
+        let igImage = instagramImageForSharing(sound)
+        share.postToInstagramStories(image: igImage, backgroundTopColorHex: "\(color.black())", backgroundBottomColorHex: "\(color.black())", deepLink: shareAppURL)
     }
     
     func showShareOptions(_ target: UIViewController, sound: Sound) {

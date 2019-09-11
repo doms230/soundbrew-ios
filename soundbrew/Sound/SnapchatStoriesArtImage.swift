@@ -1,16 +1,15 @@
 //
-//  InstagramStoriesArtImage.Swift
+//  SnapchatStoriesArtImage.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 4/9/19.
+//  Created by Dominic  Smith on 9/11/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
 import Foundation
 import UIKit
-import SnapKit
 
-class InstagramStoriesArtImage: UIView {
+class SnapchatStoriesArtImage: UIView {
     
     let color = Color()
     let uiElement = UIElement()
@@ -20,7 +19,8 @@ class InstagramStoriesArtImage: UIView {
         label.text = "Sound Title"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        label.textAlignment = .center
+        //label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
     
@@ -29,7 +29,7 @@ class InstagramStoriesArtImage: UIView {
         label.text = "Artist Name"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-        label.textAlignment = .center
+        //label.textAlignment = .center
         return label
     }()
     
@@ -38,21 +38,27 @@ class InstagramStoriesArtImage: UIView {
         label.text = "Listen on @sound_brew"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        label.textAlignment = .center
+        //label.textAlignment = .center
         return label
     }()
     
     lazy var soundArt: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleAspectFill
-        image.backgroundColor = .white
+        image.contentMode = .scaleAspectFit
+        image.backgroundColor = color.black()
         return image
+    }()
+    
+    lazy var artView: UIView = {
+        let view = UIView()
+        view.backgroundColor = color.black()
+        return view
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = .clear
+        self.backgroundColor = color.black()
         //self.layer.borderWidth = 1
         //self.layer.borderColor = color.darkGray().cgColor
     }
@@ -62,17 +68,36 @@ class InstagramStoriesArtImage: UIView {
     }
     
     override func updateConstraints() {
-        soundArt.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
-        self.addSubview(soundArt)
+        artView.frame = CGRect(x: 0, y: 0, width: 500, height: 150)
+        self.addSubview(artView)
         
-        soundTitle.frame = CGRect(x: 10, y: 515, width: 500, height: 30)
-        self.addSubview(soundTitle)
+        soundArt.frame = CGRect(x: 0, y: 0, width: 150, height: 150)
+        self.artView.addSubview(soundArt)
         
-        artistName.frame = CGRect(x: 10, y: 545, width: 500, height: 30)
-        self.addSubview(artistName)
+        soundTitle.frame = CGRect(x: 175, y: 15, width: 325, height: 30)
+        self.artView.addSubview(soundTitle)
         
-        appName.frame = CGRect(x: 10, y: 570, width: 500, height: 30)
-        self.addSubview(appName)
+        artistName.frame = CGRect(x: 175, y: 60, width: 325, height: 30)
+        self.artView.addSubview(artistName)
+        
+        appName.frame = CGRect(x: 175, y: 105, width: 325, height: 30)
+        self.artView.addSubview(appName)
+        
+        
+        /*artView.frame = CGRect(x: 0, y: 0, width: 500, height: 250)
+        self.addSubview(artView)
+        
+        soundArt.frame = CGRect(x: 0, y: 0, width: 250, height: 250)
+        self.artView.addSubview(soundArt)
+        
+        soundTitle.frame = CGRect(x: 265, y: 15, width: 240, height: 30)
+        self.artView.addSubview(soundTitle)
+        
+        artistName.frame = CGRect(x: 265, y: 65, width: 240, height: 30)
+        self.artView.addSubview(artistName)
+        
+        appName.frame = CGRect(x: 265, y: 115, width: 240, height: 30)
+        self.artView.addSubview(appName)*/
         
         super.updateConstraints()
     }
@@ -81,7 +106,7 @@ class InstagramStoriesArtImage: UIView {
 extension UIView {
     // Using a function since `var image` might conflict with an existing variable
     // (like on `UIImageView`)
-    func asImage() -> UIImage {
+    /*func asImage() -> UIImage {
         if #available(iOS 10.0, *) {
             let renderer = UIGraphicsImageRenderer(bounds: bounds)
             return renderer.image { rendererContext in
@@ -95,5 +120,5 @@ extension UIView {
             UIGraphicsEndImageContext()
             return UIImage(cgImage: image!.cgImage!)
         }
-    }
+    }*/
 }
