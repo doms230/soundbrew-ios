@@ -16,6 +16,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     let uiElement = UIElement()
     let color = Color()
     var selectedArtist: Artist!
+    var selectedTag: Tag!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,11 +34,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSounds" {
             let backItem = UIBarButtonItem()
-            backItem.title = self.chosenTags[0].name
+            backItem.title = self.selectedTag.name
             navigationItem.backBarButtonItem = backItem
             
             let viewController = segue.destination as! SoundsViewController
-            viewController.selectedTagForFiltering = self.chosenTags[0]
+            viewController.selectedTagForFiltering = self.selectedTag
             viewController.soundType = "discover"
         }
     }
@@ -181,7 +182,13 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func didSelectRowAt(_ row: Int) {
         let selectedTag = filteredTags[row]
-        appendTag(selectedTag)
+        
+        if isSelectingTagsForPlaylist {
+            self.selectedTag = selectedTag
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+        } else {
+            appendTag(selectedTag)
+        }
     }
     
     //MARK: tags
@@ -284,9 +291,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.chosenTags.append(tag)
         }
         
-        if isSelectingTagsForPlaylist || tagType != "more" {
+        if tagType != "more" {
             handleTagsForDismissal()
-            
         } else {
             self.tableView.reloadData()
         }
@@ -317,10 +323,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func handleTagsForDismissal() {
-        if self.isSelectingTagsForPlaylist {
-            self.performSegue(withIdentifier: "showSounds", sender: self)
-            
-        } else if let tagDelegate = self.tagDelegate {
+        if let tagDelegate = self.tagDelegate {
             var chosenTags: Array<Tag>?
             if self.chosenTags.count != 0 {
                 chosenTags = self.chosenTags

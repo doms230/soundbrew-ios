@@ -97,101 +97,52 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }
     
     //mark: UI
-    lazy var oneDollarAmount: UIButton = {
+    
+    lazy var balanceTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Chosen Funds"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+        label.textColor = .white
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    lazy var chosenFundAmount: UIButton = {
         let button = UIButton()
-        button.setTitleColor(color.black(), for: .normal)
-        button.setTitle("$1", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitle("$1.00", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         button.layer.cornerRadius = 3
+        button.layer.borderColor = UIColor.lightGray.cgColor
+        button.layer.borderWidth = 0.5
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
         button.tag = 0
         return button
     }()
     
-    lazy var twoDollarAmount: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(color.darkGray(), for: .normal)
-        button.setTitle("$5", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
-        button.tag = 1
-        return button
-    }()
-    
-    lazy var threeDollarAmount: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(color.darkGray(), for: .normal)
-        button.setTitle("$10", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        button.addTarget(self, action: #selector(self.didPressFundAmountButton(_:)), for: .touchUpInside)
-        button.tag = 2
-        return button
-    }()
     @objc func didPressFundAmountButton(_ sender: UIButton) {
-        var funds: Double!
-        
-        switch sender.tag {
-        case 0:
-            funds = 1
-            changeFundAmountColors(sender, unSelectedButton: twoDollarAmount, unSelectedButton1: threeDollarAmount)
-            break
-            
-        case 1:
-            funds = 5
-            changeFundAmountColors(sender, unSelectedButton: oneDollarAmount, unSelectedButton1: threeDollarAmount)
-            break
-            
-        case 2:
-            funds = 10
-            changeFundAmountColors(sender, unSelectedButton: twoDollarAmount, unSelectedButton1: oneDollarAmount)
-            break
-            
-        default:
-            break
-        }
-        
-        updateTotalAndProcessingFee(funds)
+        let menuAlert = UIAlertController(title: "Funds", message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "$1.00", style: .default, handler: { action in
+            sender.setTitle("$1.00", for: .normal)
+            self.updateTotalAndProcessingFee(1)
+        }))
+        menuAlert.addAction(UIAlertAction(title: "$5.00", style: .default, handler: { action in
+            sender.setTitle("$5.00", for: .normal)
+            self.updateTotalAndProcessingFee(5)
+        }))
+        menuAlert.addAction(UIAlertAction(title: "$10.00", style: .default, handler: { action in
+            sender.setTitle("$10.00", for: .normal)
+            self.updateTotalAndProcessingFee(10)
+        }))
+        self.present(menuAlert, animated: true, completion: nil)
     }
     
     func changeFundAmountColors(_ selectedButton: UIButton, unSelectedButton: UIButton, unSelectedButton1: UIButton) {
-        selectedButton.setTitleColor(color.black(), for: .normal)
-        unSelectedButton.setTitleColor(color.lightGray(), for: .normal)
-        unSelectedButton1.setTitleColor(color.lightGray(), for: .normal)
-    }
-    
-    lazy var addFundsSegment: UISegmentedControl = {
-        let segment = UISegmentedControl(items: ["$1", "$5", "$10"])
-        segment.selectedSegmentIndex = 0
-        segment.tintColor = color.blue()
-        segment.addTarget(self, action: #selector(didPressFundsSegmentButton(_:)), for: .valueChanged)
-        return segment
-    }()
-    @objc func didPressFundsSegmentButton(_ sender: UISegmentedControl) {
-        var funds: Double!
-        
-        switch sender.selectedSegmentIndex {
-        case 0:
-            funds = 1
-            break
-            
-        case 1:
-            funds = 5
-            break
-            
-        case 2:
-            funds = 10
-            break
-            
-        default:
-            break
-        }
-        
-        updateTotalAndProcessingFee(funds)
+        selectedButton.setTitleColor(.white, for: .normal)
+        unSelectedButton.setTitleColor(.lightGray, for: .normal)
+        unSelectedButton1.setTitleColor(.lightGray, for: .normal)
     }
     
     func updateTotalAndProcessingFee(_ funds: Double) {
@@ -262,7 +213,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var cardImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
-        image.backgroundColor = .white
+        image.backgroundColor = color.black()
         return image
     }()
     
@@ -291,6 +242,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         button.setTitle("Purchase", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(didPressPurchaseButton(_:)), for: .touchUpInside)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
         return button
     }()
     
@@ -303,29 +256,24 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
         
-        self.view.addSubview(threeDollarAmount)
-        threeDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
+        self.view.addSubview(chosenFundAmount)
+        chosenFundAmount.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(100)
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(twoDollarAmount)
-        twoDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(threeDollarAmount)
-            make.right.equalTo(threeDollarAmount.snp.left).offset(uiElement.rightOffset)
+        self.view.addSubview(balanceTitle)
+        balanceTitle.snp.makeConstraints { (make) -> Void in
+            ///make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.centerY.equalTo(chosenFundAmount)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        self.view.addSubview(oneDollarAmount)
-        oneDollarAmount.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(threeDollarAmount)
-            make.right.equalTo(twoDollarAmount.snp.left).offset(uiElement.rightOffset)
-        }
+        
         self.view.addSubview(paymentProcessingFeeTitle)
         paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(threeDollarAmount.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(chosenFundAmount.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         self.view.addSubview(paymentProcessingFee)
@@ -372,10 +320,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         
         self.view.addSubview(purchaseButton)
         purchaseButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(75)
-            make.right.equalTo(self.view)
-            make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view)
+            make.height.equalTo(50)
+            make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
         }
     }
 }

@@ -22,10 +22,12 @@ class Artist {
     var email: String?
     var isFollowedByCurrentUser: Bool?
     var followerCount: Int?
+    var followingCount: Int?
+    var earnings: Int?
     var customerId: String?
     var balance: Int?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, customerId: String?, balance: Int?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -37,10 +39,11 @@ class Artist {
         self.email = email
         self.isFollowedByCurrentUser = isFollowedByCurrentUser
         self.followerCount = followerCount
+        self.followingCount = followingCount
         self.customerId = customerId
         self.balance = balance
+        self.earnings = earnings
     }
-    
     
     func loadUserInfoFromCloud(_ userId: String, target: UIViewController, cell: ProfileTableViewCell?) {
         let query = PFQuery(className: "_User")
@@ -59,10 +62,6 @@ class Artist {
                     if currentUser.objectId! == user.objectId! {
                         self.email = user["email"] as? String
                     }
-                }
-                
-                if let followerCount = user["followerCount"] as? Int {
-                    self.followerCount = followerCount
                 }
                 
                 if let name = user["artistName"] as? String {

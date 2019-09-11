@@ -282,6 +282,7 @@ class UIElement {
         
         if let art = object["songArt"] as? PFFileObject {
             sound.artURL = art.url
+            sound.artFile = art 
         }
         
         if let tags = object["tags"] as? Array<String> {
@@ -297,7 +298,7 @@ class UIElement {
         }
         
         let userId = object["userId"] as! String
-        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
         
         sound.artist = artist
         return sound

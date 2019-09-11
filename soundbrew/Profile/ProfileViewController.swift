@@ -30,6 +30,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var currentUser: PFUser?
     var player: Player?
     var paymentType: String!
+    var followerOrFollowing: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,8 +60,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if soundList != nil {
-            executeTableViewSoundListFollowStatus()
+        let player = Player.sharedInstance
+        if player.player != nil {
+            setUpMiniPlayer()
+        } else if PFUser.current() != nil {
+            setUpTableView(nil)
         }
     }
     
@@ -79,17 +83,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundList.prepareToShowSoundInfo(segue)
             break
             
-        case "showUploadSound":
-            soundList.prepareToShowSoundAudioUpload(segue)
-            break
-            
         case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
             break
             
-        case "showPayments", "showEarnings":
+        case "showAddFunds", "showEarnings":
             let backItem = UIBarButtonItem()
-            backItem.title = paymentType.capitalized
+            backItem.title = "Add Funds"
             navigationItem.backBarButtonItem = backItem
             break
             
@@ -102,6 +102,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             viewController.soundType = selectedSoundType
             viewController.userId = profileArtist?.objectId
             break
+            
+        case "showFollowerFollowing":
+            let backItem = UIBarButtonItem()
+            backItem.title = followerOrFollowing.capitalized
+            navigationItem.backBarButtonItem = backItem
+            
+            let viewController = segue.destination as! FollowersFollowingViewController
+            viewController.loadType = followerOrFollowing
+            break
+            
         default:
             break
         }
@@ -216,7 +226,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         self.loadCollection(self.profileArtist!.objectId)
         self.loadSounds(nil, userId: self.profileArtist?.objectId)
-        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -248,7 +257,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
+            make.bottom.equalTo(self.view).offset(-49)
         }
         
         setUpTableView(miniPlayerView)
@@ -277,7 +286,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //mark: selectedArtist
     func selectedArtist(_ artist: Artist?) {
-        soundList.selectedArtist(artist)
+        if let artist = artist {
+            if artist.objectId == "addFunds" {
+                self.performSegue(withIdentifier: "showAddFunds", sender: self)
+            } else if artist.objectId == "signup" {
+                self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else {
+                soundList.selectedArtist(artist)
+            }
+        }
     }
     
     //mark: sounds
@@ -609,7 +626,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.profileArtist?.website {
-            UIApplication.shared.open(URL(string: website)!, options: [:], completionHandler: nil)
+            let websiteURL = URL(string: website)!
+            if UIApplication.shared.canOpenURL(websiteURL) {
+                UIApplication.shared.open(websiteURL, options: [:], completionHandler: nil)
+            }
         }
     }
     
@@ -656,7 +676,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 
                 if let followerCount = user["followerCount"] as? Int {
                     artist.followerCount = followerCount

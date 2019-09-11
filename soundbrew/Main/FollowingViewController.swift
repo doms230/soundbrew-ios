@@ -155,7 +155,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
+            make.bottom.equalTo(self.view).offset(-49)
         }        
     }
     

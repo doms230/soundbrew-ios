@@ -84,7 +84,7 @@ class MiniPlayerView: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .clear
+        self.backgroundColor = .black 
         setupNotificationCenter()
         player = Player.sharedInstance
     }
@@ -210,5 +210,5 @@ class MiniPlayerView: UIButton {
                 self.sound!.artist?.name = artistName
             }
         }
-    }
+    }    
 }

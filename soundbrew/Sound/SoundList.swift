@@ -162,7 +162,7 @@ class SoundList: NSObject, PlayerDelegate {
                     
                     menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
                         self.selectedSound = sound
-                        self.target.performSegue(withIdentifier: "showSoundInfo", sender: self)
+                        self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
                     }))
                     
                     menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
@@ -255,15 +255,9 @@ class SoundList: NSObject, PlayerDelegate {
     func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {
         if let selectedSound = self.selectedSound {
             let viewController = segue.destination as! SoundInfoViewController
+            selectedSound.isDraft = false
             viewController.soundThatIsBeingEdited = selectedSound
         }
-    }
-    
-    func prepareToShowSoundAudioUpload(_ segue: UIStoryboardSegue) {
-        /*if let selectedSound = self.selectedSound {
-            let viewController = segue.destination as! UploadSoundAudioViewController
-            viewController.soundThatIsBeingEdited = selectedSound
-        }*/
     }
     
     //mark: tags filter
@@ -413,7 +407,7 @@ class SoundList: NSObject, PlayerDelegate {
             } else if let user = user {
                 let artistUsername = user["username"] as? String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 
                 if let name = user["artistName"] as? String {
                     cell.soundArtist.text = name

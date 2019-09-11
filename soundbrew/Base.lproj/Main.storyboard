@@ -23,7 +23,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pyG-2h-fp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-796" y="1661"/>
+            <point key="canvasLocation" x="-1929" y="1661"/>
         </scene>
         <!--Upload Sound Audio View Controller-->
         <scene sceneID="54r-NH-38P">
@@ -38,9 +38,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="M5X-po-2VR"/>
                     <connections>
-                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showSoundInfo" id="LnM-xP-wsl"/>
+                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="LnM-xP-wsl"/>
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="7HA-id-CZ7"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="CS4-UW-TbD"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="jCE-No-XFc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -64,7 +65,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2836" y="-1213"/>
+            <point key="canvasLocation" x="-2778" y="-1239"/>
         </scene>
         <!--Container View Controller-->
         <scene sceneID="Sfx-x4-dys">
@@ -98,7 +99,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wfq-qW-WRs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1784" y="940"/>
+            <point key="canvasLocation" x="-1784" y="390"/>
+        </scene>
+        <!--Followers Following View Controller-->
+        <scene sceneID="qm0-cr-3uq">
+            <objects>
+                <viewController id="Btf-EX-uKz" customClass="FollowersFollowingViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="TCf-Ow-s1R"/>
+                    </view>
+                    <connections>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="Nhf-bc-kRf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1119" y="927"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -113,16 +132,17 @@
                     <navigationItem key="navigationItem" id="N3L-mg-Zvf"/>
                     <connections>
                         <segue destination="zJZ-n2-4Wd" kind="show" identifier="showEarnings" id="JZC-PW-c4W"/>
-                        <segue destination="elo-Tc-Pq8" kind="show" identifier="showPayments" id="97q-93-bGT"/>
                         <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="CdJ-ew-HPh"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="Pi7-qj-CXZ"/>
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="cT0-pf-EzT"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hQD-bY-Uhw"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showFollowerFollowing" id="Ejz-iv-iC5"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="5zx-sZ-k8y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2836" y="940"/>
+            <point key="canvasLocation" x="-2777" y="940"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
@@ -242,6 +262,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ate-Yt-ICi"/>
                         <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="Dx3-fw-EG5"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="iDR-Ll-dSf"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="0mA-lO-wOD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -334,24 +355,6 @@
             </objects>
             <point key="canvasLocation" x="-2836" y="1661"/>
         </scene>
-        <!--Payments View Controller-->
-        <scene sceneID="TW7-cw-zAG">
-            <objects>
-                <viewController id="elo-Tc-Pq8" customClass="PaymentsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="TO7-qN-ndB">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="ZiE-yQ-tAc"/>
-                    </view>
-                    <connections>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Gb1-aa-qAh"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ajh-Ry-HME" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1783" y="1661"/>
-        </scene>
         <!--New Upload-->
         <scene sceneID="rcF-xS-UMx">
             <objects>
@@ -391,6 +394,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="xvi-B0-pE3"/>
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="h3u-aT-JAs"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="OGJ-1Z-zjV"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="mvo-CV-XcF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWh-XQ-3VH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -563,6 +567,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
                         <segue destination="46O-ND-fN1" kind="show" identifier="showSignin" id="eam-Zm-lDh"/>
                         <segue destination="bxe-9G-fAJ" kind="show" identifier="showSignup" id="43Z-81-daK"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Lov-Rl-RRq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ior-SH-LjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -637,9 +642,10 @@
         <segue reference="CS4-UW-TbD"/>
         <segue reference="7HA-id-CZ7"/>
         <segue reference="hQD-bY-Uhw"/>
-        <segue reference="YJM-4e-UbW"/>
-        <segue reference="5zy-Bo-ugT"/>
+        <segue reference="ny7-0k-lik"/>
+        <segue reference="qF7-cv-MYn"/>
         <segue reference="LnM-xP-wsl"/>
-        <segue reference="ttO-Wg-wls"/>
+        <segue reference="Dx3-fw-EG5"/>
+        <segue reference="mvo-CV-XcF"/>
     </inferredMetricsTieBreakers>
 </document>

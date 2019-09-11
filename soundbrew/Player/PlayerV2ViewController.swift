@@ -18,7 +18,7 @@ import Photos
 import NVActivityIndicatorView
 import FirebaseAnalytics
 
-class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //, UIPickerViewDelegate, UIPickerViewDataSource {
+class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     
     let color = Color()
     let uiElement = UIElement()
@@ -83,7 +83,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
-                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 self.handleDismissal(artist)
             }
             alertView.addAction(sendMoneyActionButton)
@@ -359,7 +359,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable { //
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
         
         let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
-            let artist = Artist(objectId: "signup", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+            let artist = Artist(objectId: "signup", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
             self.handleDismissal(artist)
         }
         alertController.addAction(settingsAction)

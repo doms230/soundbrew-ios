@@ -47,7 +47,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showSoundInfo" {
+        if segue.identifier == "showEditSoundInfo" {
             var soundToBeEdited: Sound!
             if let selectedSound = soundList.selectedSound {
                 selectedSound.isDraft = true 
@@ -200,7 +200,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
+            make.bottom.equalTo(self.view).offset(-49)
         }
     }
     

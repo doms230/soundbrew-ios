@@ -14,12 +14,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     let uiElement = UIElement()
     let color = Color()
     
+    var artist: Artist?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
-        setupBottomButtons()
+        artist = Customer.shared.artist
+        loadFollowFollowingStats()
     }
     
     //Mark: sign out
@@ -134,7 +137,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 2
+            return 4
         }
         return 1
     }
@@ -156,21 +159,20 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
-                showEarningsOrPayments("funds")
+                showFollowersOrFollowing("followers")
                 break
                 
             case 1:
-                showEarningsOrPayments("earnings")
+                showFollowersOrFollowing("following")
                 break
                 
             case 2:
-                
+                showEarningsOrPayments("earnings")
                 break
                 
             case 3:
-                
+                showEarningsOrPayments("funds")
                 break
-                
                 
             default:
                 break
@@ -179,16 +181,28 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func showEarningsOrPayments(_ paymentType: String) {
+        if paymentType == "funds" {
+            if let container = self.so_containerViewController {
+                container.isSideViewControllerPresented = false
+                if let topView = container.topViewController as? UINavigationController {
+                    if let view = topView.topViewController as? ProfileViewController {
+                        view.paymentType = paymentType
+                        view.performSegue(withIdentifier: "showAddFunds", sender: self)
+                    }
+                }
+            }
+        } else {
+            self.uiElement.showAlert("Weekly Earnings", message: "Weekly Earnings are sent via PayPal using your Soundbrew email. Please double check that your Soundbrew email matches your PayPal email.", target: self)
+        }
+    }
+    
+    func showFollowersOrFollowing(_ followerOrFollowingType: String) {
         if let container = self.so_containerViewController {
             container.isSideViewControllerPresented = false
             if let topView = container.topViewController as? UINavigationController {
                 if let view = topView.topViewController as? ProfileViewController {
-                    view.paymentType = paymentType
-                    if paymentType == "funds" {
-                        view.performSegue(withIdentifier: "showPayments", sender: self)
-                    } else {
-                        view.performSegue(withIdentifier: "showEarnings", sender: self)
-                    }
+                    view.followerOrFollowing = followerOrFollowingType
+                    view.performSegue(withIdentifier: "showFollowerFollowing", sender: self)
                 }
             }
         }
@@ -202,23 +216,32 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.profileImage.layer.borderColor = color.black().cgColor
         switch indexPath.row {
         case 0:
-            cell.displayNameLabel.text = "Funds"
-            cell.profileImage.image = UIImage(named: "payments")
+            cell.displayNameLabel.text = "\(self.artist!.followerCount ?? 0)"
+            cell.username.text = "Followers"
             break
             
         case 1:
-            cell.displayNameLabel.text = "Earnings"
-            cell.profileImage.image = UIImage(named: "earnings")
+            cell.displayNameLabel.text = "\(self.artist!.followingCount ?? 0)"
+            cell.username.text = "Following"
             break
             
         case 2:
-            cell.displayNameLabel.text = "Edit Profile"
-            cell.profileImage.image = UIImage(named: "edit")
+            if let earnings = self.artist?.earnings {
+                cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
+            } else {
+                cell.displayNameLabel.text = "$0"
+            }
+            
+            cell.username.text = "Earnings"
             break
             
         case 3:
-            cell.displayNameLabel.text = "Share Profile"
-            cell.profileImage.image = UIImage(named: "share")
+            if let funds = self.artist?.balance {
+                cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
+            } else {
+                cell.displayNameLabel.text = "$0"
+            }
+            cell.username.text = "Funds"
             break
             
         default:
@@ -226,5 +249,41 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         return cell
+    }
+    
+    //data
+    func loadFollowFollowingStats() {
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Stats")
+            query.whereKey("userId", equalTo: currentUserID)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    let followers = object!["followers"] as! Int
+                    let following = object!["following"] as! Int
+                    
+                    self.artist?.followingCount = following
+                    self.artist?.followerCount = followers
+                }
+                
+               self.loadEarnings()
+            }
+        }
+    }
+    
+    func loadEarnings() {
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Payment")
+            query.whereKey("userId", equalTo: currentUserID)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    let earnings = object!["tipsSinceLastPayout"] as! Int
+                    self.artist?.earnings = earnings
+                }
+                
+                self.setupBottomButtons()
+            }
+        }
     }
 }

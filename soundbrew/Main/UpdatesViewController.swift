@@ -78,9 +78,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: updatesReuse)
-        tableView.backgroundColor = color.lightGray()
         self.tableView.separatorStyle = .none
-        self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = color.black()
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
@@ -127,7 +125,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-50)
+            make.bottom.equalTo(self.view).offset(-49)
         }
         
         setUpTableView(miniPlayerView!)
@@ -215,7 +213,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                     email = user["email"] as? String
                 }
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 
                 if let followerCount = user["followerCount"] as? Int {
                     artist.followerCount = followerCount
@@ -303,7 +301,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if let objects = objects {
                     for object in objects {
                         let userObjectId = object["fromUserId"] as! String
-                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                         let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil)
                         self.updates.append(update)
                     }
@@ -329,7 +327,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                         let userObjectId = object["fromUserId"] as! String
                         let tipAmount = object["amount"] as! Int
                         let soundId = object["soundId"] as! String
-                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                         let update = Update(object.updatedAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil)
                         self.updates.append(update)
                     }

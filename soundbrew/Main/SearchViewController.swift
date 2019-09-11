@@ -10,8 +10,8 @@ import UIKit
 import Parse
 import SnapKit
 import Kingfisher
-
-class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+import DeckTransition
+class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate {
     let color = Color()
     let uiElement = UIElement()
     var soundType: String!
@@ -30,20 +30,32 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let backItem = UIBarButtonItem()
         backItem.title = "Back"
         navigationItem.backBarButtonItem = backItem
+        
+        let player = Player.sharedInstance
+        if player.player != nil {
+            self.setUpMiniPlayer()
+        } else if self.tableView == nil {
+            self.setUpTableView(nil)
+        } else {
+            self.tableView.reloadData()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
+            if soundList == nil {
+                let viewController = segue.destination as! ProfileViewController
+                viewController.profileArtist = selectedArtist
+                
+            } else {
+               soundList.prepareToShowSelectedArtist(segue)
+            }
+            
             break
             
         case "showEditSoundInfo":
             soundList.prepareToShowSoundInfo(segue)
-            break
-            
-        case "showUploadSound":
-            soundList.prepareToShowSoundAudioUpload(segue)
             break
             
         case "showTags":
@@ -80,7 +92,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let searchProfileReuse = "searchProfileReuse"
     let filterSoundsReuse = "filterSoundsReuse"
     let chartsReuse = "chartsReuse"
-    func setUpTableView() {
+    func setUpTableView(_ miniPlayer: UIView?) {
         tableView = UITableView()
         tableView.backgroundColor = color.black()
         tableView.dataSource = self
@@ -92,8 +104,19 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
-        self.tableView.frame = view.bounds
-        self.view.addSubview(self.tableView)
+        if let miniPlayer = miniPlayer {
+            self.view.addSubview(tableView)
+            self.tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(miniPlayer.snp.top)
+            }
+            
+        } else {
+            self.tableView.frame = view.bounds
+            self.view.addSubview(tableView)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -171,7 +194,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if isSearchActive && indexPath.section == 1 {
             tableView.cellForRow(at: indexPath)?.isSelected = false
             if searchType == 0 {
-                soundList.selectedArtist = searchUsers[indexPath.row]
+                self.selectedArtist = searchUsers[indexPath.row]
                 self.performSegue(withIdentifier: "showProfile", sender: self)
             } else {
                 didSelectSoundAt(row: indexPath.row)
@@ -389,9 +412,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     }
                 }
                 
-                if self.tableView == nil {
-                    self.setUpTableView()
-                    
+                let player = Player.sharedInstance
+                if player.player != nil {
+                    self.setUpMiniPlayer()
+                } else if self.tableView == nil {
+                    self.setUpTableView(nil)
                 } else {
                     self.tableView.reloadData()
                 }
@@ -399,6 +424,66 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 print("Error: \(error!)")
                 self.uiElement.showAlert("Oops", message: "\(error!)", target: self)
+            }
+        }
+    }
+    
+    //mark: miniPlayer
+    var miniPlayerView: MiniPlayerView?
+    func setUpMiniPlayer() {
+        miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        self.view.addSubview(miniPlayerView!)
+        let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+        slide.direction = .up
+        miniPlayerView!.addGestureRecognizer(slide)
+        miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+        miniPlayerView!.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-49)
+        }
+        
+        setUpTableView(miniPlayerView)
+    }
+    
+    @objc func miniPlayerWasSwiped() {
+        showPlayerViewController()
+    }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
+    }
+    
+    func showPlayerViewController() {
+        let player = Player.sharedInstance
+        if player.player != nil {
+            let modal = PlayerV2ViewController()
+            modal.player = player
+            modal.playerDelegate = self
+            let transitionDelegate = DeckTransitioningDelegate()
+            modal.transitioningDelegate = transitionDelegate
+            modal.modalPresentationStyle = .custom
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    //mark: selectedArtist
+    var selectedArtist: Artist?
+    
+    func selectedArtist(_ artist: Artist?) {
+        if let artist = artist {
+            if artist.objectId == "addFunds" {
+                self.performSegue(withIdentifier: "showAddFunds", sender: self)
+            } else if artist.objectId == "signup" {
+                self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else {
+                if soundList == nil {
+                   self.selectedArtist = artist
+                    self.performSegue(withIdentifier: "showProfile", sender: self)
+                } else {
+                  soundList.selectedArtist(artist)
+                }
             }
         }
     }
@@ -435,9 +520,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil)
         }
         
-        if tableView == nil {
-            setUpTableView()
-            
+        let player = Player.sharedInstance
+        if player.player != nil {
+            self.setUpMiniPlayer()
+        } else if self.tableView == nil {
+            self.setUpTableView(nil)
         } else {
             self.tableView.reloadData()
         }
@@ -501,7 +588,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             }
                         }
                         
-                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                         
                         if let followerCount = user["followerCount"] as? Int {
                             artist.followerCount = followerCount

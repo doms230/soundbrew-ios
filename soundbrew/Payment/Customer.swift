@@ -112,7 +112,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, customerId: nil, balance: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 
                 if let customerId = user["customerId"] as? String {
                     if customerId.isEmpty {
@@ -130,10 +130,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     currentBalance = balance
                 }
                 artist.balance = currentBalance
-                
-                if let followerCount = user["followerCount"] as? Int {
-                    artist.followerCount = followerCount
-                }
                 
                 if let name = user["artistName"] as? String {
                     artist.name = name

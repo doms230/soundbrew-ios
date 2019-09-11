@@ -317,30 +317,58 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "settingsReuse":
-            self.addSubview(profileImage)
+            //self.addSubview(profileImage)
+            self.addSubview(username)
             self.addSubview(displayNameLabel)
+            self.addSubview(seperatorLine)
             
-            profileImage.snp.makeConstraints { (make) -> Void in
+            /*profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }*/
+            
+            //Followers count, following count, earnings count, funds count
+            displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(profileImage)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+            // follower label, following label, earnings label, funds labele
+            username.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+               // make.bottom.equalTo(self).offset(uiE)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(username.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             break
             
         case "settingsTitleReuse":
+            self.addSubview(seperatorLine)
             self.addSubview(displayNameLabel)
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(displayNameLabel.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
@@ -497,7 +525,6 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
             self.addSubview(bio)
-            
             
             profileImage.layer.cornerRadius = 50/2
             profileImage.snp.makeConstraints { (make) -> Void in

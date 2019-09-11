@@ -361,7 +361,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                         
                         default:
                         break
-                        
                     }
                 }
                 object.incrementKey("plays")

@@ -1,87 +1,56 @@
 //
-//  SearchSoundsViewController.swift
+//  FollowersFollowingViewController.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 1/28/19.
+//  Created by Dominic  Smith on 9/10/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
-//  MARK: Data, tableview, player, tags, button actions, tableview, tags
-//TODO: Automatic loading of more sounds as the user scrolls
+//
 
 import UIKit
 import Parse
-import Kingfisher
-import SnapKit
-import AppCenterCrashes
 import DeckTransition
 
-class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
-    
-    var soundList: SoundList!
-    let uiElement = UIElement()
+class FollowersFollowingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PlayerDelegate {
+
     let color = Color()
-    var soundType: String!
-    var userId: String?
+    let uiElement = UIElement()
+    
+    var artists = [Artist]()
+    
+    var loadType: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         self.view.backgroundColor = color.black()
-        showSounds()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        } else {
-            setUpTableView(nil)
-        }
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
+        
+        loadFollowersFollowing(loadType)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
-            break
-            
-        case "showEditSoundInfo":
-            soundList.prepareToShowSoundInfo(segue)
+            let viewController = segue.destination as! ProfileViewController
+            viewController.profileArtist = selectedArtist
             break
             
         default:
-            break 
+            break
         }
     }
     
-    func showSounds() {
-        if soundList != nil {
-            self.soundList.sounds.removeAll()
-            self.tableView.reloadData()
-        }
-        
-        var descendingOrder: String?
-        if soundType == "chart" {
-            if selectedTagForFiltering.name == "new" {
-                descendingOrder = "createdAt"
-            } else {
-                //descendingOrder = "plays"
-                descendingOrder = "tips"
-            }
-        }
-        
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: descendingOrder)
-    }
-    
-    //mark: tableview
-    var tableView = UITableView()
-    let soundReuse = "soundReuse"
-    
+    //MARK: Tableview
+    let tableView = UITableView()
+    let searchTagViewReuse = "searchTagViewReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.backgroundColor = color.black()
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         self.tableView.separatorStyle = .none
-        
+        self.tableView.keyboardDismissMode = .onDrag
+        self.tableView.backgroundColor = color.black()
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -102,33 +71,21 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return soundList.sounds.count
+        return artists.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: searchTagViewReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
-        return soundList.soundCell(indexPath, cell: cell)
+        self.artists[indexPath.row].loadUserInfoFromCloud(self.artists[indexPath.row].objectId, target: self, cell: cell)
+        
+        return cell 
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        didSelectRowAt(indexPath.row)
-    }
-    
-    func didSelectRowAt(_ row: Int) {
-        if let player = soundList.player {
-            player.didSelectSoundAt(row)
-            if miniPlayerView == nil {
-                self.setUpMiniPlayer()
-            }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-
-        if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad && soundType == "discover" {
-            soundList.loadWorldCreatedAtSounds()
-        }
+        tableView.cellForRow(at: indexPath)?.isSelected = false
+        selectedArtist = self.artists[indexPath.row]
+        self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     
     //mark: miniPlayer
@@ -144,7 +101,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-49)
+            make.bottom.equalTo(self.view).offset(-50)
         }
         
         setUpTableView(miniPlayerView!)
@@ -172,6 +129,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     //mark: selectedArtist
+    var selectedArtist: Artist!
+    
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
             if artist.objectId == "addFunds" {
@@ -179,12 +138,46 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
             } else {
-                soundList.selectedArtist(artist)
+                selectedArtist = artist
+                self.performSegue(withIdentifier: "showProfile", sender: self)
             }
         }
     }
     
-    //mark: tags
-    var selectedTagForFiltering: Tag! 
+    func loadFollowersFollowing(_ loadType: String) {
+        let query = PFQuery(className: "Follow")
+        if loadType == "followers" {
+            query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+        } else if loadType == "following" {
+            query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
+        }
+        query.limit = 50
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        var userId: String!
+                        if loadType == "followers" {
+                            userId = object["fromUserId"] as? String
+                        } else if loadType == "following" {
+                            userId = object["toUserId"] as? String
+                        }
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                        self.artists.append(artist)
+                    }
+                }
+                
+                let player = Player.sharedInstance
+                if player.player != nil {
+                    self.setUpMiniPlayer()
+                } else if PFUser.current() != nil {
+                    self.setUpTableView(nil)
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
 }
-
