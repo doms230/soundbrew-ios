@@ -106,6 +106,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: spaceReuse)
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
+        tableView.keyboardDismissMode = .onDrag
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
     }
@@ -326,9 +327,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         cell.editBioTitle.text = "City"
         if let city = artist?.city {
-            if !city.isEmpty {
+            if city.isEmpty {
+                cell.editBioText.text = "Add City"
+                
+            } else {
                 cell.editBioText.text = city
             }
+        } else {
+            cell.editBioText.text = "Add City"
         }
         
         return cell
@@ -351,7 +357,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         cell.editBioTitle.text = "Bio"
         if let bio = artist?.bio {
-            cell.editBioText.text = bio
+            if bio.isEmpty {
+                cell.editBioText.text = "Add Bio"
+            } else {
+                cell.editBioText.text = bio
+            }
+        } else {
+            cell.editBioText.text = "Add Bio"
         }
         
         return cell
@@ -359,8 +371,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func changeBio(_ value: String?) {
         if let newBioText = value {
-            artist!.bio = newBioText
-            self.tableView.reloadData()
+            if newBioText != "Add Bio" {
+                artist!.bio = newBioText
+                self.tableView.reloadData()
+            }
         }
     }
     

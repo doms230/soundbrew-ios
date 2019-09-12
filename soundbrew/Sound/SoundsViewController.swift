@@ -50,6 +50,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         case "showTippers":
             soundList.prepareToShowTippers(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = "Tippers"
+            navigationItem.backBarButtonItem = backItem
+            break 
             
         default:
             break 

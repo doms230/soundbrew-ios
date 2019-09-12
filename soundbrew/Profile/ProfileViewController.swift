@@ -163,7 +163,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let tableView = UITableView()
     let soundReuse = "soundReuse"
     let profileReuse = "profileReuse"
-    let noSoundsReuse = "noSoundsReuse"
     let profileSoundReuse = "profileSoundReuse"
     
     func setUpTableView(_ miniPlayer: UIView?) {
@@ -171,7 +170,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: profileSoundReuse)
         self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = color.black()

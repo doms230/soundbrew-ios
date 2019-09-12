@@ -420,7 +420,7 @@
             </objects>
             <point key="canvasLocation" x="-1657" y="-1632"/>
         </scene>
-        <!--Your Collection-->
+        <!--Your Updates-->
         <scene sceneID="qwK-R6-Jl7">
             <objects>
                 <viewController id="mpg-Ld-wKM" customClass="UpdatesViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -431,7 +431,7 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Wk0-J5-4FK"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Your Collection" id="c4F-aX-L3Q"/>
+                    <navigationItem key="navigationItem" title="Your Updates" id="c4F-aX-L3Q"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Lov-Rl-RRq"/>
@@ -508,10 +508,10 @@
         <segue reference="QFf-vL-w9n"/>
         <segue reference="FZs-ab-ofk"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="Nhf-bc-kRf"/>
+        <segue reference="gLy-U4-3xr"/>
         <segue reference="d1u-up-vYK"/>
         <segue reference="iDR-Ll-dSf"/>
         <segue reference="Dx3-fw-EG5"/>
-        <segue reference="0mA-lO-wOD"/>
+        <segue reference="Lov-Rl-RRq"/>
     </inferredMetricsTieBreakers>
 </document>

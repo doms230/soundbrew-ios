@@ -224,7 +224,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if let earnings = self.artist?.earnings {
                 cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
             } else {
-                cell.displayNameLabel.text = "$0"
+                cell.displayNameLabel.text = "$0.00"
             }
             
             cell.username.text = "Earnings"
@@ -234,7 +234,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if let funds = self.artist?.balance {
                 cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
             } else {
-                cell.displayNameLabel.text = "$0"
+                cell.displayNameLabel.text = "$0.00"
             }
             cell.username.text = "Funds"
             break

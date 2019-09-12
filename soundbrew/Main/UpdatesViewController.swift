@@ -22,7 +22,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
+        view.backgroundColor = color.black()        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -46,11 +46,12 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     //mark: tableview
     var tableView = UITableView()
     let updatesReuse = "updatesReuse"
-    
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: updatesReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = color.black()
         if let miniPlayer = miniPlayer {
@@ -73,11 +74,21 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if updates.count == 0 {
+            return 1
+        }
         return updates.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return updatesCell(indexPath)
+        if updates.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            cell.headerTitle.text = "New tips and follows will appear here!"
+            return cell
+        } else {
+           return updatesCell(indexPath)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

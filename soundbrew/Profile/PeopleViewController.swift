@@ -49,10 +49,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     //MARK: Tableview
     let tableView = UITableView()
     let searchTagViewReuse = "searchTagViewReuse"
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = color.black()
@@ -65,15 +67,33 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if artists.count == 0 {
+            return 1
+        }
         return artists.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: searchTagViewReuse) as! ProfileTableViewCell
-        cell.backgroundColor = color.black()
-        self.artists[indexPath.row].loadUserInfoFromCloud(self.artists[indexPath.row].objectId, target: self, cell: cell)
-        
-        return cell 
+        if artists.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            
+            if sound != nil {
+                cell.headerTitle.text = "No Tippers yet."
+            } else if loadType == "followers" {
+                cell.headerTitle.text = "No followers yet."
+            } else if loadType == "following" {
+                cell.headerTitle.text = "You're not following anyone yet."
+            }
+            
+            return cell
+        } else {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: searchTagViewReuse) as! ProfileTableViewCell
+            cell.backgroundColor = color.black()
+            self.artists[indexPath.row].loadUserInfoFromCloud(self.artists[indexPath.row].objectId, target: self, cell: cell)
+            
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

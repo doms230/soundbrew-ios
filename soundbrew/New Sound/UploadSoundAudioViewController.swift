@@ -55,6 +55,9 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             viewController.soundThatIsBeingEdited = soundToBeEdited
         } else {
             soundList.prepareToShowTippers(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = "Tippers"
+            navigationItem.backBarButtonItem = backItem
         }
     }
     
@@ -70,11 +73,12 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     //mark: tableview
     var tableView = UITableView()
     let soundReuse = "soundReuse"
-    
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.lightGray()
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
@@ -103,13 +107,24 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if soundList.sounds.count == 0 {
+            return 1
+        }
         return soundList.sounds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        cell.backgroundColor = color.black()
-        return soundList.soundCell(indexPath, cell: cell)
+        if soundList.sounds.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            cell.headerTitle.text = "No drafts yet. Press the 'New Upload' button above to start releasing music to Soundbrew!"
+            return cell
+            
+        } else {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            return soundList.soundCell(indexPath, cell: cell)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
