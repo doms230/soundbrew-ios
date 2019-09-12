@@ -24,14 +24,14 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     var signupHidden = true
     
-    lazy var titleLabel: UILabel = {
+    /*lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 30)
         label.text = "Sign In"
         label.textColor = .white 
         label.numberOfLines = 0
         return label
-    }()
+    }()*/
     
     lazy var emailText: UITextField = {
         let label = UITextField()
@@ -77,19 +77,22 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         let forogtPasswordItem = UIBarButtonItem(title: "Forgot Password", style: .plain, target: self, action: #selector(didPressForgotPassword(_:)))
         self.navigationItem.rightBarButtonItem = forogtPasswordItem
         
-        self.view.addSubview(titleLabel)
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
+        self.navigationItem.leftBarButtonItem = cancelButton
+        
+       // self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
         self.view.addSubview(passwordText)
         self.view.addSubview(signButton)
         
-        titleLabel.snp.makeConstraints { (make) -> Void in
+       /* titleLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        }*/
         
         emailText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -114,6 +117,12 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         NVActivityIndicatorView.DEFAULT_COLOR = color.blue()
         NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE = CGSize(width: 60, height: 60)
         NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let backItem = UIBarButtonItem()
+        backItem.title = "Forgot Password"
+        navigationItem.backBarButtonItem = backItem
     }
     
     @objc func loginAction(_ sender: UIButton) {
@@ -169,7 +178,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?.saveEventually()
                 
                 Customer.shared.getCustomer(user.objectId!)
-                self.uiElement.goBackToPreviousViewController(self)
+                self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
                 //self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
             } else {
                 UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)
@@ -179,6 +188,10 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     @objc func didPressForgotPassword(_ sender: UIBarButtonItem) {
         self.performSegue(withIdentifier: "showForgotPassword", sender: self)
+    }
+    
+    @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func didPressExit(_ sender: UIBarButtonItem) {

@@ -19,7 +19,6 @@ class SnapchatStoriesArtImage: UIView {
         label.text = "Sound Title"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        //label.textAlignment = .center
         label.numberOfLines = 0
         return label
     }()
@@ -29,7 +28,6 @@ class SnapchatStoriesArtImage: UIView {
         label.text = "Artist Name"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-        //label.textAlignment = .center
         return label
     }()
     
@@ -38,7 +36,6 @@ class SnapchatStoriesArtImage: UIView {
         label.text = "Listen on @sound_brew"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        //label.textAlignment = .center
         return label
     }()
     
@@ -59,8 +56,6 @@ class SnapchatStoriesArtImage: UIView {
         super.init(frame: frame)
         
         self.backgroundColor = color.black()
-        //self.layer.borderWidth = 1
-        //self.layer.borderColor = color.darkGray().cgColor
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -83,42 +78,6 @@ class SnapchatStoriesArtImage: UIView {
         appName.frame = CGRect(x: 175, y: 105, width: 325, height: 30)
         self.artView.addSubview(appName)
         
-        
-        /*artView.frame = CGRect(x: 0, y: 0, width: 500, height: 250)
-        self.addSubview(artView)
-        
-        soundArt.frame = CGRect(x: 0, y: 0, width: 250, height: 250)
-        self.artView.addSubview(soundArt)
-        
-        soundTitle.frame = CGRect(x: 265, y: 15, width: 240, height: 30)
-        self.artView.addSubview(soundTitle)
-        
-        artistName.frame = CGRect(x: 265, y: 65, width: 240, height: 30)
-        self.artView.addSubview(artistName)
-        
-        appName.frame = CGRect(x: 265, y: 115, width: 240, height: 30)
-        self.artView.addSubview(appName)*/
-        
         super.updateConstraints()
     }
-}
-
-extension UIView {
-    // Using a function since `var image` might conflict with an existing variable
-    // (like on `UIImageView`)
-    /*func asImage() -> UIImage {
-        if #available(iOS 10.0, *) {
-            let renderer = UIGraphicsImageRenderer(bounds: bounds)
-            return renderer.image { rendererContext in
-                layer.render(in: rendererContext.cgContext)
-            }
-            
-        } else {
-            UIGraphicsBeginImageContext(self.frame.size)
-            self.layer.render(in:UIGraphicsGetCurrentContext()!)
-            let image = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            return UIImage(cgImage: image!.cgImage!)
-        }
-    }*/
 }

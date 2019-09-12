@@ -33,11 +33,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             setUpTableView(nil)
         }
         
-        if PFUser.current() == nil {
-            showWelcome()
-        } else {
-            loadNewFollows()
-        }
+        loadNewFollows()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -45,29 +41,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             let viewController = segue.destination as! ProfileViewController
             viewController.profileArtist = selectedArtist
         }
-    }
-    
-    //login
-    var login: Login!
-    
-    func showWelcome() {
-        login = Login(target: self)
-        login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
-        login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
-        login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
-        login.welcomeView(explanationString: "Updates such as new tips and follows will appear here!", explanationImageString: "heart")
-    }
-    
-    @objc func signInAction(_ sender: UIButton) {
-        login.signInAction()
-    }
-    
-    @objc func signupAction(_ sender: UIButton) {
-        login.signupAction()
-    }
-    
-    @objc func loginWithTwitterAction(_ sender: UIButton) {
-        login.loginWithTwitterAction()
     }
     
     //mark: tableview

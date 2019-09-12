@@ -32,11 +32,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if PFUser.current() == nil {
-            showWelcome()
-        } else {
-            showSounds()
-        }
+        showSounds()
         
         let player = Player.sharedInstance
         if player.player != nil {
@@ -57,6 +53,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             }
             let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
             viewController.soundThatIsBeingEdited = soundToBeEdited
+        } else {
+            soundList.prepareToShowTippers(segue)
         }
     }
     
@@ -131,29 +129,6 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
             //soundList.loadCollection("createdAt", profileUserId: PFUser.current()!.objectId!)
         }
-    }
-    
-    //mark: login
-    var login: Login!
-    
-    func showWelcome() {
-        login = Login(target: self)
-        login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
-        login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
-        login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
-        login.welcomeView(explanationString: "From here, you'll be able to upload and tag your music!", explanationImageString: "sound")
-    }
-    
-    @objc func signInAction(_ sender: UIButton) {
-        login.signInAction()
-    }
-    
-    @objc func signupAction(_ sender: UIButton) {
-        login.signupAction()
-    }
-    
-    @objc func loginWithTwitterAction(_ sender: UIButton) {
-        login.loginWithTwitterAction()
     }
     
     //mark: new sound upload

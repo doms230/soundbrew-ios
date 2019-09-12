@@ -11,6 +11,8 @@
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
 		F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */; };
 		F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */; };
+		F226B5CB2329A47C00C3E951 /* NewUser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F226B5CA2329A47C00C3E951 /* NewUser.storyboard */; };
+		F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F226B5CC2329AFC200C3E951 /* WelcomeViewController.swift */; };
 		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
 		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
@@ -39,7 +41,6 @@
 		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
 		F2EA85752244110B005D6153 /* SoundList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA85742244110B005D6153 /* SoundList.swift */; };
 		F2EFDEFB23025B50008A157B /* FollowingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EFDEFA23025B50008A157B /* FollowingViewController.swift */; };
-		F2EFDEFD230B0ADE008A157B /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EFDEFC230B0ADD008A157B /* Login.swift */; };
 		F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122D822FBCA50002DA196 /* SearchViewController.swift */; };
 		F2F122DB22FBCA78002DA196 /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122DA22FBCA78002DA196 /* TagTableViewCell.swift */; };
 		F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */; };
@@ -134,6 +135,8 @@
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramStoriesArtImage.swift; sourceTree = "<group>"; };
 		F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapchatStoriesArtImage.swift; sourceTree = "<group>"; };
+		F226B5CA2329A47C00C3E951 /* NewUser.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = NewUser.storyboard; path = Profile/NewUser.storyboard; sourceTree = "<group>"; };
+		F226B5CC2329AFC200C3E951 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
 		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
 		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
@@ -170,7 +173,6 @@
 		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		F2EA85742244110B005D6153 /* SoundList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundList.swift; sourceTree = "<group>"; };
 		F2EFDEFA23025B50008A157B /* FollowingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingViewController.swift; sourceTree = "<group>"; };
-		F2EFDEFC230B0ADD008A157B /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
 		F2F122D822FBCA50002DA196 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F2F122DA22FBCA78002DA196 /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundListTableViewCell.swift; sourceTree = "<group>"; };
@@ -246,7 +248,7 @@
 		F23C620F21DC34DB005C9FF0 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				F2EFDEFC230B0ADD008A157B /* Login.swift */,
+				F226B5CC2329AFC200C3E951 /* WelcomeViewController.swift */,
 				F2480B5722652A31005231FD /* Returning User */,
 				F2480B5622652A19005231FD /* New User */,
 			);
@@ -319,6 +321,7 @@
 				F268989D215AF8F100C21663 /* UIElement.swift */,
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
+				F226B5CA2329A47C00C3E951 /* NewUser.storyboard */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
@@ -622,6 +625,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */,
+				F226B5CB2329A47C00C3E951 /* NewUser.storyboard in Resources */,
 				F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */,
 				F2689871215AEF9000C21663 /* Assets.xcassets in Resources */,
 				F268986F215AEF8F00C21663 /* Main.storyboard in Resources */,
@@ -741,6 +745,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */,
+				F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
@@ -755,7 +760,6 @@
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
-				F2EFDEFD230B0ADE008A157B /* Login.swift in Sources */,
 				F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */,
 				F2F122DB22FBCA78002DA196 /* TagTableViewCell.swift in Sources */,
 				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,

@@ -1,20 +1,52 @@
 //
-//  Login.swift
+//  WelcomeViewController.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 8/19/19.
+//  Created by Dominic  Smith on 9/11/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
-import Foundation
 import Parse
 import UIKit
 import SnapKit
 import TwitterKit
 
-class Login: NSObject, PFUserAuthenticationDelegate {
-    //see https://stackoverflow.com/questions/37255006/how-to-authenticate-a-user-in-parse-ios-sdk-using-oauth
+class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        welcomeView()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+            
+        case "showSignup":
+            let backItem = UIBarButtonItem()
+            backItem.title = "Sign up"
+            navigationItem.backBarButtonItem = backItem
+            
+           let navi = segue.destination as! UINavigationController
+            let viewController = navi.topViewController as! NewEmailViewController
+            
+            viewController.authToken = authToken
+            viewController.authTokenSecret = authTokenSecret
+            viewController.twitterUsername = twitterUsername
+            viewController.twitterID = twitterID
+            break
+            
+        case "showSignin":
+            let backItem = UIBarButtonItem()
+            backItem.title = "Sign In"
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        default:
+            break
+        }
+    }
+    
     func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
         return true
     }
@@ -22,31 +54,26 @@ class Login: NSObject, PFUserAuthenticationDelegate {
     let color = Color()
     let uiElement = UIElement()
     
-    var target: UIViewController!
     var authToken: String?
     var authTokenSecret: String?
     var twitterUsername: String?
     var twitterID: String?
     
-    init(target: UIViewController) {
-        self.target = target
-    }
-    
-    lazy var explanationImage: UIImageView = {
+    lazy var appImage: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "home_color")
+        image.image = UIImage(named: "appy")
         image.layer.cornerRadius = 10
         image.clipsToBounds = true
         return image
     }()
     
-    lazy var explanationLabel: UILabel = {
+    lazy var appName: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.text = "The latest uploads from artists you follow will appear here!"
-        label.textAlignment = .center
+        label.text = "Soundbrew Artists"
         label.numberOfLines = 0
         label.textColor = .white
+        //label.textAlignment = .center
         return label
     }()
     
@@ -59,6 +86,7 @@ class Login: NSObject, PFUserAuthenticationDelegate {
         button.layer.borderColor = UIColor.white.cgColor
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
+        button.addTarget(self, action: #selector(self.didPressSigninButton(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -70,19 +98,20 @@ class Login: NSObject, PFUserAuthenticationDelegate {
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
+        button.addTarget(self, action: #selector(self.didPressSignupButton(_:)), for: .touchUpInside)
         return button
     }()
     
     lazy var loginInWithTwitterButton: UIButton = {
         let button = UIButton()
         button.setTitle("Login with Twitter", for: .normal)
-       // button.setImage(UIImage(named: "twitter"), for: .normal)
+        // button.setImage(UIImage(named: "twitter"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = color.uicolorFromHex(0x1DA1F2)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
-        
+        button.addTarget(self, action: #selector(didPressLoginWithTwitterButton), for: .touchUpInside)
         return button
     }()
     
@@ -96,63 +125,57 @@ class Login: NSObject, PFUserAuthenticationDelegate {
         let button = UIButton()
         button.setTitle("By continuing, you agree to our terms and privacy policy", for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 11)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
+        button.addTarget(self, action: #selector(didPressTermsButton(_:)), for: .touchUpInside)
         return button
     }()
     
-    func welcomeView(explanationString: String, explanationImageString: String) {
-        target.view.addSubview(explanationLabel)
-        target.view.addSubview(explanationImage)
+    func welcomeView() {
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
         
-        target.view.addSubview(signinButton)
-        
-        target.view.addSubview(signupButton)
-        
-        target.view.addSubview(loginInWithTwitterButton)
+        self.view.addSubview(appName)
+        self.view.addSubview(appImage)
+        self.view.addSubview(signinButton)
+        self.view.addSubview(signupButton)
+        self.view.addSubview(loginInWithTwitterButton)
         loginInWithTwitterButton.addSubview(twitter)
+        self.view.addSubview(termsButton)
         
-        target.view.addSubview(termsButton)
-        
-        termsButton.addTarget(target, action: #selector(termsAction(_:)), for: .touchUpInside)
-        
-        explanationImage.image = UIImage(named: explanationImageString)
-        explanationImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(200)
-            make.top.equalTo(target.view).offset(uiElement.uiViewTopOffset(target))
-            make.centerX.equalTo(target.view)
+        appImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        explanationLabel.text = explanationString
-        explanationLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(explanationImage.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(target.view).offset(uiElement.leftOffset)
-            make.right.equalTo(target.view).offset(uiElement.rightOffset)
+        appName.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(appImage)
+            make.left.equalTo(appImage.snp.right).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         signinButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.top.equalTo(explanationLabel.snp.bottom).offset(uiElement.topOffset * 2)
-            make.left.equalTo(target.view).offset(uiElement.leftOffset)
-            make.right.equalTo(target.view).offset(uiElement.rightOffset)
-            //make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset * 2)
         }
         
         signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.top.equalTo(signinButton.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(target.view).offset(uiElement.leftOffset)
-            make.right.equalTo(target.view).offset(uiElement.rightOffset)
-           // make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(loginInWithTwitterButton.snp.top).offset(uiElement.bottomOffset * 2)
         }
         
         loginInWithTwitterButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.top.equalTo(signupButton.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(target.view).offset(uiElement.leftOffset)
-            make.right.equalTo(target.view).offset(uiElement.rightOffset)
-            // make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+             make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
         twitter.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(50)
@@ -162,22 +185,25 @@ class Login: NSObject, PFUserAuthenticationDelegate {
         }
         
         termsButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(loginInWithTwitterButton.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(target.view).offset(uiElement.leftOffset)
-            make.right.equalTo(target.view).offset(uiElement.rightOffset)
-            //make.bottom.equalTo(target.view).offset(-10)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.view).offset(-10)
         }
     }
     
-    func signInAction() {
-        target.performSegue(withIdentifier: "showSignin", sender: target)
+    @objc func didPressSigninButton(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "showSignin", sender: self)
     }
     
-    func signupAction() {
-        target.performSegue(withIdentifier: "showSignup", sender: target)
+    @objc func didPressSignupButton(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "showSignup", sender: self)
     }
     
-    func loginWithTwitterAction() {
+    @objc func didPressTermsButton(_ sender: UIButton) {
+        UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
+    }
+    
+    @objc func didPressLoginWithTwitterButton() {
         let store = TWTRTwitter.sharedInstance().sessionStore
         if let session = store.session() {
             store.logOutUserID(session.userID)
@@ -206,7 +232,7 @@ class Login: NSObject, PFUserAuthenticationDelegate {
                 self.authToken = authToken
                 self.authTokenSecret = authTokenSecret
                 self.twitterUsername = username
-                self.target.performSegue(withIdentifier: "showSignup", sender: self.target)
+                self.performSegue(withIdentifier: "showSignup", sender: self)
             }
         }
     }
@@ -223,12 +249,8 @@ class Login: NSObject, PFUserAuthenticationDelegate {
             installation?.saveEventually()
             
             Customer.shared.getCustomer(parseUser!.objectId!)
-            print("asdfasdfasd")
+            self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
             return AnyObject.self as AnyObject
         })
-    }
-    
-    @objc func termsAction(_ sender: UIButton) {
-        UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
     }
 }

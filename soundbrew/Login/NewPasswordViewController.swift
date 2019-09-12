@@ -119,7 +119,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 
                 Customer.shared.getCustomer(user.objectId!)
                 
-                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+                self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
             }
         }
     }    

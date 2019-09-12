@@ -11,14 +11,8 @@ import Parse
 
 class ForgotPasswordViewController: UIViewController {
 
-    lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-Bold", size: 20 )
-        label.text = "Enter Email"
-        label.textColor = Color().black()
-        label.numberOfLines = 0
-        return label
-    }()
+    let uiElement = UIElement()
+    let color = Color()
     
     lazy var emailInput: UITextField = {
         let textField = UITextField()
@@ -34,22 +28,19 @@ class ForgotPasswordViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
+        
         let doneButton = UIBarButtonItem(title: "Reset Password", style: .plain, target: self, action: #selector(doneAction(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
         
-        self.view.addSubview(titleLabel)
         self.view.addSubview(emailInput)
         
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(100)
-            make.left.equalTo(self.view).offset(UIElement().leftOffset)
-            make.right.equalTo(self.view).offset(UIElement().rightOffset)
-        }
-        
         emailInput.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
-            make.left.equalTo(self.view).offset(UIElement().leftOffset)
-            make.right.equalTo(self.view).offset(UIElement().rightOffset)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         emailInput.becomeFirstResponder()
     }

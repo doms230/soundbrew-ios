@@ -52,8 +52,6 @@ class InstagramStoriesArtImage: UIView {
         super.init(frame: frame)
         
         self.backgroundColor = .clear
-        //self.layer.borderWidth = 1
-        //self.layer.borderColor = color.darkGray().cgColor
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -78,8 +76,6 @@ class InstagramStoriesArtImage: UIView {
 }
 
 extension UIView {
-    // Using a function since `var image` might conflict with an existing variable
-    // (like on `UIImageView`)
     func asImage() -> UIImage {
         if #available(iOS 10.0, *) {
             let renderer = UIGraphicsImageRenderer(bounds: bounds)

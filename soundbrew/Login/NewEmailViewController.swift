@@ -58,6 +58,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
         
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
+        self.navigationItem.leftBarButtonItem = cancelButton
+        
         if authToken != nil {
             self.title = "Email | 1/2"
         } else {
@@ -132,5 +135,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
                 self.performSegue(withIdentifier: "showUsername", sender: self)
             }
         }
+    }
+    
+    @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
 }

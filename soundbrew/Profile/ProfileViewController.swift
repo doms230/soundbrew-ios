@@ -34,7 +34,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let currentUser = PFUser.current(){
+        
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
+        
+        if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
         
@@ -52,20 +57,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.profileArtist = currentArtist
             self.executeTableViewSoundListFollowStatus()
             self.setUpNavigationButtons()
-            
-        } else {
-            self.title = "Your Profile"
-            showWelcome()
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let player = Player.sharedInstance
+        /*let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
-        } else if PFUser.current() != nil {
+        } else if  PFUser.current() != nil  {
             setUpTableView(nil)
-        }
+        }*/
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -112,32 +113,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             viewController.loadType = followerOrFollowing
             break
             
+        case "showSignin":
+            let backItem = UIBarButtonItem()
+            backItem.title = "Sign In"
+            navigationItem.backBarButtonItem = backItem
+            break
+            
         default:
             break
         }
-    }
-    
-    //mark: login | logout
-    var login: Login!
-    
-    func showWelcome() {
-        login = Login(target: self)
-        login.signinButton.addTarget(self, action: #selector(signInAction(_:)), for: .touchUpInside)
-        login.signupButton.addTarget(self, action: #selector(signupAction(_:)), for: .touchUpInside)
-        login.loginInWithTwitterButton.addTarget(self, action: #selector(loginWithTwitterAction(_:)), for: .touchUpInside)
-        login.welcomeView(explanationString: "Music you upload and collect will appear here!", explanationImageString: "smiley")
-    }
-    
-    @objc func signInAction(_ sender: UIButton) {
-        login.signInAction()
-    }
-    
-    @objc func signupAction(_ sender: UIButton) {
-        login.signupAction()
-    }
-    
-    @objc func loginWithTwitterAction(_ sender: UIButton) {
-        login.loginWithTwitterAction()
     }
     
     func changeBio(_ value: String?) {
@@ -163,11 +147,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if self.player?.player != nil {
             setUpMiniPlayer()
             
-        } else if PFUser.current() != nil {
-            setUpTableView(nil)
-            
         } else {
-            showWelcome()
+            setUpTableView(nil)
         }
         
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
@@ -176,25 +157,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         self.loadCollection(self.profileArtist!.objectId)
         self.loadSounds(nil, userId: self.profileArtist?.objectId)
-    }
-    
-    func didPressSignoutButton() {
-        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
-            self.tableView.removeFromSuperview()
-            self.showWelcome()
-            
-            PFUser.logOut()
-            Customer.shared.artist = nil
-            let store = TWTRTwitter.sharedInstance().sessionStore
-            
-            if let session = store.session() {
-                store.logOutUserID(session.userID)
-            }
-
-        }))
-        self.present(menuAlert, animated: true, completion: nil)
     }
     
     //MARK: Tableview
@@ -607,10 +569,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setUpNavigationButtons() {
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
-        
         if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             

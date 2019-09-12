@@ -66,6 +66,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
             Customer.shared.getCustomer(objectId)
         }
         
+        if PFUser.current() != nil {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "tabBar")
+            self.window?.rootViewController = initialViewController
+            
+        } else {
+            let storyboard = UIStoryboard(name: "NewUser", bundle: nil)
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "welcome")
+            self.window?.rootViewController = initialViewController
+        }
+        
         return true
     }
     

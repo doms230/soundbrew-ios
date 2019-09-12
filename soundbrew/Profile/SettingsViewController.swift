@@ -42,12 +42,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
-            if let container = self.so_containerViewController {
-                container.isSideViewControllerPresented = false
-                if let topView = container.topViewController {
-                    topView.dismiss(animated: true, completion: nil)
-                }
-            }
+            self.uiElement.segueToView("NewUser", withIdentifier: "welcome", target: self)
         }))
         self.present(menuAlert, animated: true, completion: nil)
     }

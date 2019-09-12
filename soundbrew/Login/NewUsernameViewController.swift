@@ -170,7 +170,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                 if let _ = user["email"] as? String {
                     Customer.shared.getCustomer(user.objectId!)
                     self.stopAnimating()
-                    self.navigationController?.popToRootViewController(animated: true)
+                    self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
                     
                 } else {
                     user["artistName"] = self.usernameText.text
@@ -182,7 +182,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                         if (success) {
                             Customer.shared.getCustomer(user.objectId!)
                             self.stopAnimating()
-                            self.navigationController?.popToRootViewController(animated: true)
+                            self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
                             
                         } else if let error = error {
                             UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
