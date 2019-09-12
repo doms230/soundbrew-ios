@@ -169,7 +169,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     func showPlayerViewController() {
         let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerV2ViewController()
+            let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
             let transitionDelegate = DeckTransitioningDelegate()

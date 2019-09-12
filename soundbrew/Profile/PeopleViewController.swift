@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 import DeckTransition
+import AppCenterAnalytics
 
 class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -100,6 +101,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.cellForRow(at: indexPath)?.isSelected = false
         selectedArtist = self.artists[indexPath.row]
         self.performSegue(withIdentifier: "showProfile", sender: self)
+        
+        MSAnalytics.trackEvent("People View Controller", withProperties: ["Button" : "Did Select Person"])
     }
     
     //mark: selectedArtist

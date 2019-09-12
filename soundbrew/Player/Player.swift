@@ -12,7 +12,7 @@ import AVFoundation
 import Parse
 import MediaPlayer
 import Kingfisher
-import FirebaseAnalytics
+import AppCenterAnalytics
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
@@ -109,11 +109,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.play()
                 sendSoundUpdateToUI()
                 startTimer()
-                Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-                    AnalyticsParameterItemID: "id-play",
-                    AnalyticsParameterItemName: "play",
-                    AnalyticsParameterContentType: "cont"
-                    ])
+                
             }
         }
     }
@@ -130,11 +126,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func next() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: nil)
-        Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-            AnalyticsParameterItemID: "id-skip",
-            AnalyticsParameterItemName: "skip",
-            AnalyticsParameterContentType: "cont"
-            ])
     }
     
     func previous() {
@@ -143,13 +134,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
                 setBackgroundAudioNowPlaying(player, sound: self.currentSound!)
-                incrementPlayCount(self.currentSound!)
-                Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-                    AnalyticsParameterItemID: "id-goback",
-                    AnalyticsParameterItemName: "go back",
-                    AnalyticsParameterContentType: "cont"
-                    ])
-                
+                incrementPlayCount(self.currentSound!)                
             } else {
                 self.setUpNextSong(true, at: nil)
             }
@@ -162,6 +147,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let tableView = self.tableView {
             tableView.reloadData()
         }
+        
+        MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

@@ -10,8 +10,8 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
-import AppCenterCrashes
 import DeckTransition
+import AppCenterAnalytics
 
 class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
     
@@ -92,8 +92,11 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.cellForRow(at: indexPath)?.isSelected = false
         selectedArtist = updates[indexPath.row].artist
         self.performSegue(withIdentifier: "showProfile", sender: self)
+        
+        MSAnalytics.trackEvent("Updates View Controller", withProperties: ["Button" : "Did Select Person"])
     }
     
     //mark: miniPlayer
@@ -126,7 +129,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     func showPlayerViewController() {
         let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerV2ViewController()
+            let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
             let transitionDelegate = DeckTransitioningDelegate()

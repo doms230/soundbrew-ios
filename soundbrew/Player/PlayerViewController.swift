@@ -1,5 +1,5 @@
 //
-// PlayerV2ViewController.swift
+// PlayerViewController.swift
 // soundbrew
 //
 // Created by Dominic  Smith on 2/6/19.
@@ -16,9 +16,9 @@ import SnapKit
 import DeckTransition
 import Photos
 import NVActivityIndicatorView
-import FirebaseAnalytics
+import AppCenterAnalytics
 
-class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
+class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
     
     let color = Color()
     let uiElement = UIElement()
@@ -71,7 +71,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             customer.updateBalance(-tipAmount)
             updateArtistPayment(sound, tipAmount: tipAmount)
             ListenerToArtistTipRelation(sound, tipAmount: tipAmount, currentUserId: PFUser.current()!.objectId!)
-            incrementPostTipAmount(sound, tipAmount: tipAmount)
+            incrementTipInfo(sound, tipAmount: tipAmount, isIncrementingTipper: false)
             
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
@@ -143,6 +143,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             if success {
                 self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
+                self.incrementTipInfo(sound, tipAmount: 0, isIncrementingTipper: true)
             }
         }
     }
@@ -183,7 +184,7 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         }
     }
     
-    func incrementPostTipAmount(_ sound: Sound, tipAmount: Int) {
+    func incrementTipInfo(_ sound: Sound, tipAmount: Int, isIncrementingTipper: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
@@ -191,7 +192,12 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 print(error)
                 
             } else if let object = object {
-                object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
+                if isIncrementingTipper {
+                    object.incrementKey("tippers")
+                } else {
+                    object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
+                }
+                
                 object.saveEventually()
             }
         }
@@ -274,6 +280,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
+        
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
     
     lazy var appTitle: UILabel = {
@@ -301,8 +309,9 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
         
         let cancelAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
         alertView.addAction(cancelAction)
-        
         present(alertView, animated: true, completion: nil)
+        
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "tipAmountButton", "Description": "How much the current user has tipped the artist for the current song."])
     }
     
     lazy var songArt: UIImageView = {
@@ -331,6 +340,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     }()
     @objc func didPressArtistNameButton(_ sender: UIButton) {
         self.handleDismissal(self.sound?.artist)
+        
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "ArtistName", "Description": "User clicked on artist's name to go to profile."])
     }
     
     lazy var tipButton: UIButton = {
@@ -349,24 +360,10 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                     sendTip(sound, tipAmount: selectedTipAmount)
                 }
             }
-            
-        } else {
-            signupRequired("Welcome To Soundbrew!", message: "Sign up or Sign in to tip \(self.sound?.artist?.username ?? "this artist").")
         }
         
-    }
-    func signupRequired(_ title: String, message: String) {
-        let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
         
-        let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
-            let artist = Artist(objectId: "signup", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-            self.handleDismissal(artist)
-        }
-        alertController.addAction(settingsAction)
-        let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
     lazy var shareButton: UIButton = {
@@ -378,6 +375,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     @objc func didPressShareButton(_ sender: UIButton) {
         if let sound = self.sound {
             self.uiElement.showShareOptions(self, sound: sound)
+            
+            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Share", "Description": "User Pressed Share Button."])
         }
     }
     
@@ -398,6 +397,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                 playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
             }
         }
+        
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "PlayBackSlider", "Description": "User seeked time on song"])
     }
     
     var timer = Timer()
@@ -441,11 +442,13 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
                     player.pause()
                     timer.invalidate()
                     self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                    MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Pause", "Description": "User Pressed Pause."])
                     
                 } else {
                     player.play()
                     startTimer()
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Play", "Description": "User Pressed Play."])
                 }
             }
         }
@@ -463,6 +466,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
             self.shouldEnableSoundView(false)
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
             player.next()
+            
+            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
         }
     }
     
@@ -476,6 +481,8 @@ class PlayerV2ViewController: UIViewController, NVActivityIndicatorViewable {
     @objc func didPressGoBackButton(_ sender: UIButton) {
         if let player = self.player {
             player.previous()
+            
+            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Go Back", "Description": "User Pressed Go Back."])
         }
     }
     

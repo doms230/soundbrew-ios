@@ -11,12 +11,12 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
-import FirebaseAnalytics
 import TwitterKit
 import FirebaseDynamicLinks
 import FacebookCore
 import FacebookLogin
 import FacebookShare
+import AppCenterAnalytics
 //import Zip
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate {
@@ -98,9 +98,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.updateSound(sound, isDraft: true)
                 }
             }
+            
+            MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Save Draft", "Description": "User save sound as draft"])
         }))
         menuAlert.addAction(UIAlertAction(title: "Discard", style: .default, handler: { action in
             self.uiElement.goBackToPreviousViewController(self)
+            
+            MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Discard", "Description": "User discarded sound"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
     }
@@ -782,11 +786,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     }
                     
                     self.saveTags(tags)
-                    Analytics.logEvent(AnalyticsEventSelectContent, parameters: [
-                        AnalyticsParameterItemID: "id-soundupload",
-                        AnalyticsParameterItemName: "sound upload",
-                        AnalyticsParameterContentType: "soundupload"
-                        ])
+                    MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
             } else if let error = error {
                 self.stopAnimating()

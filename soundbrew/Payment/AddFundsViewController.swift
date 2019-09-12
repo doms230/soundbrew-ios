@@ -9,6 +9,7 @@
 import UIKit
 import Stripe
 import Parse
+import AppCenterAnalytics
 
 class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     
@@ -77,13 +78,20 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
         switch status {
         case .error:
-            self.uiElement.showAlert("Payment was Declined", message: "", target: self)
+            var errorString = ""
+            if let reError = error?.localizedDescription {
+                errorString = reError
+            }
+            self.uiElement.showAlert("Payment was Un-Successful", message: errorString, target: self)
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Declined", "description": "User's payment was Un-Successful. \(errorString)"])
+            
         case .success:
             let newFunds = paymentContext.paymentAmount - self.processingFee
             let customer = Customer.shared
             customer.updateBalance(newFunds)
             self.uiElement.goBackToPreviousViewController(self)
-            print("success")
+            
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Added", "description": "User Successfully added funds to their account."])
         case .userCancellation:
             return // Do nothing
         default:
@@ -127,10 +135,12 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         menuAlert.addAction(UIAlertAction(title: "$1.00", style: .default, handler: { action in
             sender.setTitle("$1.00", for: .normal)
             self.updateTotalAndProcessingFee(1)
+            
         }))
         menuAlert.addAction(UIAlertAction(title: "$5.00", style: .default, handler: { action in
             sender.setTitle("$5.00", for: .normal)
             self.updateTotalAndProcessingFee(5)
+            
         }))
         menuAlert.addAction(UIAlertAction(title: "$10.00", style: .default, handler: { action in
             sender.setTitle("$10.00", for: .normal)
@@ -161,6 +171,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         
         let totalInCents = total * Double(100)
         self.paymentContext.paymentAmount = Int(totalInCents)
+        
+        MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "$\(funds)", "description": "User pressed add $\(funds)"])
     }
     
     func roundTwoDecimalPlaces(_ x: Double) -> Double {
@@ -269,7 +281,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             make.centerY.equalTo(chosenFundAmount)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
-        
         
         self.view.addSubview(paymentProcessingFeeTitle)
         paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in

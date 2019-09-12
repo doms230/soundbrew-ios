@@ -13,6 +13,7 @@
 import Foundation
 import UIKit
 import Parse
+import AppCenterAnalytics
 
 class SoundList: NSObject, PlayerDelegate {
     var target: UIViewController!
@@ -154,6 +155,8 @@ class SoundList: NSObject, PlayerDelegate {
     @objc func didPressTippersButton(_ sender: UIButton) {
         self.selectedSound = sounds[sender.tag]
         target.performSegue(withIdentifier: "showTippers", sender: self)
+        
+        MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Tippers", "description": "User pressed view tippers button."])
     }
     
     func prepareToShowTippers(_ segue: UIStoryboardSegue) {
@@ -186,16 +189,22 @@ class SoundList: NSObject, PlayerDelegate {
                     menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
                         self.selectedSound = sound
                         self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
+                        
+                        MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Edit Sound", "description": "User pressed Edit Sound Info."])
                     }))
                     
                     menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
                         self.deleteSong(sound.objectId!, row: row)
+                        
+                        MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Delete Sound", "description": "User pressed Delete Sound."])
                     }))
                     
                 } else {
                     menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
                     menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
                         self.selectedArtist(sound.artist)
+                        
+                        MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Go To Artist", "description": "User pressed go to artist."])
                     }))
                 }
                 
@@ -203,6 +212,9 @@ class SoundList: NSObject, PlayerDelegate {
                 menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
                 menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
                     self.selectedArtist(sound.artist)
+                    
+                    MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Go To Artist", "description": "User pressed go to artist."])
+
                 }))
             }
             
@@ -210,6 +222,8 @@ class SoundList: NSObject, PlayerDelegate {
             
             target.present(menuAlert, animated: true, completion: nil)
         }
+        
+        MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Menu", "description": "User pressed menu button."])
     }
     
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {

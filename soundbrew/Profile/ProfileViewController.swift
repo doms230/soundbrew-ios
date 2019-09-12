@@ -14,6 +14,7 @@ import SnapKit
 import DeckTransition
 import SidebarOverlay
 import TwitterKit
+import AppCenterAnalytics
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate {
     
@@ -234,7 +235,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func showPlayerViewController() {
         let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerV2ViewController()
+            let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
             let transitionDelegate = DeckTransitioningDelegate()
@@ -303,9 +304,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if sender.tag == 0 {
                 showSoundsTitle = "\(artist.username!)'s Releases"
                 selectedSoundType = "uploads"
+                
+                MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "View all Releases", "description": "User pressed view all releases."])
+
             } else {
                 showSoundsTitle = "\(artist.username!)'s Collection"
                 selectedSoundType = "collection"
+                
+                MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "View all Collection", "description": "User pressed view all collection."])
             }
         }
         self.performSegue(withIdentifier: "showSounds", sender: self)
@@ -404,10 +410,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressReleaseSound(_ sender: UIButton) {
         didSelectSound(artistReleases, row: sender.tag)
+        
+        MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Release Sound", "description": "User pressed song that artists released."])
     }
     
     @objc func didPressCollectionSound(_ sender: UIButton) {
         didSelectSound(artistCollection, row: sender.tag)
+        
+        MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Collection Sound", "description": "User pressed song in artist's collection."])
     }
     
     func didSelectSound(_ sounds: Array<Sound>, row: Int) {
@@ -550,14 +560,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch sender.tag {
         case 0:
             self.performSegue(withIdentifier: "showEditProfile", sender: self)
+            
+            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Edit Profile", "description": "User pressed song in artist's collection."])
             break
             
         case 1:
             updateFollowStatus(false)
+            
+            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Un-Follow", "description": "User un-followed artist"])
             break
             
         case 2:
             updateFollowStatus(true)
+            
+            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Follow", "description": "User followed artist"])
             break
             
         default:
@@ -585,6 +601,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let websiteURL = URL(string: website)!
             if UIApplication.shared.canOpenURL(websiteURL) {
                 UIApplication.shared.open(websiteURL, options: [:], completionHandler: nil)
+                
+                MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Website", "description": "User selected website"])
             }
         }
     }
@@ -592,12 +610,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
         if let artist = profileArtist {
             self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+            
+            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
         }
     }
     
     @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
         if let container = self.so_containerViewController {
             container.isSideViewControllerPresented = true
+            
+            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Settings", "description": "User pressed settings button"])
         }
     }
     

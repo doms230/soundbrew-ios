@@ -37,7 +37,7 @@
 		F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */; };
 		F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
-		F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */; };
+		F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */; };
 		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
 		F2EA85752244110B005D6153 /* SoundList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA85742244110B005D6153 /* SoundList.swift */; };
 		F2EFDEFB23025B50008A157B /* FollowingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EFDEFA23025B50008A157B /* FollowingViewController.swift */; };
@@ -169,7 +169,7 @@
 		F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundsViewController.swift; sourceTree = "<group>"; };
 		F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemporaryFile.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
+		F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		F2EA85742244110B005D6153 /* SoundList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundList.swift; sourceTree = "<group>"; };
 		F2EFDEFA23025B50008A157B /* FollowingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingViewController.swift; sourceTree = "<group>"; };
@@ -376,7 +376,7 @@
 			isa = PBXGroup;
 			children = (
 				F2EA6F4D220B630B007FA614 /* Player.swift */,
-				F2EA6F4F220B6411007FA614 /* PlayerV2ViewController.swift */,
+				F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */,
 				F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */,
 			);
 			path = Player;
@@ -749,7 +749,7 @@
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
-				F2EA6F50220B6411007FA614 /* PlayerV2ViewController.swift in Sources */,
+				F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,

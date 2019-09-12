@@ -14,6 +14,7 @@ import SCSDKCreativeKit
 import ShareInstagram
 import Alamofire
 import Kingfisher
+import AppCenterAnalytics
 
 class UIElement {
     let topOffset = 10
@@ -240,16 +241,19 @@ class UIElement {
         
         let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
             self.shareToSnapchat(sound)
+            MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Snapchat", "Description": "User Pressed Share to Snapchat."])
         }
         alertController.addAction(snapchatAction)
         
         let instagramAction = UIAlertAction(title: "Instagram Stories", style: .default) { (_) -> Void in
             self.shareToInstagram(sound)
+            MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Instagram Stories", "Description": "User Pressed Share to Instagram."])
         }
         alertController.addAction(instagramAction)
         
         let moreAction = UIAlertAction(title: "Share Link", style: .default) { (_) -> Void in
             self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
+            MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
         }
         alertController.addAction(moreAction)
         
@@ -322,13 +326,5 @@ class UIElement {
         let centsToDollars = Double(cents) / 100.00
         let dollarsProperlyFormattedAsString = String(format: "%.2f", centsToDollars)
         return "\(currency)\(dollarsProperlyFormattedAsString)"
-    }
-    
-    func prepareNewUserSegue(_ segue: UIStoryboardSegue, authToken: String?, authTokenSecret: String?, twitterUsername: String?, twitterID: String?) {
-         let newEmail = segue.destination as! NewEmailViewController
-        newEmail.authToken = authToken
-        newEmail.authTokenSecret = authTokenSecret
-        newEmail.twitterUsername = twitterUsername
-        newEmail.twitterID = twitterID
     }
 }

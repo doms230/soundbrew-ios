@@ -11,6 +11,7 @@ import NVActivityIndicatorView
 import UserNotifications
 import AppCenter
 import AppCenterCrashes
+import AppCenterAnalytics
 import StoreKit
 import Firebase
 import TwitterKit
@@ -30,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         UITabBar.appearance().tintColor = .white
         UITabBar.appearance().backgroundColor = Color().black()
         
-        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self])
+        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
         
         TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
         

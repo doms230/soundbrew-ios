@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 import SidebarOverlay
+import AppCenterAnalytics
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
@@ -43,6 +44,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             PFUser.logOut()
             Customer.shared.artist = nil
             self.uiElement.segueToView("NewUser", withIdentifier: "welcome", target: self)
+            
+            MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Sign out", "description": "User pressed Sign out"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
     }
@@ -58,6 +61,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @objc func didPressProvideFeedbackButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/support")!, options: [:], completionHandler: nil)
+        
+        MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Support", "description": "User pressed Support"])
     }
     
     lazy var connectWithUsButton: UIButton = {
@@ -74,11 +79,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Twitter", style: .default, handler: { action in
         UIApplication.shared.open(URL(string: "https://www.twitter.com/sound_brew")!, options: [:], completionHandler: nil)
+            MSAnalytics.trackEvent("Connect With Us", withProperties: ["Button" : "Twitter", "description": "User pressed twitter"])
         }))
         menuAlert.addAction(UIAlertAction(title: "Instagram", style: .default, handler: { action in
             UIApplication.shared.open(URL(string: "https://www.instagram.com/sound_brew")!, options: [:], completionHandler: nil)
+            MSAnalytics.trackEvent("Connect With Us", withProperties: ["Button" : "Instagram", "description": "User pressed instagram"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
+        
+        MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Connect With Us", "description": "User pressed connect with us button"])
     }
     
     func setupBottomButtons() {
@@ -155,18 +164,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             switch indexPath.row {
             case 0:
                 showFollowersOrFollowing("followers")
+                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Followers", "description": "User pressed Followers"])
                 break
                 
             case 1:
                 showFollowersOrFollowing("following")
+                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Following", "description": "User pressed Following"])
                 break
                 
             case 2:
                 showEarningsOrPayments("earnings")
+                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Earnings", "description": "User pressed Earnings"])
                 break
                 
             case 3:
                 showEarningsOrPayments("funds")
+                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Funds", "description": "User pressed Funds"])
                 break
                 
             default:

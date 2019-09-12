@@ -11,6 +11,8 @@ import Parse
 import SnapKit
 import Kingfisher
 import DeckTransition
+import AppCenterAnalytics
+
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate {
     let color = Color()
     let uiElement = UIElement()
@@ -290,6 +292,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.selectedTagType = featureTagTypes[sender.tag]
         }
         self.performSegue(withIdentifier: "showTags", sender: self)
+        
+        MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "View All \(selectedTagType)", "description": "User pressed view all button."])
     }
     
     func addTags(_ scrollview: UIScrollView, tags: Array<Tag>, row: Int) {
@@ -357,6 +361,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         for tag in tags {
             if selectedTagTitle == tag.name {
                 showSounds(tag, soundType: "discover")
+                MSAnalytics.trackEvent("Selected Tag", withProperties: ["Tag" : "\(selectedTagTitle)"])
             }
         }
     }
@@ -451,16 +456,19 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func miniPlayerWasSwiped() {
         showPlayerViewController()
+        MSAnalytics.trackEvent("Mini Player", withProperties: ["View" : "SearchViewController", "description": "User did start Searching."])
     }
     
     @objc func miniPlayerWasPressed(_ sender: UIButton) {
         showPlayerViewController()
+        MSAnalytics.trackEvent("Mini Player", withProperties: ["View" : "SearchViewController", "description": "User did start Searching."])
+
     }
     
     func showPlayerViewController() {
         let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerV2ViewController()
+            let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
             let transitionDelegate = DeckTransitioningDelegate()
@@ -536,6 +544,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         isSearchActive = true
         self.tableView.reloadData()
         searchBar.setShowsCancelButton(true, animated: true)
+        
+        MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "Search", "description": "User did start Searching."])
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -635,7 +645,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
     }
-    
     
     //mark: dynamic link
     func checkForProfileDynamicLink() {

@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SnapKit
 import Parse
+import AppCenterAnalytics
 
 class MiniPlayerView: UIButton {
     let color = Color()
@@ -62,9 +63,13 @@ class MiniPlayerView: UIButton {
                     player.pause()
                     self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                     
+                    MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Pause", "description": "User pressed pause."])
+                    
                 } else {
                     player.play()
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    
+                    MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Play", "description": "User pressed play."])
                 }
                 
             } else {

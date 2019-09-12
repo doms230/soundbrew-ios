@@ -12,6 +12,7 @@ import MobileCoreServices
 import SnapKit
 import NVActivityIndicatorView
 import DeckTransition
+import AppCenterAnalytics
 
 class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate {
     
@@ -53,7 +54,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             }
             let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
             viewController.soundThatIsBeingEdited = soundToBeEdited
-        } else {
+        } else if segue.identifier == "showTippers" {
             soundList.prepareToShowTippers(segue)
             let backItem = UIBarButtonItem()
             backItem.title = "Tippers"
@@ -152,11 +153,16 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "From The App", style: .default, handler: { action in
             self.showUploadSoundFileUI()
+            
+            MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the App"])
         }))
         menuAlert.addAction(UIAlertAction(title: "From The Web", style: .default, handler: { action in
             UIApplication.shared.open(URL(string: "https://www.soundbrew.app/upload")!, options: [:], completionHandler: nil)
+            MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the Web"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
+        
+        MSAnalytics.trackEvent("UploadSoundViewController", withProperties: ["Button" : "New Upload", "description": "user pressed new upload button"])
     }
     
     func showUploadSoundFileUI() {
@@ -170,7 +176,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let artist = Customer.shared.artist
         newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: "\(urls[0])", relevancyScore: 0, audioData: nil, artist: artist, tmpFile: nil, tips: nil, tippers: nil, isDraft: true)
-        self.performSegue(withIdentifier: "showSoundInfo", sender: self)
+        self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -207,7 +213,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     func showPlayerViewController() {
         let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerV2ViewController()
+            let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
             let transitionDelegate = DeckTransitioningDelegate()
