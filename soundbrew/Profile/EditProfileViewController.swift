@@ -39,7 +39,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
         setUpViews()
         

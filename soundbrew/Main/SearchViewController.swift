@@ -22,6 +22,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         setupSearchBar()
         for featureTagType in featureTagTypes {
             loadTags(featureTagType)

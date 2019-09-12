@@ -21,6 +21,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.barTintColor = color.black()
         setUpNavigationBar()
         loadTags(tagType, searchText: nil)        
     }
@@ -62,7 +64,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         searchBar.placeholder = "Search Tags"
         searchTextField?.backgroundColor = color.black()
         searchBar.delegate = self
-        
+        searchTextField?.textColor = .white 
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         return searchBar
     }()

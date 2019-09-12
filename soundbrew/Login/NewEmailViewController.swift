@@ -56,7 +56,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
         let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
         self.navigationItem.leftBarButtonItem = cancelButton

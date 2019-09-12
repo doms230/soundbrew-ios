@@ -10,6 +10,7 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
+import AppCenterAnalytics
 
 class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     let color = Color()
@@ -54,8 +55,8 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
-        
+        navigationController?.navigationBar.tintColor = .white
+
         self.title = "Password | 3/3"
         
         self.view.addSubview(titleLabel)
@@ -119,7 +120,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 
                 Customer.shared.getCustomer(user.objectId!)
                 
-                self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
+                self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)                
             }
         }
     }    

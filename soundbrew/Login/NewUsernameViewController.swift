@@ -57,9 +57,9 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
         if authToken != nil {
             self.title = "Username | 2/2"

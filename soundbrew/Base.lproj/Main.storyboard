@@ -493,8 +493,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="heart_filled_nav" width="34.5" height="34.5"/>
-        <image name="heart_nav" width="34.5" height="34.5"/>
+        <image name="heart_filled_nav" width="33" height="33"/>
+        <image name="heart_nav" width="33" height="33"/>
         <image name="home" width="34.5" height="34.5"/>
         <image name="home_filled" width="34.5" height="34.5"/>
         <image name="new_nav" width="37.5" height="37.5"/>
@@ -509,9 +509,9 @@
         <segue reference="FZs-ab-ofk"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="gLy-U4-3xr"/>
-        <segue reference="d1u-up-vYK"/>
-        <segue reference="iDR-Ll-dSf"/>
-        <segue reference="Dx3-fw-EG5"/>
-        <segue reference="Lov-Rl-RRq"/>
+        <segue reference="eKw-d2-ktB"/>
+        <segue reference="LnM-xP-wsl"/>
+        <segue reference="ttO-Wg-wls"/>
+        <segue reference="jCE-No-XFc"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -24,15 +24,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     var signupHidden = true
     
-    /*lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 30)
-        label.text = "Sign In"
-        label.textColor = .white 
-        label.numberOfLines = 0
-        return label
-    }()*/
-    
     lazy var emailText: UITextField = {
         let label = UITextField()
         label.placeholder = "Username or Email"
@@ -72,7 +63,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
         let forogtPasswordItem = UIBarButtonItem(title: "Forgot Password", style: .plain, target: self, action: #selector(didPressForgotPassword(_:)))
         self.navigationItem.rightBarButtonItem = forogtPasswordItem
@@ -80,16 +71,9 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
         self.navigationItem.leftBarButtonItem = cancelButton
         
-       // self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
         self.view.addSubview(passwordText)
         self.view.addSubview(signButton)
-        
-       /* titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }*/
         
         emailText.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))

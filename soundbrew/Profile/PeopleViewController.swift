@@ -26,7 +26,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
         if sound == nil {
             loadFollowersFollowing(loadType)

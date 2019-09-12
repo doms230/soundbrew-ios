@@ -10,12 +10,11 @@ import Parse
 import UIKit
 import SnapKit
 import TwitterKit
+import AppCenterAnalytics
 
 class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
         welcomeView()
     }
     
@@ -67,16 +66,6 @@ class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
         return image
     }()
     
-    lazy var appName: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.text = "Soundbrew Artists"
-        label.numberOfLines = 0
-        label.textColor = .white
-        //label.textAlignment = .center
-        return label
-    }()
-    
     lazy var signinButton: UIButton = {
         let button = UIButton()
         button.setTitle("Sign In", for: .normal)
@@ -104,14 +93,14 @@ class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
     
     lazy var loginInWithTwitterButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Login with Twitter", for: .normal)
+        button.setTitle("Login", for: .normal)
         // button.setImage(UIImage(named: "twitter"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = color.uicolorFromHex(0x1DA1F2)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
-        button.addTarget(self, action: #selector(didPressLoginWithTwitterButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didPressLoginWithTwitterButton(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -137,7 +126,6 @@ class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
         
-        self.view.addSubview(appName)
         self.view.addSubview(appImage)
         self.view.addSubview(signinButton)
         self.view.addSubview(signupButton)
@@ -146,15 +134,9 @@ class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
         self.view.addSubview(termsButton)
         
         appImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        appName.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(appImage)
-            make.left.equalTo(appImage.snp.right).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.height.width.equalTo(100)
+            make.centerX.equalTo(self.view)
+            make.centerY.equalTo(self.view).offset(uiElement.bottomOffset * 6)
         }
         
         signinButton.snp.makeConstraints { (make) -> Void in
@@ -193,17 +175,23 @@ class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
     
     @objc func didPressSigninButton(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showSignin", sender: self)
+        
+        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign In Button", "description": "User pressed Sign in button"])
     }
     
     @objc func didPressSignupButton(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showSignup", sender: self)
+        
+        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign Up", "description": "user pressed sign up button"])
     }
     
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
+        
+        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Terms Button", "description": "user pressed terms button"])
     }
     
-    @objc func didPressLoginWithTwitterButton() {
+    @objc func didPressLoginWithTwitterButton(_ sender: UIButton) {
         let store = TWTRTwitter.sharedInstance().sessionStore
         if let session = store.session() {
             store.logOutUserID(session.userID)
@@ -218,6 +206,8 @@ class WelcomeViewController: UIViewController, PFUserAuthenticationDelegate {
                 //sender.isOn = false
             }
         })
+        
+        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Twitter Button", "description": "user pressed twitter button"])
     }
     
     func checkIfUserExists(_ userID: String, authToken: String, authTokenSecret: String, username: String?) {

@@ -26,6 +26,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     override func viewDidLoad() {        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         view.backgroundColor = color.black()
         
         let uploadButton = UIBarButtonItem(title: "New Upload", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))

@@ -500,6 +500,7 @@ class SoundList: NSObject, PlayerDelegate {
                     
                 } else if let post = post {
                     post["isRemoved"] = true
+                    post["isDraft"] = false 
                     post.saveEventually()
                     self.sounds.remove(at: row)
                     self.tableView?.reloadData()

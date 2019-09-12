@@ -30,7 +30,7 @@ class ForgotPasswordViewController: UIViewController {
         
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
         let doneButton = UIBarButtonItem(title: "Reset Password", style: .plain, target: self, action: #selector(doneAction(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
