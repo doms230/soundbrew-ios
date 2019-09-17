@@ -88,7 +88,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func showDraftOrDiscardMessage() {
-        let menuAlert = UIAlertController(title: "If you go back now, edits to your new release will be discarded.", message: nil , preferredStyle: .actionSheet)
+        let menuAlert = UIAlertController(title: "If you go back now, edits to your release will be discarded.", message: nil , preferredStyle: .actionSheet)
         menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Save Draft", style: .default, handler: { action in
             if let sound = self.soundThatIsBeingEdited {
@@ -779,12 +779,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if isDraft {
                     self.finishUp(false)
                 } else {
-                    if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
-                        let title = newSound["title"] as! String
-                        let art = newSound["songArt"] as! PFFileObject
-                        self.createDynamicLink(title, artistName: PFUser.current()!.username!, artURL: art.url!, objectId: newSound.objectId!)
-                    }
-                    
+                    self.handleSocials(newSound)
                     self.saveTags(tags)
                     MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
@@ -820,6 +815,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         if isDraft {
                             self.finishUp(false)
                         } else {
+                            self.handleSocials(object)
                             self.finishUp(true)
                         }
                         
@@ -829,6 +825,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     }
                 }
             }
+        }
+    }
+    
+    func handleSocials(_ object: PFObject) {
+        let title = object["title"] as! String
+        let art = object["songArt"] as! PFFileObject
+        if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
+            self.createDynamicLink(title, artistName: PFUser.current()!.username!, artURL: art.url!, objectId: object.objectId!)
         }
     }
     

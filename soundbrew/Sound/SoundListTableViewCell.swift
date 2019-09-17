@@ -135,6 +135,9 @@ class SoundListTableViewCell: UITableViewCell {
             break
             
         case "soundReuse":
+            self.addSubview(menuButton)
+            self.menuButton.addSubview(menuImage)
+            
             self.addSubview(artistButton)
             self.artistButton.addSubview(artistImage)
             self.artistButton.addSubview(artistLabel)
@@ -185,10 +188,23 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(artistButton)
             }
+            
+            menuButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            menuImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.right.equalTo(menuButton)
+                make.bottom.equalTo(menuButton)
+            }
+            
             collectorsButton.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(soundTitle)
-                make.right.equalTo(soundTitle)
+                make.right.equalTo(menuButton.snp.left).offset(uiElement.rightOffset)
             }
             
             collectorsLabel.snp.makeConstraints { (make) -> Void in
