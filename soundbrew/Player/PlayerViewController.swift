@@ -18,7 +18,7 @@ import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
 
-class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
+class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let color = Color()
     let uiElement = UIElement()
@@ -36,10 +36,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
             player?.target = self
             setupNotificationCenter()
             setUpView()
-            
-            if let currentUserId = PFUser.current()?.objectId {
-                ListenerToArtistTipRelation(sound, tipAmount: nil, currentUserId: currentUserId)
-            }
+            checkIfUserAddedSongToCollection(sound)
         }
     }
     
@@ -55,41 +52,56 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
-    //mark: tips
-    let selectedTipAmount = 25
-    var amountCurrentUserHastipped = 0
+    //mark: money
+    let tipAmountInCents = [10, 25, 50, 100]
+    var selectedTipAmount = 10
     var customer = Customer.shared
+    var didAddSongToCollection = false
+    func showSendMoney() {
+        if let sound = self.sound {
+            let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
+            let alertView = UIAlertController(
+                title: "Current Balance: \(balanceInDollars)",
+                message: "\n\n\n\n\n\n\n\n",
+                preferredStyle: .actionSheet)
+            
+            let pickerView = UIPickerView(frame:
+                CGRect(x: 0, y: 45, width: self.view.frame.width, height: 160))
+            pickerView.dataSource = self
+            pickerView.delegate = self
+            alertView.view.addSubview(pickerView)
+            
+            let sendMoneyActionButton = UIAlertAction(title: "Add To Your Collection", style: .default) { (_) -> Void in
+                self.sendTip(sound, tipAmount: self.selectedTipAmount)
+            }
+            alertView.addAction(sendMoneyActionButton)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertView.addAction(cancelAction)
+            
+            present(alertView, animated: true, completion: nil)
+        }
+    }
     
     func sendTip(_ sound: Sound, tipAmount: Int) {
         if customer.artist!.balance! >= tipAmount {
-            //SKStoreReviewController.requestReview()
-            self.amountCurrentUserHastipped = tipAmount + self.amountCurrentUserHastipped
-            //let amountInDollars = uiElement.convertCentsToDollarsAndReturnString(self.amountCurrentUserHastipped, currency: "$")
-           // self.tipAmountButton.setTitle(amountInDollars, for: .normal)
             self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+            self.didAddSongToCollection = true
+            
+            SKStoreReviewController.requestReview()
             
             customer.updateBalance(-tipAmount)
             updateArtistPayment(sound, tipAmount: tipAmount)
-            ListenerToArtistTipRelation(sound, tipAmount: tipAmount, currentUserId: PFUser.current()!.objectId!)
-            incrementTipInfo(sound, tipAmount: tipAmount, isIncrementingTipper: false)
-            
-            let player = Player.sharedInstance
-            if player.player != nil {
-                let modal = PlayerViewController()
-                modal.player = player
-                let transitionDelegate = DeckTransitioningDelegate()
-                modal.transitioningDelegate = transitionDelegate
-                modal.modalPresentationStyle = .custom
-                self.present(modal, animated: true, completion: nil)
-            }
+            newTip(sound, tipAmount: tipAmount)
+            incrementTipAmount(sound, tipAmount: tipAmount)
             
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let tipAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
             
             let alertView = UIAlertController(
-                title: "Required Balance: \(tipAmount) \n Current Balance: \(balance)",
-                message: "The minimum price to add this song to your collection is $0.25.",
+                title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
+                message: "The selected tip amount exceeds your Soundbrew Balance.",
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
@@ -129,7 +141,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
-        let newPaymentRow = PFObject(className: "Payment")
+        let newPaymentRow = PFObject(className: "Tip")
         newPaymentRow["userId"] = artistObjectId
         newPaymentRow["tipsSinceLastPayout"] = tipAmount
         newPaymentRow["tips"] = tipAmount
@@ -138,11 +150,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
             if error != nil {
                 self.customer.updateBalance(tipAmount)
                 self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
+                self.didAddSongToCollection = false
             }
         }
     }
     
-    func newTipRow(_ sound: Sound, tipAmount: Int) {
+    func newTip(_ sound: Sound, tipAmount: Int) {
         let newTip = PFObject(className: "Tip")
         newTip["fromUserId"] = PFUser.current()!.objectId!
         newTip["toUserId"] = sound.artist?.objectId
@@ -151,50 +164,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         newTip.saveEventually{
             (success: Bool, error: Error?) in
             if success {
-                self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
-                self.incrementTipInfo(sound, tipAmount: 0, isIncrementingTipper: true)
             }
         }
     }
     
-    func ListenerToArtistTipRelation(_ sound: Sound, tipAmount: Int?, currentUserId: String) {
-        if let artistObjectId = sound.artist?.objectId {
-            let query = PFQuery(className: "Tip")
-            query.whereKey("fromUserId", equalTo: currentUserId)
-            query.whereKey("toUserId", equalTo: artistObjectId)
-            query.whereKey("soundId", equalTo: sound.objectId!)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                if let object = object {
-                    if let tipAmount = tipAmount {
-                        object.incrementKey("amount", byAmount: NSNumber(value: tipAmount))
-                        object.saveEventually{
-                            (success: Bool, error: Error?) in
-                            if success {
-                                self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
-                                self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
-                            } else if error != nil {
-                                self.amountCurrentUserHastipped = self.amountCurrentUserHastipped - tipAmount
-                            }
-                        }
-                    } else {
-                        let amountCurrentUserHastipped = object["amount"] as! Int
-                        let tipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(amountCurrentUserHastipped, currency: "$")
-                        //self.tipAmountButton.setTitle(tipAmountString, for: .normal)
-                        self.amountCurrentUserHastipped = amountCurrentUserHastipped
-                    }
-                } else if let tipAmount = tipAmount {
-                    self.newTipRow(sound, tipAmount: tipAmount)
-                } else {
-                   // self.tipAmountButton.setTitle("$0.00", for: .normal)
-                    self.amountCurrentUserHastipped = 0
-                }
-            }
-        }
-    }
-    
-    func incrementTipInfo(_ sound: Sound, tipAmount: Int, isIncrementingTipper: Bool) {
+    func incrementTipAmount(_ sound: Sound, tipAmount: Int) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
@@ -202,15 +177,48 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
                 print(error)
                 
             } else if let object = object {
-                if isIncrementingTipper {
-                    object.incrementKey("tippers")
-                } else {
-                    object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
-                }
-                
+                object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
+                object.incrementKey("collectors")
                 object.saveEventually()
             }
         }
+    }
+    
+    func checkIfUserAddedSongToCollection(_ sound: Sound) {
+        self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
+        self.tipButton.isEnabled = false
+        self.didAddSongToCollection = false
+        
+        let query = PFQuery(className: "Tip")
+        query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId! )
+        query.whereKey("soundId", equalTo: sound.objectId!)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                self.didAddSongToCollection = true
+                self.sound?.tips = (object["amount"] as! Int)
+                self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+            }
+            self.tipButton.isEnabled = true
+        }
+    }
+        
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return tipAmountInCents.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        let balanceInDollars = Double(tipAmountInCents[row]) / 100.00
+        let doubleStr = String(format: "%.2f", balanceInDollars)
+        return "$\(doubleStr)"
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedTipAmount = tipAmountInCents[row]
     }
     
     //mark: sound
@@ -243,11 +251,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func setCurrentSoundView(_ sound: Sound) {
-        self.songTitle.text = sound.title
+        checkIfUserAddedSongToCollection(sound)
         
-        if let currentUserId = PFUser.current()?.objectId {
-            self.ListenerToArtistTipRelation(sound, tipAmount: nil, currentUserId: currentUserId)
-        }
+        self.songTitle.text = sound.title
         
         self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "appy"))
         
@@ -374,22 +380,22 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         let button = UIButton()
         button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressSendMoneyButton(_:)), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     @objc func didPressSendMoneyButton(_ sender: UIButton) {
         if let currentUser = PFUser.current() {
             if currentUser.objectId! == sound?.artist?.objectId {
-                self.uiElement.showAlert("Love Yourself", message: "But, you can't tip yourself. 🙃", target: self)
+                self.uiElement.showAlert("🙃", message: "", target: self)
+            } else if didAddSongToCollection {
+                let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tips!, currency: "$")
+                self.uiElement.showAlert("You added \(self.sound!.title!) to your Collection for \(amountString)", message: "", target: self)
             } else {
-                //showSendMoney()
-                if let sound = self.sound {
-                    sendTip(sound, tipAmount: selectedTipAmount)
-                }
+                showSendMoney()
             }
         }
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
-        
     }
     
     lazy var shareButton: UIButton = {

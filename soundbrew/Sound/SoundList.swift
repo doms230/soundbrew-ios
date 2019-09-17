@@ -137,6 +137,9 @@ class SoundList: NSObject, PlayerDelegate {
                 loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
             }
             
+            cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
+            cell.artistButton.tag = indexPath.row
+            
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
             
@@ -162,6 +165,13 @@ class SoundList: NSObject, PlayerDelegate {
         target.performSegue(withIdentifier: "showTippers", sender: self)
         
         MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
+    }
+    
+    @objc func didPressArtistButton(_ sender: UIButton) {
+        let row = sender.tag
+        if sounds.indices.contains(sender.tag) {
+            self.selectedArtist(sounds[row].artist)
+        }
     }
     
     func prepareToShowTippers(_ segue: UIStoryboardSegue) {
