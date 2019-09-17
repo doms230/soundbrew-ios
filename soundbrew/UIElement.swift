@@ -22,7 +22,7 @@ class UIElement {
     let rightOffset = -15
     let bottomOffset = -10
     let arrowHeightWidth = 10
-    let buttonHeight = 50
+    let buttonHeight = 40
     let userImageHeightWidth = 40
     let elementOffset = 5
     let titleLabelFontSize: CGFloat = 25

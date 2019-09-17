@@ -125,8 +125,13 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
             
-            if let artist = sound.artist?.name {
-                cell.soundArtist.text = artist
+            if let name = sound.artist?.name {
+                cell.artistLabel.text = name
+                if let image = sound.artist?.image {
+                    cell.artistImage.kf.setImage(with: URL(string: image))
+                } else {
+                    cell.artistImage.image = UIImage(named: "profile_icon")
+                }
                 
             } else {
                 loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
@@ -135,28 +140,28 @@ class SoundList: NSObject, PlayerDelegate {
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
             
-            cell.tippersButton.addTarget(self, action: #selector(didPressTippersButton(_:)), for: .touchUpInside)
-            cell.tippersButton.tag = indexPath.row
+            cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
+            cell.collectorsButton.tag = indexPath.row
             if let tippers = sound.tippers {
-                var tipLabel = "Tippers"
+                var tipLabel = "Collectors"
                 if tippers == 1 {
-                    tipLabel = "Tipper"
+                    tipLabel = "Collector"
                 }
                 
-                cell.tippersLabel.text = "\(tippers) \(tipLabel)"
+                cell.collectorsLabel.text = "\(tippers) \(tipLabel)"
             } else {
-                cell.tippersLabel.text = "0 Tippers"
+                cell.collectorsLabel.text = "0 Collectors"
             }
         }
         
         return cell
     }
     
-    @objc func didPressTippersButton(_ sender: UIButton) {
+    @objc func didPressCollectorsButton(_ sender: UIButton) {
         self.selectedSound = sounds[sender.tag]
         target.performSegue(withIdentifier: "showTippers", sender: self)
         
-        MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Tippers", "description": "User pressed view tippers button."])
+        MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
     }
     
     func prepareToShowTippers(_ segue: UIStoryboardSegue) {
@@ -228,7 +233,7 @@ class SoundList: NSObject, PlayerDelegate {
     
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
-        cell.soundArtist.textColor = color
+        cell.artistLabel.textColor = color
         cell.soundDate.textColor = color
     }
     
@@ -450,7 +455,7 @@ class SoundList: NSObject, PlayerDelegate {
                 let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 
                 if let name = user["artistName"] as? String {
-                    cell.soundArtist.text = name
+                    cell.artistLabel.text = name
                     artist.name = name
                 }
                 
@@ -468,6 +473,7 @@ class SoundList: NSObject, PlayerDelegate {
                 
                 if let image = user["userImage"] as? PFFileObject {
                     artist.image = image.url
+                    cell.artistImage.kf.setImage(with: URL(string: image.url!))
                 }
                 
                 if let bio = user["bio"] as? String {

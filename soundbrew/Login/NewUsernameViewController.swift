@@ -22,24 +22,16 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     var twitterUsername: String?
     var twitterID: String?
     
-    lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
-        label.text = "Username"
-        label.textColor = .white 
-        label.numberOfLines = 0
-        return label
-    }()
-    
     lazy var usernameText: UITextField = {
-        let label = UITextField()
-        label.placeholder = "Username"
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.backgroundColor = .white
-        label.borderStyle = .roundedRect
-        label.clearButtonMode = .whileEditing
-        label.keyboardType = .emailAddress
-        return label
+        let textField = UITextField()
+        textField.placeholder = "Username"
+        textField.font = UIFont(name: uiElement.mainFont, size: 17)
+        textField.backgroundColor = .white
+        textField.borderStyle = .roundedRect
+        textField.clearButtonMode = .whileEditing
+        textField.keyboardType = .emailAddress
+        textField.tintColor = color.black()
+        return textField
     }()
     
     lazy var nextButton: UIButton = {
@@ -61,29 +53,15 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        if authToken != nil {
-            self.title = "Username | 2/2"
-            nextButton.setTitle("Done", for: .normal)
-        } else {
-            self.title = "Username | 2/3"
-        }
-        
-        self.view.addSubview(titleLabel)
         self.view.addSubview(usernameText)
         self.view.addSubview(nextButton)
         nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
-        
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
         
         if let username = twitterUsername {
             usernameText.text = username
         }
         usernameText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -102,6 +80,10 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         let viewController = segue.destination as! NewPasswordViewController
         viewController.emailString = emailString
         viewController.usernameString = usernameText.text!
+        
+        let backItem = UIBarButtonItem()
+        backItem.title = "Password | 3/3"
+        navigationItem.backBarButtonItem = backItem
     }
     
     @objc func next(_ sender: UIButton){

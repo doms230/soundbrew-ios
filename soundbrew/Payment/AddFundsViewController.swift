@@ -82,7 +82,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             if let reError = error?.localizedDescription {
                 errorString = reError
             }
-            self.uiElement.showAlert("Payment was Un-Successful", message: errorString, target: self)
+            self.uiElement.showAlert("Payment was Declined", message: "", target: self)
             MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Declined", "description": "User's payment was Un-Successful. \(errorString)"])
             
         case .success:

@@ -62,10 +62,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
     
     func sendTip(_ sound: Sound, tipAmount: Int) {
         if customer.artist!.balance! >= tipAmount {
-            SKStoreReviewController.requestReview()
+            //SKStoreReviewController.requestReview()
             self.amountCurrentUserHastipped = tipAmount + self.amountCurrentUserHastipped
-            let amountInDollars = uiElement.convertCentsToDollarsAndReturnString(self.amountCurrentUserHastipped, currency: "$")
-            self.tipAmountButton.setTitle(amountInDollars, for: .normal)
+            //let amountInDollars = uiElement.convertCentsToDollarsAndReturnString(self.amountCurrentUserHastipped, currency: "$")
+           // self.tipAmountButton.setTitle(amountInDollars, for: .normal)
             self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             
             customer.updateBalance(-tipAmount)
@@ -73,13 +73,23 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
             ListenerToArtistTipRelation(sound, tipAmount: tipAmount, currentUserId: PFUser.current()!.objectId!)
             incrementTipInfo(sound, tipAmount: tipAmount, isIncrementingTipper: false)
             
+            let player = Player.sharedInstance
+            if player.player != nil {
+                let modal = PlayerViewController()
+                modal.player = player
+                let transitionDelegate = DeckTransitioningDelegate()
+                modal.transitioningDelegate = transitionDelegate
+                modal.modalPresentationStyle = .custom
+                self.present(modal, animated: true, completion: nil)
+            }
+            
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let tipAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
             
             let alertView = UIAlertController(
-                title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
-                message: "The tip amount exceeds your Soundbrew Balance.",
+                title: "Required Balance: \(tipAmount) \n Current Balance: \(balance)",
+                message: "The minimum price to add this song to your collection is $0.25.",
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
@@ -171,13 +181,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
                     } else {
                         let amountCurrentUserHastipped = object["amount"] as! Int
                         let tipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(amountCurrentUserHastipped, currency: "$")
-                        self.tipAmountButton.setTitle(tipAmountString, for: .normal)
+                        //self.tipAmountButton.setTitle(tipAmountString, for: .normal)
                         self.amountCurrentUserHastipped = amountCurrentUserHastipped
                     }
                 } else if let tipAmount = tipAmount {
                     self.newTipRow(sound, tipAmount: tipAmount)
                 } else {
-                    self.tipAmountButton.setTitle("$0.00", for: .normal)
+                   // self.tipAmountButton.setTitle("$0.00", for: .normal)
                     self.amountCurrentUserHastipped = 0
                 }
             }
@@ -248,11 +258,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         }
         
         if let artistName = sound.artist?.name {
-            self.artistName.setTitle(artistName, for: .normal)
+            self.artistLabel.text = artistName
+            if let artistImage = sound.artist?.image {
+                self.artistImage.kf.setImage(with: URL(string: artistImage))
+            }
             
         } else {
-            let placeHolder = ""
-            self.artistName.setTitle(placeHolder, for: .normal)
+            self.artistLabel.text = ""
             loadUserInfoFromCloud(sound.artist!.objectId)
         }
     }
@@ -293,7 +305,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         return label
     }()
     
-    lazy var tipAmountButton: UIButton = {
+    /*lazy var tipAmountButton: UIButton = {
         let button = UIButton()
         button.setTitle("$0.00", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -312,7 +324,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         present(alertView, animated: true, completion: nil)
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "tipAmountButton", "Description": "How much the current user has tipped the artist for the current song."])
-    }
+    }*/
     
     lazy var songArt: UIImageView = {
         let image = UIImageView()
@@ -327,17 +339,31 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.textAlignment = .center
+        label.numberOfLines = 2
         return label
     }()
     
-    lazy var artistName: UIButton = {
+    lazy var artistButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Artist Name", for: .normal)
-        button.setTitleColor(.lightGray, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         button.addTarget(self, action: #selector(didPressArtistNameButton(_:)), for: .touchUpInside)
         return button
     }()
+    
+    lazy var artistImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "profile_icon")
+        image.layer.cornerRadius = 35 / 2
+        image.clipsToBounds = true
+        return image
+    }()
+    
+    lazy var artistLabel : UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        label.textColor = .white
+        return label
+    }()
+    
     @objc func didPressArtistNameButton(_ sender: UIButton) {
         self.handleDismissal(self.sound?.artist)
         
@@ -497,11 +523,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        self.view.addSubview(tipAmountButton)
+        /*self.view.addSubview(tipAmountButton)
         tipAmountButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(exitButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        }*/
         
         self.view.addSubview(appTitle)
         appTitle.snp.makeConstraints { (make) -> Void in
@@ -520,22 +546,37 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.addSubview(songTitle)
         songTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(exitButton)
+            make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(songArt)
             make.right.equalTo(songArt)
         }
         
-        self.view.addSubview(artistName)
-        artistName.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songTitle.snp.bottom)
-            make.left.equalTo(exitButton)
+        self.view.addSubview(artistButton)
+        artistButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(35)
+            make.top.equalTo(songTitle.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(songArt)
             make.right.equalTo(songArt)
+        }
+        
+        self.artistButton.addSubview(artistLabel)
+        artistLabel.snp.makeConstraints { (make) -> Void in
+            make.centerX.equalTo(artistButton)
+            make.top.equalTo(artistButton)
+            //make.right.equalTo(artistButton)
+        }
+        
+        self.artistButton.addSubview(artistImage)
+        artistImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(35)
+            make.right.equalTo(artistLabel.snp.left).offset(-(uiElement.elementOffset))
+            make.centerY.equalTo(artistLabel)
         }
         
         //playback views
         self.view.addSubview(playBackSlider)
         playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.artistName.snp.bottom)
+            make.top.equalTo(self.artistButton.snp.bottom)
             make.left.equalTo(exitButton)
             make.right.equalTo(songArt)
         }
@@ -599,8 +640,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable {
                 
             } else if let user = user {
                 let artistName = user["artistName"] as? String
-                self.artistName.setTitle(artistName, for: .normal)
+                self.artistLabel.text = artistName
                 self.sound!.artist?.name = artistName
+                
+                if let artistImage = user["userImage"] as? PFFileObject {
+                    self.artistImage.kf.setImage(with: URL(string: artistImage.url!))
+                    self.sound!.artist?.image = artistImage.url
+                }
                 
                 self.sound!.artist?.city = user["city"] as? String
             }

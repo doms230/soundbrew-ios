@@ -21,22 +21,23 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
-        label.text = "What's Your Email?"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
+        label.text = "Your Soundbrew email is used to send PayPal Payouts."
         label.textColor = .white 
         label.numberOfLines = 0
         return label
     }()
     
     lazy var emailText: UITextField = {
-        let label = UITextField()
-        label.placeholder = "Email"
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.backgroundColor = .white
-        label.borderStyle = .roundedRect
-        label.clearButtonMode = .whileEditing
-        label.keyboardType = .emailAddress
-        return label
+        let textField = UITextField()
+        textField.placeholder = "Email"
+        textField.font = UIFont(name: uiElement.mainFont, size: 17)
+        textField.backgroundColor = .white
+        textField.borderStyle = .roundedRect
+        textField.clearButtonMode = .whileEditing
+        textField.keyboardType = .emailAddress
+        textField.tintColor = color.black()
+        return textField
     }()
     
     lazy var nextButton: UIButton = {
@@ -72,21 +73,21 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(nextButton)
         nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
         emailText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         nextButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(emailText.snp.bottom).offset(10)
+            make.top.equalTo(emailText.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        titleLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(nextButton.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -101,6 +102,17 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
         viewController.authTokenSecret = self.authTokenSecret
         viewController.twitterID = self.twitterID
         viewController.twitterUsername = self.twitterUsername
+        
+        var nextTitle: String!
+        if authToken != nil {
+            nextTitle = "Username | 2/2"
+        } else {
+            nextTitle = "Username | 2/3"
+        }
+        
+        let backItem = UIBarButtonItem()
+        backItem.title = nextTitle
+        navigationItem.backBarButtonItem = backItem
     }
     
     @objc func next(_ sender: UIButton){

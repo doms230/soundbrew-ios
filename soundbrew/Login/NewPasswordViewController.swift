@@ -18,24 +18,16 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     var emailString: String!
     var usernameString: String!
     
-    lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: uiElement.titleLabelFontSize)
-        label.text = "Choose a Password"
-        label.textColor = .white 
-        label.numberOfLines = 0
-        return label
-    }()
-    
     lazy var passwordText: UITextField = {
-        let label = UITextField()
-        label.placeholder = "Password"
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.backgroundColor = .white
-        label.borderStyle = .roundedRect
-        label.clearButtonMode = .whileEditing
-        label.isSecureTextEntry = true
-        return label
+        let textField = UITextField()
+        textField.placeholder = "Password"
+        textField.font = UIFont(name: uiElement.mainFont, size: 17)
+        textField.backgroundColor = .white
+        textField.borderStyle = .roundedRect
+        textField.clearButtonMode = .whileEditing
+        textField.isSecureTextEntry = true
+        textField.tintColor = color.black()
+        return textField
     }()
     
     lazy var finishButton: UIButton = {
@@ -56,22 +48,13 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-
-        self.title = "Password | 3/3"
         
-        self.view.addSubview(titleLabel)
         self.view.addSubview(passwordText)
         self.view.addSubview(finishButton)
         finishButton.addTarget(self, action: #selector(finish(_:)), for: .touchUpInside)
-
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
         
         passwordText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }

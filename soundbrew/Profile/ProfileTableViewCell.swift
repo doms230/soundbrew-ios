@@ -130,6 +130,7 @@ class ProfileTableViewCell: UITableViewCell {
         textField.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         textField.textColor = .white
         textField.clearButtonMode = .whileEditing
+        textField.tintColor = .white 
         return textField
     }()
     

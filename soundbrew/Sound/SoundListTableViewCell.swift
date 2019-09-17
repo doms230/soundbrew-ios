@@ -53,6 +53,26 @@ class SoundListTableViewCell: UITableViewCell {
         return line
     }()
     
+    lazy var artistButton: UIButton = {
+        let button = UIButton()
+        return button
+    }()
+    
+    lazy var artistImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "profile_icon")
+        image.layer.cornerRadius = 35 / 2
+        image.clipsToBounds = true
+        return image
+    }()
+    
+    lazy var artistLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.textColor = .white
+        return label
+    }()
+    
     lazy var soundArtImage: UIImageView = {
         let image = UIImageView()
         image.layer.borderWidth = 1
@@ -67,14 +87,6 @@ class SoundListTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 16)
         label.textColor = .white
-        label.numberOfLines = 2
-        return label
-    }()
-    
-    lazy var soundArtist: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
-        label.textColor = .white 
         return label
     }()
     
@@ -96,18 +108,12 @@ class SoundListTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var tippersButton: UIButton = {
+    lazy var collectorsButton: UIButton = {
         let button = UIButton()
         return button
     }()
     
-    lazy var tippersImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "profile_icon")
-        return image
-    }()
-    
-    lazy var tippersLabel: UILabel = {
+    lazy var collectorsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
         label.textColor = .white
@@ -131,76 +137,82 @@ class SoundListTableViewCell: UITableViewCell {
         case "soundReuse":
             self.addSubview(menuButton)
             self.menuButton.addSubview(menuImage)
+            
+            self.addSubview(artistButton)
+            self.artistButton.addSubview(artistImage)
+            self.artistButton.addSubview(artistLabel)
+            
             self.addSubview(soundArtImage)
             self.addSubview(soundTitle)
-            self.addSubview(soundArtist)
+            self.addSubview(artistLabel)
             self.addSubview(soundDate)
             self.addSubview(dividerLine)
             
             //adding seperate stuff because doesn't size right as one button.
-            self.addSubview(tippersButton)
-            //self.tippersButton.addSubview(tippersImage)
-            self.tippersButton.addSubview(tippersLabel)
+            self.addSubview(collectorsButton)
+            self.collectorsButton.addSubview(collectorsLabel)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(115)
+                make.height.width.equalTo(125)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundArtImage)
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            soundArtist.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(soundTitle)
-                make.right.equalTo(soundTitle)
             }
             
             soundDate.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArtist.snp.bottom).offset(uiElement.elementOffset)
+                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(soundTitle)
             }
             
+            artistButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(soundDate.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(soundTitle)
+            }
+            artistImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(35)
+                make.top.equalTo(artistButton)
+                make.left.equalTo(artistButton)
+            }
+            
+            artistLabel.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(artistImage)
+                make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(artistButton)
+            }
+            
             menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(75)
-                make.top.equalTo(soundArtImage.snp.bottom).offset(uiElement.bottomOffset - 10)
+                make.height.width.equalTo(15)
+                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-               // make.bottom.equalTo(self)
             }
             
             menuImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
-                make.top.equalTo(menuButton)
                 make.right.equalTo(menuButton)
+                make.bottom.equalTo(menuButton)
             }
             
-            tippersButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(75)
-                make.top.equalTo(menuButton).offset(uiElement.bottomOffset)
+            collectorsButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(soundTitle)
-                make.right.equalTo(menuButton.snp.left)
-                //make.bottom.equalTo(soundArtImage.snp.bottom)
+                make.right.equalTo(menuButton.snp.left).offset(uiElement.rightOffset)
             }
             
-            /*tippersImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(tippersButton)
-                make.left.equalTo(tippersButton)
-            }*/
-            
-            tippersLabel.snp.makeConstraints { (make) -> Void in
-               // make.centerY.equalTo(tippersImage)
-                make.top.equalTo(tippersButton)
-                make.left.equalTo(tippersButton)
-                make.right.equalTo(tippersButton)
+            collectorsLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(collectorsButton)
+                make.left.equalTo(collectorsButton)
+                make.right.equalTo(collectorsButton)
             }
-        
+            
             break
             
         case "shareReuse":
