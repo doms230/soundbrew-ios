@@ -33,6 +33,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         } else {
             loadTippers()
         }
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -80,7 +81,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             cell.backgroundColor = color.black()
             
             if sound != nil {
-                cell.headerTitle.text = "No Tippers yet."
+                cell.headerTitle.text = "No Collectors yet."
             } else if loadType == "followers" {
                 cell.headerTitle.text = "No followers yet."
             } else if loadType == "following" {
@@ -128,6 +129,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         } else if loadType == "following" {
             query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
         }
+        query.whereKey("isRemoved", equalTo: false)
         query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

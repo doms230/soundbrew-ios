@@ -38,8 +38,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
-        
+        navigationController?.navigationBar.tintColor = .white        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
@@ -52,22 +54,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             loadUserInfoFromCloud(userId)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
             self.setUpNavigationButtons()
-    
+            
         } else if let currentArtist = Customer.shared.artist {
             isCurrentUserProfile = true
             self.profileArtist = currentArtist
             self.executeTableViewSoundListFollowStatus()
             self.setUpNavigationButtons()
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        /*let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        } else if  PFUser.current() != nil  {
-            setUpTableView(nil)
-        }*/
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -86,7 +79,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
+            let viewController = segue.destination as! ProfileViewController
+            viewController.profileArtist = selectedArtist
             break
             
         case "showAddFunds", "showEarnings":
@@ -246,6 +240,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: selectedArtist
+    var selectedArtist: Artist!
+    
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
             if artist.objectId == "addFunds" {
@@ -253,7 +249,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
             } else {
-                soundList.selectedArtist(artist)
+                if artist.objectId != profileArtist?.objectId {
+                    let player = Player.sharedInstance
+                    self.selectedArtist = player.currentSound?.artist
+                    self.performSegue(withIdentifier: "showProfile", sender: self)
+                }
             }
         }
     }
@@ -271,6 +271,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundReuse) as! TagTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
+        
+        if cell.tagsScrollview.subviews.count > 0 {
+            for subview in cell.tagsScrollview.subviews{
+                subview.removeFromSuperview()
+            }
+        }
+        
         if indexPath.section == 1 {
             cell.TagTypeTitle.text = "Releases"
             if artistReleases.count == 0 && didloadReleases {
@@ -355,6 +362,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let titleLabel = UILabel()
             titleLabel.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
             titleLabel.text = sound.title
+            titleLabel.textAlignment = .center
             titleLabel.textColor = .white
             scrollview.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
@@ -367,6 +375,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             artistLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
             self.loadArtistName(sound.artist!.objectId, label: artistLabel)
             artistLabel.textColor = .white
+            artistLabel.textAlignment = .center
             scrollview.addSubview(artistLabel)
             artistLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(titleLabel.snp.bottom)
@@ -379,6 +388,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             dateLabel.text = formattedDate
             dateLabel.textColor = .lightGray
+            dateLabel.textAlignment = .center
             scrollview.addSubview(dateLabel)
             dateLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistLabel.snp.bottom)
@@ -617,8 +627,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressSettingsButton(_ sender: UIBarButtonItem) {
         if let container = self.so_containerViewController {
+            let sideView = container.sideViewController as! SettingsViewController
+            sideView.artist = Customer.shared.artist
+            sideView.loadFollowFollowingStats()
+            sideView.tableView.reloadData()
             container.isSideViewControllerPresented = true
-            
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Settings", "description": "User pressed settings button"])
         }
     }

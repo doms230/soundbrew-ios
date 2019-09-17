@@ -84,7 +84,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         if updates.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.backgroundColor = color.black()
-            cell.headerTitle.text = "New tips and follows will appear here!"
+            cell.headerTitle.text = "New collectors and followers will appear here!"
             return cell
         } else {
            return updatesCell(indexPath)

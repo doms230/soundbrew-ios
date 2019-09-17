@@ -45,6 +45,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             self.addCardLabel.text = "Edit"
         }
         self.purchaseButton.isEnabled = paymentContext.selectedPaymentOption != nil
+        self.purchaseButton.setTitle("PURCHASE", for: .normal)
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
     }
@@ -249,9 +250,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     lazy var purchaseButton: UIButton = {
         let button = UIButton()
         button.isEnabled = false
-        button.backgroundColor = color.blue()
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        button.setTitle("Purchase", for: .normal)
+        //button.backgroundColor = color.blue()
+        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        button.setTitle("Loading...", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(didPressPurchaseButton(_:)), for: .touchUpInside)
         button.layer.cornerRadius = 3

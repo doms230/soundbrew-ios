@@ -245,6 +245,7 @@ class SoundList: NSObject, PlayerDelegate {
         cell.soundTitle.textColor = color
         cell.artistLabel.textColor = color
         cell.soundDate.textColor = color
+        cell.collectorsLabel.textColor = color
     }
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
@@ -295,12 +296,11 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = false
         if self.player != nil {
             self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
-            self.tableView?.isHidden = false
-            //target.view.bringSubviewToFront(tableView!)
-            self.player!.sounds = self.sounds
-            self.player!.fetchAudioData(0, prepareAndPlay: false)
+            if self.sounds.count > 0 {
+                self.player!.sounds = self.sounds
+                self.player!.fetchAudioData(0, prepareAndPlay: false)
+            }
         }
-        
         self.tableView?.reloadData()
     }
     

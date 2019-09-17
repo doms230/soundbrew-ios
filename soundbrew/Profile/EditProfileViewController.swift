@@ -487,7 +487,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func validateWebsite() -> Bool {
         if !websiteText.text!.isEmpty {
-            if !websiteText.text!.starts(with: "https") || !websiteText.text!.starts(with: "http") {
+            if !websiteText.text!.starts(with: "https") && !websiteText.text!.starts(with: "http") {
                 websiteText.text = "https://\(websiteText.text!)"
             }
             

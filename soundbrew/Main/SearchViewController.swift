@@ -79,6 +79,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             navigationItem.backBarButtonItem = backItem
             break
             
+        case "showTippers":
+            soundList.prepareToShowTippers(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = "Collectors"
+            navigationItem.backBarButtonItem = backItem
+            break   
+            
         default:
             break
         }
@@ -152,6 +159,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if isSearchActive {
             if indexPath.section == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
+                cell.selectionStyle = .none 
                 cell.backgroundColor = color.black()
                 cell.newButton.setTitle("Artists", for: .normal)
                 cell.newButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
@@ -582,7 +590,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         
         let cityQuery = PFQuery(className: "_User")
-        cityQuery.whereKey("city", matchesRegex: text.lowercased())
+        cityQuery.whereKey("artistName", matchesRegex: text.lowercased())
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery, cityQuery])
         query.limit = 50
@@ -612,7 +620,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         }
                         
                         if let username = user["username"] as? String {
-                            artist.username = username
+                            if username.contains("@") {
+                                artist.username = ""
+                            } else {
+                                artist.username = username
+                            }
                         }
                         
                         if let city = user["city"] as? String {

@@ -18,7 +18,7 @@ class SnapchatStoriesArtImage: UIView {
         let label = UILabel()
         label.text = "Sound Title"
         label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.numberOfLines = 0
         return label
     }()
@@ -43,18 +43,23 @@ class SnapchatStoriesArtImage: UIView {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
         image.backgroundColor = color.black()
+        image.layer.cornerRadius = 5
+        image.clipsToBounds = true 
         return image
     }()
     
     lazy var artView: UIView = {
         let view = UIView()
         view.backgroundColor = color.black()
+        view.layer.cornerRadius = 5
+        view.clipsToBounds = true
         return view
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.layer.cornerRadius = 5
+        self.clipsToBounds = true
         self.backgroundColor = color.black()
     }
     
@@ -72,10 +77,10 @@ class SnapchatStoriesArtImage: UIView {
         soundTitle.frame = CGRect(x: 175, y: 15, width: 325, height: 30)
         self.artView.addSubview(soundTitle)
         
-        artistName.frame = CGRect(x: 175, y: 60, width: 325, height: 30)
+        artistName.frame = CGRect(x: 175, y: 65, width: 325, height: 30)
         self.artView.addSubview(artistName)
         
-        appName.frame = CGRect(x: 175, y: 105, width: 325, height: 30)
+        appName.frame = CGRect(x: 175, y: 110, width: 325, height: 30)
         self.artView.addSubview(appName)
         
         super.updateConstraints()

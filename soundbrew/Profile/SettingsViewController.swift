@@ -22,9 +22,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
+        
         artist = Customer.shared.artist
         loadFollowFollowingStats()
+        
     }
+    
     
     //Mark: sign out
     lazy var signOut: UIButton = {
@@ -290,8 +293,25 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     self.artist?.earnings = earnings
                 }
                 
+                //self.loadFunds()
                 self.setupBottomButtons()
             }
         }
     }
+    
+    /*func loadFunds() {
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "_User")
+            query.whereKey("objectId", equalTo: currentUserID)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    let funds = object!["balance"] as! Int
+                    self.artist?.balance = funds
+                }
+                
+                self.setupBottomButtons()
+            }
+        }
+    }*/
 }

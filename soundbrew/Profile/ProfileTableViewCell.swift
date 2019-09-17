@@ -301,12 +301,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            //message
-            /*username.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel)
-                make.left.equalTo(displayNameLabel.snp.right)
-                //make.right.equalTo(self).offset(uiElement.rightOffset)
-            }*/
             
             city.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
@@ -322,13 +316,6 @@ class ProfileTableViewCell: UITableViewCell {
             self.addSubview(username)
             self.addSubview(displayNameLabel)
             self.addSubview(seperatorLine)
-            
-            /*profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }*/
             
             //Followers count, following count, earnings count, funds count
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
@@ -521,35 +508,6 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             break
-            
-        case "earningsPaymentsReuse":
-            self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(bio)
-            
-            profileImage.layer.cornerRadius = 50/2
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            //artist name
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            //Song Title
-            bio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            break
-            
             
         case "spaceReuse":
             break

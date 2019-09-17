@@ -22,6 +22,7 @@ class ForgotPasswordViewController: UIViewController {
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .emailAddress
         textField.placeholder = "Email"
+        textField.tintColor = color.black()
         return textField
     }()
     

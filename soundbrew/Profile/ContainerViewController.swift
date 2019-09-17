@@ -13,10 +13,8 @@ class ContainerViewController: SOContainerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.menuSide = .right
         self.topViewController = self.storyboard?.instantiateViewController(withIdentifier: "topScreen")
         self.sideViewController = self.storyboard?.instantiateViewController(withIdentifier: "rightScreen")
     }
-
 }

@@ -53,8 +53,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //mark: money
-    let tipAmountInCents = [10, 25, 50, 100]
-    var selectedTipAmount = 10
+    let tipAmountInCents = [25, 50, 75, 100]
+    var selectedTipAmount = 25
     var customer = Customer.shared
     var didAddSongToCollection = false
     func showSendMoney() {
@@ -62,7 +62,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let alertView = UIAlertController(
                 title: "Current Balance: \(balanceInDollars)",
-                message: "\n\n\n\n\n\n\n\n",
+                message: "Pay Artist: \n\n\n\n\n\n\n\n",
                 preferredStyle: .actionSheet)
             
             let pickerView = UIPickerView(frame:
@@ -311,27 +311,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         return label
     }()
     
-    /*lazy var tipAmountButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("$0.00", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        button.addTarget(self, action: #selector(didPressTipAmountButton(_:)), for: .touchUpInside)
-        return button
-    }()
-    @objc func didPressTipAmountButton(_ sender: UIButton) {
-        let alertView = UIAlertController(
-            title: nil,
-            message: "You've tipped \(sound!.artist!.username!) \(sender.titleLabel!.text!) for \(sound!.title!)",
-            preferredStyle: .alert)
-        
-        let cancelAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
-        alertView.addAction(cancelAction)
-        present(alertView, animated: true, completion: nil)
-        
-        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "tipAmountButton", "Description": "How much the current user has tipped the artist for the current song."])
-    }*/
-    
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
@@ -528,12 +507,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.top.equalTo(self.view).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
-        
-        /*self.view.addSubview(tipAmountButton)
-        tipAmountButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(exitButton)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }*/
         
         self.view.addSubview(appTitle)
         appTitle.snp.makeConstraints { (make) -> Void in

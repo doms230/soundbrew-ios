@@ -10,14 +10,17 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
+import TwitterKit
 
-class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
+class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate {
     let color = Color()
     let uiElement = UIElement()
     var authToken: String?
     var authTokenSecret: String?
     var twitterUsername: String?
     var twitterID: String?
+    
+    var isLoggingInWithTwitter = false
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -42,23 +45,35 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     
     lazy var nextButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Next", for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
+        button.setTitle("NEXT", for: .normal)
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
-        button.backgroundColor = color.blue()
+       // button.backgroundColor = color.blue()
+        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         return button
     }()
     
+    func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
+        return true
+    }
+    
     override func viewDidLoad(){
         super.viewDidLoad()
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
+
+        if isLoggingInWithTwitter {
+            LoginWithTwitter()
+        } else {
+            setupNewEmailView()
+        }
+    }
+    
+    func setupNewEmailView() {
         let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
         self.navigationItem.leftBarButtonItem = cancelButton
         
@@ -151,5 +166,60 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable {
     
     @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    //MARK: TWITTER
+    func LoginWithTwitter() {
+        self.startAnimating()
+        let store = TWTRTwitter.sharedInstance().sessionStore
+        if let session = store.session() {
+            store.logOutUserID(session.userID)
+        }
+        
+        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+            if let session = session {
+                self.checkIfUserExists(session.userID, authToken: session.authToken, authTokenSecret: session.authTokenSecret, username: session.userName)
+                
+            } else if let error = error {
+                print("error: \(error.localizedDescription)");
+                self.stopAnimating()
+                self.dismiss(animated: true, completion: nil)
+            }
+        })
+    }
+    
+    func checkIfUserExists(_ userID: String, authToken: String, authTokenSecret: String, username: String?) {
+        let query = PFQuery(className: "_User")
+        query.whereKey("twitterID", equalTo: userID)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object != nil && error == nil {
+                self.PFauthenticateWithTwitter(userID, auth_token: authToken, auth_token_secret: authTokenSecret, username: username)
+            } else {
+                self.twitterID = userID
+                self.authToken = authToken
+                self.authTokenSecret = authTokenSecret
+                self.twitterUsername = username
+                self.stopAnimating()
+                self.setupNewEmailView()
+            }
+        }
+    }
+    
+    func PFauthenticateWithTwitter(_ userId: String, auth_token: String, auth_token_secret: String, username: String?) {
+        
+        PFUser.logInWithAuthType(inBackground: "twitter", authData: ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]).continueOnSuccessWith(block: {
+            (ignored: BFTask!) -> AnyObject? in
+            
+            let parseUser = PFUser.current()
+            let installation = PFInstallation.current()
+            installation?["user"] = parseUser
+            installation?["userId"] = parseUser?.objectId
+            installation?.saveEventually()
+            
+            Customer.shared.getCustomer(parseUser!.objectId!)
+            self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
+            return AnyObject.self as AnyObject
+        })
     }
 }

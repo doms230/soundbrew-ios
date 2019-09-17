@@ -51,7 +51,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         case "showTippers":
             soundList.prepareToShowTippers(segue)
             let backItem = UIBarButtonItem()
-            backItem.title = "Tippers"
+            backItem.title = "Collectors"
             navigationItem.backBarButtonItem = backItem
             break 
             
@@ -61,13 +61,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showSounds() {
-        if soundList != nil {
-            self.soundList.sounds.removeAll()
-            self.tableView.reloadData()
-        }
-        
         var descendingOrder: String?
-        if soundType == "chart" {
+        
+        if soundType == nil {
+            soundType = "follow"
+            userId = PFUser.current()?.objectId
+            descendingOrder = "createdAt"
+        } else if soundType == "chart" {
             if selectedTagForFiltering.name == "new" {
                 descendingOrder = "createdAt"
             } else {
@@ -82,11 +82,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: tableview
     var tableView = UITableView()
     let soundReuse = "soundReuse"
-    
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         
@@ -110,13 +111,29 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if soundList.sounds.count == 0 {
+            return 1
+        }
         return soundList.sounds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-        cell.backgroundColor = color.black()
-        return soundList.soundCell(indexPath, cell: cell)
+        if soundList.sounds.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            
+            if soundType == "following" {
+                cell.headerTitle.text = "The latest releases from artists you follow will appear here!"
+            } else if selectedTagForFiltering != nil {
+                cell.headerTitle.text = "No Results for \(selectedTagForFiltering.name!)"
+            }
+            return cell
+            
+        } else {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            return soundList.soundCell(indexPath, cell: cell)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

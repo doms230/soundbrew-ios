@@ -36,13 +36,14 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     
     lazy var nextButton: UIButton = {
         let button = UIButton()
-        button.setTitle("next", for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 20)
+        button.setTitle("NEXT", for: .normal)
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
-        button.backgroundColor = color.blue()
+       // button.backgroundColor = color.blue()
+        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         return button
     }()
 
