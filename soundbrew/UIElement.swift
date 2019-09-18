@@ -263,9 +263,9 @@ class UIElement {
     }
     
     func sendAlert(_ message: String, toUserId: String) {
-        /*Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
+        Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
             //print(response.response as Any)
-        }*/
+        }
     }
     
     func newArtistObject(_ user: PFObject) -> Artist {

@@ -314,7 +314,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         for tag in tags {
             let tagButton = UIButton()
             if let tagImage = tag.image {
-                tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal)
+                tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal, placeholder: UIImage(named: "hashtag"))
                 tagButton.titleLabel?.backgroundColor = color.black().withAlphaComponent(0.5)
                 tagButton.titleLabel?.layer.cornerRadius = 3
                 tagButton.titleLabel?.clipsToBounds = true

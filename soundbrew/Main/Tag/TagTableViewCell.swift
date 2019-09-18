@@ -103,7 +103,7 @@ class TagTableViewCell: UITableViewCell {
             self.addSubview(topChartsButton)
             self.addSubview(TagTypeTitle)
             
-            TagTypeTitle.text = "Charts"
+            TagTypeTitle.text = "Releases"
             TagTypeTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
