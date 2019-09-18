@@ -220,7 +220,6 @@ class UIElement {
         })
     }
     
-    
     func instagramImageForSharing(_ sound: Sound) -> UIImage {
         let soundArtImage = InstagramStoriesArtImage(frame: CGRect(x: 0, y: 0, width: 500, height: 610))
         soundArtImage.soundArt.image = sound.artImage
@@ -267,6 +266,43 @@ class UIElement {
         /*Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
             //print(response.response as Any)
         }*/
+    }
+    
+    func newArtistObject(_ user: PFObject) -> Artist {
+        let username = user["username"] as? String
+        
+        var email: String?
+        if user.objectId! == PFUser.current()!.objectId {
+            email = user["email"] as? String
+        }
+        
+        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+        
+        if let name = user["artistName"] as? String {
+            artist.name = name
+        }
+        
+        if let username = user["username"] as? String {
+            artist.username = username
+        }
+        
+        if let city = user["city"] as? String {
+            artist.city = city
+        }
+        
+        if let userImageFile = user["userImage"] as? PFFileObject {
+            artist.image = userImageFile.url!
+        }
+        
+        if let bio = user["bio"] as? String {
+            artist.bio = bio
+        }
+        
+        if let website = user["website"] as? String {
+            artist.website = website
+        }
+        
+        return artist 
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {

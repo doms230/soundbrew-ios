@@ -196,50 +196,10 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 print(error)
                 
             } else if let user = user {
-                let username = user["username"] as? String
-                
-                var email: String?
-                if user.objectId! == PFUser.current()!.objectId {
-                    email = user["email"] as? String
+                let artist = self.uiElement.newArtistObject(user)
+                if let userImageFile = artist.image {
+                    cell.profileImage.kf.setImage(with: URL(string: userImageFile))
                 }
-                
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                
-                if let followerCount = user["followerCount"] as? Int {
-                    artist.followerCount = followerCount
-                }
-                
-                if let name = user["artistName"] as? String {
-                    artist.name = name
-                }
-                
-                if let username = user["username"] as? String {
-                    if !username.contains("@") {
-                        artist.username = username
-                    }
-                }
-                
-                if let city = user["city"] as? String {
-                    artist.city = city
-                }
-                
-                if let userImageFile = user["userImage"] as? PFFileObject {
-                    cell.profileImage.kf.setImage(with: URL(string: userImageFile.url!))
-                    artist.image = userImageFile.url!
-                }
-                
-                if let bio = user["bio"] as? String {
-                    artist.bio = bio
-                }
-                
-                if let artistVerification = user["artistVerification"] as? Bool {
-                    artist.isVerified = artistVerification
-                }
-                
-                if let website = user["website"] as? String {
-                    artist.website = website
-                }
-                
                 self.updates[indexPath.row].artist = artist
                 if let soundId = self.updates[indexPath.row].soundId {
                     self.loadSound(soundId, cell: cell, indexPath: indexPath)

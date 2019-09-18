@@ -466,6 +466,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             } else if let object = object {
                 let sound = [UIElement().newSoundObject(object)]
                 self.sounds = sound
+                self.loadUserInfoFromCloud(self.sounds[0].artist!.objectId, i: 0)
                 self.setUpNextSong(false, at: 0)
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
             }
@@ -480,10 +481,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 print(error)
                 
             } else if let user = user {
-                let artistName = user["artistName"] as? String
-                self.sounds[i].artist?.name = artistName
-                self.setBackgroundAudioNowPlaying(self.player, sound: self.sounds[self.currentSoundIndex])
-                self.sounds[i].artist?.city = user["city"] as? String
+                self.sounds[i].artist = UIElement().newArtistObject(user)
+                self.setBackgroundAudioNowPlaying(self.player, sound: self.sounds[i])
+                
             }
         }
     }

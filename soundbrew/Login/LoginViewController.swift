@@ -53,7 +53,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.titleLabel?.textAlignment = .right
         button.setTitle("SIGN IN", for: .normal)
-        //button.backgroundColor = color.blue()
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
@@ -166,7 +165,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 
                 Customer.shared.getCustomer(user.objectId!)
                 self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
-                //self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
             } else {
                 UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)
             }

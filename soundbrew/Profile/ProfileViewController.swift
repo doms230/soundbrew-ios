@@ -656,49 +656,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                print(user)
-                let username = user["username"] as? String
-                
-                var email: String?
-                if user.objectId! == PFUser.current()!.objectId {
-                    email = user["email"] as? String
-                }
-                
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                
-                if let name = user["artistName"] as? String {
-                    artist.name = name
-                }
-                
-                if let username = user["username"] as? String {
-                    artist.username = username
-                }
-                
-                if let city = user["city"] as? String {
-                    artist.city = city
-                }
-                
-                if let userImageFile = user["userImage"] as? PFFileObject {
-                    artist.image = userImageFile.url!
-                }
-                
-                if let bio = user["bio"] as? String {
-                    artist.bio = bio
-                }
-                
-                if let artistVerification = user["artistVerification"] as? Bool {
-                    artist.isVerified = artistVerification
-                }
-                
-                if let website = user["website"] as? String {
-                    artist.website = website
-                }
-                
-                self.profileArtist = artist
+            if let user = user {
+                self.profileArtist = self.uiElement.newArtistObject(user)
                 self.executeTableViewSoundListFollowStatus()
             }
         }

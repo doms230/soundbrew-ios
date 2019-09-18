@@ -133,10 +133,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         case 0:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileImageReuse) as? ProfileTableViewCell
             cell.backgroundColor = Color().darkGray() 
-          //  tableView.separatorStyle = .singleLine
             tableView.separatorInset = .zero
             cell.selectionStyle = .none
-           // cell.backgroundColor = color.black()
             
             profileImage = cell.profileImage
             if let image = artist?.image {
@@ -158,9 +156,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 4:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
-            //cell.backgroundColor = .white
             cell.selectionStyle = .none
-            //tableView.separatorStyle = .singleLine
             tableView.separatorInset = .zero
             
             cell.editProfileTitle.text = "Email"
@@ -176,9 +172,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 5:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
-            //cell.backgroundColor = color.black()
             cell.selectionStyle = .none
-            //tableView.separatorStyle = .none
             break
             
         default:
@@ -214,7 +208,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
         cell.backgroundColor = .white
         cell.selectionStyle = .none
-        //tableView.separatorStyle = .singleLine
         tableView.separatorInset = edgeInsets
         
         var inputTitle: String!
@@ -322,7 +315,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
-        //tableView.separatorStyle = .singleLine
         tableView.separatorInset = .zero
         
         cell.editBioTitle.text = "City"
@@ -352,7 +344,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
-        //tableView.separatorStyle = .singleLine
         tableView.separatorInset = .zero
         
         cell.editBioTitle.text = "Bio"

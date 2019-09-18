@@ -470,7 +470,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     @objc func miniPlayerWasPressed(_ sender: UIButton) {
         showPlayerViewController()
         MSAnalytics.trackEvent("Mini Player", withProperties: ["View" : "SearchViewController", "description": "User did start Searching."])
-
     }
     
     func showPlayerViewController() {
@@ -535,7 +534,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if searchType == 0 {
             searchUsers(searchBar.text!)
         } else {
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
         }
         
         let player = Player.sharedInstance

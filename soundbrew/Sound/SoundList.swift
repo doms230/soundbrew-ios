@@ -30,8 +30,9 @@ class SoundList: NSObject, PlayerDelegate {
     var didLoadCollection = false
     var searchText: String?
     var domSmithUserId = "AWKPPDI4CB"
+    var linkObjectId: String?
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?, linkObjectId: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
@@ -39,6 +40,7 @@ class SoundList: NSObject, PlayerDelegate {
         self.profileUserId = userId
         self.selectedTagForFiltering = tags
         self.searchText = searchText
+        self.linkObjectId = linkObjectId
         if let descendingOrder = descendingOrder {
             self.descendingOrder = descendingOrder
         }

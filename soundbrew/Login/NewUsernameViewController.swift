@@ -42,7 +42,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         button.titleLabel?.textAlignment = .right
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
-       // button.backgroundColor = color.blue()
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         return button
     }()

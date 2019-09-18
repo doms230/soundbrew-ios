@@ -285,7 +285,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
         if sender.tag == 0 {
-            //checkFacebookAuth(sender)
             shouldPostToSnapchat = true
         } else {
             checkTwitterAuth(sender)
@@ -325,54 +324,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: Snapchat
     var shouldPostToSnapchat = false
-    
-    //mark: Facebook
-    /*var shouldPostLinkToFacebook = false
-    
-    func checkFacebookAuth(_ sender: UISwitch) {
-        if sender.isOn {
-            if AccessToken.current == nil {
-                authenticateFacebook(sender)
-
-            } else {
-                shouldPostLinkToFacebook = true
-            }
-            
-        } else {
-            shouldPostLinkToFacebook = false
-        }
-    }
-    func authenticateFacebook(_ sender: UISwitch) {
-        let loginManager = LoginManager()
-        loginManager.logIn(readPermissions: [.publicProfile], viewController: self) { loginResult in
-            switch loginResult {
-            case .failed(let error):
-                print(error)
-            case .cancelled:
-                print("User cancelled login.")
-                sender.isOn = false
-            case .success:
-                self.shouldPostLinkToFacebook = true
-            }
-        }
-    }
-    
-    func postToFacebook(_ url: URL) {
-        let content = LinkShareContent(url: url)
-        
-        let shareDialog = ShareDialog(content: content)
-        shareDialog.mode = .native
-        shareDialog.failsOnInvalidData = true
-        shareDialog.completion = { result in
-            // Handle share results
-        }
-        
-        do {
-        try shareDialog.show()
-        } catch let error {
-            print(error)
-        }
-    }*/
     
     //mark: twitter
     var twitterUserID: String?

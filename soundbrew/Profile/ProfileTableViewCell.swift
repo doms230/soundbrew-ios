@@ -396,7 +396,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             editProfileInput.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editProfileTitle)
@@ -422,7 +421,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-               // make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             userCity.snp.makeConstraints { (make) -> Void in
@@ -450,7 +448,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             rightArrow.snp.makeConstraints { (make) -> Void in
@@ -463,7 +460,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(editBioTitle)
                 make.left.equalTo(editBioTitle.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(rightArrow.snp.left).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             seperatorLine.snp.makeConstraints { (make) -> Void in

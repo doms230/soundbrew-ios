@@ -82,7 +82,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: descendingOrder)
+        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: descendingOrder, linkObjectId: nil)
     }
     
     //mark: tableview

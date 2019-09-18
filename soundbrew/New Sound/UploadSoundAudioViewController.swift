@@ -20,9 +20,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     let color = Color()
     var soundList: SoundList!
     var newSound: Sound!
-    
-    //var soundThatIsBeingEdited: Sound?
-    
+        
     override func viewDidLoad() {        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -78,7 +76,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func showSounds() {
-        soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil)
     }
     
     //mark: tableview
