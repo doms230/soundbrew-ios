@@ -40,6 +40,10 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         if segue.identifier == "showProfile" {
             let viewController = segue.destination as! ProfileViewController
             viewController.profileArtist = selectedArtist
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
         }
     }
     
@@ -95,7 +99,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.cellForRow(at: indexPath)?.isSelected = false
         selectedArtist = updates[indexPath.row].artist
         self.performSegue(withIdentifier: "showProfile", sender: self)
-        
         MSAnalytics.trackEvent("Updates View Controller", withProperties: ["Button" : "Did Select Person"])
     }
     
@@ -112,7 +115,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-49)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
         setUpTableView(miniPlayerView!)
@@ -168,7 +171,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             let name = self.getName(update.artist)
             if update.soundId != nil {
                 let tipAmountInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(update.tipAmount!, currency: "$")
-                cell.displayNameLabel.text = "\(name) tipped you \(tipAmountInDollarString) for \(update.soundName!)."
+                cell.displayNameLabel.text = "\(name) collected \(update.soundName!) for \(tipAmountInDollarString)."
                 cell.displayNameLabel.textColor = color.green()
             } else {
                 cell.displayNameLabel.text = "\(name) followed you."
@@ -260,7 +263,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let title = object["title"] as! String
                 let tipAmountInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(self.updates[indexPath.row].tipAmount!, currency: "$")
                 let name = self.getName(self.updates[indexPath.row].artist)
-                cell.displayNameLabel.text = "\(name) tipped you \(tipAmountInDollarString) for \(title)."
+                cell.displayNameLabel.text = "\(name) collected \(title) for \(tipAmountInDollarString)."
                 cell.displayNameLabel.textColor = self.color.green()
                 self.updates[indexPath.row].soundName = title
             }
@@ -277,11 +280,18 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func loadNewFollows() {
-        self.updates.removeAll()
         let query = PFQuery(className: "Follow")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
+        var followIds = [String]()
+        for update in updates {
+            if let followId = update.followId {
+                followIds.append(followId)
+            }
+        }
+        query.whereKey("objectId", notContainedIn: followIds)
         query.limit = 25
+        query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -289,7 +299,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                     for object in objects {
                         let userObjectId = object["fromUserId"] as! String
                         let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                        let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil)
+                        let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil, tipId: nil, followId: object.objectId!)
                         self.updates.append(update)
                     }
                 }
@@ -304,6 +314,13 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     func loadNewTips() {
         let query = PFQuery(className: "Tip")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+        var tipIds = [String]()
+        for update in updates {
+            if let tipId = update.tipId {
+                tipIds.append(tipId)
+            }
+        }
+        query.whereKey("objectId", notContainedIn: tipIds)
         query.limit = 25
         query.addDescendingOrder("updatedAt")
         query.findObjectsInBackground {
@@ -315,7 +332,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                         let tipAmount = object["amount"] as! Int
                         let soundId = object["soundId"] as! String
                         let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                        let update = Update(object.updatedAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil)
+                        let update = Update(object.updatedAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil, tipId: object.objectId!, followId: nil)
                         self.updates.append(update)
                     }
                 }
@@ -337,12 +354,16 @@ class Update {
     var tipAmount: Int?
     var soundId: String?
     var soundName: String?
+    var tipId: String?
+    var followId: String?
     
-    init(_ createdAt: Date, artist: Artist, tipAmount: Int?, soundId: String?, soundName: String?) {
+    init(_ createdAt: Date, artist: Artist, tipAmount: Int?, soundId: String?, soundName: String?, tipId: String?, followId: String?) {
         self.createdAt = createdAt
         self.artist = artist
         self.tipAmount = tipAmount
         self.soundId = soundId
         self.soundName = soundName
+        self.tipId = tipId
+        self.followId = followId
     }
 }

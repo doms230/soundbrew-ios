@@ -6,7 +6,7 @@
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
-//  SoundlistViewController.swift and ProfileViewController.swift utilize this class
+//  SoundsViewController.swift utilize this class
 //
 // MARK: tableView, sounds, artist, tags filter, data, miniplayer, comment, search
 
@@ -118,7 +118,7 @@ class SoundList: NSObject, PlayerDelegate {
             cell.menuButton.tag = indexPath.row
             
             if let soundURL = sound.artURL {
-                cell.soundArtImage.kf.setImage(with: URL(string: soundURL))
+                cell.soundArtImage.kf.setImage(with: URL(string: soundURL), placeholder: UIImage(named: "sound"))
             } else {
                 cell.soundArtImage.image = UIImage(named: "sound")
             }
@@ -382,11 +382,8 @@ class SoundList: NSObject, PlayerDelegate {
                     
                     if objects.count == 0 {
                         self.thereIsMoreDataToLoad = false
-                        
-                    } else {
-                        self.updateSounds()
                     }
-                    
+                                        
                 } else {
                     self.thereIsMoreDataToLoad = false
                     print("no colection 1")
@@ -394,8 +391,10 @@ class SoundList: NSObject, PlayerDelegate {
                 
             } else {
                 self.thereIsMoreDataToLoad = false
+                
                 print("Error: \(error!)")
             }
+            self.updateSounds()
         }
     }
     

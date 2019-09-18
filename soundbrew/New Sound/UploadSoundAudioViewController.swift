@@ -2,7 +2,7 @@
 //  NewSoundViewController.swift
 //  soundbrew artists
 //
-//  Created by Dominic  Smith on 10/8/18.
+//  Created by Dominic Smith on 10/8/18.
 //  Copyright © 2018 Dominic  Smith. All rights reserved.
 //
 
@@ -45,30 +45,39 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showEditSoundInfo" {
+        switch segue.identifier {
+        case "showEditSoundInfo":
             var soundToBeEdited: Sound!
             if let selectedSound = soundList.selectedSound {
-                selectedSound.isDraft = true 
+                selectedSound.isDraft = true
                 soundToBeEdited = selectedSound
             } else {
                 soundToBeEdited = newSound
             }
             let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
             viewController.soundThatIsBeingEdited = soundToBeEdited
-        } else if segue.identifier == "showTippers" {
+            break
+            
+        case "showTippers":
             soundList.prepareToShowTippers(segue)
             let backItem = UIBarButtonItem()
-            backItem.title = "Tippers"
+            backItem.title = "Collectors"
             navigationItem.backBarButtonItem = backItem
+            break
+            
+        case "showProfile":
+            soundList.prepareToShowSelectedArtist(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        default:
+            break
         }
     }
     
     func showSounds() {
-        if soundList != nil {
-            self.soundList.sounds.removeAll()
-            self.tableView.reloadData()
-        }
-        
         soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil)
     }
     
@@ -119,7 +128,12 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         if soundList.sounds.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.backgroundColor = color.black()
-            cell.headerTitle.text = "No drafts yet. Press the 'New Upload' button above to start releasing music to Soundbrew!"
+            if soundList.isUpdatingData {
+                cell.headerTitle.text = "Loading..."
+            } else {
+                cell.headerTitle.text = "No drafts yet. Press the 'New Upload' button above to start releasing music to Soundbrew!"
+            }
+
             return cell
             
         } else {
@@ -197,7 +211,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-49)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
         setUpTableView(miniPlayerView)

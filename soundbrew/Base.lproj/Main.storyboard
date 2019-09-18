@@ -41,11 +41,12 @@
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="LnM-xP-wsl"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="jCE-No-XFc"/>
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="eKw-d2-ktB"/>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="8ie-Jd-veP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3726" y="-1213"/>
+            <point key="canvasLocation" x="-3813" y="-1268"/>
         </scene>
         <!--Sound Info View Controller-->
         <scene sceneID="R29-0C-CbA">
@@ -140,7 +141,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2836" y="940"/>
+            <point key="canvasLocation" x="-2836" y="943"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="CKO-y2-IBC">
@@ -277,7 +278,6 @@
                     <navigationItem key="navigationItem" id="DQE-st-WjY"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ate-Yt-ICi"/>
-                        <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="Dx3-fw-EG5"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="iDR-Ll-dSf"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="0mA-lO-wOD"/>
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="d1u-up-vYK"/>
@@ -351,7 +351,6 @@
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="AaU-Nw-Vla"/>
                         <segue destination="Wod-6r-vBx" kind="show" identifier="showTags" id="ny7-0k-lik"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="qF7-cv-MYn"/>
-                        <segue destination="NMN-7Y-7rd" kind="show" identifier="showUploadSound" id="A7h-oS-bzS"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="217-ix-XIX"/>
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="TH1-Tr-UvO"/>
                     </connections>
@@ -396,7 +395,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bcv-xe-OI8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4613" y="-1213"/>
+            <point key="canvasLocation" x="-4664" y="-1254"/>
         </scene>
         <!--Following-->
         <scene sceneID="ONb-vr-0dI">
@@ -530,12 +529,11 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
-        <segue reference="hQD-bY-Uhw"/>
+        <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="AOa-FM-5jw"/>
-        <segue reference="Ejz-iv-iC5"/>
-        <segue reference="217-ix-XIX"/>
-        <segue reference="A7h-oS-bzS"/>
-        <segue reference="5zx-sZ-k8y"/>
+        <segue reference="8ie-Jd-veP"/>
+        <segue reference="eKw-d2-ktB"/>
+        <segue reference="LnM-xP-wsl"/>
+        <segue reference="jCE-No-XFc"/>
     </inferredMetricsTieBreakers>
 </document>

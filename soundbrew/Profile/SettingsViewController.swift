@@ -2,7 +2,7 @@
 //  SettingsViewController.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 7/2/19.
+//  Created by Dominic Smith on 7/2/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
@@ -25,9 +25,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         artist = Customer.shared.artist
         loadFollowFollowingStats()
-        
     }
-    
     
     //Mark: sign out
     lazy var signOut: UIButton = {
@@ -98,7 +96,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-50 + uiElement.bottomOffset)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(uiElement.bottomOffset))
         }
         
         self.view.addSubview(connectWithUsButton)
@@ -276,7 +274,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     self.artist?.followingCount = following
                     self.artist?.followerCount = followers
                 }
-                
                self.loadEarnings()
             }
         }
@@ -292,26 +289,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     let earnings = object!["tipsSinceLastPayout"] as! Int
                     self.artist?.earnings = earnings
                 }
-                
-                //self.loadFunds()
                 self.setupBottomButtons()
             }
         }
     }
-    
-    /*func loadFunds() {
-        if let currentUserID = PFUser.current()?.objectId {
-            let query = PFQuery(className: "_User")
-            query.whereKey("objectId", equalTo: currentUserID)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
-                    let funds = object!["balance"] as! Int
-                    self.artist?.balance = funds
-                }
-                
-                self.setupBottomButtons()
-            }
-        }
-    }*/
 }

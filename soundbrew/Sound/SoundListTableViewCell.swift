@@ -190,7 +190,8 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(15)
+                make.height.equalTo(15)
+                make.width.equalTo(50)
                 make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }

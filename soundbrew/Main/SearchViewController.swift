@@ -313,12 +313,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         for tag in tags {
             let tagButton = UIButton()
-            tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
-            /*if let tagImage = tag.image {
+            if let tagImage = tag.image {
                 tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal)
              } else {
              tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
-             }*/
+             }
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
             tagButton.tag = row
@@ -457,7 +456,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-49)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
         setUpTableView(miniPlayerView)

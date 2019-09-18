@@ -212,7 +212,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-49)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
         setUpTableView(miniPlayerView)

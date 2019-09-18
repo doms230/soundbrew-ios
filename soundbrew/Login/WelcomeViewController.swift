@@ -168,6 +168,7 @@ class WelcomeViewController: UIViewController {
         appLabel.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(appImage)
             make.left.equalTo(appImage.snp.right)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         point3.snp.makeConstraints { (make) -> Void in
@@ -177,15 +178,12 @@ class WelcomeViewController: UIViewController {
         }
         
         point2.snp.makeConstraints { (make) -> Void in
-           // make.top.equalTo(point3.snp.bottom).offset(uiElement.topOffset)
-           // make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(point3.snp.top).offset(uiElement.bottomOffset)
         }
         
         point1.snp.makeConstraints { (make) -> Void in
-           // make.top.equalTo(appImage.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(point2.snp.top).offset(uiElement.bottomOffset)

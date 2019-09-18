@@ -2,8 +2,8 @@
 //  SignupViewController.swift
 //  soundbrew artists
 //
-//  Created by Dominic  Smith on 10/10/18.
-//  Copyright © 2018 Dominic  Smith. All rights reserved.
+//  Created by Dominic Smith on 10/10/18.
+//  Copyright © 2018 Dominic Smith. All rights reserved.
 //
 
 import UIKit

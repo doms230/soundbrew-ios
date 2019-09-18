@@ -43,23 +43,17 @@ class SnapchatStoriesArtImage: UIView {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
         image.backgroundColor = color.black()
-        image.layer.cornerRadius = 5
-        image.clipsToBounds = true 
         return image
     }()
     
     lazy var artView: UIView = {
         let view = UIView()
         view.backgroundColor = color.black()
-        view.layer.cornerRadius = 5
-        view.clipsToBounds = true
         return view
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.layer.cornerRadius = 5
-        self.clipsToBounds = true
         self.backgroundColor = color.black()
     }
     

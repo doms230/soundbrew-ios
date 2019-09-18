@@ -39,7 +39,6 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var username: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.numberOfLines = 0
         label.textColor = .white
         return label
     }()

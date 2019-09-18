@@ -62,9 +62,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: views
     func setUpViews() {
-        var shouldUploadButtonBeEnabled = true
-        if soundThatIsBeingEdited?.objectId == nil {
-            shouldUploadButtonBeEnabled = false
+        var shouldUploadButtonBeEnabled = false
+        if soundThatIsBeingEdited?.objectId != nil {
+            shouldUploadButtonBeEnabled = true
+            soundParseFileDidFinishProcessing = true 
         }
         
         uploadButton = UIBarButtonItem(title: "Release", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
@@ -79,7 +80,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
         self.soundThatIsBeingEdited?.title = self.soundTitle.text
         if let sound = self.soundThatIsBeingEdited {
-            if sound.isDraft! {
+            if sound.isDraft! && self.soundParseFileDidFinishProcessing {
                 showDraftOrDiscardMessage()
             } else {
                 self.uiElement.goBackToPreviousViewController(self)
@@ -234,10 +235,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
         
         if let sound = soundThatIsBeingEdited {
-            if let soundArtURL = sound.artURL {
-                cell.soundArt.kf.setImage(with: URL(string: soundArtURL), for: .normal)
-            } else if let soundArtImage = sound.artImage {
+            if let soundArtImage = sound.artImage {
                 cell.soundArt.setImage(soundArtImage, for: .normal)
+            } else if let soundArtURL = sound.artURL {
+                cell.soundArt.kf.setImage(with: URL(string: soundArtURL), for: .normal)
+                self.soundThatIsBeingEdited?.artImage = cell.soundArt.imageView?.image
             }
             
             if let soundTitle = sound.title {
@@ -260,10 +262,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
         
         if indexPath.row == 0 {
-            if shouldPostLinkToFacebook {
+            if shouldPostToSnapchat {
                 cell.socialSwitch.isOn = true
             }
-            socialTitle = "Facebook"
+            socialTitle = "Snapchat"
             tag = 0
             
         } else {
@@ -283,17 +285,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
         if sender.tag == 0 {
-            checkFacebookAuth(sender)
+            //checkFacebookAuth(sender)
+            shouldPostToSnapchat = true
         } else {
             checkTwitterAuth(sender)
         }
     }
     
-    func createDynamicLink(_ title: String, artistName: String, artURL: String, objectId: String) {
-        let title = title
-        let description = "\(title) by \(artistName)"
-        let imageURL = artURL
-        let objectId = objectId
+    func createDynamicLink(_ object: PFObject) {
+        let title = object["title"] as! String
+        let description = "\(title) by \(PFUser.current()!.username!)"
+        let art = object["songArt"] as! PFFileObject
+        let imageURL = art.url!
+        let objectId = object.objectId!
         
         guard let link = URL(string: "https://soundbrew.app/sound/\(objectId)") else { return }
         let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
@@ -308,9 +312,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let error = error {
                 print(error)
             } else if let url = url {
-                if self.shouldPostLinkToFacebook {
-                    self.postToFacebook(url)
-                }
+                /*if self.shouldPostLinkToFacebook {
+                    let ya = URL(string: "https://www.instagram.com")
+                    self.postToFacebook(ya!)
+                }*/
                 if self.shouldPostLinkToTwitter {
                     self.postTweet(url, title: title)
                 }
@@ -318,8 +323,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    //mark: facebook
-    var shouldPostLinkToFacebook = false
+    //mark: Snapchat
+    var shouldPostToSnapchat = false
+    
+    //mark: Facebook
+    /*var shouldPostLinkToFacebook = false
     
     func checkFacebookAuth(_ sender: UISwitch) {
         if sender.isOn {
@@ -364,7 +372,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } catch let error {
             print(error)
         }
-    }
+    }*/
     
     //mark: twitter
     var twitterUserID: String?
@@ -699,30 +707,28 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
         
-        if let sound = self.soundThatIsBeingEdited {
-            sound.artImage = image
-            self.tableView.reloadData()
-            
-            let proPic = image.jpegData(compressionQuality: 0.5)
-            self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)
-            self.soundThatIsBeingEdited?.artFile!.saveInBackground({
-                (succeeded: Bool, error: Error?) -> Void in
-                if succeeded {
-                    self.soundArtDidFinishProcessing = true
-                    
-                    if self.didPressUploadButton && self.soundParseFileDidFinishProcessing {
-                        self.createSound(sound, isDraft: false)
-                    }
-                    
-                } else if let error = error {
-                    self.errorAlert("Art Processing Failed", message: error.localizedDescription)
+        self.soundThatIsBeingEdited?.artImage = image
+        self.tableView.reloadData()
+        
+        let proPic = image.jpegData(compressionQuality: 0.5)
+        self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)
+        self.soundThatIsBeingEdited?.artFile!.saveInBackground({
+            (succeeded: Bool, error: Error?) -> Void in
+            if succeeded {
+                self.soundArtDidFinishProcessing = true
+                
+                if self.didPressUploadButton && self.soundParseFileDidFinishProcessing {
+                    self.createSound(self.soundThatIsBeingEdited!, isDraft: false)
                 }
                 
-            }, progressBlock: {
-                (percentDone: Int32) -> Void in
-                // Update your progress spinner here. percentDone will be between 0 and 100.
-            })
-        }
+            } else if let error = error {
+                self.errorAlert("Art Processing Failed", message: error.localizedDescription)
+            }
+            
+        }, progressBlock: {
+            (percentDone: Int32) -> Void in
+            // Update your progress spinner here. percentDone will be between 0 and 100.
+        })
         
         dismiss(animated: true, completion: nil)
     }
@@ -791,6 +797,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func updateSound(_ sound: Sound, isDraft: Bool) {
+        self.startAnimating()
         let tags = combineSelectedTags()
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
@@ -829,10 +836,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func handleSocials(_ object: PFObject) {
-        let title = object["title"] as! String
-        let art = object["songArt"] as! PFFileObject
-        if self.shouldPostLinkToTwitter || self.shouldPostLinkToFacebook {
-            self.createDynamicLink(title, artistName: PFUser.current()!.username!, artURL: art.url!, objectId: object.objectId!)
+        if self.shouldPostLinkToTwitter {
+            self.createDynamicLink(object)
+        }
+        
+        if self.shouldPostToSnapchat {
+            self.uiElement.shareToSnapchat(self.soundThatIsBeingEdited!)
         }
     }
     
@@ -846,7 +855,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if let user = user {
                 if let city = user["city"] as? String {
                     if !city.isEmpty {
-                        //self.loadCityTag(city.lowercased())
                         self.loadTag(city.lowercased(), type: "city")
                     }
                 }

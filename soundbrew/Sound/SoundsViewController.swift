@@ -42,9 +42,15 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         switch segue.identifier {
         case "showProfile":
             soundList.prepareToShowSelectedArtist(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
             break
             
         case "showEditSoundInfo":
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
             soundList.prepareToShowSoundInfo(segue)
             break
             
@@ -122,11 +128,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.backgroundColor = color.black()
             
-            if soundType == "following" {
+            if soundList.isUpdatingData {
+                cell.headerTitle.text = "Loading..."
+            } else  if soundType == "following" {
                 cell.headerTitle.text = "The latest releases from artists you follow will appear here!"
             } else if selectedTagForFiltering != nil {
                 cell.headerTitle.text = "No Results for \(selectedTagForFiltering.name!)"
             }
+
             return cell
             
         } else {
@@ -173,7 +182,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-49)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
         setUpTableView(miniPlayerView!)

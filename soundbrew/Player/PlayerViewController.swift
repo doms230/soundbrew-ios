@@ -2,7 +2,7 @@
 // PlayerViewController.swift
 // soundbrew
 //
-// Created by Dominic  Smith on 2/6/19.
+// Created by Dominic Smith on 2/6/19.
 // Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 // mark: View, Share, tips
@@ -87,6 +87,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if customer.artist!.balance! >= tipAmount {
             self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             self.didAddSongToCollection = true
+            self.sound?.tips = tipAmount
             
             SKStoreReviewController.requestReview()
             
@@ -164,7 +165,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         newTip.saveEventually{
             (success: Bool, error: Error?) in
             if success {
-                self.uiElement.sendAlert("\(PFUser.current()!.username!) tipped you for \(sound.title!)!", toUserId: sound.artist!.objectId)
+                self.uiElement.sendAlert("\(PFUser.current()!.username!) collected \(sound.title!)!", toUserId: sound.artist!.objectId)
             }
         }
     }
@@ -178,7 +179,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 
             } else if let object = object {
                 object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
-                object.incrementKey("collectors")
+                object.incrementKey("tippers")
                 object.saveEventually()
             }
         }
