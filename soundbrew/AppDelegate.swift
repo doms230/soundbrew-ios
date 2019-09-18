@@ -15,7 +15,6 @@ import AppCenterAnalytics
 import StoreKit
 import Firebase
 import TwitterKit
-import FacebookCore
 import Stripe
 
 @UIApplicationMain
@@ -36,8 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
         
         FirebaseApp.configure()
-        
-        SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         
         //let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
         let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
@@ -110,9 +107,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                                sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                                annotation: "")
             
-        } else if url.absoluteString.starts(with: "fb") {
-            return SDKApplicationDelegate.shared.application(app, open: url, options: options)
-            
         } else {
             return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
         }
@@ -142,12 +136,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         let installation = PFInstallation.current()
         installation?.badge = 0
         installation?.saveEventually()
-        
-        //doing this to insure that if ad needs to be shown, the ad is attached to the right view controller
-        //won't show if ad is attached to view controller that isn't currently active...
-        
-        //let player = Player.sharedInstance
-       // player.target = self.window?.rootViewController
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

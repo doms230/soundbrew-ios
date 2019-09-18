@@ -8,32 +8,8 @@ PODS:
   - AppCenter/Core (2.0.1)
   - AppCenter/Crashes (2.0.1):
     - AppCenter/Core
-  - Bolts (1.9.0):
-    - Bolts/AppLinks (= 1.9.0)
-    - Bolts/Tasks (= 1.9.0)
-  - Bolts/AppLinks (1.9.0):
-    - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
   - DeckTransition (2.1.0)
-  - FacebookCore (0.5.0):
-    - Bolts (~> 1.9)
-    - FBSDKCoreKit (~> 4.37)
-  - FacebookLogin (0.5.0):
-    - Bolts (~> 1.9)
-    - FacebookCore (~> 0.5)
-    - FBSDKCoreKit (~> 4.37)
-    - FBSDKLoginKit (~> 4.37)
-  - FacebookShare (0.5.0):
-    - Bolts (~> 1.9)
-    - FacebookCore (~> 0.5)
-    - FBSDKCoreKit (~> 4.37)
-    - FBSDKShareKit (~> 4.37)
-  - FBSDKCoreKit (4.44.1):
-    - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.44.1):
-    - FBSDKCoreKit
-  - FBSDKShareKit (4.44.1):
-    - FBSDKCoreKit
   - Firebase/Core (6.2.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.0.1)
@@ -123,9 +99,6 @@ DEPENDENCIES:
   - Alamofire
   - AppCenter
   - DeckTransition
-  - FacebookCore (~> 0.5.0)
-  - FacebookLogin (~> 0.5.0)
-  - FacebookShare (~> 0.5.0)
   - Firebase/Core
   - Firebase/DynamicLinks
   - Kingfisher
@@ -145,12 +118,6 @@ SPEC REPOS:
     - AppCenter
     - Bolts
     - DeckTransition
-    - FacebookCore
-    - FacebookLogin
-    - FacebookShare
-    - FBSDKCoreKit
-    - FBSDKLoginKit
-    - FBSDKShareKit
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -179,12 +146,6 @@ SPEC CHECKSUMS:
   AppCenter: 6a5ff2fd007b53431259fdd74f91eb3d0dfea3d1
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   DeckTransition: ca707456e3d83928c895fed6f458cbf68c5cac84
-  FacebookCore: 74288d0add931d361b1596beae787ab72c438249
-  FacebookLogin: ebcf34714a1cb9f0759d9f071cfb01ed500996cf
-  FacebookShare: 963b4bb1124a64a395b1e428163d70b5774116e8
-  FBSDKCoreKit: a823ae35bdb60ebb8d7a7e51abe7c5d87d2bfced
-  FBSDKLoginKit: 54ae59987f2a8703021557c90a9aebb9e5c2bef6
-  FBSDKShareKit: 526d4cfb713d24855fa23d0dd74e191accd3a720
   Firebase: 5965bac23e7fcb5fa6d926ed429c9ecef8a2014e
   FirebaseAnalytics: 629301c2b9925f3537d4093a17a72751ae5b7084
   FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
@@ -208,6 +169,6 @@ SPEC CHECKSUMS:
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
 
-PODFILE CHECKSUM: f0dc7ddf99ce13df86e0209455985454d583b31e
+PODFILE CHECKSUM: 810041d372a6672dd84a6dcd62f24637fbaad16f
 
 COCOAPODS: 1.7.1

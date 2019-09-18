@@ -13,9 +13,6 @@ import SnapKit
 import Kingfisher
 import TwitterKit
 import FirebaseDynamicLinks
-import FacebookCore
-import FacebookLogin
-import FacebookShare
 import AppCenterAnalytics
 //import Zip
 

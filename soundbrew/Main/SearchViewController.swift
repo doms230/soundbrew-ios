@@ -315,8 +315,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let tagButton = UIButton()
             if let tagImage = tag.image {
                 tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal)
+                tagButton.titleLabel?.backgroundColor = color.black().withAlphaComponent(0.5)
+                tagButton.titleLabel?.layer.cornerRadius = 3
+                tagButton.titleLabel?.clipsToBounds = true
              } else {
-             tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
+                tagButton.setBackgroundImage(UIImage(named: "hashtag"), for: .normal)
+                
              }
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
@@ -335,7 +339,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.top.equalTo(scrollview)
                 make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
             }
-            
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
             scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
         }
