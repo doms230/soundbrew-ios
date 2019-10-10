@@ -69,9 +69,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func showSounds() {
         var descendingOrder: String?
         
-        if soundType == nil {
-            soundType = "follow"
-            userId = PFUser.current()?.objectId
+        if soundType == "follow" {
+            //soundType = "follow"
+            if let userId = PFUser.current()?.objectId {
+                self.userId = userId
+            } else {
+                self.userId = ""
+            }
             descendingOrder = "createdAt"
         } else if soundType == "chart" {
             if selectedTagForFiltering.name == "new" {

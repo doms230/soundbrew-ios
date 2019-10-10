@@ -80,7 +80,7 @@ class UIElement {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
         
         let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
-            target.performSegue(withIdentifier: "showWelcome", sender: self)
+            self.newRootView("NewUser", withIdentifier: "welcome")
         }
         alertController.addAction(settingsAction)
         let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
@@ -273,9 +273,12 @@ class UIElement {
         let username = user["username"] as? String
         
         var email: String?
-        if user.objectId! == PFUser.current()!.objectId {
-            email = user["email"] as? String
+        if PFUser.current() != nil {
+            if user.objectId! == PFUser.current()!.objectId {
+                email = user["email"] as? String
+            }
         }
+
         
         let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
         

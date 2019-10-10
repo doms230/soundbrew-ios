@@ -23,12 +23,14 @@ class WelcomeViewController: UIViewController {
             let navi = segue.destination as! UINavigationController
             let viewController = navi.topViewController as! NewEmailViewController
             viewController.isLoggingInWithTwitter = isLoggingInWithTwitter
+            viewController.isLoggingInWithApple = isLoggingInWithApple
         }
     }
     
     let color = Color()
     let uiElement = UIElement()
     var isLoggingInWithTwitter = false
+    var isLoggingInWithApple = false
     
     lazy var backgroundView: UIImageView = {
         let image = UIImageView()
@@ -80,6 +82,15 @@ class WelcomeViewController: UIViewController {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         label.text = "∙ Listen for free."
+        label.textColor = .white
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    lazy var signinWithLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        label.text = "Sign In With:"
         label.textColor = .white
         label.numberOfLines = 0
         return label
@@ -139,6 +150,17 @@ class WelcomeViewController: UIViewController {
         return button
     }()
     
+    lazy var skipButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Skip", for: .normal)
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(didPressSkipButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
     func welcomeView() {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -153,6 +175,10 @@ class WelcomeViewController: UIViewController {
         self.view.addSubview(point1)
         self.view.addSubview(point2)
         self.view.addSubview(point3)
+        
+        self.view.addSubview(signinWithLabel)
+        
+        self.view.addSubview(skipButton)
         self.view.addSubview(signinButton)
         self.view.addSubview(signupButton)
         self.view.addSubview(loginInWithTwitterButton)
@@ -189,6 +215,13 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(point2.snp.top).offset(uiElement.bottomOffset)
         }
         
+        skipButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
         signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
@@ -223,6 +256,10 @@ class WelcomeViewController: UIViewController {
         }
     }
     
+    @objc func didPressSkipButton(_ sender: UIButton) {
+        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+    }
+    
     @objc func didPressSigninButton(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showSignin", sender: self)
         MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign In Button", "description": "User pressed Sign in button"])
@@ -240,6 +277,7 @@ class WelcomeViewController: UIViewController {
     }
     
     @objc func didPressLoginWithTwitterButton(_ sender: UIButton) {
+        isLoggingInWithApple = false
         isLoggingInWithTwitter = true
         self.performSegue(withIdentifier: "showSignup", sender: self)
         MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Twitter Button", "description": "user pressed twitter button"])

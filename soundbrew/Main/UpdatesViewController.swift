@@ -26,14 +26,18 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        } else if PFUser.current() != nil {
-            setUpTableView(nil)
+        if PFUser.current() != nil {
+            let player = Player.sharedInstance
+            if player.player != nil {
+                setUpMiniPlayer()
+            } else if PFUser.current() != nil {
+                setUpTableView(nil)
+            }
+            
+            loadNewFollows()
+        } else {
+            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
         }
-        
-        loadNewFollows()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

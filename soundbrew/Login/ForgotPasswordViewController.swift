@@ -23,6 +23,9 @@ class ForgotPasswordViewController: UIViewController {
         textField.keyboardType = .emailAddress
         textField.placeholder = "Email"
         textField.tintColor = color.black()
+        textField.textColor = color.black()
+        textField.attributedPlaceholder = NSAttributedString(string: "Email",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return textField
     }()
     

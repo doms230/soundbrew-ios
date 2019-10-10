@@ -117,7 +117,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             present(alertView, animated: true, completion: nil)
         }
     }
-    
+        
     func updateArtistPayment(_ sound: Sound, tipAmount: Int) {
         if let artistObjectId = sound.artist?.objectId {
             let query = PFQuery(className: "Payment")
@@ -142,7 +142,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
-        let newPaymentRow = PFObject(className: "Tip")
+        let newPaymentRow = PFObject(className: "Payment")
         newPaymentRow["userId"] = artistObjectId
         newPaymentRow["tipsSinceLastPayout"] = tipAmount
         newPaymentRow["tips"] = tipAmount
@@ -186,20 +186,24 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func checkIfUserAddedSongToCollection(_ sound: Sound) {
-        self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
-        self.tipButton.isEnabled = false
-        self.didAddSongToCollection = false
-        
-        let query = PFQuery(className: "Tip")
-        query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId! )
-        query.whereKey("soundId", equalTo: sound.objectId!)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-             if let object = object {
-                self.didAddSongToCollection = true
-                self.sound?.tips = (object["amount"] as! Int)
-                self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+        if PFUser.current() != nil {
+            self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
+            self.tipButton.isEnabled = false
+            self.didAddSongToCollection = false
+            
+            let query = PFQuery(className: "Tip")
+            query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId! )
+            query.whereKey("soundId", equalTo: sound.objectId!)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                 if let object = object {
+                    self.didAddSongToCollection = true
+                    self.sound?.tips = (object["amount"] as! Int)
+                    self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                }
+                self.tipButton.isEnabled = true
             }
+        } else {
             self.tipButton.isEnabled = true
         }
     }
@@ -373,6 +377,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             } else {
                 showSendMoney()
             }
+        } else {
+            self.uiElement.signupRequired("Sign up required", message: "Tip artists to add songs to your collection!", target: self)
         }
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])

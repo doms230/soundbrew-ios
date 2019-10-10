@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -78,7 +76,7 @@
                         <viewLayoutGuide key="safeArea" id="IKx-id-dcd"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="profile_nav" selectedImage="profile_nav_filled" id="9Xb-ZK-TuQ">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
                     </tabBarItem>
                     <navigationItem key="navigationItem" id="Q3X-YD-Tkk"/>
                 </viewController>
@@ -186,7 +184,7 @@
             <objects>
                 <viewController id="3jl-7I-oti" customClass="EditBioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eBy-XP-uAL">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="WKJ-WH-T7i"/>
@@ -229,7 +227,6 @@
                     </tabBar>
                     <connections>
                         <segue destination="3Mr-Tw-OSi" kind="relationship" relationship="viewControllers" id="sBe-M4-6h3"/>
-                        <segue destination="1BA-5R-pql" kind="relationship" relationship="viewControllers" id="NDN-PQ-6YD"/>
                         <segue destination="4ef-dR-Glj" kind="relationship" relationship="viewControllers" id="ccd-sE-dZb"/>
                         <segue destination="D9F-Kl-XwJ" kind="relationship" relationship="viewControllers" id="7Ep-eH-VKJ"/>
                         <segue destination="SLi-Nt-QNQ" kind="relationship" relationship="viewControllers" id="s3D-zM-pMy"/>
@@ -293,7 +290,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="n4H-QI-4Ol" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5ux-yi-Vqb">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="barTintColor" red="0.094117647060000004" green="0.050980392159999999" blue="0.1333333333" alpha="1" colorSpace="calibratedRGB"/>
@@ -315,7 +312,7 @@
             <objects>
                 <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
                         <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -379,7 +376,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4ef-dR-Glj" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="new_nav" selectedImage="new_nav_filled" id="CtQ-Jd-vze">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="New Upload" id="bvA-Tr-Phs"/>
@@ -417,7 +414,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWh-XQ-3VH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3752.1739130434785" y="-505.58035714285711"/>
+            <point key="canvasLocation" x="-3752" y="-506"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="WTx-3Q-WJ0">
@@ -428,7 +425,7 @@
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
@@ -467,7 +464,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x5d-dt-OWZ">
@@ -531,9 +528,9 @@
         <segue reference="QFf-vL-w9n"/>
         <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="8ie-Jd-veP"/>
-        <segue reference="eKw-d2-ktB"/>
+        <segue reference="xvi-B0-pE3"/>
+        <segue reference="PpL-DV-h1t"/>
         <segue reference="LnM-xP-wsl"/>
-        <segue reference="jCE-No-XFc"/>
+        <segue reference="mvo-CV-XcF"/>
     </inferredMetricsTieBreakers>
 </document>

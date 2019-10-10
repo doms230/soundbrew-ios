@@ -7,12 +7,11 @@ import TwitterKit
 class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate {
     let color = Color()
     let uiElement = UIElement()
+
     var authToken: String?
-    var authTokenSecret: String?
-    var twitterUsername: String?
-    var twitterID: String?
     
     var isLoggingInWithTwitter = false
+    var isLoggingInWithApple = false
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -32,6 +31,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .emailAddress
         textField.tintColor = color.black()
+        textField.textColor = color.black()
+        textField.attributedPlaceholder = NSAttributedString(string: "Email",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return textField
     }()
     
@@ -58,7 +60,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         navigationController?.navigationBar.tintColor = .white
 
         if isLoggingInWithTwitter {
-            LoginWithTwitter()
+            loginWithTwitter()
+        } else if isLoggingInWithApple {
+            //loginWithApple()
         } else {
             setupNewEmailView()
         }
@@ -160,7 +164,11 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     //MARK: TWITTER
-    func LoginWithTwitter() {
+    var authTokenSecret: String?
+    var twitterUsername: String?
+    var twitterID: String?
+    
+    func loginWithTwitter() {
         self.startAnimating()
         let store = TWTRTwitter.sharedInstance().sessionStore
         if let session = store.session() {

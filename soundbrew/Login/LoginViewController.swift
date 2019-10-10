@@ -33,6 +33,9 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         label.clearButtonMode = .whileEditing
         label.keyboardType = .emailAddress
         label.tintColor = color.black()
+        label.textColor = color.black()
+        label.attributedPlaceholder = NSAttributedString(string: "Username or Email",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return label
     }()
     
@@ -45,6 +48,9 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         label.clearButtonMode = .whileEditing
         label.isSecureTextEntry = true
         label.tintColor = color.black()
+        label.textColor = color.black()
+        label.attributedPlaceholder = NSAttributedString(string: "Password",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return label
     }()
     
@@ -98,11 +104,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         signButton.addTarget(self, action: #selector(loginAction(_:)), for: .touchUpInside)
         
         usernameText.becomeFirstResponder()
-        
-        NVActivityIndicatorView.DEFAULT_TYPE = .ballScaleMultiple
-        NVActivityIndicatorView.DEFAULT_COLOR = color.blue()
-        NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE = CGSize(width: 60, height: 60)
-        NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

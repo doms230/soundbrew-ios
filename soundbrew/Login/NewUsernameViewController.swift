@@ -31,6 +31,9 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .emailAddress
         textField.tintColor = color.black()
+        textField.textColor = color.black()
+        textField.attributedPlaceholder = NSAttributedString(string: "Username",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return textField
     }()
     

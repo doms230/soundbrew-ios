@@ -198,6 +198,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
             cell.topChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
             cell.topChartsButton.tag = 1
+            
+            cell.followButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
+            cell.followButton.tag = 2
+            
             return cell
         }
         return featureTagCell(indexPath)
@@ -232,10 +236,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func didPressChartsButton(_ sender: UIButton) {
         let tag = Tag(objectId: nil, name: "new", count: 0, isSelected: false, type: nil, image: nil)
+        var soundType = "chart"
         if sender.tag == 1 {
             tag.name = "top"
+        } else if sender.tag == 2 {
+            tag.name = "following"
+            soundType = "follow"
         }
-        showSounds(tag, soundType: "chart")
+        showSounds(tag, soundType: soundType)
     }
     
     //mark: tags
@@ -268,13 +276,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         case 1:
             //city
             addTags(cell.tagsScrollview, tags: topCityTags, row: 3)
-            
             break
             
         case 2:
             //mood
             addTags(cell.tagsScrollview, tags: topMoodTags, row: 1)
-            
             break
             
         case 3:
@@ -307,8 +313,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func addTags(_ scrollview: UIScrollView, tags: Array<Tag>, row: Int) {
         //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonHeight = 130
-        let buttonWidth = 200
+        let buttonHeight = 115
+        let buttonWidth = 170
         var xPositionForFeatureTags = UIElement().leftOffset
         
         for tag in tags {

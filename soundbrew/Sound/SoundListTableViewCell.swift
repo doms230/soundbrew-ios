@@ -255,7 +255,6 @@ class SoundListTableViewCell: UITableViewCell {
         case "filterSoundsReuse":
             self.addSubview(newButton)
             self.addSubview(popularButton)
-            
             newButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -269,6 +268,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(newButton.snp.right).offset(uiElement.leftOffset + 10)
                 make.bottom.equalTo(newButton)
             }
+    
             break
             
         case "noFilterTagsReuse":

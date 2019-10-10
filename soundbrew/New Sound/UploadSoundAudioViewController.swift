@@ -32,13 +32,17 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        showSounds()
-        
-        let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        } else if PFUser.current() != nil {
-            setUpTableView(nil)
+        if PFUser.current() != nil {
+            showSounds()
+            
+            let player = Player.sharedInstance
+            if player.player != nil {
+                setUpMiniPlayer()
+            } else if PFUser.current() != nil {
+                setUpTableView(nil)
+            }
+        } else {
+            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
         }
     }
     

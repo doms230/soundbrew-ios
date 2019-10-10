@@ -60,6 +60,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.profileArtist = currentArtist
             self.executeTableViewSoundListFollowStatus()
             self.setUpNavigationButtons()
+        } else {
+            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
         }
     }
     

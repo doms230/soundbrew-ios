@@ -58,6 +58,16 @@ class TagTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var followButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Following", for: .normal)
+        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        button.layer.cornerRadius = 5
+        button.clipsToBounds = true
+        return button
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -90,7 +100,7 @@ class TagTableViewCell: UITableViewCell {
                 if reuseIdentifier == "profileSoundReuse" {
                   make.height.equalTo(210)
                 } else {
-                    make.height.equalTo(150)
+                    make.height.equalTo(115)
                 }
                 make.top.equalTo(tagTypeButton.snp.bottom)
                 make.left.equalTo(self)
@@ -101,6 +111,7 @@ class TagTableViewCell: UITableViewCell {
         } else {
             self.addSubview(newChartsButton)
             self.addSubview(topChartsButton)
+            self.addSubview(followButton)
             self.addSubview(TagTypeTitle)
             
             TagTypeTitle.text = "Releases"
@@ -123,6 +134,14 @@ class TagTableViewCell: UITableViewCell {
                 make.height.equalTo(50)
                 make.top.equalTo(newChartsButton)
                 make.left.equalTo(newChartsButton.snp.right).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            followButton.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(100)
+                make.height.equalTo(50)
+                make.top.equalTo(newChartsButton)
+                make.left.equalTo(topChartsButton.snp.right).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
         }
