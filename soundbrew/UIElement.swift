@@ -44,10 +44,11 @@ class UIElement {
             (target.navigationController?.navigationBar.frame.height ?? 0.0) + CGFloat(topOffset)
     }
     
-    func segueToView(_ storyBoard: String, withIdentifier: String, target: UIViewController) {
+    func newRootView(_ storyBoard: String, withIdentifier: String) {
         let storyboard = UIStoryboard(name: storyBoard, bundle: nil)
-        let controller = storyboard.instantiateViewController(withIdentifier: withIdentifier)
-        target.present(controller, animated: true, completion: nil)
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: withIdentifier)
+        let appdelegate = UIApplication.shared.delegate as! AppDelegate
+        appdelegate.window?.rootViewController = initialViewController
     }
     
     func showAlert(_ title: String, message: String, target: UIViewController) {

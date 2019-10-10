@@ -1,11 +1,3 @@
-//
-//  SignupViewController.swift
-//  soundbrew artists
-//
-//  Created by Dominic Smith on 10/10/18.
-//  Copyright © 2018 Dominic Smith. All rights reserved.
-//
-
 import UIKit
 import Parse
 import NVActivityIndicatorView
@@ -26,7 +18,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         label.text = "Your Soundbrew email is used to send PayPal Payouts."
-        label.textColor = .white 
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()
@@ -217,7 +209,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             installation?.saveEventually()
             
             Customer.shared.getCustomer(parseUser!.objectId!)
-            self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
+            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
             return AnyObject.self as AnyObject
         })
     }

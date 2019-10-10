@@ -44,8 +44,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
-            self.uiElement.segueToView("NewUser", withIdentifier: "welcome", target: self)
-            
+            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
             MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Sign out", "description": "User pressed Sign out"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
@@ -225,12 +224,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.profileImage.layer.borderColor = color.black().cgColor
         switch indexPath.row {
         case 0:
-            cell.displayNameLabel.text = "\(self.artist!.followerCount ?? 0)"
+            cell.displayNameLabel.text = "\(self.artist?.followerCount ?? 0)"
             cell.username.text = "Followers"
             break
             
         case 1:
-            cell.displayNameLabel.text = "\(self.artist!.followingCount ?? 0)"
+            cell.displayNameLabel.text = "\(self.artist?.followingCount ?? 0)"
             cell.username.text = "Following"
             break
             

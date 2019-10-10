@@ -2,7 +2,7 @@
 //  NewPasswordViewController.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 4/15/19.
+//  Created by Dominic Smith on 10/9/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
@@ -103,8 +103,8 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 
                 Customer.shared.getCustomer(user.objectId!)
                 
-                self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)                
+                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
             }
         }
-    }    
+    }
 }

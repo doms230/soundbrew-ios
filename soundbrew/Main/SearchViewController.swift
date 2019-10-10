@@ -519,9 +519,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 5, height: 10))
         searchBar.placeholder = "Artists & Music"
         
-        let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField
-        searchTextField?.backgroundColor = color.black()
-        searchTextField?.textColor = .white
+        let searchTextField = searchBar.searchTextField
+        searchTextField.backgroundColor = color.black()
+        searchTextField.textColor = .white
         searchBar.delegate = self
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)

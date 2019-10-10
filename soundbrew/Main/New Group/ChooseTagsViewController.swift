@@ -60,11 +60,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             minusWidth = 100
         }
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
-        let searchTextField = searchBar.value(forKey: "searchField") as? UITextField
+        
+        let searchTextField = searchBar.searchTextField
         searchBar.placeholder = "Search Tags"
-        searchTextField?.backgroundColor = color.black()
+        searchTextField.backgroundColor = color.black()
         searchBar.delegate = self
-        searchTextField?.textColor = .white 
+        searchTextField.textColor = .white 
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         return searchBar
     }()

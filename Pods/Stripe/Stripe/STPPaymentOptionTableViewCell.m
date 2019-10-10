@@ -10,8 +10,15 @@
 
 #import "STPApplePayPaymentOption.h"
 #import "STPCard.h"
+#import "STPCardValidator+Private.h"
 #import "STPImageLibrary+Private.h"
 #import "STPLocalizationUtils.h"
+#import "STPPaymentMethod.h"
+#import "STPPaymentMethodCard.h"
+#import "STPPaymentMethodCardParams.h"
+#import "STPPaymentMethodFPX.h"
+#import "STPPaymentMethodFPXParams.h"
+#import "STPPaymentMethodParams.h"
 #import "STPPaymentOption.h"
 #import "STPSource.h"
 #import "STPTheme.h"
@@ -115,26 +122,77 @@
     [self setNeedsLayout];
 }
 
+- (void)configureForFPXRowWithTheme:(STPTheme *)theme {
+    self.paymentOption = nil;
+    self.theme = theme;
+
+    self.backgroundColor = theme.secondaryBackgroundColor;
+    
+    // Left icon
+    self.leftIcon.image = [STPImageLibrary bankIcon];
+    self.leftIcon.tintColor = [self primaryColorForPaymentOptionWithSelected:NO];
+
+    // Title label
+    self.titleLabel.font = theme.font;
+    self.titleLabel.textColor = self.theme.primaryForegroundColor;
+    self.titleLabel.text = STPLocalizedString(@"Online Banking (FPX)", @"Button to pay with a Bank Account (using FPX).");
+
+    // Checkmark icon
+    self.checkmarkIcon.hidden = YES;
+    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    [self setNeedsLayout];
+}
+
 - (UIColor *)primaryColorForPaymentOptionWithSelected:(BOOL)selected {
-    return selected ? self.theme.accentColor : [self.theme.primaryForegroundColor colorWithAlphaComponent:0.6f];
+    UIColor *fadedColor = nil;
+#ifdef __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+        fadedColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * __unused _Nonnull traitCollection) {
+            return [self.theme.primaryForegroundColor colorWithAlphaComponent:0.6f];
+        }];
+    } else {
+#endif
+        fadedColor = [self.theme.primaryForegroundColor colorWithAlphaComponent:0.6f];
+#ifdef __IPHONE_13_0
+    }
+#endif
+
+    return selected ? self.theme.accentColor : fadedColor;
 }
 
 - (NSAttributedString *)buildAttributedStringWithPaymentOption:(id<STPPaymentOption>)paymentOption selected:(BOOL)selected {
     if ([paymentOption isKindOfClass:[STPCard class]]) {
         return [self buildAttributedStringWithCard:(STPCard *)paymentOption selected:selected];
-    }
-    else if ([paymentOption isKindOfClass:[STPSource class]]) {
+    } else if ([paymentOption isKindOfClass:[STPSource class]]) {
         STPSource *source = (STPSource *)paymentOption;
         if (source.type == STPSourceTypeCard
             && source.cardDetails != nil) {
             return [self buildAttributedStringWithCardSource:source selected:selected];
         }
-    }
-
-    if ([paymentOption isKindOfClass:[STPApplePayPaymentOption class]]) {
+    } else if ([paymentOption isKindOfClass:[STPPaymentMethod class]]) {
+        STPPaymentMethod *paymentMethod = (STPPaymentMethod *)paymentOption;
+        if (paymentMethod.type == STPPaymentMethodTypeCard
+            && paymentMethod.card != nil) {
+            return [self buildAttributedStringWithCardPaymentMethod:paymentMethod selected:selected];
+        }
+        if (paymentMethod.type == STPPaymentMethodTypeFPX
+            && paymentMethod.fpx != nil) {
+            return [self buildAttributedStringWithFPXBankBrand:STPFPXBankBrandFromIdentifier(paymentMethod.fpx.bankIdentifierCode) selected:selected];
+        }
+    } else if ([paymentOption isKindOfClass:[STPApplePayPaymentOption class]]) {
         NSString *label = STPLocalizedString(@"Apple Pay", @"Text for Apple Pay payment method");
         UIColor *primaryColor = [self primaryColorForPaymentOptionWithSelected:selected];
         return [[NSAttributedString alloc] initWithString:label attributes:@{NSForegroundColorAttributeName: primaryColor}];
+    } else if ([paymentOption isKindOfClass:[STPPaymentMethodParams class]]) {
+        STPPaymentMethodParams *paymentMethodParams = (STPPaymentMethodParams *)paymentOption;
+        if (paymentMethodParams.type == STPPaymentMethodTypeCard
+            && paymentMethodParams.card != nil) {
+            return [self buildAttributedStringWithCardPaymentMethodParams:paymentMethodParams selected:selected];
+        }
+        if (paymentMethodParams.type == STPPaymentMethodTypeFPX
+            && paymentMethodParams.fpx != nil) {
+            return [self buildAttributedStringWithFPXBankBrand:paymentMethodParams.fpx.bank selected:selected];
+        }
     }
 
     // Unrecognized payment method
@@ -153,6 +211,25 @@
                                        selected:selected];
 }
 
+- (NSAttributedString *)buildAttributedStringWithCardPaymentMethod:(STPPaymentMethod *)paymentMethod selected:(BOOL)selected {
+    return [self buildAttributedStringWithBrand:paymentMethod.card.brand
+                                          last4:paymentMethod.card.last4
+                                       selected:selected];
+}
+
+- (NSAttributedString *)buildAttributedStringWithCardPaymentMethodParams:(STPPaymentMethodParams *)paymentMethodParams selected:(BOOL)selected {
+    STPCardBrand brand = [STPCardValidator brandForNumber:paymentMethodParams.card.number];
+    return [self buildAttributedStringWithBrand:brand
+                                          last4:paymentMethodParams.card.last4
+                                       selected:selected];
+}
+
+- (NSAttributedString *)buildAttributedStringWithFPXBankBrand:(STPFPXBankBrand)bankBrand selected:(BOOL)selected {
+    NSString *label = [STPStringFromFPXBankBrand(bankBrand) stringByAppendingString:@" (FPX)"];
+    UIColor *primaryColor = [self primaryColorForPaymentOptionWithSelected:selected];
+    return [[NSAttributedString alloc] initWithString:label attributes:@{NSForegroundColorAttributeName: primaryColor}];
+}
+
 - (NSAttributedString *)buildAttributedStringWithBrand:(STPCardBrand)brand
                                                  last4:(NSString *)last4
                                               selected:(BOOL)selected {
@@ -161,7 +238,19 @@
     NSString *label = [NSString stringWithFormat:format, brandString, last4];
 
     UIColor *primaryColor = selected ? self.theme.accentColor : self.theme.primaryForegroundColor;
-    UIColor *secondaryColor = [primaryColor colorWithAlphaComponent:0.6f];
+    
+    UIColor *secondaryColor = nil;
+#ifdef __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+        secondaryColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * __unused _Nonnull traitCollection) {
+            return [primaryColor colorWithAlphaComponent:0.6f];
+        }];
+    } else {
+#endif
+        secondaryColor = [primaryColor colorWithAlphaComponent:0.6f];
+#ifdef __IPHONE_13_0
+    }
+#endif
 
     NSDictionary *attributes = @{NSForegroundColorAttributeName: secondaryColor,
                                  NSFontAttributeName: self.theme.font};

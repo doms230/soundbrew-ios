@@ -10,8 +10,9 @@ import UIKit
 import Stripe
 import Parse
 import AppCenterAnalytics
+import NVActivityIndicatorView
 
-class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
+class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVActivityIndicatorViewable {
     
     let color = Color()
     let uiElement = UIElement()
@@ -54,34 +55,60 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
         
     }
     
-    func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPErrorBlock) {
-        if let currentUser = PFUser.current() {
-            let payment = Payment.shared
-            let paymentAmount = paymentContext.paymentAmount
-            payment.charge(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentAmount, currency: paymentContext.paymentCurrency, description: "", source: paymentResult.source.stripeID) { [weak self] (error) in
-                
-                guard let strongSelf = self else {
-                    // View controller was deallocated
-                    return
+    func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
+        
+            if let currentUser = PFUser.current() {
+                let payment = Payment.shared
+                let paymentAmount = paymentContext.paymentAmount
+                payment.createPaymentIntent(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentAmount, currency: paymentContext.paymentCurrency, description: "") { [weak self] (result) in
+                            
+                    guard self != nil else {
+                        // View controller was deallocated
+                        return
+                    }
+                    
+                    switch result {
+                        case .success(let clientSecret):
+                        // Confirm the PaymentIntent
+                            let paymentIntentParams = STPPaymentIntentParams(clientSecret: clientSecret)
+                        paymentIntentParams.configure(with: paymentResult)
+                        STPPaymentHandler.shared().confirmPayment(withParams: paymentIntentParams, authenticationContext: paymentContext) { status, paymentIntent, error in
+                            switch status {
+                            case .succeeded:
+                                // Our example backend asynchronously fulfills the customer's order via webhook
+                                // See https://stripe.com/docs/payments/payment-intents/ios#fulfillment
+                                completion(.success, nil)
+                            case .failed:
+                                completion(.error, error)
+                            case .canceled:
+                                completion(.userCancellation, nil)
+                            @unknown default:
+                                completion(.error, nil)
+                            }
+                        }
+                        
+                        case .failure(let error):
+                            // A real app should retry this request if it was a network error.
+                            print("Failed to create a Payment Intent: \(error)")
+                            completion(.error, error)
+                            break
+                    case .none:
+                        break
+                        
+                    }
                 }
-                
-                guard error == nil else {
-                    // Error while requesting ride
-                    completion(error)
-                    return
-                }
-                
-                completion(nil)
-            }
         }
     }
+
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
+        self.stopAnimating()
         switch status {
         case .error:
             var errorString = ""
             if let reError = error?.localizedDescription {
                 errorString = reError
+                print(errorString)
             }
             self.uiElement.showAlert("Payment was Declined", message: "", target: self)
             MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Declined", "description": "User's payment was Un-Successful. \(errorString)"])
@@ -148,12 +175,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
             self.updateTotalAndProcessingFee(10)
         }))
         self.present(menuAlert, animated: true, completion: nil)
-    }
-    
-    func changeFundAmountColors(_ selectedButton: UIButton, unSelectedButton: UIButton, unSelectedButton1: UIButton) {
-        selectedButton.setTitleColor(.white, for: .normal)
-        unSelectedButton.setTitleColor(.lightGray, for: .normal)
-        unSelectedButton1.setTitleColor(.lightGray, for: .normal)
     }
     
     func updateTotalAndProcessingFee(_ funds: Double) {
@@ -262,6 +283,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate {
     }()
     
     @objc func didPressPurchaseButton(_ sender: UIButton) {
+        self.startAnimating()
         self.paymentContext.requestPayment()
     }
     

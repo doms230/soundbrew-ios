@@ -9,15 +9,16 @@
 /* Begin PBXBuildFile section */
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
+		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
+		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
+		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
+		E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6422234E57470055E65A /* NewPasswordViewController.swift */; };
 		F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */; };
 		F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */; };
 		F226B5CB2329A47C00C3E951 /* NewUser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F226B5CA2329A47C00C3E951 /* NewUser.storyboard */; };
 		F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F226B5CC2329AFC200C3E951 /* WelcomeViewController.swift */; };
-		F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621021DC34EC005C9FF0 /* LoginViewController.swift */; };
-		F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */; };
 		F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */; };
 		F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F246999A22A82EEE0020497E /* AuthenticationServices.framework */; };
-		F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2480B5422652375005231FD /* NewPasswordViewController.swift */; };
 		F24F2B762278E8CB006D1CB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */; };
 		F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2689869215AEF8F00C21663 /* AppDelegate.swift */; };
 		F268986F215AEF8F00C21663 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F268986D215AEF8F00C21663 /* Main.storyboard */; };
@@ -33,7 +34,6 @@
 		F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2860643232823DF00399F2A /* PeopleViewController.swift */; };
 		F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28A9861222FA5F200C96EED /* EditBioViewController.swift */; };
 		F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BE03EC22CAD610009A5760 /* Payment.swift */; };
-		F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */; };
 		F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */; };
 		F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
@@ -132,16 +132,17 @@
 		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
+		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
+		E46A6422234E57470055E65A /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasswordViewController.swift; sourceTree = "<group>"; };
 		F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramStoriesArtImage.swift; sourceTree = "<group>"; };
 		F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapchatStoriesArtImage.swift; sourceTree = "<group>"; };
 		F226B5CA2329A47C00C3E951 /* NewUser.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = NewUser.storyboard; path = Profile/NewUser.storyboard; sourceTree = "<group>"; };
 		F226B5CC2329AFC200C3E951 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
-		F23C621021DC34EC005C9FF0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
-		F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewEmailViewController.swift; path = ../NewEmailViewController.swift; sourceTree = "<group>"; };
-		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ForgotPasswordViewController.swift; path = ../ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		F246995222A8273E0020497E /* Swifter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Swifter.xcodeproj; path = "soundbrew/Swifter-master 2/Swifter.xcodeproj"; sourceTree = "<group>"; };
 		F246999A22A82EEE0020497E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
-		F2480B5422652375005231FD /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewPasswordViewController.swift; path = ../NewPasswordViewController.swift; sourceTree = "<group>"; };
 		F24F2B752278E8CA006D1CB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F2689866215AEF8F00C21663 /* soundbrew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundbrew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2689869215AEF8F00C21663 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -164,7 +165,6 @@
 		F2860643232823DF00399F2A /* PeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleViewController.swift; sourceTree = "<group>"; };
 		F28A9861222FA5F200C96EED /* EditBioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBioViewController.swift; sourceTree = "<group>"; };
 		F2BE03EC22CAD610009A5760 /* Payment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payment.swift; sourceTree = "<group>"; };
-		F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewUsernameViewController.swift; path = ../NewUsernameViewController.swift; sourceTree = "<group>"; };
 		F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundsViewController.swift; sourceTree = "<group>"; };
 		F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemporaryFile.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
@@ -247,8 +247,11 @@
 			isa = PBXGroup;
 			children = (
 				F226B5CC2329AFC200C3E951 /* WelcomeViewController.swift */,
-				F2480B5722652A31005231FD /* Returning User */,
-				F2480B5622652A19005231FD /* New User */,
+				F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */,
+				E46A641C234E567C0055E65A /* LoginViewController.swift */,
+				E46A641E234E56D30055E65A /* NewEmailViewController.swift */,
+				E46A6420234E57120055E65A /* NewUsernameViewController.swift */,
+				E46A6422234E57470055E65A /* NewPasswordViewController.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -263,25 +266,6 @@
 				F246996422A8273F0020497E /* SwifterTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F2480B5622652A19005231FD /* New User */ = {
-			isa = PBXGroup;
-			children = (
-				F23C621221DC34FA005C9FF0 /* NewEmailViewController.swift */,
-				F2CB7C8E225F3F5200A1BC9A /* NewUsernameViewController.swift */,
-				F2480B5422652375005231FD /* NewPasswordViewController.swift */,
-			);
-			path = "New User";
-			sourceTree = "<group>";
-		};
-		F2480B5722652A31005231FD /* Returning User */ = {
-			isa = PBXGroup;
-			children = (
-				F23C621021DC34EC005C9FF0 /* LoginViewController.swift */,
-				F23C621A21DC3582005C9FF0 /* ForgotPasswordViewController.swift */,
-			);
-			path = "Returning User";
 			sourceTree = "<group>";
 		};
 		F268985D215AEF8F00C21663 = {
@@ -745,6 +729,7 @@
 				F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
+				E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
@@ -752,19 +737,19 @@
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
-				F2CB7C8F225F3F5200A1BC9A /* NewUsernameViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
-				F2480B5522652375005231FD /* NewPasswordViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
 				F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */,
 				F2F122DB22FBCA78002DA196 /* TagTableViewCell.swift in Sources */,
+				E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */,
 				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
 				F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */,
-				F23C621121DC34EC005C9FF0 /* LoginViewController.swift in Sources */,
+				E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
+				E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */,
@@ -777,7 +762,6 @@
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
-				F23C621321DC34FA005C9FF0 /* NewEmailViewController.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

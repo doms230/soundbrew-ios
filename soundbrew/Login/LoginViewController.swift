@@ -1,9 +1,9 @@
 //
 //  LoginViewController.swift
-//  soundbrew artists
+//  soundbrew
 //
-//  Created by Dominic Smith on 10/10/18.
-//  Copyright © 2018 Dominic Smith. All rights reserved.
+//  Created by Dominic Smith on 10/9/19.
+//  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
 import UIKit
@@ -164,7 +164,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?.saveEventually()
                 
                 Customer.shared.getCustomer(user.objectId!)
-                self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
+                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
             } else {
                 UIElement().showAlert("Oops", message: "Incorrect login credentials.", target: self)
             }

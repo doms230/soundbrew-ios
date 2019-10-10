@@ -1,8 +1,8 @@
 //
-//  UsernameViewController.swift
+//  NewUsernameViewController.swift
 //  soundbrew
 //
-//  Created by Dominic  Smith on 4/11/19.
+//  Created by Dominic Smith on 10/9/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
 
@@ -152,8 +152,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                 if let _ = user["email"] as? String {
                     Customer.shared.getCustomer(user.objectId!)
                     self.stopAnimating()
-                    self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
-                    
+                    self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                 } else {
                     user["artistName"] = self.usernameText.text
                     user["username"] = self.usernameText.text
@@ -164,8 +163,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                         if (success) {
                             Customer.shared.getCustomer(user.objectId!)
                             self.stopAnimating()
-                            self.uiElement.segueToView("Main", withIdentifier: "tabBar", target: self)
-                            
+                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         } else if let error = error {
                             UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
                         }

@@ -19,7 +19,7 @@ class Payment: NSObject {
     let baseURL = URL(string: "https://www.soundbrew.app/payments/")
     //let baseURL = URL(string: "http://192.168.1.68:3000/payments/")
     
-    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, completion: @escaping (Error?) -> Void) {
+    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, completion: @escaping (Result<Any>?) -> Void) {
         let url = self.baseURL!.appendingPathComponent("charge")
         let customer = Customer.shared
         let parameters: Parameters = [
@@ -35,7 +35,8 @@ class Payment: NSObject {
         Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
-                switch responseJSON.result {
+                completion(responseJSON.result)
+                /*switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
                     print(json)
@@ -43,7 +44,36 @@ class Payment: NSObject {
                     
                 case .failure(let error):
                     completion(error)
+                }*/
+        }
+    }
+    
+    func createPaymentIntent(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, completion: @escaping (Swift.Result<String, Error>?) -> Void) {
+        let url = self.baseURL!.appendingPathComponent("create-payment-intent")
+        let customer = Customer.shared
+        let parameters: Parameters = [
+            "amount": amount,
+            "currency": currency,
+            "description": description,
+            "metadata": objectId,
+            "customer": "\(customer.artist!.customerId!)",
+            "receipt_email": email
+        ]
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    print(json)
+                    if let secret = json["clientSecret"].string {
+                        completion(.success(secret))
+                    }
+                    
+                case .failure(let error):
+                    completion(.failure(error))
                 }
         }
+        
     }
 }

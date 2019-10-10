@@ -190,11 +190,10 @@ static const NSInteger FIRErrorCodeDurableDeepLinkFailed = -119;
     error =
         [FIRApp errorForSubspecConfigurationFailureWithDomain:kFirebaseDurableDeepLinkErrorDomain
                                                     errorCode:FIRErrorCodeDurableDeepLinkFailed
-                                                      service:kFIRServiceDynamicLinks
+                                                      service:@"DynamicLinks"
                                                        reason:errorDescription];
   }
   if (error) {
-    [app sendLogsWithServiceName:kFIRServiceDynamicLinks version:kFIRDLVersion error:error];
     NSString *message = nil;
     if (options.usingOptionsFromDefaultPlist) {
       // Configured using plist file
@@ -221,12 +220,7 @@ static const NSInteger FIRErrorCodeDurableDeepLinkFailed = -119;
     }
     [NSException raise:kFirebaseDurableDeepLinkErrorDomain format:@"%@", message];
   }
-  // Check to see if FirebaseDynamicLinksCustomDomains array is present.
-  NSDictionary *infoDictionary = [NSBundle mainBundle].infoDictionary;
-  NSArray *customDomains = infoDictionary[kInfoPlistCustomDomainsKey];
-  if (customDomains) {
-    FIRDLAddToAllowListForCustomDomainsArray(customDomains);
-  }
+  [self checkForCustomDomainEntriesInInfoPlist];
 }
 
 - (instancetype)initWithAnalytics:(nullable id<FIRAnalyticsInterop>)analytics {
@@ -254,6 +248,26 @@ static const NSInteger FIRErrorCodeDurableDeepLinkFailed = -119;
   return dynamicLinks;
 }
 #endif
+
+#pragma mark - Custom domains
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    [self checkForCustomDomainEntriesInInfoPlist];
+  }
+  return self;
+}
+
+// Check for custom domains entry in PLIST file.
+- (void)checkForCustomDomainEntriesInInfoPlist {
+  // Check to see if FirebaseDynamicLinksCustomDomains array is present.
+  NSDictionary *infoDictionary = [NSBundle mainBundle].infoDictionary;
+  NSArray *customDomains = infoDictionary[kInfoPlistCustomDomainsKey];
+  if (customDomains) {
+    FIRDLAddToAllowListForCustomDomainsArray(customDomains);
+  }
+}
 
 #pragma mark - First party interface
 
