@@ -524,12 +524,17 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 5, height: 10))
         searchBar.placeholder = "Artists & Music"
-        
-        let searchTextField = searchBar.searchTextField
-        searchTextField.backgroundColor = color.black()
-        searchTextField.textColor = .white
         searchBar.delegate = self
-        
+        if #available(iOS 13.0, *) {
+            let searchTextField = searchBar.searchTextField
+            searchTextField.backgroundColor = color.black()
+            searchTextField.textColor = .white
+        } else {
+            let searchTextField = searchBar.value(forKey: "_searchField") as! UITextField
+            searchTextField.backgroundColor = color.black()
+            searchTextField.textColor = .white
+        }
+                
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         return searchBar
     }()
