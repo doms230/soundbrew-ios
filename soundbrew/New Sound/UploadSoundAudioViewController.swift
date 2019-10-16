@@ -11,7 +11,6 @@ import Parse
 import MobileCoreServices
 import SnapKit
 import NVActivityIndicatorView
-import DeckTransition
 import AppCenterAnalytics
 
 class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate {
@@ -233,9 +232,6 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
-            let transitionDelegate = DeckTransitioningDelegate()
-            modal.transitioningDelegate = transitionDelegate
-            modal.modalPresentationStyle = .custom
             self.present(modal, animated: true, completion: nil)
         }
     }

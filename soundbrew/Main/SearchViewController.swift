@@ -10,7 +10,6 @@ import UIKit
 import Parse
 import SnapKit
 import Kingfisher
-import DeckTransition
 import AppCenterAnalytics
 
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate {
@@ -487,9 +486,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
-            let transitionDelegate = DeckTransitioningDelegate()
-            modal.transitioningDelegate = transitionDelegate
-            modal.modalPresentationStyle = .custom
             self.present(modal, animated: true, completion: nil)
         }
     }

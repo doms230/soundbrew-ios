@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import DeckTransition
 import Parse
 
 class Tag {

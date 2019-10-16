@@ -10,7 +10,6 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
-import DeckTransition
 import AppCenterAnalytics
 
 class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
@@ -139,9 +138,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
-            let transitionDelegate = DeckTransitioningDelegate()
-            modal.transitioningDelegate = transitionDelegate
-            modal.modalPresentationStyle = .custom
             self.present(modal, animated: true, completion: nil)
         }
     }

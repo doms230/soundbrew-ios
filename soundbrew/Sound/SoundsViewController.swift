@@ -12,7 +12,6 @@ import Parse
 import Kingfisher
 import SnapKit
 import AppCenterCrashes
-import DeckTransition
 
 class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
     
@@ -206,9 +205,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let modal = PlayerViewController()
             modal.player = player
             modal.playerDelegate = self
-            let transitionDelegate = DeckTransitioningDelegate()
-            modal.transitioningDelegate = transitionDelegate
-            modal.modalPresentationStyle = .custom
             self.present(modal, animated: true, completion: nil)
         }
     }

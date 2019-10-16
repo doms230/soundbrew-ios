@@ -18,6 +18,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="OXq-VS-SbB"/>
                     </view>
+                    <navigationItem key="navigationItem" id="KK6-Na-7Us"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pyG-2h-fp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -57,6 +58,7 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Iks-Cm-qJq"/>
                     </view>
+                    <navigationItem key="navigationItem" id="nxg-Om-mwg"/>
                     <connections>
                         <segue destination="W2D-HU-YWf" kind="presentation" identifier="showTags" id="QFf-vL-w9n"/>
                     </connections>
@@ -109,6 +111,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="TCf-Ow-s1R"/>
                     </view>
+                    <navigationItem key="navigationItem" id="B3p-dq-dhk"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="Nhf-bc-kRf"/>
                     </connections>
@@ -151,6 +154,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="qaa-ef-0gE"/>
                     </view>
+                    <navigationItem key="navigationItem" id="5mt-QK-y97"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="AOa-FM-5jw"/>
                     </connections>
@@ -366,6 +370,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="MY4-QU-ZFk"/>
                     </view>
+                    <navigationItem key="navigationItem" id="u3H-E5-I9Q"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C20-sp-m9d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -394,10 +399,10 @@
             </objects>
             <point key="canvasLocation" x="-4664" y="-1254"/>
         </scene>
-        <!--Following-->
+        <!--Player View Controller-->
         <scene sceneID="ONb-vr-0dI">
             <objects>
-                <viewController id="UtP-Uh-9hz" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="UtP-Uh-9hz" customClass="PlayerViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="U3p-s3-Koh">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -405,7 +410,7 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="QKF-iJ-HXz"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Following" id="ZUc-A1-nE7"/>
+                    <navigationItem key="navigationItem" id="ZUc-A1-nE7"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="xvi-B0-pE3"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="mvo-CV-XcF"/>
@@ -414,7 +419,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWh-XQ-3VH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3752" y="-506"/>
+            <point key="canvasLocation" x="-4261" y="-543"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="WTx-3Q-WJ0">
@@ -424,6 +429,7 @@
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="SRX-FF-mWm"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -490,7 +496,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="1BA-5R-pql" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="FVv-OO-AMc">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="gNs-Nw-9DN">
@@ -509,7 +515,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eYs-9v-cZE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4662.3188405797109" y="-505.58035714285711"/>
+            <point key="canvasLocation" x="-5794" y="-458"/>
         </scene>
     </scenes>
     <resources>

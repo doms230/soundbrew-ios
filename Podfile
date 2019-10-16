@@ -27,7 +27,6 @@ target 'soundbrew' do
   pod 'SwiftyJSON'
   pod 'SnapSDK'
   pod 'ShareInstagram'
-  pod 'DeckTransition'
   pod 'AppCenter'
   #pod 'MessageViewController'
   pod 'Firebase/Core'

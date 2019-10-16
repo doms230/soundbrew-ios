@@ -13,7 +13,6 @@ import ShareInstagram
 import Parse
 import Kingfisher
 import SnapKit
-import DeckTransition
 import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
@@ -635,6 +634,33 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 }
                 
                 self.sound!.artist?.city = user["city"] as? String
+            }
+        }
+    }
+    
+    //MARK: RADIO
+    var radioSounds = [Sound]()
+    
+    func loadRadioSounds() {
+        let query = PFQuery(className: "Post")
+        query.whereKey("isRemoved", notEqualTo: true)
+        //query.addDescendingOrder("plays")
+        query.addDescendingOrder("tips")
+        query.limit = 10
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let sound = self.uiElement.newSoundObject(object)
+                        self.radioSounds.append(sound)
+                    }
+                    
+                } else {
+                }
+                
+            } else {
+                print("Error: \(error!)")
             }
         }
     }

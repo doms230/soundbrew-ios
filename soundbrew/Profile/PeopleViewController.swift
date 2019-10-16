@@ -8,7 +8,6 @@
 
 import UIKit
 import Parse
-import DeckTransition
 import AppCenterAnalytics
 
 class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
