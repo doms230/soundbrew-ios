@@ -81,9 +81,27 @@ class SoundInfoTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var dividerLine: UIView = {
+        let line = UIView()
+        line.layer.borderWidth = 1
+        line.layer.borderColor = color.darkGray().cgColor
+        return line
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
+            
+        case "dividerReuse":
+            self.addSubview(dividerLine)
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
+            
         case "soundProgressReuse":
             self.addSubview(progressSlider)
             self.addSubview(titleLabel)
@@ -121,6 +139,7 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.left.equalTo(soundArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
+            
             break
             
         case "soundTagReuse":
@@ -142,7 +161,6 @@ class SoundInfoTableViewCell: UITableViewCell {
         case "soundSocialReuse":
             self.addSubview(soundTagLabel)
             self.addSubview(socialSwitch)
-            
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
@@ -204,7 +222,6 @@ class SoundInfoTableViewCell: UITableViewCell {
         default:
             break
         }
-
     }
     
     ///////////

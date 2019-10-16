@@ -113,6 +113,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let soundTagReuse = "soundTagReuse"
     let soundProgressReuse = "soundProgressReuse"
     let soundSocialReuse = "soundSocialReuse"
+    let dividerReuse = "dividerReuse"
+    
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
@@ -121,9 +123,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundProgressReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundSocialReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
-        tableView.separatorStyle = .singleLine
+        //tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
@@ -134,17 +137,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func numberOfSections(in tableView: UITableView) -> Int {
         if soundThatIsBeingEdited?.objectId != nil {
-            return 3
+            return 5
         }
-        return 4
+        return 6
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var tagSection = 2
-        var socialSection = 3
+        var tagSection = 3
+        var socialSection = 5
         if soundThatIsBeingEdited?.objectId != nil {
-            tagSection = 1
-            socialSection = 2
+            tagSection = 2
+            socialSection = 4
         }
         
         if section == tagSection {
@@ -158,18 +161,27 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: SoundInfoTableViewCell!
-        
+    
+        var soundProgress = 0
         var titleSection = 1
-        var tagSection = 2
-        var socialSection = 3
+        var tagSection = 3
+        var socialSection = 5
         
         if soundThatIsBeingEdited?.objectId != nil {
+            soundProgress = -1
             titleSection = 0
-            tagSection = 1
-            socialSection = 2
+            tagSection = 2
+            socialSection = 4
         }
         
         switch indexPath.section {
+        case soundProgress:
+            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
+            self.progressSliderTitle = cell.titleLabel
+            self.progressSlider = cell.progressSlider
+            //tableView.separatorStyle = .none
+            break
+            
         case titleSection:
             cell = soundTitleImageCell()
             break
@@ -183,10 +195,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         default:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
-            self.progressSliderTitle = cell.titleLabel
-            self.progressSlider = cell.progressSlider
-            tableView.separatorStyle = .none
+            cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as? SoundInfoTableViewCell
             break
         }
         
@@ -196,9 +205,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var tagSection = 2
+        var tagSection = 3
         if self.soundThatIsBeingEdited?.objectId != nil {
-            tagSection = 1
+            tagSection = 2
         }
         
         if indexPath.section == tagSection {
