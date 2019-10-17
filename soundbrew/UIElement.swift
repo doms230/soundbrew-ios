@@ -251,7 +251,7 @@ class UIElement {
         }
         alertController.addAction(instagramAction)
         
-        let moreAction = UIAlertAction(title: "Share Link", style: .default) { (_) -> Void in
+        let moreAction = UIAlertAction(title: "More Options", style: .default) { (_) -> Void in
             self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
             MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
         }

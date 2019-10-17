@@ -196,51 +196,91 @@ class SoundList: NSObject, PlayerDelegate {
                 tips = soundTips
             }
             let tipsInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(tips, currency: "$")
-            
-            var menuAlert: UIAlertController!
-            
+                        
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
-                menuAlert = UIAlertController(title: "\(plays) Plays \n \(tipsInDollarString) in Tips", message: nil, preferredStyle: .actionSheet)
-                    
-                    menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
-                        self.selectedSound = sound
-                        self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
+                    let menuAlert = UIAlertController(title: "\(plays) Plays \n \(tipsInDollarString) in Tips", message: nil, preferredStyle: .actionSheet)
                         
-                        MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Edit Sound", "description": "User pressed Edit Sound Info."])
-                    }))
-                    
-                    menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
-                        self.deleteSong(sound.objectId!, row: row)
+                        menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
+                            self.selectedSound = sound
+                            self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
+                            
+                            MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Edit Sound", "description": "User pressed Edit Sound Info."])
+                        }))
                         
-                        MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Delete Sound", "description": "User pressed Delete Sound."])
-                    }))
+                        menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
+                            self.deleteSong(sound.objectId!, row: row)
+                            
+                            MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Delete Sound", "description": "User pressed Delete Sound."])
+                        }))
+                        
+                        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                        
+                        target.present(menuAlert, animated: true, completion: nil)
                     
                 } else {
-                    menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-                    menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
-                        self.selectedArtist(sound.artist)
-                        
-                        MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Go To Artist", "description": "User pressed go to artist."])
-                    }))
+                    showOtherMenuAlert(sound)
                 }
                 
             } else {
-                menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-                menuAlert.addAction(UIAlertAction(title: "Go to Artist", style: .default, handler: { action in
-                    self.selectedArtist(sound.artist)
-                    
-                    MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Go To Artist", "description": "User pressed go to artist."])
-
-                }))
+                showOtherMenuAlert(sound)
             }
-            
-            menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-            
-            target.present(menuAlert, animated: true, completion: nil)
         }
         
         MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Menu", "description": "User pressed menu button."])
+    }
+    
+    func showOtherMenuAlert(_ sound: Sound) {
+        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+            menuAlert.addAction(UIAlertAction(title: "Report Sound", style: .default, handler: { action in
+                self.showReportSoundAlert(sound)
+                
+                MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Report", "description": "User pressed report option."])
+            }))
+        
+            menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+            target.present(menuAlert, animated: true, completion: nil)
+        }
+    
+    func showReportSoundAlert(_ sound: Sound) {
+        if let currentUserId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Report")
+            query.whereKey("userId", equalTo: currentUserId)
+            query.whereKey("soundId", equalTo: sound.objectId!)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                 if let object = object {
+                    let createdAt = object.createdAt
+                    self.uiElement.showAlert("Thank you!", message: "You reported \(sound.title!) on \(self.uiElement.formatDateAndReturnString(createdAt!)). If you have any questions, please email us at support@soundbrew.app.", target: self.target)
+                 } else {
+                    self.showReportAlert(currentUserId, soundId: sound.objectId!, title: sound.title!)
+                }
+            }
+                        
+        } else {
+            self.uiElement.signupRequired("Sign Up Required", message: "Only registered users can report sounds. If you prefer to opt out of registering, you can email us your report at support@soundbrew.app", target: self.target)
+        }
+    }
+    
+    func showReportAlert(_ currentUserId: String, soundId: String, title: String) {
+        let menuAlert = UIAlertController(title: "Report \(title)?", message: "If this sound infringes on copyrights, we would like to know!" , preferredStyle: .alert)
+        menuAlert.addAction(UIAlertAction(title: "Nevermind", style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: "Report", style: .default, handler: { action in
+            let newReport = PFObject(className: "Report")
+            newReport["userId"] = currentUserId
+            newReport["soundId"] = soundId
+            newReport.saveEventually {
+                (success: Bool, error: Error?) in
+                if (success) {
+                    self.uiElement.showAlert("Thank you!", message: "We received your report and will take further action if necessary. If you have any questions, please email us at support@soundbrew.app.", target: self.target)
+                    MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Report"])
+                } else if let error = error {
+                    MSAnalytics.trackEvent("Error", withProperties: ["Error" : "\(error.localizedDescription)", "Class and Line": "SoundList, line 265"])
+                }
+            }
+        }))
+        target.present(menuAlert, animated: true, completion: nil)
     }
     
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
@@ -629,5 +669,4 @@ class SoundList: NSObject, PlayerDelegate {
             }
         }
     }
-    
 }
