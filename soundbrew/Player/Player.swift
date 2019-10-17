@@ -95,6 +95,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func sendSoundUpdateToUI() {
         self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
         
+        if let player = self.player {
+            if player.duration >= (5 * 60) {
+                setUpSkipForwardBackwardCommands()
+            } else {
+                setUpNextGoBackCommands()
+            }
+        }
+        
         if let tableView = self.tableView {
             tableView.reloadData()
         }
@@ -138,6 +146,21 @@ class Player: NSObject, AVAudioPlayerDelegate {
             } else {
                 self.setUpNextSong(true, at: nil)
             }
+        }
+    }
+    
+    func skipForward() {
+        if let player = self.player, let currentSound = self.currentSound {
+            let currentTime = player.currentTime
+            player.currentTime = currentTime + TimeInterval(15)
+            self.setBackgroundAudioNowPlaying(player, sound: currentSound)
+        }
+    }
+    
+    func skipBackward() {
+        if let player = self.player, let currentSound = self.currentSound {
+            self.setBackgroundAudioNowPlaying(player, sound: currentSound)
+            player.currentTime = player.currentTime - TimeInterval(15)
         }
     }
     
@@ -360,7 +383,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func setupRemoteTransportControls() {
         // Get the shared MPRemoteCommandCenter
         let commandCenter = MPRemoteCommandCenter.shared()
-        
+                
         // Add handler for Play Command
         commandCenter.playCommand.addTarget { [weak self] event in
             if let playSelf = self {
@@ -370,7 +393,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             
             return .commandFailed
         }
-        
+                
         // Add handler for Pause Command
         commandCenter.pauseCommand.addTarget { [weak self] event in
             if let pauseSelf = self {
@@ -380,6 +403,31 @@ class Player: NSObject, AVAudioPlayerDelegate {
             
             return .commandFailed
         }
+        
+        /*commandCenter.nextTrackCommand.addTarget { [weak self] event in
+            if let nextSelf = self {
+                nextSelf.next()
+                return .success
+            }
+
+            return .commandFailed
+        }*/
+        
+        /*commandCenter.previousTrackCommand.addTarget { [weak self] event in
+            if let previousSelf = self {
+                previousSelf.previous()
+                return .success
+            }
+
+            return .commandFailed
+        }*/
+    }
+    
+    func setUpNextGoBackCommands() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        commandCenter.skipBackwardCommand.isEnabled = false
+        commandCenter.skipForwardCommand.isEnabled = false
         
         commandCenter.nextTrackCommand.addTarget { [weak self] event in
             if let nextSelf = self {
@@ -400,12 +448,41 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
+    func setUpSkipForwardBackwardCommands() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        commandCenter.nextTrackCommand.isEnabled = false
+        commandCenter.previousTrackCommand.isEnabled = false
+        
+        commandCenter.skipForwardCommand.preferredIntervals = [15]
+        commandCenter.skipForwardCommand.addTarget { [weak self] event in
+            if let nextSelf = self {
+                nextSelf.skipForward()
+                return .success
+            }
+
+            return .commandFailed
+        }
+        
+        commandCenter.skipBackwardCommand.preferredIntervals = [15]
+        commandCenter.skipBackwardCommand.addTarget { [weak self] event in
+            if let playSelf = self {
+                playSelf.skipBackward()
+                return .success
+            }
+            
+            return .commandFailed
+        }
+    }
+    
     func shouldEnableCommandCenter(_ shouldEnable: Bool ) {
         let commandCenter = MPRemoteCommandCenter.shared()
         commandCenter.playCommand.isEnabled = shouldEnable
         commandCenter.pauseCommand.isEnabled = shouldEnable
         commandCenter.nextTrackCommand.isEnabled = shouldEnable
         commandCenter.previousTrackCommand.isEnabled = shouldEnable
+        commandCenter.skipForwardCommand.isEnabled = shouldEnable
+        commandCenter.skipBackwardCommand.isEnabled = shouldEnable
     }
     
     func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer?, sound: Sound) {

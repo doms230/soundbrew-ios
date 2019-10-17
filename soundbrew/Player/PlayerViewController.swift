@@ -250,6 +250,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 } else {
                     self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                 }
+                
+                if soundPlayer.duration >= (5 * 60) {
+                    self.skipButton.setImage(UIImage(named: "skipForward"), for: .normal)
+                    self.goBackButton.setImage((UIImage(named: "skipBack")), for: .normal)
+                } else {
+                    self.skipButton.setImage(UIImage(named: "skip"), for: .normal)
+                    self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
+                }
             }
         }
     }
@@ -480,9 +488,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     @objc func didPressSkipButton(_ sender: UIButton) {
         if let player = self.player {
-            self.shouldEnableSoundView(false)
             self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            player.next()
+            if let soundPlayer = player.player {
+                if soundPlayer.duration >= (5 * 60) {
+                    player.skipForward()
+                } else {
+                    self.shouldEnableSoundView(false)
+                    player.next()
+                }
+            }
             
             MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
         }
@@ -497,7 +511,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     @objc func didPressGoBackButton(_ sender: UIButton) {
         if let player = self.player {
-            player.previous()
+            if let soundPlayer = player.player {
+                if soundPlayer.duration >= (5 * 60) {
+                    player.skipBackward()
+                } else {
+                    player.previous()
+                }
+            }
             
             MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Go Back", "Description": "User Pressed Go Back."])
         }
