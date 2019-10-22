@@ -69,7 +69,6 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     //mark: tableView
-    let filterSoundsReuse = "filterSoundsReuse"
     func setUpTableView() {
         if let player = self.player {
             player.tableView = self.tableView

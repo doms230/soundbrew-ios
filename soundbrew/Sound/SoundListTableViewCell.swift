@@ -24,17 +24,25 @@ class SoundListTableViewCell: UITableViewCell {
     }()
     
     //filter new/popular
-    lazy var newButton: UIButton = {
+    lazy var searchTagsButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Recent", for: .normal)
+        button.setTitle("Tags", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.white, for: .normal)
         return button
     }()
     
-    lazy var popularButton: UIButton = {
+    lazy var searchArtistsButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Top", for: .normal)
+        button.setTitle("Artists", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        button.setTitleColor(.darkGray, for: .normal)
+        return button
+    }()
+    
+    lazy var searchSoundsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Sounds", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.darkGray, for: .normal)
         return button
@@ -253,20 +261,28 @@ class SoundListTableViewCell: UITableViewCell {
             break
             
         case "filterSoundsReuse":
-            self.addSubview(newButton)
-            self.addSubview(popularButton)
-            newButton.snp.makeConstraints { (make) -> Void in
+            self.addSubview(searchTagsButton)
+            self.addSubview(searchArtistsButton)
+            self.addSubview(searchSoundsButton)
+            searchTagsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            popularButton.snp.makeConstraints { (make) -> Void in
+            searchArtistsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
-                make.top.equalTo(newButton)
-                make.left.equalTo(newButton.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(newButton)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(searchTagsButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            searchSoundsButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.top.equalTo(searchArtistsButton)
+                make.left.equalTo(searchArtistsButton.snp.right).offset(uiElement.leftOffset + 10)
+                make.bottom.equalTo(searchArtistsButton)
             }
     
             break

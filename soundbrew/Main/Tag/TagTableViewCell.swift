@@ -16,8 +16,18 @@ class TagTableViewCell: UITableViewCell {
     lazy var TagTypeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.textColor = .white 
+        label.textColor = .white
         return label
+    }()
+    
+    lazy var tagsScrollview: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
+    lazy var tagTypeButton: UIButton = {
+        let button = UIButton()
+        return button
     }()
     
     lazy var viewAllLabel: UILabel = {
@@ -26,16 +36,6 @@ class TagTableViewCell: UITableViewCell {
         label.text = "View All"
         label.textColor = .white
         return label
-    }()
-    
-    lazy var tagTypeButton: UIButton = {
-        let button = UIButton()
-        return button
-    }()
-    
-    lazy var tagsScrollview: UIScrollView = {
-        let scrollView = UIScrollView()
-        return scrollView
     }()
     
     lazy var newChartsButton: UIButton = {
@@ -71,7 +71,26 @@ class TagTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        if reuseIdentifier == "reuse" || reuseIdentifier == "profileSoundReuse" {
+        if reuseIdentifier == "reuse" {
+            self.addSubview(TagTypeTitle)
+            self.addSubview(tagsScrollview)
+            
+            TagTypeTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            tagsScrollview.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(115)
+                make.top.equalTo(TagTypeTitle.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self)
+                make.right.equalTo(self)
+                make.bottom.equalTo(self)
+            }
+            
+            
+        } else if reuseIdentifier == "profileSoundReuse" {
             self.addSubview(tagTypeButton)
             self.tagTypeButton.addSubview(TagTypeTitle)
             self.tagTypeButton.addSubview(viewAllLabel)
@@ -97,11 +116,7 @@ class TagTableViewCell: UITableViewCell {
             }
             
             tagsScrollview.snp.makeConstraints { (make) -> Void in
-                if reuseIdentifier == "profileSoundReuse" {
-                  make.height.equalTo(210)
-                } else {
-                    make.height.equalTo(115)
-                }
+                make.height.equalTo(210)
                 make.top.equalTo(tagTypeButton.snp.bottom)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
