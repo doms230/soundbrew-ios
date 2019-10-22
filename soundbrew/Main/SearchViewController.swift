@@ -29,9 +29,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func setupTags() {
-        let podcastTagURL = "https://www.soundbrew.app/parse/files/A839D96FA14FCC48772EB62B99FA1/1cf81b20a726ecc5a24173bfcec35dc2_Hashtag_long.png"
-        let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", image: podcastTagURL)
-        self.topGenreTags.append(podcastTag)
         for featureTagType in featureTagTypes {
             loadTags(featureTagType, searchText: nil)
         }
@@ -461,6 +458,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         switch type {
                         case "genre":
                             self.topGenreTags = tags
+                            let podcastTagURL = "https://www.soundbrew.app/parse/files/A839D96FA14FCC48772EB62B99FA1/1cf81b20a726ecc5a24173bfcec35dc2_Hashtag_long.png"
+                            let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", image: podcastTagURL)
+                            self.topGenreTags.insert(podcastTag, at: 0)
                             browseMoreTag.name = "More Genres"
                             self.topGenreTags.append(browseMoreTag)
                             break

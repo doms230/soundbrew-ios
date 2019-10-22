@@ -161,6 +161,9 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                     user["username"] = self.usernameText.text
                     user["email"] = self.emailString
                     user["twitterID"] = self.twitterID
+                    if let twitterUsername = self.twitterUsername {
+                        user["website"] = "https://www.twitter.com/\(twitterUsername)"
+                    }
                     user.saveEventually {
                         (success: Bool, error: Error?) in
                         if (success) {
