@@ -39,7 +39,7 @@ class MiniPlayerView: UIButton {
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.backgroundColor = .white
-        image.image = UIImage(named: "appy")
+        image.image = UIImage(named: "sound")
         return image
     }()
     
@@ -191,7 +191,7 @@ class MiniPlayerView: UIButton {
     func setCurrentSoundView(_ sound: Sound) {
         self.songTitle.text = sound.title
         
-        self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "appy"))
+        self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
         
         if let artistName = sound.artist?.name {
             self.artistName.text = artistName

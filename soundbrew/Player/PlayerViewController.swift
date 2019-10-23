@@ -22,27 +22,19 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     let color = Color()
     let uiElement = UIElement()
     
-    var player: Player?
+    let player = Player.sharedInstance
     var sound: Sound?
     
     var playerDelegate: PlayerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if let sound = self.player?.currentSound {
-            self.sound = sound
-            player?.target = self
-            setupNotificationCenter()
-            setUpView()
-            checkIfUserAddedSongToCollection(sound)
-        }
+        setupPlayerView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if let player = self.player {
-            self.sound = player.currentSound
-        }
+        self.sound = player.currentSound
+        updatePlayBackControls()
     }
     
     func setupNotificationCenter(){
@@ -226,74 +218,121 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //mark: sound
+    func setupPlayerView() {
+        
+        setupNotificationCenter()
+        if let sound = self.player.currentSound {
+            self.sound = sound
+           showPlayerView()
+            checkIfUserAddedSongToCollection(sound)
+            player.target = self
+        } else {
+            showLoadingSoundbrewSpinner()
+        }
+        
+         /*else {
+            self.player = Player.sharedInstance
+            self.player!.target = self
+            self.player?.sounds = self.sounds
+            self.player?.currentSound = sound
+            self.player!.fetchAudioData(0, prepareAndPlay: true)
+                        
+        }*/
+        /*setupNotificationCenter()
+        setUpView()
+        if let player = self.player {
+            self.sound = sound
+            player.target = self
+            checkIfUserAddedSongToCollection(sound)
+        } else {
+            self.player = Player.sharedInstance
+            self.player!.target = self
+            self.player?.sounds = self.sounds
+            self.player?.currentSound = sound
+            self.player!.fetchAudioData(0, prepareAndPlay: true)
+                        
+        }*/
+    }
     @objc func didReceiveSound(){
         setSound()
     }
     
     @objc func didBecomeActive() {
         if self.viewIfLoaded?.window != nil {
-            if let player = player {
-                player.target = self
-            }
+            player.target = self
         }
     }
     
     func setSound() {
-        if let player = self.player {
-            self.sound = player.currentSound
-            setCurrentSoundView(self.sound!)
-            self.shouldEnableSoundView(true)
-            if let soundPlayer = player.player {
-                if soundPlayer.isPlaying  {
-                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    
-                } else {
-                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                }
-                
-                if soundPlayer.duration >= (5 * 60) {
-                    self.skipButton.setImage(UIImage(named: "skipForward"), for: .normal)
-                    self.goBackButton.setImage((UIImage(named: "skipBack")), for: .normal)
-                } else {
-                    self.skipButton.setImage(UIImage(named: "skip"), for: .normal)
-                    self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
-                }
-            }
-        }
-    }
-    
-    func setCurrentSoundView(_ sound: Sound) {
-        checkIfUserAddedSongToCollection(sound)
-        
-        self.songTitle.text = sound.title
-        
-        self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "appy"))
-        
-        if let duration = self.player?.player?.duration {
-            self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
-            playBackSlider.maximumValue = Float(duration)
-            self.startTimer()
-        }
-        
-        if let artistName = sound.artist?.name {
-            self.artistLabel.text = artistName
-            if let artistImage = sound.artist?.image {
-                self.artistImage.kf.setImage(with: URL(string: artistImage))
+        if let sound = player.currentSound {
+            self.sound = sound
+            self.loadingSoundbrewSpinner.removeFromSuperview()
+
+            checkIfUserAddedSongToCollection(sound)
+            
+            self.songTitle.text = sound.title
+            
+            self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
+            
+            if let duration = self.player.player?.duration {
+                self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
+                playBackSlider.maximumValue = Float(duration)
+                self.startTimer()
             }
             
-        } else {
-            self.artistLabel.text = ""
-            loadUserInfoFromCloud(sound.artist!.objectId)
+            if let artistName = sound.artist?.name {
+                self.artistLabel.text = artistName
+                if let artistImage = sound.artist?.image {
+                    self.artistImage.kf.setImage(with: URL(string: artistImage))
+                }
+                
+            } else {
+                self.artistLabel.text = ""
+                loadUserInfoFromCloud(sound.artist!.objectId)
+            }
+            
+            if playBackButton.superview == nil {
+                showPlayerView()
+            }
+            
+            updatePlayBackControls()
         }
     }
     
-    func shouldEnableSoundView(_ shouldEnable: Bool) {
+    func updatePlayBackControls() {
+        if let soundPlayer = player.player {
+            if soundPlayer.isPlaying  {
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                self.shouldEnablePlaybackControls(true)
+                
+            } else {
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            }
+            
+            if soundPlayer.duration >= fiveMinutesInSeconds {
+                self.skipButton.setImage(UIImage(named: "skipForward"), for: .normal)
+                self.goBackButton.setImage((UIImage(named: "skipBack")), for: .normal)
+            } else {
+                self.skipButton.setImage(UIImage(named: "skip"), for: .normal)
+                self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
+            }
+        }
+    }
+    
+    func shouldEnablePlaybackControls(_ shouldEnable: Bool) {
+        if shouldEnable {
+            self.loadSoundSpinner.isHidden = true
+            self.playBackButton.isHidden = false
+        } else {
+            self.playBackButton.isHidden = true
+            self.loadSoundSpinner.isHidden = false
+        }
         self.playBackButton.isEnabled = shouldEnable
-        self.skipButton.isEnabled = shouldEnable
-        self.goBackButton.isEnabled = shouldEnable
     }
     
     //mark: View
+    let fiveMinutesInSeconds: Double = 5 * 60
+    
     func handleDismissal(_ artist: Artist?) {
         self.dismiss(animated: true, completion: {() in
             if let playerDelegate = self.playerDelegate {
@@ -310,7 +349,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
-        
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
     
@@ -415,12 +453,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     
     @objc func sliderValueDidChange(_ sender: UISlider) {
-        if let player = self.player {
-            if let soundPlayer = player.player {
-                player.setBackgroundAudioNowPlaying(soundPlayer, sound: sound!)
-                soundPlayer.currentTime = TimeInterval(sender.value)
-                playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
-            }
+        if let soundPlayer = player.player {
+            player.setBackgroundAudioNowPlaying(soundPlayer, sound: sound!)
+            soundPlayer.currentTime = TimeInterval(sender.value)
+            playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
         }
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "PlayBackSlider", "Description": "User seeked time on song"])
@@ -428,9 +464,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     var timer = Timer()
     @objc func UpdateTimer(_ timer: Timer) {
-        if let player = self.player?.player {
-            playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(player.currentTime)))"
-            playBackSlider.value = Float(player.currentTime)
+        if let currentTime = player.player?.currentTime {
+            playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(currentTime)))"
+            playBackSlider.value = Float(currentTime)
         }
     }
     func startTimer() {
@@ -460,21 +496,35 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         button.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         return button
     }()
+    
+    lazy var loadingSoundbrewSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.startAnimating()
+        return spinner
+    }()
+    
+    lazy var loadSoundSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.startAnimating()
+        spinner.isHidden = true
+        return spinner
+    }()
+    
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let player = self.player {
-            if let soundPlayer = player.player {
-                if soundPlayer.isPlaying {
-                    player.pause()
-                    timer.invalidate()
-                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                    MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Pause", "Description": "User Pressed Pause."])
-                    
-                } else {
-                    player.play()
-                    startTimer()
-                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Play", "Description": "User Pressed Play."])
-                }
+        if let soundPlayer = player.player {
+            if soundPlayer.isPlaying {
+                player.pause()
+                timer.invalidate()
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Pause", "Description": "User Pressed Pause."])
+                
+            } else {
+                player.play()
+                startTimer()
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Play", "Description": "User Pressed Play."])
             }
         }
     }
@@ -482,48 +532,53 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     lazy var skipButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "skip"), for: .normal)
-        button.isEnabled = false
         button.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressSkipButton(_ sender: UIButton) {
-        if let player = self.player {
-            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            if let soundPlayer = player.player {
-                if soundPlayer.duration >= (5 * 60) {
-                    player.skipForward()
-                } else {
-                    self.shouldEnableSoundView(false)
-                    player.next()
-                }
+        self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        self.playBackSlider.value = 0
+        self.playBackCurrentTime.text = "0s"
+        self.playBackTotalTime.text = "0s"
+        if let soundPlayer = player.player {
+            if soundPlayer.duration >= fiveMinutesInSeconds {
+                player.skipForward()
+            } else {
+                self.shouldEnablePlaybackControls(false)
+                player.next()
             }
-            
-            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
         }
+        
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
     }
     
     lazy var goBackButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "goBack"), for: .normal)
-        button.isEnabled = false
         button.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressGoBackButton(_ sender: UIButton) {
-        if let player = self.player {
-            if let soundPlayer = player.player {
-                if soundPlayer.duration >= (5 * 60) {
-                    player.skipBackward()
-                } else {
-                    player.previous()
-                }
+        if let soundPlayer = player.player {
+            if soundPlayer.duration >= fiveMinutesInSeconds {
+                player.skipBackward()
+            } else {
+                player.previous()
             }
-            
-            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Go Back", "Description": "User Pressed Go Back."])
+        }
+        
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Go Back", "Description": "User Pressed Go Back."])
+    }
+    
+    func showLoadingSoundbrewSpinner(){
+        self.view.addSubview(loadingSoundbrewSpinner)
+        loadingSoundbrewSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(self.view.frame.width * (2))
+            make.centerY.centerX.equalTo(self.view)
         }
     }
     
-    func setUpView() {
+    func showPlayerView() {
         self.view.backgroundColor = color.black()
         
         //top views
@@ -605,6 +660,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.centerX.equalTo(self.view)
         }
         
+        self.view.addSubview(loadSoundSpinner)
+        loadSoundSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(200)
+            make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
+            make.centerX.equalTo(self.view)
+        }
+        
         self.view.addSubview(goBackButton)
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(55)
@@ -659,29 +721,29 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //MARK: RADIO
-    var radioSounds = [Sound]()
+    //var sounds = [Sound]()
     
-    func loadRadioSounds() {
+    /*func loadSounds() {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
         //query.addDescendingOrder("plays")
         query.addDescendingOrder("tips")
-        query.limit = 10
+        query.limit = 100
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
                 if let objects = objects {
                     for object in objects {
                         let sound = self.uiElement.newSoundObject(object)
-                        self.radioSounds.append(sound)
+                        self.sounds.append(sound)
                     }
-                    
-                } else {
+                    self.sounds.shuffle()
+                    //self.setupSound(self.sounds[0])
                 }
                 
             } else {
                 print("Error: \(error!)")
             }
         }
-    }
+    }*/
 }

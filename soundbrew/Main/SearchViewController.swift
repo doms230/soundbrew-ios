@@ -538,7 +538,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let player = Player.sharedInstance
         if player.player != nil {
             let modal = PlayerViewController()
-            modal.player = player
+            //modal.player = player
             modal.playerDelegate = self
             self.present(modal, animated: true, completion: nil)
         }

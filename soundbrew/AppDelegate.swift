@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         UITabBar.appearance().barTintColor = Color().black()
         UITabBar.appearance().tintColor = .white
         UITabBar.appearance().backgroundColor = Color().black()
-        
+                
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
         
         TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
@@ -52,6 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         Parse.initialize(with: configuration)
         
         PFUser.register(self, forAuthType: "twitter")
+        
+        loadSounds()
 
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)
@@ -170,6 +172,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func showMainViewController() {
         let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "tabBar") as! UITabBarController
         window!.rootViewController = tabBarController
+    }
+    
+    func loadSounds() {
+        let query = PFQuery(className: "Post")
+        query.whereKey("isRemoved", notEqualTo: true)
+        //query.addDescendingOrder("plays")
+        query.addDescendingOrder("tips")
+        query.limit = 25
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    var sounds = [Sound]()
+                    for object in objects {
+                        let sound = UIElement().newSoundObject(object)
+                        sounds.append(sound)
+                    }
+                    sounds.shuffle()
+                    let player = Player.sharedInstance
+                    player.sounds = sounds
+                    player.currentSound = sounds[0]
+                    player.fetchAudioData(0, prepareAndPlay: true)
+                    print("yea")
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
     }
 }
 
