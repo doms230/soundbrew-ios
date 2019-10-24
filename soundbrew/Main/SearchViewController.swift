@@ -329,7 +329,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 tagButton.titleLabel?.layer.cornerRadius = 3
                 tagButton.titleLabel?.clipsToBounds = true
                 tagButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: CGFloat(uiElement.topOffset), right: 0)
-            } else  {
+            } else {
                 tagButton.setBackgroundImage(UIImage(named: "background"), for: .normal)
                 tagButton.titleLabel?.backgroundColor = .clear
                 tagButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: CGFloat((buttonHeight / 2) - 10), right: 0)

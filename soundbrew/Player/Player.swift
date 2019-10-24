@@ -95,14 +95,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func sendSoundUpdateToUI() {
         self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
         
-        if let player = self.player {
+        /*if let player = self.player {
             if player.duration >= (5 * 60) {
                 setUpSkipForwardBackwardCommands()
             } else {
                 setUpNextGoBackCommands()
             }
-        }
-        
+        }*/
+        setUpNextGoBackCommands()
         if let tableView = self.tableView {
             tableView.reloadData()
         }

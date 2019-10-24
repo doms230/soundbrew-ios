@@ -336,7 +336,7 @@ class SoundList: NSObject, PlayerDelegate {
     func updateSounds() {
         self.isUpdatingData = false
         if self.player != nil {
-            self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+            //self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             if self.sounds.count > 0 {
                 self.player!.sounds = self.sounds
                 self.player!.fetchAudioData(0, prepareAndPlay: false)

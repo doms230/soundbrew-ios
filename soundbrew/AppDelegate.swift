@@ -53,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         PFUser.register(self, forAuthType: "twitter")
         
-        loadSounds()
+        //loadSounds()
 
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)
@@ -174,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         window!.rootViewController = tabBarController
     }
     
-    func loadSounds() {
+    /*func loadSounds() {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
         //query.addDescendingOrder("plays")
@@ -194,13 +194,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                     player.sounds = sounds
                     player.currentSound = sounds[0]
                     player.fetchAudioData(0, prepareAndPlay: true)
-                    print("yea")
                 }
                 
             } else {
                 print("Error: \(error!)")
             }
         }
-    }
+    }*/
 }
 
