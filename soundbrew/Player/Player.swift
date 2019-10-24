@@ -94,7 +94,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func sendSoundUpdateToUI() {
         self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
-        
         /*if let player = self.player {
             if player.duration >= (5 * 60) {
                 setUpSkipForwardBackwardCommands()
@@ -242,7 +241,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func updateUI(_ sound: Sound) {
         currentSound = sound
-        setBackgroundAudioViews(sound)
         self.sendSoundUpdateToUI()
     }
     
@@ -498,6 +496,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 MPMediaItemArtwork(boundsSize: image.size) { size in
                     return image
             }
+        } else {
+            loudSoundAndArtistInfo(sound)
         }
         
         if let player = player {
@@ -511,7 +511,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
-    func setBackgroundAudioViews(_ sound: Sound) {
+    func loudSoundAndArtistInfo(_ sound: Sound) {
         if let artFile = sound.artFile {
             artFile.getDataInBackground { (imageData: Data?, error: Error?) in
                 if let error = error {

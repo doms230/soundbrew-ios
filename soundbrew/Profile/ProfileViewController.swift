@@ -61,7 +61,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.executeTableViewSoundListFollowStatus()
             self.setUpNavigationButtons()
         } else {
-            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
+            self.uiElement.welcomeAlert("Welcome To Soundbrew!", message: "Register to keep track of your uploads, collection, and more!", target: self)
         }
     }
     

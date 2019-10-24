@@ -35,7 +35,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             loadNewFollows()
         } else {
-            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
+            self.uiElement.welcomeAlert("Welcome To Soundbrew!", message: "Register to keep track of updates like new tips and follows!", target: self)
         }
     }
     

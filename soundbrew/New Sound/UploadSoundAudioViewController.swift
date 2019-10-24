@@ -41,7 +41,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                 setUpTableView(nil)
             }
         } else {
-            self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
+            self.uiElement.welcomeAlert("Welcome To Soundbrew!", message: "Register to start uploading to Soundbrew", target: self)
         }
     }
     
