@@ -57,8 +57,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 viewController.sound = sound
             }
 
+            let localizedCollectors = NSLocalizedString("collectors", comment: "")
             let backItem = UIBarButtonItem()
-            backItem.title = "Collectors"
+            backItem.title = localizedCollectors
             navigationItem.backBarButtonItem = backItem
             break
             
@@ -80,10 +81,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     var didAddSongToCollection = false
     func showSendMoney() {
         if let sound = self.sound {
+            let localizedCurrentBalance = NSLocalizedString("currentBalance", comment: "")
+            let localizedTipArtist = NSLocalizedString("tipArtist", comment: "")
             let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let alertView = UIAlertController(
-                title: "Current Balance: \(balanceInDollars)",
-                message: "Pay Artist: \n\n\n\n\n\n\n\n",
+                title: "\(localizedCurrentBalance) \(balanceInDollars)",
+                message: "\(localizedTipArtist) \n\n\n\n\n\n\n\n",
                 preferredStyle: .actionSheet)
             
             let pickerView = UIPickerView(frame:
@@ -92,12 +95,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             pickerView.delegate = self
             alertView.view.addSubview(pickerView)
             
-            let sendMoneyActionButton = UIAlertAction(title: "Add To Your Collection", style: .default) { (_) -> Void in
+            let localizedAddToCollection = NSLocalizedString("addToCollection", comment: "")
+
+            let sendMoneyActionButton = UIAlertAction(title: localizedAddToCollection, style: .default) { (_) -> Void in
                 self.sendTip(sound, tipAmount: self.selectedTipAmount)
             }
             alertView.addAction(sendMoneyActionButton)
             
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            let localizedCancel = NSLocalizedString("cancel", comment: "")
+            let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
             alertView.addAction(cancelAction)
             
             present(alertView, animated: true, completion: nil)
@@ -120,19 +126,24 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let tipAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-            
+            let localizedTipAmount = NSLocalizedString("tipAmount", comment: "")
+            let localizedCurrentBalance = NSLocalizedString("currentBalance", comment: "")
+            let localizedTipAmountExceedsBalance = NSLocalizedString("tipAmountExceedsBalance", comment: "")
+            let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
+            let localizedLater = NSLocalizedString("later", comment: "")
+
             let alertView = UIAlertController(
-                title: "Tip Amount: \(tipAmount) \n Current Balance: \(balance)",
-                message: "The selected tip amount exceeds your Soundbrew Balance.",
+                title: "\(localizedTipAmount) \(tipAmount) \n \(localizedCurrentBalance) \(balance)",
+                message: localizedTipAmountExceedsBalance,
                 preferredStyle: .alert)
             
-            let sendMoneyActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
+            let sendMoneyActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
                 let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                 self.handleDismissal(artist)
             }
             alertView.addAction(sendMoneyActionButton)
             
-            let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: localizedLater, style: .cancel, handler: nil)
             alertView.addAction(cancelAction)
             
             present(alertView, animated: true, completion: nil)
@@ -308,7 +319,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if let tippers = sound?.tippers {
             collectors = tippers
         }
-        let collectorsButton = UIBarButtonItem(title: "\(collectors) Collectors", style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
+        let localizedCollectors = NSLocalizedString("collectors", comment: "")
+
+        let collectorsButton = UIBarButtonItem(title: "\(collectors) \(localizedCollectors)", style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
         self.navigationItem.rightBarButtonItem = collectorsButton
     }
     
@@ -320,16 +333,18 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.playBackCurrentTime.text = "0s"
         self.playBackTotalTime.text = "0s"
         
-        self.songTitle.text = "Loading..."
+        let localizedLoading = NSLocalizedString("loading", comment: "")
+
+        self.songTitle.text = localizedLoading
         
         self.songArt.image = UIImage(named: "sound")
-        self.artistLabel.text = "Loading..."
+        self.artistLabel.text = localizedLoading
         self.artistImage.kf.setImage(with: URL(string: "profile_icon"))
         
         if playBackButton.superview == nil {
             showPlayerView()
         }
-        let collectorsButton = UIBarButtonItem(title: "Loading Collectors", style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
+        let collectorsButton = UIBarButtonItem(title: localizedLoading, style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
         self.navigationItem.rightBarButtonItem = collectorsButton
     }
     
@@ -403,8 +418,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     
     lazy var songTitle: UILabel = {
+        let localizedSoundTitle = NSLocalizedString("soundTitle", comment: "")
         let label = UILabel()
-        label.text = "Sound Title"
+        label.text = localizedSoundTitle
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.textAlignment = .center
@@ -451,12 +467,16 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 self.uiElement.showAlert("🙃", message: "", target: self)
             } else if didAddSongToCollection {
                 let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tips!, currency: "$")
-                self.uiElement.showAlert("You added \(self.sound!.title!) to your Collection for \(amountString)", message: "", target: self)
+                let localizedYouAdded = NSLocalizedString("youAdded", comment: "")
+                let localizedToYourCollection = NSLocalizedString("toYourCollection", comment: "")
+                self.uiElement.showAlert("\(localizedYouAdded) \(self.sound!.title!) \(localizedToYourCollection) \(amountString)", message: "", target: self)
             } else {
                 showSendMoney()
             }
         } else {
-            self.uiElement.signupRequired("Sign up required", message: "Tip artists to add songs to your collection!", target: self)
+            let localizedSignupRequired = NSLocalizedString("signupRequired", comment: "")
+            let localizedTipArtistsToAddToCollection = NSLocalizedString("tipArtistsToAddToCollection", comment: "")
+            self.uiElement.signupRequired(localizedSignupRequired, message: localizedTipArtistsToAddToCollection, target: self)
         }
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
@@ -538,8 +558,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     
     lazy var loadSoundbrewSpinnerTitle: UILabel = {
+        let localizedSteepingSoundbrew = NSLocalizedString("steepingSoundbrew", comment: "")
         let label = UILabel()
-        label.text = "Steeping Your Soundbrew"
+        label.text = localizedSteepingSoundbrew
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
         label.textAlignment = .center
@@ -797,10 +818,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                         sounds.append(sound)
                     }
                     sounds.shuffle()
-                    let player = Player.sharedInstance
-                    player.sounds = sounds
-                    player.currentSound = sounds[0]
-                    player.fetchAudioData(0, prepareAndPlay: true)
+                    self.resetPlayer(sounds: sounds)
                     self.setSound()
                 }
                 
@@ -808,6 +826,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 print("Error: \(error!)")
             }
         }
+    }
+    
+    func resetPlayer(sounds: [Sound]) {
+        let player = Player.sharedInstance
+        player.player = nil
+        player.sounds = sounds
+        player.currentSound = sounds[0]
+        player.fetchAudioData(0, prepareAndPlay: true)
     }
     
     @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {

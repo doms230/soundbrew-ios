@@ -24,25 +24,28 @@ class SoundListTableViewCell: UITableViewCell {
     }()
     
     //filter new/popular
+    let localizedTags = NSLocalizedString("tags", comment: "")
     lazy var searchTagsButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Tags", for: .normal)
+        button.setTitle(localizedTags, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.white, for: .normal)
         return button
     }()
     
     lazy var searchArtistsButton: UIButton = {
+        let localizedArtists = NSLocalizedString("artists", comment: "")
         let button = UIButton()
-        button.setTitle("Artists", for: .normal)
+        button.setTitle(localizedArtists, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.darkGray, for: .normal)
         return button
     }()
     
     lazy var searchSoundsButton: UIButton = {
+        let localizedSounds = NSLocalizedString("sounds", comment: "")
         let button = UIButton()
-        button.setTitle("Sounds", for: .normal)
+        button.setTitle(localizedSounds, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         button.setTitleColor(.darkGray, for: .normal)
         return button

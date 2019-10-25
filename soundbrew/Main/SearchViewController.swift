@@ -35,8 +35,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        let localizedBack = NSLocalizedString("back", comment: "")
         let backItem = UIBarButtonItem()
-        backItem.title = "Back"
+        backItem.title = localizedBack
         navigationItem.backBarButtonItem = backItem
         
         let player = Player.sharedInstance
@@ -89,8 +90,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         case "showTippers":
             soundList.prepareToShowTippers(segue)
+            let localizedCollectors = NSLocalizedString("collectors", comment: "")
             let backItem = UIBarButtonItem()
-            backItem.title = "Collectors"
+            backItem.title = localizedCollectors
             navigationItem.backBarButtonItem = backItem
             break   
             
@@ -279,32 +281,39 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var selectedTag: Tag!
     var selectedTagType: String!
     var featureMoreTagIndex = 0
+    let localizedMore = NSLocalizedString("more", comment: "")
     
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! TagTableViewCell
         cell.selectionStyle = .none
         cell.backgroundColor = color.black()
         cell.tagsScrollview.backgroundColor = color.black()
-        cell.TagTypeTitle.text = "\(featureTagTypes[indexPath.row].capitalized)"
         
         switch indexPath.row {
         case 0:
             //genre
+            cell.TagTypeTitle.text = "Genre"
             addTags(cell.tagsScrollview, tags: topGenreTags, row: 0)
             break
             
         case 1:
             //city
+            let localizedCity = NSLocalizedString("city", comment: "")
+            cell.TagTypeTitle.text = localizedCity
             addTags(cell.tagsScrollview, tags: topCityTags, row: 3)
             break
             
         case 2:
             //mood
+            let localizedMood = NSLocalizedString("mood", comment: "")
+            cell.TagTypeTitle.text = localizedMood
             addTags(cell.tagsScrollview, tags: topMoodTags, row: 1)
             break
             
         case 3:
             //activity
+            let localizedActivity = NSLocalizedString("activity", comment: "")
+            cell.TagTypeTitle.text = localizedActivity
             addTags(cell.tagsScrollview, tags: topActivityTags, row: 2)
             break
             
@@ -416,7 +425,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             query.whereKey("tag", matchesRegex: text.lowercased())
             query.limit = 25
         } else {
-            print("d")
             if type != "all" {
                 query.whereKey("type", equalTo: type)
             } else {
@@ -461,25 +469,28 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             let podcastTagURL = "https://www.soundbrew.app/parse/files/A839D96FA14FCC48772EB62B99FA1/1cf81b20a726ecc5a24173bfcec35dc2_Hashtag_long.png"
                             let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", image: podcastTagURL)
                             self.topGenreTags.insert(podcastTag, at: 0)
-                            browseMoreTag.name = "More Genres"
+                            browseMoreTag.name = "\(self.localizedMore.capitalized) Genres"
                             self.topGenreTags.append(browseMoreTag)
                             break
                             
                         case "mood":
                             self.topMoodTags = tags
-                            browseMoreTag.name = "More Moods"
+                            let localizedMores = NSLocalizedString("moods", comment: "")
+                            browseMoreTag.name = "\(self.localizedMore.capitalized) \(localizedMores)"
                             self.topMoodTags.append(browseMoreTag)
                             break
                             
                         case "activity":
                             self.topActivityTags = tags
-                            browseMoreTag.name = "More Activities"
+                            let localizedActivities = NSLocalizedString("activities", comment: "")
+                            browseMoreTag.name = "\(self.localizedMore.capitalized) \(localizedActivities)"
                             self.topActivityTags.append(browseMoreTag)
                             break
                             
                         case "city":
                             self.topCityTags = tags
-                            browseMoreTag.name = "More Cities"
+                            let localizedCities = NSLocalizedString("cities", comment: "")
+                            browseMoreTag.name = "\(self.localizedMore.capitalized) \(localizedCities)"
                             self.topCityTags.append(browseMoreTag)
                             break
                             
@@ -500,7 +511,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 
             } else {
                 print("Error: \(error!)")
-                self.uiElement.showAlert("Oops", message: "\(error!)", target: self)
+                let localizedOops = NSLocalizedString("oops", comment: "")
+                self.uiElement.showAlert(localizedOops, message: "\(error!.localizedDescription)", target: self)
             }
         }
     }

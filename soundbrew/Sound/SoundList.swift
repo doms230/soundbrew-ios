@@ -50,24 +50,6 @@ class SoundList: NSObject, PlayerDelegate {
         determineTypeOfSoundToLoad(soundType)
     }
     
-    lazy var noResultsLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        label.text = "Welcome to Soundbrew! The latest releases from artists you follow will appear here."
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    func showNoResultsLabel() {
-        self.tableView?.isHidden = true
-        target.view.addSubview(noResultsLabel)
-        noResultsLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(target.view).offset(uiElement.uiViewTopOffset(target))
-            make.left.equalTo(target.view).offset(uiElement.leftOffset)
-            make.right.equalTo(target.view).offset(uiElement.rightOffset)
-        }
-    }
-    
     //mark: tableView
     func setUpTableView() {
         if let player = self.player {
@@ -146,15 +128,16 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
             cell.collectorsButton.tag = indexPath.row
+            let localizedCollector = NSLocalizedString("collector", comment: "")
             if let tippers = sound.tippers {
-                var tipLabel = "Collectors"
+                var tipLabel = "\(localizedCollector)s"
                 if tippers == 1 {
-                    tipLabel = "Collector"
+                    tipLabel = localizedCollector
                 }
                 
                 cell.collectorsLabel.text = "\(tippers) \(tipLabel)"
             } else {
-                cell.collectorsLabel.text = "0 Collectors"
+                cell.collectorsLabel.text = "0 \(localizedCollector)s"
             }
         }
         
@@ -198,22 +181,29 @@ class SoundList: NSObject, PlayerDelegate {
                         
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
-                    let menuAlert = UIAlertController(title: "\(plays) Plays \n \(tipsInDollarString) in Tips", message: nil, preferredStyle: .actionSheet)
+                    let localizedPlays = NSLocalizedString("plays", comment: "")
+                    let localizedTips = NSLocalizedString("tips", comment: "")
+                    let localizedIn = NSLocalizedString("in", comment: "")
+
+                    let menuAlert = UIAlertController(title: "\(plays) \(localizedPlays) \n \(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
                         
-                        menuAlert.addAction(UIAlertAction(title: "Edit Sound", style: .default, handler: { action in
+                        let localizedEditSound = NSLocalizedString("editSound", comment: "")
+                        menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
                             self.selectedSound = sound
                             self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
                             
                             MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Edit Sound", "description": "User pressed Edit Sound Info."])
                         }))
                         
-                        menuAlert.addAction(UIAlertAction(title: "Delete Sound", style: .default, handler: { action in
+                        let localizedDeleteSound = NSLocalizedString("deleteSound", comment: "")
+                        menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
                             self.deleteSong(sound.objectId!, row: row)
                             
                             MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Delete Sound", "description": "User pressed Delete Sound."])
                         }))
                         
-                        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                        let localizedCancel = NSLocalizedString("cancel", comment: "")
+                        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
                         
                         target.present(menuAlert, animated: true, completion: nil)
                     
@@ -230,14 +220,15 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func showOtherMenuAlert(_ sound: Sound) {
+        let localizedReportSound = NSLocalizedString("reportSound", comment: "")
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-            menuAlert.addAction(UIAlertAction(title: "Report Sound", style: .default, handler: { action in
+            menuAlert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
                 self.showReportSoundAlert(sound)
                 
                 MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Report", "description": "User pressed report option."])
             }))
-        
-            menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            let localizedCancel = NSLocalizedString("cancel", comment: "")
+            menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
         
             target.present(menuAlert, animated: true, completion: nil)
         }
@@ -251,28 +242,39 @@ class SoundList: NSObject, PlayerDelegate {
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {
                     let createdAt = object.createdAt
-                    self.uiElement.showAlert("Thank you!", message: "You reported \(sound.title!) on \(self.uiElement.formatDateAndReturnString(createdAt!)). If you have any questions, please email us at support@soundbrew.app.", target: self.target)
+                    let localizedThankyou = NSLocalizedString("thankyou", comment: "")
+                    let localizedYouReported = NSLocalizedString("youReported", comment: "")
+                    let localizedOn = NSLocalizedString("on", comment: "")
+                    let localizedIfYouHaveAnyQuestions = NSLocalizedString("ifYouHaveAnyQuestions", comment: "")
+                    self.uiElement.showAlert("\(localizedThankyou)!", message: "\(localizedYouReported) \(sound.title!) \(localizedOn) \(self.uiElement.formatDateAndReturnString(createdAt!)). \(localizedIfYouHaveAnyQuestions) support@soundbrew.app.", target: self.target)
                  } else {
                     self.showReportAlert(currentUserId, soundId: sound.objectId!, title: sound.title!)
                 }
             }
                         
         } else {
-            self.uiElement.signupRequired("Sign Up Required", message: "Only registered users can report sounds. If you prefer to opt out of registering, you can email us your report at support@soundbrew.app", target: self.target)
+            let localizedSignupRequired = NSLocalizedString("signupRequired", comment: "")
+            let localizedOnlyRegisteredUsers = NSLocalizedString("onlyRegisteredUsers", comment: "")
+            self.uiElement.signupRequired(localizedSignupRequired, message: "\(localizedOnlyRegisteredUsers) support@soundbrew.app", target: self.target)
         }
     }
     
     func showReportAlert(_ currentUserId: String, soundId: String, title: String) {
-        let menuAlert = UIAlertController(title: "Report \(title)?", message: "If this sound infringes on copyrights, we would like to know!" , preferredStyle: .alert)
-        menuAlert.addAction(UIAlertAction(title: "Nevermind", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Report", style: .default, handler: { action in
+        let localizedReport = NSLocalizedString("report", comment: "")
+        let localizedReportMessage = NSLocalizedString("reportMessage", comment: "")
+        let localizedNevermind = NSLocalizedString("nevermind", comment: "")
+        let localizedThankyou = NSLocalizedString("thankyou", comment: "")
+        let localizedReceivedReport = NSLocalizedString("receivedReport", comment: "")
+        let menuAlert = UIAlertController(title: "\(localizedReport) \(title)?", message:  localizedReportMessage, preferredStyle: .alert)
+        menuAlert.addAction(UIAlertAction(title: localizedNevermind, style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: localizedReport, style: .default, handler: { action in
             let newReport = PFObject(className: "Report")
             newReport["userId"] = currentUserId
             newReport["soundId"] = soundId
             newReport.saveEventually {
                 (success: Bool, error: Error?) in
                 if (success) {
-                    self.uiElement.showAlert("Thank you!", message: "We received your report and will take further action if necessary. If you have any questions, please email us at support@soundbrew.app.", target: self.target)
+                    self.uiElement.showAlert(localizedThankyou, message: localizedReceivedReport, target: self.target)
                     MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Report"])
                 } else if let error = error {
                     MSAnalytics.trackEvent("Error", withProperties: ["Error" : "\(error.localizedDescription)", "Class and Line": "SoundList, line 265"])
@@ -336,9 +338,8 @@ class SoundList: NSObject, PlayerDelegate {
     func updateSounds() {
         self.isUpdatingData = false
         if self.player != nil {
-            //self.sounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
             if self.sounds.count > 0 {
-                self.player!.sounds = self.sounds
+                //self.player!.sounds = self.sounds
                 self.player!.fetchAudioData(0, prepareAndPlay: false)
             }
         }
@@ -543,11 +544,17 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func deleteSong(_ objectId: String, row: Int) {
-        let menuAlert = UIAlertController(title: "Remove \(self.sounds[row].title ?? "this sound") from Soundbrew?", message: nil, preferredStyle: .alert)
+        let localizedRemove = NSLocalizedString("remove", comment: "")
+        let localizedThisSound = NSLocalizedString("thisSound", comment: "")
+        let localizedFromSoundbrew = NSLocalizedString("fromSoundbrew", comment: "")
+
+        let menuAlert = UIAlertController(title: "\(localizedRemove)( \(self.sounds[row].title ?? localizedThisSound) \(localizedFromSoundbrew)?", message: nil, preferredStyle: .alert)
         
-        menuAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        let localizedNo = NSLocalizedString("no", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedNo, style: .cancel, handler: nil))
         
-        menuAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+        let localizedYes = NSLocalizedString("yes", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedYes, style: .default, handler: { action in
             let query = PFQuery(className: "Post")
             query.getObjectInBackground(withId: objectId) {
                 (post: PFObject?, error: Error?) -> Void in

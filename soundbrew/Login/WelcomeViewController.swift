@@ -63,6 +63,7 @@ class WelcomeViewController: UIViewController {
     lazy var point1: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        //label.text = "∙ Discover music, curated by the artists."
         label.text = "∙ Discover music, curated by the artists."
         label.textColor = .white
         label.numberOfLines = 0
@@ -98,7 +99,9 @@ class WelcomeViewController: UIViewController {
     
     lazy var signinButton: UIButton = {
         let button = UIButton()
-        button.setTitle("SIGN IN", for: .normal)
+        //button.setTitle("SIGN IN", for: .normal)
+        let localizedSignin = NSLocalizedString("signin", comment: "")
+        button.setTitle(localizedSignin, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.setTitleColor(.white, for: .normal)
         button.layer.borderWidth = 1
@@ -111,7 +114,8 @@ class WelcomeViewController: UIViewController {
     
     lazy var signupButton: UIButton = {
         let button = UIButton()
-        button.setTitle("SIGN UP", for: .normal)
+        let localizedSignup = NSLocalizedString("signup", comment: "")
+        button.setTitle(localizedSignup, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.setTitleColor(color.black(), for: .normal)
         button.backgroundColor = .white
@@ -123,7 +127,8 @@ class WelcomeViewController: UIViewController {
     
     lazy var loginInWithTwitterButton: UIButton = {
         let button = UIButton()
-        button.setTitle("CONTINUE WITH TWITTER", for: .normal)
+        let localizedtwitter = NSLocalizedString("twitter", comment: "")
+        button.setTitle(localizedtwitter, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = color.uicolorFromHex(0x1DA1F2)
@@ -141,8 +146,10 @@ class WelcomeViewController: UIViewController {
     
     lazy var termsButton: UIButton = {
         let button = UIButton()
-        button.setTitle("By continuing, you agree to our terms and privacy policy", for: .normal)
+        let localizedTerms = NSLocalizedString("terms", comment: "")
+        button.setTitle(localizedTerms, for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 11)
+        button.titleLabel?.numberOfLines = 0
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
@@ -152,7 +159,8 @@ class WelcomeViewController: UIViewController {
     
     lazy var skipButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Skip", for: .normal)
+        let localizedSkip = NSLocalizedString("skip", comment: "")
+        button.setTitle(localizedSkip, for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 3

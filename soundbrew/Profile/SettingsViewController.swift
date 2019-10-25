@@ -28,9 +28,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //Mark: sign out
+    let localizedSignout = NSLocalizedString("signout", comment: "")
+    let localizedCancel = NSLocalizedString("cancel", comment: "")
+    
     lazy var signOut: UIButton = {
         let button = UIButton()
-        button.setTitle("Sign Out", for: .normal)
+        button.setTitle(localizedSignout, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(self.didPressSignoutButton(_:)), for: .touchUpInside)
@@ -39,8 +42,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @objc func didPressSignoutButton(_ sender: UIButton) {
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { action in
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+        menuAlert.addAction(UIAlertAction(title: localizedSignout, style: .default, handler: { action in
             self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
@@ -51,8 +54,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     lazy var provideFeedbackButton: UIButton = {
+        let localizedProvideFeedback = NSLocalizedString("provideFeedback", comment: "")
         let button = UIButton()
-        button.setTitle("Provide Feedback", for: .normal)
+        button.setTitle(localizedProvideFeedback, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(self.didPressProvideFeedbackButton(_:)), for: .touchUpInside)
@@ -66,8 +70,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     lazy var connectWithUsButton: UIButton = {
+        let localizedConnectWithUs = NSLocalizedString("connectWithUs", comment: "")
         let button = UIButton()
-        button.setTitle("Connect With Us", for: .normal)
+        button.setTitle(localizedConnectWithUs, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(self.didPressConnectWithUsButton(_:)), for: .touchUpInside)
@@ -75,8 +80,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }()
     
     @objc func didPressConnectWithUsButton(_ sender: UIButton) {
-        let menuAlert = UIAlertController(title: "Connect With Us", message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        let localizedConnectWithUs = NSLocalizedString("connectWithUs", comment: "")
+        let menuAlert = UIAlertController(title: localizedConnectWithUs, message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Twitter", style: .default, handler: { action in
         UIApplication.shared.open(URL(string: "https://www.twitter.com/sound_brew")!, options: [:], completionHandler: nil)
             MSAnalytics.trackEvent("Connect With Us", withProperties: ["Button" : "Twitter", "description": "User pressed twitter"])
@@ -151,7 +157,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsTitleReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
             cell.selectionStyle = .none
-            cell.displayNameLabel.text = "Settings"
+            let localizedSettings = NSLocalizedString("settings", comment: "")
+            cell.displayNameLabel.text = localizedSettings
             return cell
             
         } else {
@@ -200,7 +207,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             }
         } else {
-            self.uiElement.showAlert("Weekly Earnings", message: "Weekly Earnings are sent via PayPal using your Soundbrew email. Please double check that your Soundbrew email matches your PayPal email.", target: self)
+            let localizedWeeklyEarnings = NSLocalizedString("weeklyEarnings", comment: "")
+            let localizedWeeklyEarningsMessage = NSLocalizedString("weeklyEarningsMessage", comment: "")
+            self.uiElement.showAlert(localizedWeeklyEarnings, message: localizedWeeklyEarningsMessage, target: self)
         }
     }
     
@@ -217,6 +226,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func settingsItemReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
+        let localizedFollowers = NSLocalizedString("followers", comment: "")
+        let localizedFollowing = NSLocalizedString("following", comment: "")
+        let localizedEarnings = NSLocalizedString("earnings", comment: "")
+        let localizedFunds = NSLocalizedString("funds", comment: "")
+        
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
         cell.backgroundColor = color.black()
@@ -225,12 +239,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         switch indexPath.row {
         case 0:
             cell.displayNameLabel.text = "\(self.artist?.followerCount ?? 0)"
-            cell.username.text = "Followers"
+            cell.username.text = localizedFollowers
             break
             
         case 1:
             cell.displayNameLabel.text = "\(self.artist?.followingCount ?? 0)"
-            cell.username.text = "Following"
+            cell.username.text = localizedFollowing
             break
             
         case 2:
@@ -240,7 +254,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.displayNameLabel.text = "$0.00"
             }
             
-            cell.username.text = "Earnings"
+            cell.username.text = localizedEarnings
             break
             
         case 3:
@@ -249,7 +263,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             } else {
                 cell.displayNameLabel.text = "$0.00"
             }
-            cell.username.text = "Funds"
+            cell.username.text = localizedFunds
             break
             
         default:

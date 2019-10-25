@@ -54,9 +54,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             break
             
         case "showTippers":
+            let localizedCollectors = NSLocalizedString("collectors", comment: "")
             soundList.prepareToShowTippers(segue)
             let backItem = UIBarButtonItem()
-            backItem.title = "Collectors"
+            backItem.title = localizedCollectors
             navigationItem.backBarButtonItem = backItem
             break 
             
@@ -132,11 +133,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.backgroundColor = color.black()
             
             if soundList.isUpdatingData {
-                cell.headerTitle.text = "Loading..."
+                let localizedLoading = NSLocalizedString("loading", comment: "")
+                cell.headerTitle.text = localizedLoading
             } else  if soundType == "following" {
-                cell.headerTitle.text = "The latest releases from artists you follow will appear here!"
+                let localizedLatestReleases = NSLocalizedString("latestReleases", comment: "")
+                cell.headerTitle.text = localizedLatestReleases
             } else if selectedTagForFiltering != nil {
-                cell.headerTitle.text = "No Results for \(selectedTagForFiltering.name!)"
+                let localizedNoResults = NSLocalizedString("noResults", comment: "")
+                cell.headerTitle.text = "\(localizedNoResults) \(selectedTagForFiltering.name!)"
             }
 
             return cell
@@ -154,6 +158,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func didSelectRowAt(_ row: Int) {
         if let player = soundList.player {
+            player.sounds = soundList.sounds
             player.didSelectSoundAt(row)
             if miniPlayerView == nil {
                 self.setUpMiniPlayer()

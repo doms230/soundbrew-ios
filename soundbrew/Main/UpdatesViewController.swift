@@ -35,7 +35,8 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             loadNewFollows()
         } else {
-            self.uiElement.welcomeAlert("Welcome To Soundbrew!", message: "Register to keep track of updates like new tips and follows!", target: self)
+            let localizedRegisterForUpdatesMessage = NSLocalizedString("registerForUpdatesMessage", comment: "")
+            self.uiElement.welcomeAlert(localizedRegisterForUpdatesMessage, target: self)
         }
     }
     
@@ -91,7 +92,8 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         if updates.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.backgroundColor = color.black()
-            cell.headerTitle.text = "New collectors and followers will appear here!"
+            let localizedNewCollectorsAndFollowersMessage = NSLocalizedString("NewCollectorsAndFollowersMessage", comment: "")
+            cell.headerTitle.text = localizedNewCollectorsAndFollowersMessage
             return cell
         } else {
            return updatesCell(indexPath)
@@ -160,6 +162,9 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //Updates 
     var updates = [Update]()
+    let localizedFollowedYou = NSLocalizedString("followedYou", comment: "")
+    let localizedCollected = NSLocalizedString("collected", comment: "")
+    let localizedFor = NSLocalizedString("for", comment: "")
     
     func updatesCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: updatesReuse) as! ProfileTableViewCell
@@ -171,10 +176,10 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             let name = self.getName(update.artist)
             if update.soundId != nil {
                 let tipAmountInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(update.tipAmount!, currency: "$")
-                cell.displayNameLabel.text = "\(name) collected \(update.soundName!) for \(tipAmountInDollarString)."
+                cell.displayNameLabel.text = "\(name) \(localizedCollected) \(update.soundName!) \(localizedFor) \(tipAmountInDollarString)."
                 cell.displayNameLabel.textColor = color.green()
             } else {
-                cell.displayNameLabel.text = "\(name) followed you."
+                cell.displayNameLabel.text = "\(name) \(localizedFollowedYou)"
                 cell.displayNameLabel.textColor = .white
             }
             
@@ -205,7 +210,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.loadSound(soundId, cell: cell, indexPath: indexPath)
                 } else {
                     let name = self.getName(artist)
-                    cell.displayNameLabel.text = "\(name) followed you."
+                    cell.displayNameLabel.text = "\(name) \(self.localizedFollowedYou)"
                     cell.displayNameLabel.textColor = .white
                 }
             }
@@ -223,7 +228,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let title = object["title"] as! String
                 let tipAmountInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(self.updates[indexPath.row].tipAmount!, currency: "$")
                 let name = self.getName(self.updates[indexPath.row].artist)
-                cell.displayNameLabel.text = "\(name) collected \(title) for \(tipAmountInDollarString)."
+                cell.displayNameLabel.text = "\(name) \(self.localizedCollected) \(title) \(self.localizedFor) \(tipAmountInDollarString)."
                 cell.displayNameLabel.textColor = self.color.green()
                 self.updates[indexPath.row].soundName = title
             }

@@ -15,8 +15,9 @@ class SoundInfoTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     
     lazy var soundArt: UIButton = {
+        let localizedAddArt = NSLocalizedString("addArt", comment: "")
        let image = UIButton()
-        image.setTitle("Add Art", for: .normal)
+        image.setTitle(localizedAddArt, for: .normal)
         image.titleLabel?.textColor = .black
         image.layer.borderWidth = 1
         image.layer.borderColor = UIColor.black.cgColor
@@ -28,20 +29,22 @@ class SoundInfoTableViewCell: UITableViewCell {
     }()
     
     lazy var soundTitle: UITextField = {
+        let localizedAddTitle = NSLocalizedString("addTitle", comment: "")
         let textField = UITextField()
-        textField.placeholder = "Add Title"
+        //textField.placeholder = localizedAddTitle
         textField.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         textField.textColor = .white
-        textField.attributedPlaceholder = NSAttributedString(string: "Add Title",
+        textField.attributedPlaceholder = NSAttributedString(string: localizedAddTitle,
                                                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         textField.borderStyle = .none
         return textField
     }()
     
     lazy var soundTagLabel: UILabel = {
+        let localizedTags = NSLocalizedString("tags", comment: "")
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.text = "Tags"
+        label.text = localizedTags
         label.textColor = .white
         return label
     }()
@@ -75,9 +78,10 @@ class SoundInfoTableViewCell: UITableViewCell {
     }()
     
     lazy var artistTypeButton: UIButton = {
+        let localizedArtist = NSLocalizedString("artist", comment: "")
         let button = UIButton()
         button.setTitleColor(.darkGray, for: .normal)
-        button.setTitle("Artist", for: .normal)
+        button.setTitle(localizedArtist, for: .normal)
         return button
     }()
     

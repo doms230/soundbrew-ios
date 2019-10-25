@@ -33,6 +33,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var uploadButton: UIBarButtonItem!
     
+    let localizedAdd = NSLocalizedString("add", comment: "")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         getTwitterUserID()
@@ -58,19 +60,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: views
+    let localizedCancel = NSLocalizedString("cancel", comment: "")
     func setUpViews() {
         var shouldUploadButtonBeEnabled = false
         if soundThatIsBeingEdited?.objectId != nil {
             shouldUploadButtonBeEnabled = true
             soundParseFileDidFinishProcessing = true 
         }
-        
-        uploadButton = UIBarButtonItem(title: "Release", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
+        let localizedRelease = NSLocalizedString("release", comment: "")
+        uploadButton = UIBarButtonItem(title: localizedRelease, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
         
         self.navigationItem.hidesBackButton = true
-        let backButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(didPressCancelButton(_:)))
+        let backButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(didPressCancelButton(_:)))
         self.navigationItem.leftBarButtonItem = backButton
     }
     
@@ -86,9 +89,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func showDraftOrDiscardMessage() {
-        let menuAlert = UIAlertController(title: "If you go back now, edits to your release will be discarded.", message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "Save Draft", style: .default, handler: { action in
+        let localizedIfYouGobackMessage = NSLocalizedString("ifYouGoBackMessage", comment: "")
+        let menuAlert = UIAlertController(title: localizedIfYouGobackMessage, message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+        let localizedSaveDraft = NSLocalizedString("saveDraft", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedSaveDraft, style: .default, handler: { action in
             if let sound = self.soundThatIsBeingEdited {
                 if sound.objectId == nil {
                     self.createSound(sound, isDraft: true)
@@ -99,6 +104,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
             MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Save Draft", "Description": "User save sound as draft"])
         }))
+        let localizedDiscard = NSLocalizedString("discard", comment: "")
         menuAlert.addAction(UIAlertAction(title: "Discard", style: .default, handler: { action in
             self.uiElement.goBackToPreviousViewController(self)
             
@@ -281,8 +287,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             tag = 1
         }
-        
-        cell.soundTagLabel.text = "Share link To \(socialTitle!)"
+        let localizedShareLinkTo = NSLocalizedString("shareLinkTo", comment: "")
+        cell.soundTagLabel.text = "\(localizedShareLinkTo) \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
         cell.socialSwitch.tag = tag
         tableView.separatorStyle = .none
@@ -422,33 +428,35 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tagCell(_ indexPath: IndexPath, tableView: UITableView) -> SoundInfoTableViewCell {
        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell
+        let localizedTag = NSLocalizedString("tag", comment: "")
+        let localizedTags = NSLocalizedString("tags", comment: "")
         
         switch indexPath.row {
         case 0:
-            determineTag(cell, soundTagLabel: "Genre Tag", tag: self.genreTag)
+            determineTag(cell, soundTagLabel: "Genre \(localizedTag)", tag: self.genreTag)
             tableView.separatorStyle = .none
             break
         case 1:
-            determineTag(cell, soundTagLabel: "Mood Tag", tag: self.moodTag)
+            determineTag(cell, soundTagLabel: "\(self.uiElement.localizedActivity.capitalized) \(localizedTag)", tag: self.moodTag)
             tableView.separatorStyle = .none
             break
         case 2:
-            determineTag(cell, soundTagLabel: "Activity Tag", tag: self.activityTag)
+            determineTag(cell, soundTagLabel: "\(self.uiElement.localizedActivity.capitalized) \(localizedTag)", tag: self.activityTag)
             tableView.separatorStyle = .none
             break
         case 3:
-            cell.soundTagLabel.text = "More Tags"
+            cell.soundTagLabel.text = "\(self.uiElement.localizedMore.capitalized) \(localizedTags)"
             if let moreTags = self.moreTags {
                 if moreTags.count == 1 {
-                    cell.chosenSoundTagLabel.text = "\(moreTags.count) tag"
+                    cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTag)"
                 } else {
-                    cell.chosenSoundTagLabel.text = "\(moreTags.count) tags"
+                    cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTags)"
                 }
                 
                 cell.chosenSoundTagLabel.textColor = .white
                 
             } else {
-                cell.chosenSoundTagLabel.text = "Add"
+                cell.chosenSoundTagLabel.text = localizedAdd.capitalized
                 cell.chosenSoundTagLabel.textColor = color.red()
             }
             tableView.separatorStyle = .singleLine
@@ -466,7 +474,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.chosenSoundTagLabel.textColor = .white 
             
         } else {
-            cell.chosenSoundTagLabel.text = "Add"
+            cell.chosenSoundTagLabel.text = localizedAdd.capitalized
             cell.chosenSoundTagLabel.textColor = color.red()
         }
     }
@@ -625,17 +633,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.saveAudioFile(self.soundThatIsBeingEdited!.audio!)
             }
         } catch let error {
-            self.errorAlert("Oops", message: "There was an issue with your audio processing: \(error)")
+            let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
+            self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload) \(error)")
         }
     }
     
     func saveAudioFile(_ soundParseFile: PFFileObject) {
+        let localizedAudioProcessingComplete = NSLocalizedString("audioProcessingComplete", comment: "")
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundParseFileDidFinishProcessing = true
                 self.uploadButton.isEnabled = true
-                self.progressSliderTitle.text = "Audio Processing Complete."
+                self.progressSliderTitle.text = localizedAudioProcessingComplete
                 
             } else if let error = error {
                 self.errorAlert("Sound Processing Failed", message: error.localizedDescription)
@@ -644,7 +654,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         }, progressBlock: {
             (percentDone: Int32) -> Void in
-            self.progressSliderTitle.text = "Processing Audio..."
+            let localizedProcessingAudio = NSLocalizedString("processingAudio", comment: "")
+            self.progressSliderTitle.text = localizedProcessingAudio
             self.progressSlider!.value = Float(percentDone)
         })
     }
@@ -679,7 +690,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
             } else if let error = error {
-                self.errorAlert("Art Processing Failed", message: error.localizedDescription)
+                let localizedArtProcessingFailed = NSLocalizedString("artProcessingFailded", comment: "")
+                self.errorAlert(localizedArtProcessingFailed, message: error.localizedDescription)
             }
             
         }, progressBlock: {
@@ -748,7 +760,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             } else if let error = error {
                 self.stopAnimating()
-                self.uiElement.showAlert("We Couldn't Post Your Sound", message: error.localizedDescription, target: self)
+                let localizedCouldNotPost = NSLocalizedString("couldNotPost", comment: "")
+                self.uiElement.showAlert(localizedCouldNotPost, message: error.localizedDescription, target: self)
             }
         }
     }
@@ -785,7 +798,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         
                     } else if let error = error {
                         self.stopAnimating()
-                        self.uiElement.showAlert("We Couldn't Update Your Sound", message: error.localizedDescription, target: self)
+                        let localizedCouldNotUpdate = NSLocalizedString("couldNotUpdate", comment: "")
+                        self.uiElement.showAlert(localizedCouldNotUpdate, message: error.localizedDescription, target: self)
                     }
                 }
             }
@@ -821,17 +835,26 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //mark: utility
     func isSoundInfoCorrect(_ sound: Sound) -> Bool {
+        let localizedTitleRequired = NSLocalizedString("titleRequired", comment: "")
+        let localizedSoundArtRequired = NSLocalizedString("soundArtRequired", comment: "")
+        let localizedTapGrayBoxArt = NSLocalizedString("tapGrayBoxArt", comment: "")
+        let localizedTapGrayBoxGenre = NSLocalizedString("tapGrayBoxGenre", comment: "")
+        let localizedGenreRequired = NSLocalizedString("genreRequired", comment: "")
+        let localizedMoodRequired = NSLocalizedString("moodRequired", comment: "")
+        let localizedActivityRequired = NSLocalizedString("activityRequired", comment: "")
+        let localizedTapGrayBoxMood = NSLocalizedString("tapGrayBoxMood", comment: "")
+        let localizedTapGrayBoxActivity = NSLocalizedString("tapGrayBoxActivity", comment: "")
         if let sound = soundThatIsBeingEdited {
             if sound.title!.isEmpty {
-                showAttributedPlaceholder(soundTitle, text: "Title Required")
+                showAttributedPlaceholder(soundTitle, text: localizedTitleRequired)
             } else if sound.artFile == nil && sound.artURL == nil {
-                uiElement.showAlert("Sound Art is Required", message: "Tap the gray box that says 'Add Art' in the top left corner.", target: self)
+                uiElement.showAlert(localizedSoundArtRequired, message: localizedTapGrayBoxArt, target: self)
             }else if genreTag == nil {
-                uiElement.showAlert("Sound Genre is Required", message: "Tap the 'add genre tag' button to choose", target: self)
+                uiElement.showAlert(localizedGenreRequired, message: localizedTapGrayBoxGenre, target: self)
             } else if moodTag == nil  {
-                uiElement.showAlert("Sound Mood is Required", message: "Tap the 'add mood tag' button to choose", target: self)
+                uiElement.showAlert(localizedMoodRequired, message: localizedTapGrayBoxMood, target: self)
             } else if activityTag == nil  {
-                uiElement.showAlert("Sound Activity is Required", message: "Tap the 'add activity tag' button to choose", target: self)
+                uiElement.showAlert(localizedActivityRequired, message: localizedTapGrayBoxActivity, target: self)
             } else {
                 return true
             }

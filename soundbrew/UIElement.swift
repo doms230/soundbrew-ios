@@ -29,6 +29,12 @@ class UIElement {
     let color = Color()
     let mainFont = "HelveticaNeue"
     
+    let localizedCollectors = NSLocalizedString("collectos", comment: "")
+    let localizedMood = NSLocalizedString("mood", comment: "")
+    let localizedActivity = NSLocalizedString("activity", comment: "")
+    let localizedMore = NSLocalizedString("more", comment: "")
+    let localizedOops = NSLocalizedString("oops", comment: "")
+    
     func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
         let uiFont = UIFont(name: "\(mainFont)-bold", size: 17)!
         let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
@@ -59,8 +65,8 @@ class UIElement {
     
     func permissionDenied(_ title: String, message: String, target: UIViewController) {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
-        
-        let settingsAction = UIAlertAction(title: "Go to Settings", style: .default) { (_) -> Void in
+        let localizedGoToSettings = NSLocalizedString("goToSettings", comment: "")
+        let settingsAction = UIAlertAction(title: localizedGoToSettings, style: .default) { (_) -> Void in
             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                 return
             }
@@ -70,7 +76,8 @@ class UIElement {
             }
         }
         alertController.addAction(settingsAction)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
         target.present(alertController, animated: true, completion: nil)
@@ -79,24 +86,30 @@ class UIElement {
     func signupRequired(_ title: String, message: String, target: UIViewController) {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .actionSheet)
         
-        let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
+        let localizedSignup = NSLocalizedString("signup", comment: "")
+        let settingsAction = UIAlertAction(title: localizedSignup, style: .default) { (_) -> Void in
             self.newRootView("NewUser", withIdentifier: "welcome")
         }
         alertController.addAction(settingsAction)
-        let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
+        let localizedLater = NSLocalizedString("later", comment: "")
+        let cancelAction = UIAlertAction(title: localizedLater, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
         target.present(alertController, animated: true, completion: nil)
     }
     
-    func welcomeAlert(_ title: String, message: String, target: UIViewController) {
-        let alertController = UIAlertController (title: title, message: message, preferredStyle: .actionSheet)
+    func welcomeAlert(_ message: String, target: UIViewController) {
+        let localizedWelcomeToSoundbrew = NSLocalizedString("welcomeToSoundbrew", comment: "")
+        let alertController = UIAlertController (title: localizedWelcomeToSoundbrew, message: message, preferredStyle: .actionSheet)
         
-        let settingsAction = UIAlertAction(title: "Sign Up", style: .default) { (_) -> Void in
+        let localizedSignup = NSLocalizedString("signup", comment: "")
+        let settingsAction = UIAlertAction(title: localizedSignup, style: .default) { (_) -> Void in
             self.newRootView("NewUser", withIdentifier: "welcome")
         }
         alertController.addAction(settingsAction)
-        let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
+        
+        let localizedLater = NSLocalizedString("later", comment: "")
+        let cancelAction = UIAlertAction(title: localizedLater, style: .cancel) { (_) -> Void in
             self.newRootView("Main", withIdentifier: "tabBar")
         }
         alertController.addAction(cancelAction)
@@ -169,7 +182,9 @@ class UIElement {
             
         } else if let artist = artist {
             objectId = artist.objectId
-            description = "Check out my @sound_brew page!"
+            let localizedCheckout = NSLocalizedString("checkout", comment: "")
+            let localizedPage = NSLocalizedString("page", comment: "")
+            description = "\(localizedCheckout) @sound_brew \(localizedPage)!"
             if let username = artist.username {
                 if !username.contains("@") {
                     title = username
@@ -252,7 +267,9 @@ class UIElement {
     }
     
     func showShareOptions(_ target: UIViewController, sound: Sound) {
-        let alertController = UIAlertController (title: "Share this Sound" , message: "To:", preferredStyle: .actionSheet)
+        let localizedShareThisSound = NSLocalizedString("shareThisSound", comment: "")
+        let localizedTo = NSLocalizedString("to", comment: "")
+        let alertController = UIAlertController (title: localizedShareThisSound , message: "\(localizedTo):", preferredStyle: .actionSheet)
         
         let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
             self.shareToSnapchat(sound)
@@ -266,13 +283,15 @@ class UIElement {
         }
         alertController.addAction(instagramAction)
         
-        let moreAction = UIAlertAction(title: "More Options", style: .default) { (_) -> Void in
+        let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
+        let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in
             self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
             MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
         }
         alertController.addAction(moreAction)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
         target.present(alertController, animated: true, completion: nil)

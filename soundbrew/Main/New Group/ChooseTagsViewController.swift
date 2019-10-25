@@ -28,8 +28,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        let localizedBack = NSLocalizedString("back", comment: "")
         let backItem = UIBarButtonItem()
-        backItem.title = "Back"
+        backItem.title = localizedBack
         navigationItem.backBarButtonItem = backItem
     }
     
@@ -60,7 +61,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             minusWidth = 100
         }
         let searchBar = UISearchBar(frame: CGRect(x: searchBarX, y: 0, width: self.view.frame.width - minusWidth, height: 10))
-        searchBar.placeholder = "Search Tags"
+        let localizedSearchTags = NSLocalizedString("searchTags", comment: "")
+
+        searchBar.placeholder = localizedSearchTags
         searchBar.delegate = self
         if #available(iOS 13.0, *) {
             let searchTextField = searchBar.searchTextField
@@ -87,7 +90,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.navigationItem.rightBarButtonItem = searchBarItem
             
         } else if tagType == "more" {
-            let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+            let localizedDone = NSLocalizedString("done", comment: "")
+            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
             self.navigationItem.leftBarButtonItem = searchBarItem
             
@@ -220,8 +224,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var xPositionForChosenTags = UIElement().leftOffset
     
     lazy var chooseTagsLabel: UILabel = {
+        let localizedSelectTags = NSLocalizedString("selectTags", comment: "")
         let label = UILabel()
-        label.text = "Select Tags"
+        label.text = localizedSelectTags
         label.textColor = .white
         label.textAlignment = .center
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
@@ -256,11 +261,14 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func addChooseTagsLabel() {
+        let localizedSelectTag = NSLocalizedString("selectTag", comment: "")
+        let localizedSelect = NSLocalizedString("select", comment: "")
+        let localizedTag = NSLocalizedString("tag", comment: "")
         if let type = tagType {
             if type == "all" {
-                self.chooseTagsLabel.text = "Select Tag"
+                self.chooseTagsLabel.text = localizedSelectTag
             } else {
-                self.chooseTagsLabel.text = "Select \(type.capitalized) Tag"
+                self.chooseTagsLabel.text = "\(localizedSelect) \(type.capitalized) \(localizedTag)"
             }
         }
         self.chosenTagsScrollview.addSubview(chooseTagsLabel)
@@ -448,7 +456,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 
             } else {
                 print("Error: \(error!)")
-                self.uiElement.showAlert("Oops", message: "\(error!)", target: self)
+                let localizedOops = NSLocalizedString("oops", comment: "")
+                self.uiElement.showAlert(localizedOops, message: "\(error!)", target: self)
             }
         }
     }

@@ -1,0 +1,294 @@
+/* GERMAN
+  Localizable.strings
+  soundbrew
+
+  Created by Dominic Smith on 10/24/19.
+  Copyright © 2019 Dominic  Smith. All rights reserved.
+*/
+//Key      //Translation
+"signin" = "EINLOGGEN";
+"signup" = "ANMELDEN";
+"signupRequired" = "Anmeldung erforderlich.";
+"signupRequiredMessage" = "Follow other artists to keep up with their latests releases!";
+"twitter" = "WEITER MIT TWITTER";
+"terms" = "Wenn Sie fortfahren, stimmen Sie unseren Nutzungsbedingungen und Datenschutzbestimmungen zu";
+"skip" = "ÜBERSPRINGEN";
+"resetPassword" = "Passwort zurücksetzen";
+"checkInboxTitle" = "Überprüfen Sie Ihren Posteingang (und auch Spam)";
+"titleRequired" = "Titel erforderlich";
+"checkInboxMessage" = "Klicken Sie auf den Link von noreply@soundbrew.app";
+"oops" = "Hoppla";
+"resetEmailErrorMessage" = "Es konnte kein mit verknüpftes Konto gefunden werden";
+"usernameOrEmail" = "Benutzername oder E-Mail-Adresse";
+"password" = "Passwort";
+"forgotPassword" = "Passwort vergessen";
+"cancel" = "Stornieren";
+"fieldRequired" = "Pflichtfeld";
+"incorrectLogin" = "Falsche Anmeldedaten.";
+"payPalPayoutMessage" = "Ihre Soundbrew-E-Mail-Adresse wird zum Senden von PayPal-Auszahlungen verwendet.";
+"next" = "Nächster";
+"username" = "username";
+"validEmailRequired" = "Gültige E-Mail erforderlich.";
+"emailAlreadyInUse" = "E-Mail wird bereits verwendet.";
+"invalidUsername" = "Ungültiger Benutzername";
+"usernameRequired" = "Benutzername erforderlich.";
+"usernameAlreadyInUse" = "Benutzername bereits vergeben.";
+"finish" = "FERTIG";
+"passwordRequired" = "Passwort erforderlich";
+"addArt" = "Art. Hinzufügen";
+"addTitle" = "Titel hinzufügen";
+"add" = "Hinzufügen";
+"tags" = "Stichworte";
+"Etikett" = "Etikett";
+"artist" = "Künstler";
+"artists" = "Künstler";
+"newUpload" = "Neuer Upload";
+"welcomeToSoundbrew" = "Willkommen bei Soundbrew!";
+"registerToUpload" = "Registrieren Sie sich, um mit dem Hochladen auf Soundbrew zu beginnen.";
+"collectors" = "Sammler";
+"collected" = "Gesammelt";
+"drafts" = "Entwürfe";
+"loading" = "Wird geladen...";
+"noDraftsMessage" = "Noch keine Entwürfe. Klicken Sie oben auf 'Neuer Upload', um Musik für Soundbrew freizugeben.";
+"upload" = "Hochladen";
+"fromTheApp" = "Aus der App";
+"fromTheWeb" = "From The Web";
+"release" = "Freisetzung";
+"ifYouGoBackMessage" = "Wenn Sie jetzt zurückgehen, werden Änderungen an Ihrer Version verworfen.";
+"saveDraft" = "Entwurf speichern";
+"mood" = "Stimmung";
+"activity" = "Aktivität";
+"more" = "Mehr";
+"shareLinkTo" = "Link teilen mit";
+"issueWithUpload" = "There was an issue with your audio processing:";
+"audioProcessingComplete" = "Audioverarbeitung abgeschlossen.";
+"processingAudio" = "Audio wird verarbeitet...";
+"artProcessingFailded" = "AKunstverarbeitung fehlgeschlagen";
+"couldNotPost" = "Wir konnten Ihren Sound nicht veröffentlichen";
+"couldNotUpdate" = "Wir konnten Ihren Sound nicht aktualisieren";
+"soundArtRequired" = "Sound Art is Required";
+"tapGrayBoxArt" = "Tippen Sie oben links auf das graue Feld mit der Aufschrift 'Kunst hinzufügen'.";
+"tapGrayBoxGenre" = "Tippen Sie zur Auswahl auf die Schaltfläche 'Genre-Tag hinzufügen'";
+"genreRequired" = "Sound Genre ist erforderlich";
+"moodRequired" = "Sound Mood ist erforderlich";
+"activityRequired" = "Sound-Aktivität ist erforderlich";
+"tapGrayBoxMood" = "Tippen Sie zur Auswahl auf die Schaltfläche 'Stimmungskennzeichnung hinzufügen'";
+"tapGrayBoxActivity" = "Tippen Sie zur Auswahl auf die Schaltfläche 'Aktivitäts-Tag hinzufügen'";
+"signout" = "Ausloggen";
+"provideFeedback" = "Rückmeldung geben";
+"connectWithUs" = "Verbinde dich mit uns";
+"settings" = "die Einstellungen";
+"earnings" = "Verdienste";
+"weeklyEarnings" = "Wöchentliches Einkommen";
+"weeklyEarningsMessage" = "Wöchentliche Einnahmen werden über PayPal mit Ihrer Soundbrew-E-Mail gesendet. Bitte überprüfen Sie, ob Ihre Soundbrew-E-Mail mit Ihrer PayPal-E-Mail übereinstimmt.";
+"followers" = "Anhänger";
+"follow" = "Folgen";
+"following" = "Im Anschluss";
+"funds" = "Mittel";
+"changeProfilePhoto" = "Profilfoto ändern";
+"privateInformation" = "Private Informationen";
+"registerForUpdates" = "Registrieren Sie sich, um Ihre Uploads, Sammlungen und mehr zu verfolgen!";
+"editProfile" = "Profil bearbeiten";
+"addFunds" = "Geld hinzufügen";
+"noReleasesYet" = "Noch keine Veröffentlichungen.";
+"collection" = "Sammlung";
+"nothingInCollection" = "Noch nichts in ihrer Sammlung.";
+"done" = "Getan";
+"usernameIsRequired" = "Ein Benutzername ist erforderlich.";
+"website" = "Webseite";
+"camera" = "Kamera";
+"photoLibrary" = "Fotobibliothek";
+"city" = "Stadt";
+"addCity" = "Stadt hinzufügen";
+"invalidURL" = "Ungültige URL.";
+"noCollectors" = "Noch keine Sammler.";
+"noFollowers" = "Noch keine Follower.";
+"notFollowingAnyone" = "Sie folgen noch niemandem.";
+"back" = "Zurück";
+"moods" = "Stimmungen";
+"activities" = "Aktivitäten";
+"cities" = "Städte";
+"registerForUpdatesMessage" = "Registrieren Sie sich, um Updates wie neue Tipps und Hinweise zu verfolgen!";
+"NewCollectorsAndFollowersMessage" = "Hier erscheinen neue Sammler und Anhänger!";
+"for" = "zum";
+"followedYou" = "dir gefolgt.";
+"searchTags" = "Tags suchen";
+"selectTags" = "Wählen Sie Tags";
+"selectTag" = "Wählen Sie Tag";
+"select" = "Wählen";
+"viewAll" = "Alle ansehen";
+"new" = "Neu";
+"top" = "oben";
+"edit" = "Bearbeiten";
+"purchase" = "KAUF";
+"paymentDeclined" = "Zahlung wurde abgelehnt";
+"chosenFunds" = "Ausgewählte Fonds";
+"funds" = "Mittel";
+"paymentProcessingFee" = "Zahlungsbearbeitungsgebühr";
+"currentBalance" = "Aktueller Kontostand:";
+"tipArtist" = "Tipp Künstler:";
+"addToCollection" = "Fügen Sie Ihrer Sammlung hinzu";
+"tipAmount" = "Trinkgeldbetrag:";
+"currentBalance" = "Aktueller Kontostand:";
+"tipAmountExceedsBalance" = "Der ausgewählte Trinkgeldbetrag übersteigt Ihr Soundbrew-Gleichgewicht.";
+"later" = "Später";
+"soundTitle" = "Sound-Titel";
+"youAdded" = "Du hast hinzugefügt";
+"toYourCollection" = "Ihrer Sammlung hinzufügen für";
+"tipArtistsToAddToCollection" = "Tippe Künstler, um Songs zu deiner Sammlung hinzuzufügen!";
+"steepingSoundbrew" = "Ihre Soundbrew durchdringen";
+"sounds" = "Geräusche";
+"plays" = "Theaterstücke";
+"tips" = "Tipps";
+"in" = "In";
+"editSound" = "Sound bearbeiten";
+"deleteSound" = "Sound löschen";
+"reportSound" = "Sound melden";
+"thankyou" = "Dankeschön";
+"youReported" = "Sie haben berichtet";
+"on" = "auf";
+"ifYouHaveAnyQuestions" = "Wenn Sie Fragen haben, senden Sie uns bitte eine E-Mail an";
+"onlyRegisteredUsers" = "Nur registrierte Benutzer können Sounds melden. Wenn Sie die Registrierung ablehnen möchten, können Sie uns Ihren Bericht per E-Mail unter senden";
+"report" = "Bericht";
+"reportMessage" = "Wenn dieser Sound gegen das Urheberrecht verstößt, würden wir das gerne wissen!";
+"nevermind" = "Keine Ursache";
+"receivedReport" = "Wir haben Ihren Bericht erhalten und werden gegebenenfalls weitere Maßnahmen ergreifen. Bei Fragen senden Sie uns bitte eine E-Mail an support@soundbrew.app.";
+"remove" = "Entfernen";
+"thisSound" = "dieser Klang";
+"fromSoundbrew" = "von Soundbrew";
+"no" = "Nein";
+"yes" = "Ja";
+"latestReleases" = "The latest releases from artists you follow will appear here!";
+"noResults" = "";
+"goToSettings" = "Gehe zu den Einstellungen";
+"checkout" = "CSieh dir mein an";
+"page" = "Seite";
+"shareThisSound" = "Teile diesen Sound";
+"to" = "Zu";
+"moreOptions" = "Mehr Optionen";
+"discard" = "Verwerfen";
+"total" = "Gesamt";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

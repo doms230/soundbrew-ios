@@ -40,6 +40,9 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         case "showProfile":
             let viewController = segue.destination as! ProfileViewController
             viewController.profileArtist = selectedArtist
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
             break
             
         default:
@@ -80,11 +83,14 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             cell.backgroundColor = color.black()
             
             if sound != nil {
-                cell.headerTitle.text = "No Collectors yet."
+                let localizedNoCollectors = NSLocalizedString("noCollectors", comment: "")
+                cell.headerTitle.text = localizedNoCollectors
             } else if loadType == "followers" {
-                cell.headerTitle.text = "No followers yet."
+                let localizedNoFollowers = NSLocalizedString("noFollowers", comment: "")
+                cell.headerTitle.text = localizedNoFollowers
             } else if loadType == "following" {
-                cell.headerTitle.text = "You're not following anyone yet."
+                let localizedNotFollowingAnyone = NSLocalizedString("notFollowingAnyone", comment: "")
+                cell.headerTitle.text = localizedNotFollowingAnyone
             }
             
             return cell

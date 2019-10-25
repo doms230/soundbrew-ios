@@ -35,7 +35,8 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     //done
     func setUpDoneButton() {
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
+        let localizedDone = NSLocalizedString("done", comment: "")
+        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
     }
     

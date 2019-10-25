@@ -31,16 +31,18 @@ class TagTableViewCell: UITableViewCell {
     }()
     
     lazy var viewAllLabel: UILabel = {
+        let localizedViewAll = NSLocalizedString("viewAll", comment: "")
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.text = "View All"
+        label.text = localizedViewAll
         label.textColor = .white
         return label
     }()
     
     lazy var newChartsButton: UIButton = {
+        let localizedNew = NSLocalizedString("new", comment: "")
         let button = UIButton()
-        button.setTitle("New", for: .normal)
+        button.setTitle(localizedNew, for: .normal)
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.layer.cornerRadius = 5
@@ -49,8 +51,9 @@ class TagTableViewCell: UITableViewCell {
     }()
     
     lazy var topChartsButton: UIButton = {
+        let localizedTop = NSLocalizedString("top", comment: "")
         let button = UIButton()
-        button.setTitle("Top", for: .normal)
+        button.setTitle(localizedTop, for: .normal)
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.layer.cornerRadius = 5
@@ -59,8 +62,9 @@ class TagTableViewCell: UITableViewCell {
     }()
     
     lazy var followButton: UIButton = {
+        let localizedFollowing = NSLocalizedString("following", comment: "")
         let button = UIButton()
-        button.setTitle("Following", for: .normal)
+        button.setTitle(localizedFollowing, for: .normal)
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.layer.cornerRadius = 5
@@ -153,7 +157,7 @@ class TagTableViewCell: UITableViewCell {
             }
             
             followButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(100)
+                make.width.equalTo(115)
                 make.height.equalTo(50)
                 make.top.equalTo(newChartsButton)
                 make.left.equalTo(topChartsButton.snp.right).offset(uiElement.leftOffset)

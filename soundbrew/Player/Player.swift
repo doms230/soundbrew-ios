@@ -276,7 +276,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 print(error)
                 
             } else if let audioData = audioData {
-                if prepareAndPlay {
+                if prepareAndPlay && self.player == nil {
                     self.prepareAndPlay(audioData)
                     
                 } else if self.sounds.indices.contains(position + 1) {

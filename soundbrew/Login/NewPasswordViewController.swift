@@ -19,8 +19,9 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     var usernameString: String!
     
     lazy var passwordText: UITextField = {
+        let localizedPassword = NSLocalizedString("password", comment: "")
         let textField = UITextField()
-        textField.placeholder = "Password"
+        //textField.placeholder = "Password"
         textField.font = UIFont(name: uiElement.mainFont, size: 17)
         textField.backgroundColor = .white
         textField.borderStyle = .roundedRect
@@ -28,14 +29,15 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         textField.isSecureTextEntry = true
         textField.tintColor = color.black()
         textField.textColor = color.black()
-        textField.attributedPlaceholder = NSAttributedString(string: "Password",
+        textField.attributedPlaceholder = NSAttributedString(string: localizedPassword,
         attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return textField
     }()
     
     lazy var finishButton: UIButton = {
+        let localizedFinish = NSLocalizedString("finish", comment: "")
         let button = UIButton()
-        button.setTitle("FINISH", for: .normal)
+        button.setTitle(localizedFinish, for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
@@ -79,14 +81,16 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func validatePassword() -> Bool {
+        let localizedPasswordRequired = NSLocalizedString("passwordRequired", comment: "")
         if passwordText.text!.isEmpty {
-            self.uiElement.showTextFieldErrorMessage(passwordText, text: "Password required.")
+            self.uiElement.showTextFieldErrorMessage(passwordText, text: localizedPasswordRequired)
             return false
         }
        return true
     }
     
     func signup() {
+        
         self.startAnimating()
         let user = PFUser()
         user.username = usernameString
@@ -96,7 +100,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
             self.stopAnimating()
             if let error = error {
-                UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
+                UIElement().showAlert(self.uiElement.localizedOops, message: error.localizedDescription, target: self)
                 
             } else {
                 let installation = PFInstallation.current()

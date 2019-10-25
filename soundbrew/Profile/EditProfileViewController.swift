@@ -65,8 +65,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func setUpViews() {        
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+    func setUpViews() {
+        let localizedDone = NSLocalizedString("done", comment: "")
+        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
     }
     
@@ -225,11 +226,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 1:
             usernameText = cell.editProfileInput
-            inputTitle = "Username"
+            let localizedusername = NSLocalizedString("username", comment: "")
+            inputTitle = localizedusername
             if let username = artist?.username {
                 inputText = username
             } else {
-                self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
+                let localizedusernameIsRequired = NSLocalizedString("usernameIsRequired", comment: "")
+                self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedusernameIsRequired)
             }
             
             break
@@ -237,7 +240,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         case 2:
             cell.editProfileInput.keyboardType = .URL
             websiteText = cell.editProfileInput
-            inputTitle = "Website"
+            let localizedWebsite = NSLocalizedString("website", comment: "")
+            inputTitle = localizedWebsite
             if let website = artist?.website {
                 inputText = website
             }
@@ -291,19 +295,22 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         let alertController = UIAlertController (title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let cameraAction = UIAlertAction(title: "Camera", style: .default) { (_) -> Void in
+        let localizedCamera = NSLocalizedString("camera", comment: "")
+        let cameraAction = UIAlertAction(title: localizedCamera, style: .default) { (_) -> Void in
             imagePicker.sourceType = .camera
             self.present(imagePicker, animated: true, completion: nil)
         }
         alertController.addAction(cameraAction)
         
-        let photolibraryAction = UIAlertAction(title: "Photo Library", style: .default) { (_) -> Void in
+        let localizedPhotoLibrary = NSLocalizedString("photoLibrary", comment: "")
+        let photolibraryAction = UIAlertAction(title: localizedPhotoLibrary, style: .default) { (_) -> Void in
             imagePicker.sourceType = .photoLibrary
             self.present(imagePicker, animated: true, completion: nil)
         }
         alertController.addAction(photolibraryAction)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel) { (_) -> Void in
         }
         alertController.addAction(cancelAction)
         
@@ -317,16 +324,19 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.selectionStyle = .gray
         tableView.separatorInset = .zero
         
-        cell.editBioTitle.text = "City"
+        let localizedCity = NSLocalizedString("city", comment: "")
+        let localizedAddCity = NSLocalizedString("addCity", comment: "")
+        cell.editBioTitle.text = localizedCity
         if let city = artist?.city {
             if city.isEmpty {
-                cell.editBioText.text = "Add City"
+                
+                cell.editBioText.text = localizedAddCity
                 
             } else {
                 cell.editBioText.text = city
             }
         } else {
-            cell.editBioText.text = "Add City"
+            cell.editBioText.text = localizedAddCity
         }
         
         return cell
@@ -346,23 +356,25 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.selectionStyle = .gray
         tableView.separatorInset = .zero
         
+        let localizedAdd = NSLocalizedString("add", comment: "")
         cell.editBioTitle.text = "Bio"
         if let bio = artist?.bio {
             if bio.isEmpty {
-                cell.editBioText.text = "Add Bio"
+                cell.editBioText.text = "\(localizedAdd) Bio"
             } else {
                 cell.editBioText.text = bio
             }
         } else {
-            cell.editBioText.text = "Add Bio"
+            cell.editBioText.text = "\(localizedAdd) Bio"
         }
         
         return cell
     }
     
     func changeBio(_ value: String?) {
+        let localizedAdd = NSLocalizedString("add", comment: "")
         if let newBioText = value {
-            if newBioText != "Add Bio" {
+            if newBioText != "\(localizedAdd) Bio" {
                 artist!.bio = newBioText
                 self.tableView.reloadData()
             }
@@ -455,8 +467,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func validateEmail() -> Bool {
+        let localizedValidEmailRequired = NSLocalizedString("validEmailRequired", comment: "")
         if emailText.text!.isEmpty || !emailText.text!.contains("@") || !emailText.text!.contains(".") {
-            self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Valid email required.")
+            self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedValidEmailRequired)
             return false
         }
         
@@ -464,12 +477,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func validateUsername() -> Bool {
+        let localizedInvalidUsername = NSLocalizedString("invalidUsername", comment: "")
+        let localizedUsernameRequired = NSLocalizedString("usernameRequired", comment: "")
         if usernameText.text!.contains("@") {
-            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Invalid username.")
+            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedInvalidUsername)
             return false
             
         } else if usernameText.text!.isEmpty {
-            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username is required.")
+            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameRequired)
             return false
         }
         
@@ -483,7 +498,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
             
             if !UIApplication.shared.canOpenURL(URL(string: websiteText.text!)!) {
-                self.uiElement.showTextFieldErrorMessage(self.websiteText, text: "Invalid url.")
+                let localizedInvalidURL = NSLocalizedString("invalidURL", comment: "")
+                self.uiElement.showTextFieldErrorMessage(self.websiteText, text: localizedInvalidURL)
                 return false
             }
         }

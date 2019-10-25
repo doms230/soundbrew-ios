@@ -23,8 +23,9 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     var twitterID: String?
     
     lazy var usernameText: UITextField = {
+        let localizedUsername = NSLocalizedString("username", comment: "")
         let textField = UITextField()
-        textField.placeholder = "Username"
+        //textField.placeholder = "Username"
         textField.font = UIFont(name: uiElement.mainFont, size: 17)
         textField.backgroundColor = .white
         textField.borderStyle = .roundedRect
@@ -32,14 +33,15 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         textField.keyboardType = .emailAddress
         textField.tintColor = color.black()
         textField.textColor = color.black()
-        textField.attributedPlaceholder = NSAttributedString(string: "Username",
+        textField.attributedPlaceholder = NSAttributedString(string: localizedUsername,
         attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return textField
     }()
     
     lazy var nextButton: UIButton = {
+        let localizedNext = NSLocalizedString("next", comment: "")
         let button = UIButton()
-        button.setTitle("NEXT", for: .normal)
+        button.setTitle(localizedNext, for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
@@ -84,8 +86,9 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         viewController.emailString = emailString
         viewController.usernameString = usernameText.text!
         
+        let localizedPassword = NSLocalizedString("password", comment: "")
         let backItem = UIBarButtonItem()
-        backItem.title = "Password | 3/3"
+        backItem.title = "\(localizedPassword) | 3/3"
         navigationItem.backBarButtonItem = backItem
     }
     
@@ -98,9 +101,10 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func validateUsername() -> Bool {
+        let localizedInvalidUsername = NSLocalizedString("invalidUsername", comment: "")
         let usernameString : NSString = usernameText.text! as NSString
         if usernameText.text!.isEmpty || usernameString.contains("@") {
-            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Invalid username.")
+            self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedInvalidUsername)
             return false
         }
         
@@ -109,13 +113,14 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     
     func checkIfUsernameExistsThenMoveForward() {
         startAnimating()
+        let localizedUsernameAlreadyInUse = NSLocalizedString("usernameAlreadyInUse", comment: "")
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: usernameText.text!)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             self.stopAnimating()
             if object != nil && error == nil {
-                self.uiElement.showTextFieldErrorMessage(self.usernameText, text: "Username already in use.")
+                self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameAlreadyInUse)
                 
             } else {
                 if let authToken = self.authToken {

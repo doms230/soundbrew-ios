@@ -80,8 +80,9 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var actionButton: UIButton = {
+        let localizedLoading = NSLocalizedString("loading", comment: "")
         let button = UIButton()
-        button.setTitle("Loading", for: .normal)
+        button.setTitle(localizedLoading, for: .normal)
         button.backgroundColor = .lightGray
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.layer.cornerRadius = 3
@@ -109,8 +110,9 @@ class ProfileTableViewCell: UITableViewCell {
     
     //EditProfile
     lazy var editProfileLabel: UILabel = {
+        let localizedChangeProfilePhoto = NSLocalizedString("changeProfilePhoto", comment: "")
         let label = UILabel()
-        label.text = "Change Profile Photo"
+        label.text = localizedChangeProfilePhoto
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
         label.textAlignment = .center
         label.textColor = color.blue()
@@ -154,8 +156,9 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var privateInformationLabel: UILabel = {
+        let localizedPrivateInformation = NSLocalizedString("privateInformation", comment: "")
         let label = UILabel()
-        label.text = "Private Information"
+        label.text = localizedPrivateInformation
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         label.textColor = .white 
         return label

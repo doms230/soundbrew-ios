@@ -38,15 +38,19 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
+        let localizedAdd = NSLocalizedString("add", comment: "")
+        let localizedEdit = NSLocalizedString("edit", comment: "")
+        let localizedPurchase = NSLocalizedString("purchase", comment: "")
+
         if paymentContext.selectedPaymentOption == nil {
             self.purchaseButton.isEnabled = false
-            self.addCardLabel.text = "Add"
+            self.addCardLabel.text = localizedAdd
         } else {
             self.purchaseButton.isEnabled = true
-            self.addCardLabel.text = "Edit"
+            self.addCardLabel.text = localizedEdit
         }
         self.purchaseButton.isEnabled = paymentContext.selectedPaymentOption != nil
-        self.purchaseButton.setTitle("PURCHASE", for: .normal)
+        self.purchaseButton.setTitle(localizedPurchase, for: .normal)
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
     }
@@ -110,7 +114,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
                 errorString = reError
                 print(errorString)
             }
-            self.uiElement.showAlert("Payment was Declined", message: "", target: self)
+            let localizedPaymentDeclined = NSLocalizedString("paymentDeclined", comment: "")
+            self.uiElement.showAlert(localizedPaymentDeclined, message: "", target: self)
             MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Declined", "description": "User's payment was Un-Successful. \(errorString)"])
             
         case .success:
@@ -135,8 +140,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     //mark: UI
     
     lazy var balanceTitle: UILabel = {
+        let localizedChosenFunds = NSLocalizedString("chosenFunds", comment: "")
         let label = UILabel()
-        label.text = "Chosen Funds"
+        label.text = localizedChosenFunds
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = .white
         label.numberOfLines = 0
@@ -158,8 +164,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }()
     
     @objc func didPressFundAmountButton(_ sender: UIButton) {
-        let menuAlert = UIAlertController(title: "Funds", message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        let localizedFunds = NSLocalizedString("funds", comment: "")
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let menuAlert = UIAlertController(title: localizedFunds, message: nil , preferredStyle: .actionSheet)
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "$1.00", style: .default, handler: { action in
             sender.setTitle("$1.00", for: .normal)
             self.updateTotalAndProcessingFee(1)
@@ -202,8 +210,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     lazy var paymentProcessingFeeTitle: UILabel = {
+        let localizedPaymentProcessingFee = NSLocalizedString("paymentProcessingFee", comment: "")
         let label = UILabel()
-        label.text = "Payment Processing Fee"
+        label.text = localizedPaymentProcessingFee
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
         label.textColor = .white 
         label.numberOfLines = 0
@@ -219,8 +228,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }()
     
     lazy var totalTitle: UILabel = {
+        let localizedTotal = NSLocalizedString("total", comment: "")
         let label = UILabel()
-        label.text = "Total"
+        label.text = localizedTotal
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         label.textColor = .white
         label.numberOfLines = 0
@@ -269,12 +279,13 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }()
     
     lazy var purchaseButton: UIButton = {
+        let localizedLoading = NSLocalizedString("loading", comment: "")
         let button = UIButton()
         button.isEnabled = false
         //button.backgroundColor = color.blue()
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        button.setTitle("Loading...", for: .normal)
+        button.setTitle(localizedLoading, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(didPressPurchaseButton(_:)), for: .touchUpInside)
         button.layer.cornerRadius = 3

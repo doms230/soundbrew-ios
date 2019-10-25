@@ -14,9 +14,10 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     var isLoggingInWithApple = false
     
     lazy var titleLabel: UILabel = {
+        let localizedPayPalPayoutMessage = NSLocalizedString("payPalPayoutMessage", comment: "")
         let label = UILabel()
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-        label.text = "Your Soundbrew email is used to send PayPal Payouts."
+        label.text = localizedPayPalPayoutMessage
         label.textColor = .white
         label.numberOfLines = 0
         return label
@@ -38,8 +39,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }()
     
     lazy var nextButton: UIButton = {
+        let localizedNext = NSLocalizedString("next", comment: "")
         let button = UIButton()
-        button.setTitle("NEXT", for: .normal)
+        button.setTitle(localizedNext, for: .normal)
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.textAlignment = .right
@@ -69,7 +71,8 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     func setupNewEmailView() {
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
         self.navigationItem.leftBarButtonItem = cancelButton
         
         if authToken != nil {
@@ -106,6 +109,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let localizedUsername = NSLocalizedString("username", comment: "")
         let viewController = segue.destination as! NewUsernameViewController
         viewController.emailString = emailText.text!
         viewController.authToken = self.authToken
@@ -115,9 +119,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         
         var nextTitle: String!
         if authToken != nil {
-            nextTitle = "Username | 2/2"
+            nextTitle = "\(localizedUsername) | 2/2"
         } else {
-            nextTitle = "Username | 2/3"
+            nextTitle = "\(localizedUsername) | 2/3"
         }
         
         let backItem = UIBarButtonItem()
@@ -134,9 +138,10 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     
     //MARK: Validate jaunts
     func validateEmail() -> Bool {
+        let localizedValidEmailRequired = NSLocalizedString("validEmailRequired", comment: "")
         let emailString : NSString = emailText.text! as NSString
         if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
-            self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Valid email required.")
+            self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedValidEmailRequired)
             return false
         }
         
@@ -144,6 +149,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     func checkIfEmailExistsThenMoveForward() {
+        let localizedEmailAlreadyInUse = NSLocalizedString("emailAlreadyInUse", comment: "")
         startAnimating()
         let query = PFQuery(className: "_User")
         query.whereKey("email", equalTo: emailText.text!)
@@ -151,7 +157,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             (object: PFObject?, error: Error?) -> Void in
             self.stopAnimating()
             if object != nil && error == nil {
-                self.uiElement.showTextFieldErrorMessage(self.emailText, text: "Email already in use.")
+                self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedEmailAlreadyInUse)
             
             } else if object == nil {
                 self.performSegue(withIdentifier: "showUsername", sender: self)

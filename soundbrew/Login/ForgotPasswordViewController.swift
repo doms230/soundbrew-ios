@@ -35,8 +35,8 @@ class ForgotPasswordViewController: UIViewController {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
-        let doneButton = UIBarButtonItem(title: "Reset Password", style: .plain, target: self, action: #selector(doneAction(_:)))
+        let localizedResetPassword = NSLocalizedString("resetPassword", comment: "")
+        let doneButton = UIBarButtonItem(title: localizedResetPassword, style: .plain, target: self, action: #selector(doneAction(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
         
         self.view.addSubview(emailInput)
@@ -57,8 +57,9 @@ class ForgotPasswordViewController: UIViewController {
             (objects: [PFObject]?, error: Error?) -> Void in
             if objects?.count != 0 {
                 PFUser.requestPasswordResetForEmail(inBackground: emailText!)
-                
-                let alertController = UIAlertController (title: "Check Your Inbox (& Spam too)", message: "Click on the link from noreply@soundbrew.app", preferredStyle: .alert)
+                let localizedStringTitle = NSLocalizedString("checkInboxTitle", comment: "")
+                let localizedStringMessage = NSLocalizedString("checkInboxMessage", comment: "")
+                let alertController = UIAlertController (title: localizedStringTitle, message: localizedStringMessage, preferredStyle: .alert)
                 
                 let okayAction = UIAlertAction(title: "Okay", style: .default) { (_) -> Void in
                     self.emailInput.resignFirstResponder()
@@ -69,7 +70,9 @@ class ForgotPasswordViewController: UIViewController {
                 self.present(alertController, animated: true, completion: nil)
                 
             } else {
-                UIElement().showAlert("Oops", message: "Couldn't find an account associated with \(emailText!)", target: self)
+                let localizedStringOops = NSLocalizedString("oops", comment: "")
+                let localizedStringMessage = NSLocalizedString("resetEmailErrorMessage", comment: "")
+                UIElement().showAlert(localizedStringOops, message: "\(localizedStringMessage) \(emailText!)", target: self)
             }
         }
     }

@@ -61,15 +61,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.executeTableViewSoundListFollowStatus()
             self.setUpNavigationButtons()
         } else {
-            self.uiElement.welcomeAlert("Welcome To Soundbrew!", message: "Register to keep track of your uploads, collection, and more!", target: self)
+            let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
+            self.uiElement.welcomeAlert(localizedRegisterForUpdates, target: self)
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showEditProfile":
+            let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
             let backItem = UIBarButtonItem()
-            backItem.title = "Edit Profile"
+            backItem.title = localizedEditProfile
             navigationItem.backBarButtonItem = backItem
             
             let editProfileController = segue.destination as! EditProfileViewController
@@ -86,8 +88,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case "showAddFunds", "showEarnings":
+            let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
             let backItem = UIBarButtonItem()
-            backItem.title = "Add Funds"
+            backItem.title = localizedAddFunds
             navigationItem.backBarButtonItem = backItem
             break
             
@@ -108,12 +111,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             let viewController = segue.destination as! PeopleViewController
             viewController.loadType = followerOrFollowing
-            break
-            
-        case "showSignin":
-            let backItem = UIBarButtonItem()
-            backItem.title = "Sign In"
-            navigationItem.backBarButtonItem = backItem
             break
             
         default:
@@ -265,6 +262,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var didLoadCollection = false
     var showSoundsTitle: String!
     var selectedSoundType: String!
+    let localizedCollection = NSLocalizedString("collection", comment: "")
     
     func soundsReuse(_ indexPath: IndexPath) -> TagTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundReuse) as! TagTableViewCell
@@ -278,10 +276,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         if indexPath.section == 1 {
+            let localizedNoReleasesYet = NSLocalizedString("noReleasesYet", comment: "")
+
             cell.TagTypeTitle.text = "Releases"
             if artistReleases.count == 0 && didloadReleases {
                 cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: "No Releases Yet.")
+                addNoSounds(cell.tagsScrollview, title: localizedNoReleasesYet)
             } else {
                 cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
                 cell.tagTypeButton.tag = 0
@@ -290,10 +290,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
         } else {
-            cell.TagTypeTitle.text = "Collection"
+            
+            let localizedNothingInCollection = NSLocalizedString("nothingInCollection", comment: "")
+
+            cell.TagTypeTitle.text = localizedCollection
             if artistCollection.count == 0 && didLoadCollection  {
                 cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: "Nothing in their collection yet.")
+                addNoSounds(cell.tagsScrollview, title: localizedNothingInCollection)
             } else {
                 cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
                 cell.tagTypeButton.tag = 1
@@ -314,7 +317,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "View all Releases", "description": "User pressed view all releases."])
 
             } else {
-                showSoundsTitle = "\(artist.username!)'s Collection"
+                showSoundsTitle = "\(artist.username!)'s \(localizedCollection)"
                 selectedSoundType = "collection"
                 
                 MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "View all Collection", "description": "User pressed view all collection."])
@@ -347,7 +350,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let sound = sounds[i]
             
             let soundArt = UIImageView()
-            soundArt.kf.setImage(with: URL(string: sound.artURL!))
+            soundArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
             soundArt.contentMode = .scaleAspectFill
             soundArt.layer.cornerRadius = 5
             soundArt.clipsToBounds = true
@@ -531,9 +534,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
             cell.actionButton.addTarget(self, action: #selector(self.didPressActionButton(_:)), for: .touchUpInside)
+            
+            let localizedFollow = NSLocalizedString("follow", comment: "")
+            let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
+            let localizedFollowing = NSLocalizedString("following", comment: "")
+            
             if let currentUserID = PFUser.current()?.objectId {
                 if currentUserID == self.profileArtist!.objectId {
-                    cell.actionButton.setTitle("Edit Profile", for: .normal)
+                    cell.actionButton.setTitle(localizedEditProfile, for: .normal)
                     cell.actionButton.backgroundColor = color.black()
                     cell.actionButton.setTitleColor(.white, for: .normal)
                     cell.actionButton.layer.borderColor = color.lightGray().cgColor
@@ -542,19 +550,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.actionButton.tag = 0
                 } else if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
                     if isFollowedByCurrentUser {
-                        cell.actionButton.setTitle("Following", for: .normal)
+                        cell.actionButton.setTitle(localizedFollowing, for: .normal)
                         cell.actionButton.backgroundColor = color.lightGray()
                         cell.actionButton.setTitleColor(color.black(), for: .normal)
                         cell.actionButton.tag = 1
                     } else {
-                        cell.actionButton.setTitle("Follow", for: .normal)
+                        cell.actionButton.setTitle(localizedFollow, for: .normal)
                         cell.actionButton.backgroundColor = color.blue()
                         cell.actionButton.setTitleColor(.white, for: .normal)
                         cell.actionButton.tag = 2
                     }
                 }
             } else {
-                cell.actionButton.setTitle("Follow", for: .normal)
+                cell.actionButton.setTitle(localizedFollow, for: .normal)
                 cell.actionButton.backgroundColor = color.blue()
                 cell.actionButton.setTitleColor(.white, for: .normal)
                 cell.actionButton.tag = 3
@@ -569,24 +577,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch sender.tag {
         case 0:
             self.performSegue(withIdentifier: "showEditProfile", sender: self)
-            
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Edit Profile", "description": "User pressed song in artist's collection."])
             break
             
         case 1:
             updateFollowStatus(false)
-            
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Un-Follow", "description": "User un-followed artist"])
             break
             
         case 2:
             updateFollowStatus(true)
-            
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Follow", "description": "User followed artist"])
             break
             
         default:
-            self.uiElement.showAlert("Sign up Required.", message: "Follow other artists to keep up with their latests releases!", target: self)
+            let localizedSignupRequired = NSLocalizedString("signupRequired", comment: "")
+            let localizedSignupRequiredMessage = NSLocalizedString("signupRequiredMessage", comment: "")
+            self.uiElement.showAlert(localizedSignupRequired, message: localizedSignupRequiredMessage, target: self)
             break
         }
     }
@@ -674,7 +681,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 (success: Bool, error: Error?) in
                 if success && error == nil {
                     self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: true)
-                    self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
+                    self.uiElement.sendAlert("\(currentUser.username!) Followed You!", toUserId: self.profileArtist!.objectId)
                     
                 } else {
                     self.profileArtist!.isFollowedByCurrentUser = false

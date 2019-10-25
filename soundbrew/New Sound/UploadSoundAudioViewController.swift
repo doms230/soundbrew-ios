@@ -26,7 +26,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         navigationController?.navigationBar.tintColor = .white
         view.backgroundColor = color.black()
         
-        let uploadButton = UIBarButtonItem(title: "New Upload", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
+        let localizedNewUpload = NSLocalizedString("newUpload", comment: "")
+        let uploadButton = UIBarButtonItem(title: localizedNewUpload, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
     }
     
@@ -41,7 +42,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
                 setUpTableView(nil)
             }
         } else {
-            self.uiElement.welcomeAlert("Welcome To Soundbrew!", message: "Register to start uploading to Soundbrew", target: self)
+            let localizedRegisterToUpload = NSLocalizedString("registerToUpload", comment: "")
+            self.uiElement.welcomeAlert(localizedRegisterToUpload, target: self)
         }
     }
     
@@ -62,7 +64,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         case "showTippers":
             soundList.prepareToShowTippers(segue)
             let backItem = UIBarButtonItem()
-            backItem.title = "Collectors"
+            backItem.title = self.uiElement.localizedCollectors
             navigationItem.backBarButtonItem = backItem
             break
             
@@ -111,7 +113,8 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Drafts"
+        let localizedDrafts = NSLocalizedString("drafts", comment: "")
+        return localizedDrafts
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -130,9 +133,11 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.backgroundColor = color.black()
             if soundList.isUpdatingData {
-                cell.headerTitle.text = "Loading..."
+                let localizedLoading = NSLocalizedString("loading", comment: "")
+                cell.headerTitle.text = localizedLoading
             } else {
-                cell.headerTitle.text = "No drafts yet. Press the 'New Upload' button above to start releasing music to Soundbrew!"
+                let localizedNoDraftsMessage = NSLocalizedString("noDraftsMessage", comment: "")
+                cell.headerTitle.text = localizedNoDraftsMessage
             }
 
             return cell
@@ -165,14 +170,17 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     
     //mark: new sound upload
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        let menuAlert = UIAlertController(title: "Upload ", message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: "From The App", style: .default, handler: { action in
+        let localizedUpload = NSLocalizedString("upload", comment: "")
+        let menuAlert = UIAlertController(title: localizedUpload, message: nil , preferredStyle: .actionSheet)
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+        let localizedFromTheApp = NSLocalizedString("fromTheApp", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedFromTheApp, style: .default, handler: { action in
             self.showUploadSoundFileUI()
-            
             MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the App"])
         }))
-        menuAlert.addAction(UIAlertAction(title: "From The Web", style: .default, handler: { action in
+        let localizedFromTheWeb = NSLocalizedString("fromTheWeb", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedFromTheWeb, style: .default, handler: { action in
             UIApplication.shared.open(URL(string: "https://www.soundbrew.app/upload")!, options: [:], completionHandler: nil)
             MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the Web"])
         }))
