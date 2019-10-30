@@ -43,6 +43,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         setUpTableView()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        //loading city Tag, so want to get most recent data if user updated profile.
+        if tableView != nil {
+            self.tableView.reloadData()
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showTags" {
             let navi = segue.destination as! UINavigationController
@@ -105,7 +112,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Save Draft", "Description": "User save sound as draft"])
         }))
         let localizedDiscard = NSLocalizedString("discard", comment: "")
-        menuAlert.addAction(UIAlertAction(title: "Discard", style: .default, handler: { action in
+        menuAlert.addAction(UIAlertAction(title: localizedDiscard, style: .default, handler: { action in
             self.uiElement.goBackToPreviousViewController(self)
             
             MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Discard", "Description": "User discarded sound"])
@@ -157,7 +164,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         if section == tagSection {
-            return 4
+            return 5
         } else if section == socialSection {
             return 2
         }
@@ -189,7 +196,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case titleSection:
-            cell = soundTitleImageCell()
+            cell = titleImageCell()
             break
             
         case tagSection:
@@ -219,18 +226,21 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if indexPath.section == tagSection {
             switch indexPath.row {
             case 0:
+                self.tagType = "city"
+                break
+            case 1:
                 self.tagType = "genre"
                 break
                 
-            case 1:
+            case 2:
                 self.tagType = "mood"
                 break
                 
-            case 2:
+            case 3:
                 self.tagType = "activity"
                 break
                 
-            case 3:
+            case 4:
                 self.tagType = "more"
                 self.tagsToUpdateInChooseTagsViewController = moreTags
                 break
@@ -239,11 +249,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 break
             }
             
-            self.performSegue(withIdentifier: showTags, sender: self)
+            if self.tagType == "city" {
+                let localizedCityTagTitle = NSLocalizedString("cityTag", comment: "")
+                let localizedCityTagMessage = NSLocalizedString("cityTagMessage", comment: "")
+                self.uiElement.showAlert(localizedCityTagTitle, message: localizedCityTagMessage, target: self)
+            } else {
+                self.performSegue(withIdentifier: showTags, sender: self)
+            }
         }
     }
     
-    func soundTitleImageCell() -> SoundInfoTableViewCell {
+    func titleImageCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
         
         if let sound = soundThatIsBeingEdited {
@@ -253,8 +269,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.soundArt.kf.setImage(with: URL(string: soundArtURL), for: .normal)
                 self.soundThatIsBeingEdited?.artImage = cell.soundArt.imageView?.image
             }
-            
-            if let soundTitle = sound.title {
+                        
+            if cell.soundTitle.text!.isEmpty, let soundTitle = sound.title {
                 cell.soundTitle.text = soundTitle
             }
         }
@@ -433,33 +449,50 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         switch indexPath.row {
         case 0:
-            determineTag(cell, soundTagLabel: "Genre \(localizedTag)", tag: self.genreTag)
+            let localizedCityTag = NSLocalizedString("cityTag", comment: "")
+            cell.soundTagLabel.text = localizedCityTag
+            cell.chosenSoundTagLabel.textColor = .darkGray
+            if let currentArtistCity = Customer.shared.artist?.city {
+                cell.chosenSoundTagLabel.text = currentArtistCity
+            } else {
+                let localizedNone = NSLocalizedString("none", comment: "")
+                cell.chosenSoundTagLabel.text = localizedNone
+                cell.chosenSoundTagLabel.textColor = .darkGray
+            }
             tableView.separatorStyle = .none
             break
         case 1:
+            determineTag(cell, soundTagLabel: "Genre \(localizedTag)", tag: self.genreTag)
+            tableView.separatorStyle = .none
+            break
+            
+        case 2:
             determineTag(cell, soundTagLabel: "\(self.uiElement.localizedActivity.capitalized) \(localizedTag)", tag: self.moodTag)
             tableView.separatorStyle = .none
             break
-        case 2:
+            
+        case 3:
             determineTag(cell, soundTagLabel: "\(self.uiElement.localizedActivity.capitalized) \(localizedTag)", tag: self.activityTag)
             tableView.separatorStyle = .none
             break
-        case 3:
+            
+        case 4:
             cell.soundTagLabel.text = "\(self.uiElement.localizedMore.capitalized) \(localizedTags)"
-            if let moreTags = self.moreTags {
-                if moreTags.count == 1 {
-                    cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTag)"
-                } else {
-                    cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTags)"
-                }
-                
-                cell.chosenSoundTagLabel.textColor = .white
-                
+        if let moreTags = self.moreTags {
+            if moreTags.count == 1 {
+                cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTag)"
             } else {
-                cell.chosenSoundTagLabel.text = localizedAdd.capitalized
-                cell.chosenSoundTagLabel.textColor = color.red()
+                cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTags)"
             }
-            tableView.separatorStyle = .singleLine
+            
+            cell.chosenSoundTagLabel.textColor = .white
+            
+        } else {
+            cell.chosenSoundTagLabel.text = localizedAdd.capitalized
+            cell.chosenSoundTagLabel.textColor = color.red()
+        }
+        tableView.separatorStyle = .singleLine
+            break
         default:
             break
         }
@@ -792,6 +825,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         if isDraft {
                             self.finishUp(false)
                         } else {
+                            self.saveTags(tags)
                             self.handleSocials(object)
                             self.finishUp(true)
                         }

@@ -154,11 +154,11 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     }
     
     func didSelectRowAt(_ row: Int) {
-        if let player = soundList.player {
-            player.didSelectSoundAt(row)
-            if miniPlayerView == nil {
-                self.setUpMiniPlayer()
-            }
+        let player = Player.sharedInstance
+        player.sounds = soundList.sounds
+        player.didSelectSoundAt(row)
+        if miniPlayerView == nil {
+            self.setUpMiniPlayer()
         }
     }
     

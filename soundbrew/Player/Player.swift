@@ -101,7 +101,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 setUpNextGoBackCommands()
             }
         }*/
-        setUpNextGoBackCommands()
+        //setUpNextGoBackCommands()
         if let tableView = self.tableView {
             tableView.reloadData()
         }
@@ -402,31 +402,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             return .commandFailed
         }
         
-        /*commandCenter.nextTrackCommand.addTarget { [weak self] event in
-            if let nextSelf = self {
-                nextSelf.next()
-                return .success
-            }
-
-            return .commandFailed
-        }*/
-        
-        /*commandCenter.previousTrackCommand.addTarget { [weak self] event in
-            if let previousSelf = self {
-                previousSelf.previous()
-                return .success
-            }
-
-            return .commandFailed
-        }*/
-    }
-    
-    func setUpNextGoBackCommands() {
-        let commandCenter = MPRemoteCommandCenter.shared()
-        
-        commandCenter.skipBackwardCommand.isEnabled = false
-        commandCenter.skipForwardCommand.isEnabled = false
-        
         commandCenter.nextTrackCommand.addTarget { [weak self] event in
             if let nextSelf = self {
                 nextSelf.next()
@@ -446,7 +421,32 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func setUpSkipForwardBackwardCommands() {
+    /*func setUpNextGoBackCommands() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+       // commandCenter.skipBackwardCommand.isEnabled = false
+        //commandCenter.skipForwardCommand.isEnabled = false
+        
+        commandCenter.nextTrackCommand.addTarget { [weak self] event in
+            if let nextSelf = self {
+                nextSelf.next()
+                return .success
+            }
+
+            return .commandFailed
+        }
+        
+        commandCenter.previousTrackCommand.addTarget { [weak self] event in
+            if let previousSelf = self {
+                previousSelf.previous()
+                return .success
+            }
+
+            return .commandFailed
+        }
+    }*/
+    
+    /*func setUpSkipForwardBackwardCommands() {
         let commandCenter = MPRemoteCommandCenter.shared()
         
         commandCenter.nextTrackCommand.isEnabled = false
@@ -471,7 +471,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             
             return .commandFailed
         }
-    }
+    }*/
     
     func shouldEnableCommandCenter(_ shouldEnable: Bool ) {
         let commandCenter = MPRemoteCommandCenter.shared()
@@ -479,8 +479,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         commandCenter.pauseCommand.isEnabled = shouldEnable
         commandCenter.nextTrackCommand.isEnabled = shouldEnable
         commandCenter.previousTrackCommand.isEnabled = shouldEnable
-        commandCenter.skipForwardCommand.isEnabled = shouldEnable
-        commandCenter.skipBackwardCommand.isEnabled = shouldEnable
+        //commandCenter.skipForwardCommand.isEnabled = shouldEnable
+        //commandCenter.skipBackwardCommand.isEnabled = shouldEnable
     }
     
     func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer?, sound: Sound) {
@@ -533,7 +533,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     //mark: data
-    func loadDynamicLinkSound(_ objectId: String) {
+    /*func loadDynamicLinkSound(_ objectId: String) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -548,7 +548,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
             }
         }
-    }
+    }*/
         
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")

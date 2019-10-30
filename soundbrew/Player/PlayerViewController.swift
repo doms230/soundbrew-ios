@@ -261,13 +261,16 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     //mark: sound
     func setupPlayerView() {
         setupNotificationCenter()
-        if let sound = self.player.currentSound {
+        if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
+            loadDynamicLinkSound(soundId)
+            
+        } else if let sound = self.player.currentSound {
             self.sound = sound
             showPlayerView()
             player.target = self
             
         } else {
-            loadYourSoundbrew()
+            loadYourSoundbrew(true)
             showLoadingSoundbrewSpinner()
         }
     }
@@ -340,6 +343,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.songArt.image = UIImage(named: "sound")
         self.artistLabel.text = localizedLoading
         self.artistImage.kf.setImage(with: URL(string: "profile_icon"))
+        self.artistLabel.text = ""
         
         if playBackButton.superview == nil {
             showPlayerView()
@@ -803,7 +807,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    func loadYourSoundbrew() {
+    func loadYourSoundbrew(_ shouldSetupPlayer: Bool) {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("tips")
@@ -818,12 +822,38 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                         sounds.append(sound)
                     }
                     sounds.shuffle()
-                    self.resetPlayer(sounds: sounds)
-                    self.setSound()
+                    if shouldSetupPlayer {
+                        self.resetPlayer(sounds: sounds)
+                        self.setSound()
+                    } else {
+                        let player = Player.sharedInstance
+                        player.sounds = sounds
+                    }
                 }
                 
             } else {
                 print("Error: \(error!)")
+            }
+        }
+    }
+    
+    func loadDynamicLinkSound(_ objectId: String) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                UserDefaults.standard.removeObject(forKey: "receivedSoundId")
+                let sound = [UIElement().newSoundObject(object)]
+                /*let player = Player.sharedInstance
+                player.sounds = sound
+                player.setUpNextSong(false, at: 0)*/
+                
+                self.resetPlayer(sounds: sound)
+                self.setSound()
+                self.loadYourSoundbrew(false)
             }
         }
     }
@@ -838,6 +868,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {
         self.resetPlayView()
-        loadYourSoundbrew()
+        loadYourSoundbrew(true)
     }
 }

@@ -305,6 +305,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if tagType != "more" {
             handleTagsForDismissal()
         } else {
+            self.searchBar.text = ""
             self.tableView.reloadData()
         }
     }

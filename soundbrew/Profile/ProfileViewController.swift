@@ -83,6 +83,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case "showProfile":
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            
             let viewController = segue.destination as! ProfileViewController
             viewController.profileArtist = selectedArtist
             break

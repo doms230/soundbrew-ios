@@ -168,3 +168,8 @@
 "moreOptions" = "More Options";
 "discard" = "Discard";
 "total" = "Total";
+"addTitle" = "Add Title";
+"none" = "None";
+"cityTag" = "City Tag";
+"cityTagMessage" = "Go to your profile, and tap 'edit profile' to change your city tag.";
+

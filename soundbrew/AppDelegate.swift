@@ -53,8 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         PFUser.register(self, forAuthType: "twitter")
         
-        //loadSounds()
-
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)
         NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE = CGSize(width: 60, height: 60)
@@ -77,8 +75,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
             } else if let url = dynamiclink?.url {
                 if let pathComponents = dynamiclink?.url?.pathComponents {
                     if pathComponents.contains("sound") {
-                        self.playSound(url: url)
-                        
+                       // self.playSound(url: url)
+                       self.receivedPostId(url.lastPathComponent)
+
                     } else if pathComponents.contains("profile") {
                         self.receivedUserId(url.lastPathComponent)
                     }
@@ -106,8 +105,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
             if let pathComponents = dynamicLink.url?.pathComponents {
                 if pathComponents.contains("sound") {
-                    self.playSound(url: url)
-                    UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
+                    //self.playSound(url: url)
+                    //UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
+                    self.receivedPostId(url.lastPathComponent)
                     
                 } else if pathComponents.contains("profile") {
                     self.receivedUserId(url.lastPathComponent)
@@ -157,15 +157,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         }
     }
     
-    func playSound(url: URL) {
+   /* func playSound(url: URL) {
         let player = Player.sharedInstance
         let objectId = url.lastPathComponent
         player.loadDynamicLinkSound(objectId)
         showMainViewController()
-    }
+    }*/
     
     func receivedUserId(_ userId: String) {
         UIElement().setUserDefault("receivedUserId", value: userId)
+        showMainViewController()
+    }
+    
+    func receivedPostId(_ soundId: String) {
+        UIElement().setUserDefault("receivedSoundId", value: soundId)
         showMainViewController()
     }
     
@@ -173,33 +178,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "tabBar") as! UITabBarController
         window!.rootViewController = tabBarController
     }
-    
-    /*func loadSounds() {
-        let query = PFQuery(className: "Post")
-        query.whereKey("isRemoved", notEqualTo: true)
-        //query.addDescendingOrder("plays")
-        query.addDescendingOrder("tips")
-        query.limit = 25
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    var sounds = [Sound]()
-                    for object in objects {
-                        let sound = UIElement().newSoundObject(object)
-                        sounds.append(sound)
-                    }
-                    sounds.shuffle()
-                    let player = Player.sharedInstance
-                    player.sounds = sounds
-                    player.currentSound = sounds[0]
-                    player.fetchAudioData(0, prepareAndPlay: true)
-                }
-                
-            } else {
-                print("Error: \(error!)")
-            }
-        }
-    }*/
 }
 

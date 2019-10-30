@@ -38,7 +38,7 @@ class MiniPlayerView: UIButton {
     
     lazy var songArt: UIImageView = {
         let image = UIImageView()
-        image.backgroundColor = .white
+        image.backgroundColor = .clear 
         image.image = UIImage(named: "sound")
         return image
     }()

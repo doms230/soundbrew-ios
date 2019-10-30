@@ -9,7 +9,7 @@
 "signin" = "EINLOGGEN";
 "signup" = "ANMELDEN";
 "signupRequired" = "Anmeldung erforderlich.";
-"signupRequiredMessage" = "Follow other artists to keep up with their latests releases!";
+"signupRequiredMessage" = "Folgen Sie anderen Künstlern, um über ihre neuesten Veröffentlichungen auf dem Laufenden zu bleiben!";
 "twitter" = "WEITER MIT TWITTER";
 "terms" = "Wenn Sie fortfahren, stimmen Sie unseren Nutzungsbedingungen und Datenschutzbestimmungen zu";
 "skip" = "ÜBERSPRINGEN";
@@ -60,13 +60,13 @@
 "activity" = "Aktivität";
 "more" = "Mehr";
 "shareLinkTo" = "Link teilen mit";
-"issueWithUpload" = "There was an issue with your audio processing:";
+"issueWithUpload" = "Bei der Audioverarbeitung ist ein Problem aufgetreten:";
 "audioProcessingComplete" = "Audioverarbeitung abgeschlossen.";
 "processingAudio" = "Audio wird verarbeitet...";
 "artProcessingFailded" = "AKunstverarbeitung fehlgeschlagen";
 "couldNotPost" = "Wir konnten Ihren Sound nicht veröffentlichen";
 "couldNotUpdate" = "Wir konnten Ihren Sound nicht aktualisieren";
-"soundArtRequired" = "Sound Art is Required";
+"soundArtRequired" = "Sound Art ist erforderlich";
 "tapGrayBoxArt" = "Tippen Sie oben links auf das graue Feld mit der Aufschrift 'Kunst hinzufügen'.";
 "tapGrayBoxGenre" = "Tippen Sie zur Auswahl auf die Schaltfläche 'Genre-Tag hinzufügen'";
 "genreRequired" = "Sound Genre ist erforderlich";
@@ -158,7 +158,7 @@
 "fromSoundbrew" = "von Soundbrew";
 "no" = "Nein";
 "yes" = "Ja";
-"latestReleases" = "The latest releases from artists you follow will appear here!";
+"latestReleases" = "Die neuesten Veröffentlichungen von Künstlern, denen Sie folgen, erscheinen hier!";
 "noResults" = "";
 "goToSettings" = "Gehe zu den Einstellungen";
 "checkout" = "CSieh dir mein an";
@@ -168,6 +168,9 @@
 "moreOptions" = "Mehr Optionen";
 "discard" = "Verwerfen";
 "total" = "Gesamt";
+"none" = "keiner";
+"cityTag" = "Stadt-Tag";
+"cityTagMessage" = "Gehen Sie zu Ihrem Profil und tippen Sie auf 'Profil bearbeiten', um Ihr Stadt-Tag zu ändern.";
 
 
 

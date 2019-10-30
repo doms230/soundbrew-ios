@@ -133,6 +133,9 @@
 		A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_soundbrewTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE5E96109A7445CB251E5689 /* Pods-soundbrewUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewUITests/Pods-soundbrewUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7A0E542735DEBF665AEBE43 /* Pods-soundbrewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E4006F5E2367A0EA0020CDD8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		E4006F5F2367A0EB0020CDD8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		E4006F602367A0EC0020CDD8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E40829E5236204E900D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E40829E6236204EA00D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		E40829EB236209C800D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -550,6 +553,7 @@
 				en,
 				Base,
 				de,
+				es,
 			);
 			mainGroup = F268985D215AEF8F00C21663;
 			productRefGroup = F2689867215AEF8F00C21663 /* Products */;
@@ -811,6 +815,7 @@
 			children = (
 				E40829EB236209C800D88B33 /* de */,
 				E40829ED236209D100D88B33 /* en */,
+				E4006F602367A0EC0020CDD8 /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -820,6 +825,7 @@
 			children = (
 				F268986E215AEF8F00C21663 /* Base */,
 				E40829E6236204EA00D88B33 /* de */,
+				E4006F5F2367A0EB0020CDD8 /* es */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -829,6 +835,7 @@
 			children = (
 				F2689873215AEF9000C21663 /* Base */,
 				E40829E5236204E900D88B33 /* de */,
+				E4006F5E2367A0EA0020CDD8 /* es */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
