@@ -93,7 +93,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        tableView.backgroundColor = color.lightGray()
+        //tableView.backgroundColor = color.lightGray()
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = color.black()
@@ -131,7 +131,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if soundList.sounds.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
+            //cell.backgroundColor = color.black()
             if soundList.isUpdatingData {
                 let localizedLoading = NSLocalizedString("loading", comment: "")
                 cell.headerTitle.text = localizedLoading
@@ -144,7 +144,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
+           // cell.backgroundColor = color.black()
             return soundList.soundCell(indexPath, cell: cell)
         }
     }

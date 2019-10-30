@@ -332,6 +332,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.playBackButton.isEnabled = false
         self.loadSoundSpinner.isHidden = false
         self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        timer.invalidate()
         self.playBackSlider.value = 0
         self.playBackCurrentTime.text = "0s"
         self.playBackTotalTime.text = "0s"

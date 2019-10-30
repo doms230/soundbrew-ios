@@ -159,7 +159,7 @@
 "no" = "no";
 "yes" = "si";
 "latestReleases" = "Die neuesten Veröffentlichungen von Künstlern, denen Sie folgen, erscheinen hier!";
-"noResults" = "No hay resultados para";
+"noResultsFor" = "No hay resultados para";
 "goToSettings" = "Ir a la configuración";
 "checkout" = "Echa un vistazo a mi";
 "page" = "página";
@@ -172,4 +172,6 @@
 "none" = "ninguno";
 "cityTag" = "Etiqueta de la ciudad";
 "cityTagMessage" = "Vaya a su perfil y toque 'editar perfil' para cambiar su etiqueta de ciudad.";
+"noResults" = "No hay resultados.";
+
 

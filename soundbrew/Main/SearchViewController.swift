@@ -46,7 +46,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if self.tableView == nil {
             self.setUpTableView(nil)
         } else {
-            self.tableView.reloadData()
+            //self.tableView.reloadData()
         }
     }
     
@@ -115,6 +115,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let filterSoundsReuse = "filterSoundsReuse"
     let chartsReuse = "chartsReuse"
     let searchTagViewReuse = "searchTagViewReuse"
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView = UITableView()
         tableView.backgroundColor = color.black()
@@ -126,6 +127,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         if let miniPlayer = miniPlayer {
@@ -150,15 +152,22 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isSearchActive {
             if section == 0 {
+                //search title section
                 return 1
             } else {
-                if searchType == 0 {
+                //search content section
+                if searchType == 0 && searchTags.count != 0 {
                     return searchTags.count
-                } else if searchType == 1 {
+                } else if searchType == 1  && searchUsers.count != 0 {
                     return searchUsers.count
                 } else if soundList != nil {
-                    return soundList.sounds.count
+                    if soundList.sounds.count != 0 {
+                        return soundList.sounds.count
+                    }
+                    return 1 
                 }
+                
+                return 1
             }
             
         } else if section == 0 {
@@ -200,14 +209,23 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 return cell
                 
             } else {
-                if searchType == 0 {
+                if searchType == 0 && searchTags.count != 0 {
                     return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
-                } else if searchType == 1 {
+                    
+                } else if searchType == 1 && searchUsers.count != 0 {
                     return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
+                    
                 } else if soundList != nil {
-                    let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-                    cell.backgroundColor = color.black()
-                    return soundList.soundCell(indexPath, cell: cell)
+                    if soundList.sounds.count != 0 {
+                        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+                        cell.backgroundColor = color.black()
+                        return soundList.soundCell(indexPath, cell: cell)
+                    } else {
+                        return noResultsCell()
+                    }
+                    
+                } else {
+                    return noResultsCell()
                 }
             }
             
@@ -256,6 +274,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.tableView.reloadData()
             }
         }
+    }
+    
+    func noResultsCell() -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+        let localizedNoResults = NSLocalizedString("noResults", comment: "")
+        cell.headerTitle.text = localizedNoResults
+        return cell
     }
     
     @objc func didPressChartsButton(_ sender: UIButton) {
@@ -330,7 +355,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let buttonWidth = 170
         var xPositionForFeatureTags = UIElement().leftOffset
         
-        for tag in tags {
+        //for tag in tags {
+        for i in 0..<tags.count {
+            let tag = tags[i]
             let tagButton = UIButton()
             if let tagImage = tag.image {
                 tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal, placeholder: UIImage(named: "hashtag"))
@@ -344,17 +371,36 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 tagButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: CGFloat((buttonHeight / 2) - 10), right: 0)
             }
             
-            if tag.objectId != nil {
-                tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
-            } else {
+            if i == tag.count {
+                //determine which feature tag for "more cities, genres, etc."
                 if featureMoreTagIndex == 0 {
                     tagButton.tag = featureMoreTagIndex
                 } else {
-                    featureMoreTagIndex = featureMoreTagIndex + 1
+                    //featureMoreTagIndex = featureMoreTagIndex + 1
+                    print("tag index: \(featureMoreTagIndex)")
                     tagButton.tag = featureMoreTagIndex
                 }
+                featureMoreTagIndex = featureMoreTagIndex + 1
                 tagButton.addTarget(self, action: #selector(self.didPressViewMoreTagsButton(_:)), for: .touchUpInside)
+            } else {
+                tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
             }
+            
+            //tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
+           /* if tag.objectId != nil {
+                tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
+            } else {
+                //determine which feature tag for "more cities, genres, etc."
+                if featureMoreTagIndex == 0 {
+                    tagButton.tag = featureMoreTagIndex
+                } else {
+                    //featureMoreTagIndex = featureMoreTagIndex + 1
+                    print("tag index: \(featureMoreTagIndex)")
+                    tagButton.tag = featureMoreTagIndex
+                }
+                featureMoreTagIndex = featureMoreTagIndex + 1
+                tagButton.addTarget(self, action: #selector(self.didPressViewMoreTagsButton(_:)), for: .touchUpInside)
+            }*/
             
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
@@ -401,10 +447,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func didPressViewMoreTagsButton(_ sender: UIButton) {
         let selectedTagType = featureTagTypes[sender.tag]
-        
-        self.selectedTagType = featureTagTypes[sender.tag]
+        self.selectedTagType = selectedTagType
+        print(selectedTagType)
         self.performSegue(withIdentifier: "showTags", sender: self)
-        
         MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "View All \(selectedTagType)", "description": "User pressed view all button."])
     }
     

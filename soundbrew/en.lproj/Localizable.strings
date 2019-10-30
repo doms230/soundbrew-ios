@@ -159,7 +159,7 @@
 "no" = "no";
 "yes" = "yes";
 "latestReleases" = "Die neuesten Veröffentlichungen von Künstlern, denen Sie folgen, erscheinen hier!";
-"noResults" = "No Results for";
+"noResultsFor" = "No Results for";
 "goToSettings" = "Go To Settings";
 "checkout" = "Check out my";
 "page" = "page";
@@ -172,4 +172,5 @@
 "none" = "None";
 "cityTag" = "City Tag";
 "cityTagMessage" = "Go to your profile, and tap 'edit profile' to change your city tag.";
+"noResults" = "No Results.";
 

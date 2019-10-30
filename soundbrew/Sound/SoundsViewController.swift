@@ -139,8 +139,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 let localizedLatestReleases = NSLocalizedString("latestReleases", comment: "")
                 cell.headerTitle.text = localizedLatestReleases
             } else if selectedTagForFiltering != nil {
-                let localizedNoResults = NSLocalizedString("noResults", comment: "")
-                cell.headerTitle.text = "\(localizedNoResults) \(selectedTagForFiltering.name!)"
+                let localizedNoResultsFor = NSLocalizedString("noResultsFor", comment: "")
+                cell.headerTitle.text = "\(localizedNoResultsFor) \(selectedTagForFiltering.name!)"
             }
 
             return cell
