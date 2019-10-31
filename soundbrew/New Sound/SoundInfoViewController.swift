@@ -25,7 +25,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     let color = Color()
     var soundArtDidFinishProcessing = false
-    var soundTitle: UITextField!
+    var soundTitle: UITextView!
     var soundParseFileDidFinishProcessing = false
     var didPressUploadButton = false
     
@@ -269,15 +269,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.soundArt.kf.setImage(with: URL(string: soundArtURL), for: .normal)
                 self.soundThatIsBeingEdited?.artImage = cell.soundArt.imageView?.image
             }
-                        
-            if cell.soundTitle.text!.isEmpty, let soundTitle = sound.title {
-                cell.soundTitle.text = soundTitle
+            
+            if cell.inputTitle.text!.isEmpty, let soundTitle = sound.title {
+                cell.inputTitle.text = soundTitle
             }
+                        
+           /* if cell.soundTitle.text!.isEmpty, let soundTitle = sound.title {
+                cell.soundTitle.text = soundTitle
+            }*/
         }
         
         cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
         
-        soundTitle = cell.soundTitle
+        soundTitle = cell.inputTitle
         tableView.separatorStyle = .singleLine
         
         return cell
@@ -467,7 +471,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 2:
-            determineTag(cell, soundTagLabel: "\(self.uiElement.localizedActivity.capitalized) \(localizedTag)", tag: self.moodTag)
+            determineTag(cell, soundTagLabel: "\(self.uiElement.localizedMood.capitalized) \(localizedTag)", tag: self.moodTag)
             tableView.separatorStyle = .none
             break
             
@@ -493,6 +497,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         tableView.separatorStyle = .singleLine
             break
+            
         default:
             break
         }
@@ -641,7 +646,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 case "artist":
                     self.artistTag = retreivedTag
                     break
-                    
+                                                   
                 default:
                     self.moreTags?.append(retreivedTag)
                     break
@@ -880,7 +885,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let localizedTapGrayBoxActivity = NSLocalizedString("tapGrayBoxActivity", comment: "")
         if let sound = soundThatIsBeingEdited {
             if sound.title!.isEmpty {
-                showAttributedPlaceholder(soundTitle, text: localizedTitleRequired)
+                //showAttributedPlaceholder(soundTitle, text: localizedTitleRequired)
+                uiElement.showAlert(localizedTitleRequired, message: "", target: self)
             } else if sound.artFile == nil && sound.artURL == nil {
                 uiElement.showAlert(localizedSoundArtRequired, message: localizedTapGrayBoxArt, target: self)
             }else if genreTag == nil {
@@ -896,10 +902,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         return false
     }
     
-    func showAttributedPlaceholder(_ textField: UITextField, text: String) {
-        textField.attributedPlaceholder = NSAttributedString(string:"\(text)",
+    /*func showAttributedPlaceholder(_ textField: UITextView, text: String) {
+        //textField.attributedPlaceholder = NSAttributedString(string:"\(text)",
             attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-    }
+    }*/
     
     func errorAlert(_ title: String, message: String) {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)

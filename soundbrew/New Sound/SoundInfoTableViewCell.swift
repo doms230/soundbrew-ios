@@ -59,6 +59,16 @@ class SoundInfoTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        label.numberOfLines = 0 
+        return label
+    }()
+    
+    lazy var inputTitle: UITextView = {
+        let label = UITextView()
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        label.textColor = .white
+        label.backgroundColor = color.black()
+        label.isScrollEnabled = false 
         return label
     }()
     
@@ -129,7 +139,7 @@ class SoundInfoTableViewCell: UITableViewCell {
             
         case "soundInfoReuse":
             self.addSubview(soundArt)
-            self.addSubview(soundTitle)
+            self.addSubview(inputTitle)
             
             soundArt.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
@@ -138,10 +148,11 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArt).offset(40)
+            inputTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundArt)
                 make.left.equalTo(soundArt.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundArt)
             }
             
             break

@@ -17,6 +17,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let uiElement = UIElement()
     var soundType: String!
     
+    var isLoadingResults = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -45,8 +47,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.setUpMiniPlayer()
         } else if self.tableView == nil {
             self.setUpTableView(nil)
-        } else {
-            //self.tableView.reloadData()
         }
     }
     
@@ -278,8 +278,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func noResultsCell() -> SoundListTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-        let localizedNoResults = NSLocalizedString("noResults", comment: "")
-        cell.headerTitle.text = localizedNoResults
+        cell.backgroundColor = color.black()
+        if isLoadingResults {
+            cell.headerTitle.text = ""
+        } else {
+            let localizedNoResults = NSLocalizedString("noResults", comment: "")
+            cell.headerTitle.text = localizedNoResults
+        }
         return cell
     }
     
@@ -370,14 +375,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 tagButton.titleLabel?.backgroundColor = .clear
                 tagButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: CGFloat((buttonHeight / 2) - 10), right: 0)
             }
-            
-            if i == tag.count {
+
+            if i == tags.count - 1 {
                 //determine which feature tag for "more cities, genres, etc."
                 if featureMoreTagIndex == 0 {
                     tagButton.tag = featureMoreTagIndex
                 } else {
                     //featureMoreTagIndex = featureMoreTagIndex + 1
-                    print("tag index: \(featureMoreTagIndex)")
                     tagButton.tag = featureMoreTagIndex
                 }
                 featureMoreTagIndex = featureMoreTagIndex + 1
@@ -385,22 +389,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
             }
-            
-            //tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
-           /* if tag.objectId != nil {
-                tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
-            } else {
-                //determine which feature tag for "more cities, genres, etc."
-                if featureMoreTagIndex == 0 {
-                    tagButton.tag = featureMoreTagIndex
-                } else {
-                    //featureMoreTagIndex = featureMoreTagIndex + 1
-                    print("tag index: \(featureMoreTagIndex)")
-                    tagButton.tag = featureMoreTagIndex
-                }
-                featureMoreTagIndex = featureMoreTagIndex + 1
-                tagButton.addTarget(self, action: #selector(self.didPressViewMoreTagsButton(_:)), for: .touchUpInside)
-            }*/
             
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
@@ -463,6 +451,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func loadTags(_ type: String, searchText: String?) {
+        
         let query = PFQuery(className: "Tag")
 
         if let text = searchText {
@@ -545,6 +534,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     }
                 }
                 
+                self.isLoadingResults = false
                 let player = Player.sharedInstance
                 if player.player != nil {
                     self.setUpMiniPlayer()
@@ -661,6 +651,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func search() {
+        isLoadingResults = true
         if searchType == 0 {
             loadTags("", searchText: searchBar.text!)
         } else if searchType == 1 {
@@ -701,7 +692,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func searchUsers(_ text: String) {
         self.searchUsers.removeAll()
-        
         let nameQuery = PFQuery(className: "_User")
         nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
         nameQuery.whereKey("artistName", matchesRegex: text)
@@ -771,6 +761,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     }
                 }
                 
+                self.isLoadingResults = false
                 self.tableView.reloadData()
                 
             } else {

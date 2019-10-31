@@ -280,12 +280,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             query.whereKey("userId", equalTo: currentUserID)
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
-                    let followers = object!["followers"] as! Int
-                    let following = object!["following"] as! Int
+                if error == nil, let object = object {
+                    if let followers = object["followers"] as? Int {
+                        self.artist?.followerCount = followers
+                    }
                     
-                    self.artist?.followingCount = following
-                    self.artist?.followerCount = followers
+                    if let following = object["following"] as? Int {
+                        self.artist?.followingCount = following
+                    }
                 }
                self.loadEarnings()
             }
@@ -298,9 +300,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             query.whereKey("userId", equalTo: currentUserID)
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
-                    let earnings = object!["tipsSinceLastPayout"] as! Int
-                    self.artist?.earnings = earnings
+                if error == nil, let object = object {
+                    if let earnings = object["tipsSinceLastPayout"] as? Int {
+                        self.artist?.earnings = earnings
+                    } else {
+                        self.artist?.earnings = 0
+                    }
                 }
                 self.setupBottomButtons()
             }
