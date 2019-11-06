@@ -173,5 +173,9 @@
 "cityTag" = "Etiqueta de la ciudad";
 "cityTagMessage" = "Vaya a su perfil y toque 'editar perfil' para cambiar su etiqueta de ciudad.";
 "noResults" = "No hay resultados.";
+"stripeAddFundsMessage" = "Los pagos son procesados ​​de forma segura por Stripe.";
+"addFundsMessage" = "Los artistas suben música a Soundbrew para que la disfrutes gratis sin anuncios. ¡Darles propina a los artistas con tus fondos de Soundbrew les ayuda a que te paguen por su música!";
+"whyAddFundsTitle" = "¿Por qué agregar fondos?";
+
 
 

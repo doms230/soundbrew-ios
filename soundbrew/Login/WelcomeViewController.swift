@@ -53,36 +53,9 @@ class WelcomeViewController: UIViewController {
     
     lazy var appLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
-        label.text = "Soundbrew Artists"
-        label.textColor = .white
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var point1: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        //label.text = "∙ Discover music, curated by the artists."
-        label.text = "∙ Discover music, curated by the artists."
-        label.textColor = .white
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var point2: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.text = "∙ Directly pay artists for their music."
-        label.textColor = .white
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var point3: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.text = "∙ Listen for free."
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        label.text = "Soundbrew"
+        label.textAlignment = .center
         label.textColor = .white
         label.numberOfLines = 0
         return label
@@ -180,10 +153,6 @@ class WelcomeViewController: UIViewController {
         self.view.addSubview(appImage)
         self.view.addSubview(appLabel)
         
-        self.view.addSubview(point1)
-        self.view.addSubview(point2)
-        self.view.addSubview(point3)
-        
         self.view.addSubview(signinWithLabel)
         
         self.view.addSubview(skipButton)
@@ -193,34 +162,16 @@ class WelcomeViewController: UIViewController {
         loginInWithTwitterButton.addSubview(twitter)
         self.view.addSubview(termsButton)
         
-        appImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(100)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
         appLabel.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(appImage)
-            make.left.equalTo(appImage.snp.right)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        point3.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(self.view)
+            make.centerY.equalTo(self.view).offset(uiElement.bottomOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        point2.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(point3.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        point1.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(point2.snp.top).offset(uiElement.bottomOffset)
+        appImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(150)
+            make.centerX.equalTo(self.view)
+            make.bottom.equalTo(appLabel.snp.top)
         }
         
         skipButton.snp.makeConstraints { (make) -> Void in
@@ -260,7 +211,7 @@ class WelcomeViewController: UIViewController {
         termsButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-10)
+            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset)
         }
     }
     

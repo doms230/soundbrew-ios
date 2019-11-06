@@ -359,7 +359,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let buttonWidth = 170
         var xPositionForFeatureTags = UIElement().leftOffset
         
-        //for tag in tags {
         for i in 0..<tags.count {
             let tag = tags[i]
             let tagButton = UIButton()
@@ -440,7 +439,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         print(selectedTagTitle)
         for tag in tags {
             if selectedTagTitle == tag.name {
-                print("show sounds \(tag.name)")
                 showSounds(tag, soundType: "discover")
                 MSAnalytics.trackEvent("Selected Tag", withProperties: ["Tag" : "\(selectedTagTitle)"])
             }
@@ -582,7 +580,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let player = Player.sharedInstance
         if player.player != nil {
             let modal = PlayerViewController()
-            //modal.player = player
             modal.playerDelegate = self
             self.present(modal, animated: true, completion: nil)
         }

@@ -11,7 +11,6 @@ import UIKit
 import Parse
 import Kingfisher
 import SnapKit
-//import DeckTransition
 import SidebarOverlay
 import TwitterKit
 import AppCenterAnalytics
@@ -35,7 +34,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white        
@@ -532,7 +530,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
             if let website = artist.website {
-                //cell.website.setTitle(website, for: .normal)
                 cell.website.text = website 
                 cell.websiteView.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
             }

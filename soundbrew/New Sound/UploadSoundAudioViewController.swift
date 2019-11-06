@@ -93,7 +93,6 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        //tableView.backgroundColor = color.lightGray()
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = color.black()

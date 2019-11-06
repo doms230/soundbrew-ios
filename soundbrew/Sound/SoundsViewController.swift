@@ -70,7 +70,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         var descendingOrder: String?
         
         if soundType == "follow" {
-            //soundType = "follow"
             if let userId = PFUser.current()?.objectId {
                 self.userId = userId
             } else {
@@ -81,7 +80,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if selectedTagForFiltering.name == "new" {
                 descendingOrder = "createdAt"
             } else {
-                //descendingOrder = "plays"
                 descendingOrder = "tips"
             }
         }

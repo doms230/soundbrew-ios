@@ -21,7 +21,6 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var passwordText: UITextField = {
         let localizedPassword = NSLocalizedString("password", comment: "")
         let textField = UITextField()
-        //textField.placeholder = "Password"
         textField.font = UIFont(name: uiElement.mainFont, size: 17)
         textField.backgroundColor = .white
         textField.borderStyle = .roundedRect
@@ -90,7 +89,6 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func signup() {
-        
         self.startAnimating()
         let user = PFUser()
         user.username = usernameString

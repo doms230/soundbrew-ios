@@ -25,7 +25,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var usernameText: UITextField = {
         let localizedUsername = NSLocalizedString("username", comment: "")
         let textField = UITextField()
-        //textField.placeholder = "Username"
         textField.font = UIFont(name: uiElement.mainFont, size: 17)
         textField.backgroundColor = .white
         textField.borderStyle = .roundedRect

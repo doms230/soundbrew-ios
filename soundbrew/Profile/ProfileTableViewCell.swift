@@ -257,7 +257,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
-                //make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             break
@@ -308,13 +307,11 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-               // make.bottom.equalTo(self)
             }
             
             break
             
         case "settingsReuse":
-            //self.addSubview(profileImage)
             self.addSubview(username)
             self.addSubview(displayNameLabel)
             self.addSubview(seperatorLine)

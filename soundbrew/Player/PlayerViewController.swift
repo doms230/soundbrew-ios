@@ -29,7 +29,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let yourSoundbrewButton = UIBarButtonItem(title: "Soundbrew", style: .plain, target: self, action: #selector(self.didPressYourSoundbrewButton(_:)))
+        let yourSoundbrewButton = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(self.didPressYourSoundbrewButton(_:)))
         self.navigationItem.leftBarButtonItem = yourSoundbrewButton
         setupPlayerView()
     }
@@ -717,7 +717,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         artistLabel.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(artistButton)
             make.top.equalTo(artistButton)
-            //make.right.equalTo(artistButton)
         }
         
         self.artistButton.addSubview(artistImage)
@@ -850,9 +849,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             } else if let object = object {
                 UserDefaults.standard.removeObject(forKey: "receivedSoundId")
                 let sound = [UIElement().newSoundObject(object)]
-                /*let player = Player.sharedInstance
-                player.sounds = sound
-                player.setUpNextSong(false, at: 0)*/
                 
                 self.resetPlayer(sounds: sound)
                 self.setSound()

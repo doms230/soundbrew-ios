@@ -13,6 +13,7 @@ import Parse
 import MediaPlayer
 import Kingfisher
 import AppCenterAnalytics
+import Alamofire
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
@@ -186,22 +187,29 @@ class Player: NSObject, AVAudioPlayerDelegate {
             player = nil
         }
         
-        DispatchQueue.main.async {
-            if let temporaryFile =  self.sounds[self.currentSoundIndex].tmpFile {
-                do {
-                    try temporaryFile.deleteDirectory()
-                    
-                } catch let error {
-                    print("error deleting temp file: \(error)")
-                }
-            }
-        }
+        clearCurrentSoundTmpData()
         
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
             updateUI(sound)
             prepareToPlaySound(sound)
             setUpAudioForNextSound()
         }
+    }
+    
+    func clearCurrentSoundTmpData() {
+        if self.sounds.indices.contains(self.currentSoundIndex) {
+            self.sounds[self.currentSoundIndex].audio?.clearCachedDataInBackground()
+            DispatchQueue.main.async {
+                if let temporaryFile =  self.sounds[self.currentSoundIndex].tmpFile {
+                    do {
+                        try temporaryFile.deleteDirectory()
+                        
+                    } catch let error {
+                        print("error deleting temp file: \(error)")
+                    }
+                }
+            }
+        }        
     }
     
     func setUpAudioForNextSound() {
@@ -533,22 +541,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     //mark: data
-    /*func loadDynamicLinkSound(_ objectId: String) {
-        let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: objectId) {
-            (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let object = object {
-                let sound = [UIElement().newSoundObject(object)]
-                self.sounds = sound
-                self.loadUserInfoFromCloud(self.sounds[0].artist!.objectId, i: 0)
-                self.setUpNextSong(false, at: 0)
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setDynamicLink"), object: nil)
-            }
-        }
-    }*/
         
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")

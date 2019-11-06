@@ -139,7 +139,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
-        //tableView.separatorStyle = .singleLine
         tableView.frame = view.bounds
         self.view.addSubview(tableView)
         
@@ -272,11 +271,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if cell.inputTitle.text!.isEmpty, let soundTitle = sound.title {
                 cell.inputTitle.text = soundTitle
+            } else {
+                cell.inputTitle.text = "Untitled"
             }
-                        
-           /* if cell.soundTitle.text!.isEmpty, let soundTitle = sound.title {
-                cell.soundTitle.text = soundTitle
-            }*/
         }
         
         cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
@@ -322,37 +319,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             checkTwitterAuth(sender)
         }
     }
-    
-    /*func createDynamicLink(_ object: PFObject) {
-        let title = object["title"] as! String
-        let description = "\(title) by \(PFUser.current()!.username!)"
-        let art = object["songArt"] as! PFFileObject
-        let imageURL = art.url!
-        let objectId = object.objectId!
-        
-        guard let link = URL(string: "https://soundbrew.app/sound/\(objectId)") else { return }
-        let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
-        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
-        linkBuilder!.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.soundbrew.soundbrew-artists")
-        linkBuilder!.iOSParameters!.appStoreID = "1438851832"
-        linkBuilder!.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-        linkBuilder!.socialMetaTagParameters!.title = "\(title)"
-        linkBuilder!.socialMetaTagParameters!.descriptionText = description
-        linkBuilder!.socialMetaTagParameters!.imageURL = URL(string: imageURL)
-        linkBuilder!.shorten() { url, warnings, error in
-            if let error = error {
-                print(error)
-            } else if let url = url {
-                /*if self.shouldPostLinkToFacebook {
-                    let ya = URL(string: "https://www.instagram.com")
-                    self.postToFacebook(ya!)
-                }*/
-                if self.shouldPostLinkToTwitter {
-                    self.postTweet(url, title: title)
-                }
-            }
-        }
-    }*/
     
     //mark: Snapchat
     var shouldPostToSnapchat = false
@@ -889,7 +855,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let localizedTapGrayBoxActivity = NSLocalizedString("tapGrayBoxActivity", comment: "")
         if let sound = soundThatIsBeingEdited {
             if sound.title!.isEmpty {
-                //showAttributedPlaceholder(soundTitle, text: localizedTitleRequired)
                 uiElement.showAlert(localizedTitleRequired, message: "", target: self)
             } else if sound.artFile == nil && sound.artURL == nil {
                 uiElement.showAlert(localizedSoundArtRequired, message: localizedTapGrayBoxArt, target: self)
@@ -905,11 +870,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         return false
     }
-    
-    /*func showAttributedPlaceholder(_ textField: UITextView, text: String) {
-        //textField.attributedPlaceholder = NSAttributedString(string:"\(text)",
-            attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-    }*/
     
     func errorAlert(_ title: String, message: String) {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)

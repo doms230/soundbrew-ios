@@ -85,7 +85,6 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     func setupBioCount(_ keyboardHeight: Int) {
         self.view.addSubview(bioCount)
         bioCount.snp.makeConstraints { (make) -> Void in
-            //make.top.equalTo(self.inputBio.snp.bottom).offset(uiElement.elementOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.view).offset(-(keyboardHeight + uiElement.elementOffset))
         }

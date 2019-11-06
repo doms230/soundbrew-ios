@@ -245,6 +245,31 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         return label
     }()
     
+    lazy var stripeAddFundsMessage: UIButton = {
+        let localizedStripeAddFundsMessage = NSLocalizedString("stripeAddFundsMessage", comment: "")
+        let button = UIButton()
+        button.setTitle(localizedStripeAddFundsMessage, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.numberOfLines = 0
+        button.addTarget(self, action: #selector(didPressStripeAddFundsMessage(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func didPressStripeAddFundsMessage(_ sender: UIButton) {
+        let stripeURL = URL(string: "https://stripe.com/payments")
+        if UIApplication.shared.canOpenURL(stripeURL!) {
+            UIApplication.shared.open(stripeURL!, options: [:], completionHandler: nil)
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "stripe", "description": "User selected stripe website"])
+        }
+    }
+    
+    @objc func didPressAddFundsMessage(_ sender: UIBarButtonItem) {
+        let localizedStripeAddFundsMessage = NSLocalizedString("addFundsMessage", comment: "")
+        let localizedStripeAddFundsTitle = NSLocalizedString("whyAddFundsTitle", comment: "")
+        self.uiElement.showAlert(localizedStripeAddFundsTitle, message: localizedStripeAddFundsMessage, target: self)
+    }
+    
     lazy var cardButton: UIButton = {
         let button = UIButton()
         button.addTarget(self, action: #selector(self.didPressAddCardButton(_:)), for: .touchUpInside)
@@ -303,6 +328,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
+        let questionButton = UIBarButtonItem(image: UIImage(named: "questionMark"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddFundsMessage(_:)))
+        self.navigationItem.rightBarButtonItem = questionButton
+        
         self.view.addSubview(chosenFundAmount)
         chosenFundAmount.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(100)
@@ -312,7 +340,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         
         self.view.addSubview(balanceTitle)
         balanceTitle.snp.makeConstraints { (make) -> Void in
-            ///make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.centerY.equalTo(chosenFundAmount)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
@@ -368,6 +395,13 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         purchaseButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(stripeAddFundsMessage)
+        stripeAddFundsMessage.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(purchaseButton.snp.bottom).offset(self.uiElement.topOffset)
             make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
             make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
         }

@@ -31,7 +31,6 @@ class SoundInfoTableViewCell: UITableViewCell {
     lazy var soundTitle: UITextField = {
         let localizedAddTitle = NSLocalizedString("addTitle", comment: "")
         let textField = UITextField()
-        //textField.placeholder = localizedAddTitle
         textField.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
         textField.textColor = .white
         textField.attributedPlaceholder = NSAttributedString(string: localizedAddTitle,

@@ -172,6 +172,9 @@
 "cityTag" = "Stadt-Tag";
 "cityTagMessage" = "Gehen Sie zu Ihrem Profil und tippen Sie auf 'Profil bearbeiten', um Ihr Stadt-Tag zu ändern.";
 "noResults" = "Keine Ergebnisse.";
+"stripeAddFundsMessage" = "Zahlungen werden von Stripe sicher abgewickelt.";
+"addFundsMessage" = "Künstler laden Musik zu Soundbrew hoch, damit Sie sie ohne Werbung kostenlos genießen können. Wenn Sie Künstler mit Ihrem Soundbrew-Guthaben tippen, können Sie sie für ihre Musik bezahlen!";
+"whyAddFundsTitle" = "Warum Fonds hinzufügen?";
 
 
 

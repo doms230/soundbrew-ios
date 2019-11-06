@@ -339,7 +339,6 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = false
         if self.player != nil {
             if self.sounds.count > 0 {
-                //self.player!.sounds = self.sounds
                 self.player!.fetchAudioData(0, prepareAndPlay: false)
             }
         }
@@ -385,7 +384,6 @@ class SoundList: NSObject, PlayerDelegate {
         
         if let collectionIds = collectionIds {
             query.whereKey("objectId", containedIn: collectionIds)
-            //query.whereKey("objectId", containsAllObjectsIn: collectionIds)
         }
         
         if let followIds = followIds {
@@ -443,8 +441,6 @@ class SoundList: NSObject, PlayerDelegate {
     func loadCollection(_ descendingOrder: String, profileUserId: String) {
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: profileUserId)
-       // query.whereKey("soundId", notContainedIn: self.collectionSoundIds)
-        //query.limit = 50
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -470,8 +466,6 @@ class SoundList: NSObject, PlayerDelegate {
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: profileUserId)
         query.whereKey("isRemoved", equalTo: false)
-        // query.whereKey("soundId", notContainedIn: self.collectionSoundIds)
-        //query.limit = 50
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -631,7 +625,6 @@ class SoundList: NSObject, PlayerDelegate {
     func loadWorldTopSounds() {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
-        //query.addDescendingOrder("plays")
         query.addDescendingOrder("tips")
         query.whereKey("objectId", notContainedIn: worldCreatedAtSounds.map {$0.objectId!})
         query.limit = 10

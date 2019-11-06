@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -67,7 +67,7 @@
             </objects>
             <point key="canvasLocation" x="-2778" y="-1239"/>
         </scene>
-        <!--Container View Controller-->
+        <!--Me-->
         <scene sceneID="Sfx-x4-dys">
             <objects>
                 <viewController id="SLi-Nt-QNQ" customClass="ContainerViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -77,9 +77,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="IKx-id-dcd"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="" image="profile_nav" selectedImage="profile_nav_filled" id="9Xb-ZK-TuQ">
-                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
-                    </tabBarItem>
+                    <tabBarItem key="tabBarItem" title="Me" image="profile_nav" selectedImage="profile_nav_filled" id="9Xb-ZK-TuQ"/>
                     <navigationItem key="navigationItem" id="Q3X-YD-Tkk"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nfq-Si-Szj" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -312,12 +310,11 @@
             </objects>
             <point key="canvasLocation" x="-3726" y="2369"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Search-->
         <scene sceneID="LYJ-Ge-DSD">
             <objects>
                 <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
-                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
+                    <tabBarItem key="tabBarItem" title="Search" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
                         <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -381,9 +378,7 @@
         <scene sceneID="rcF-xS-UMx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4ef-dR-Glj" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="new_nav" selectedImage="new_nav_filled" id="CtQ-Jd-vze">
-                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
-                    </tabBarItem>
+                    <tabBarItem key="tabBarItem" title="Upload" image="new_nav" selectedImage="new_nav_filled" id="CtQ-Jd-vze"/>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="New Upload" id="bvA-Tr-Phs"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Y6S-lx-Onz">
@@ -466,13 +461,11 @@
             </objects>
             <point key="canvasLocation" x="-3678.2608695652175" y="215.625"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Updates-->
         <scene sceneID="ivk-k4-ubP">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP">
-                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
-                    </tabBarItem>
+                    <tabBarItem key="tabBarItem" title="Updates" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x5d-dt-OWZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -492,13 +485,11 @@
             </objects>
             <point key="canvasLocation" x="-4588.4057971014499" y="215.625"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Soundbrew-->
         <scene sceneID="Wlf-Mb-sg8">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="1BA-5R-pql" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="FVv-OO-AMc">
-                        <inset key="imageInsets" minX="0.0" minY="3" maxX="0.0" maxY="-3"/>
-                    </tabBarItem>
+                    <tabBarItem key="tabBarItem" title="Soundbrew" image="home" selectedImage="home_filled" id="FVv-OO-AMc"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="gNs-Nw-9DN">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -520,16 +511,16 @@
         </scene>
     </scenes>
     <resources>
-        <image name="heart_filled_nav" width="33" height="33"/>
-        <image name="heart_nav" width="33" height="33"/>
-        <image name="home" width="34.5" height="34.5"/>
-        <image name="home_filled" width="34.5" height="34.5"/>
-        <image name="new_nav" width="37.5" height="37.5"/>
-        <image name="new_nav_filled" width="37.5" height="37.5"/>
-        <image name="profile_nav" width="42" height="42"/>
-        <image name="profile_nav_filled" width="42" height="42"/>
-        <image name="search" width="34.5" height="34.5"/>
-        <image name="search_filled" width="34.5" height="34.5"/>
+        <image name="heart_filled_nav" width="31" height="31"/>
+        <image name="heart_nav" width="31" height="31"/>
+        <image name="home" width="28" height="28"/>
+        <image name="home_filled" width="28" height="28"/>
+        <image name="new_nav" width="25" height="25"/>
+        <image name="new_nav_filled" width="25" height="25"/>
+        <image name="profile_nav" width="28" height="28"/>
+        <image name="profile_nav_filled" width="28" height="28"/>
+        <image name="search" width="23" height="23"/>
+        <image name="search_filled" width="23" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
