@@ -160,7 +160,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     return searchTags.count
                 } else if searchType == 1  && searchUsers.count != 0 {
                     return searchUsers.count
-                } else if soundList != nil {
+                } else if searchType == 2 && soundList != nil {
                     if soundList.sounds.count != 0 {
                         return soundList.sounds.count
                     }
@@ -215,7 +215,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 } else if searchType == 1 && searchUsers.count != 0 {
                     return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
                     
-                } else if soundList != nil {
+                } else if searchType == 2 && soundList != nil {
                     if soundList.sounds.count != 0 {
                         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
                         cell.backgroundColor = color.black()
@@ -257,7 +257,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else if searchType == 1 {
                 self.selectedArtist = searchUsers[indexPath.row]
                 self.performSegue(withIdentifier: "showProfile", sender: self)
-            } else {
+            } else if searchType == 2 {
                 didSelectSoundAt(row: indexPath.row)
             }
         }
@@ -310,7 +310,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var featureTagScrollview: UIScrollView!
     var selectedTag: Tag!
     var selectedTagType: String!
-    var featureMoreTagIndex = 0
     let localizedMore = NSLocalizedString("more", comment: "")
     
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
@@ -323,28 +322,28 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         case 0:
             //genre
             cell.TagTypeTitle.text = "Genre"
-            addTags(cell.tagsScrollview, tags: topGenreTags, row: 0)
+            addTags(cell.tagsScrollview, tags: topGenreTags, row: indexPath.row)
             break
             
         case 1:
             //city
             let localizedCity = NSLocalizedString("city", comment: "")
             cell.TagTypeTitle.text = localizedCity
-            addTags(cell.tagsScrollview, tags: topCityTags, row: 3)
+            addTags(cell.tagsScrollview, tags: topCityTags, row: indexPath.row)
             break
             
         case 2:
             //mood
             let localizedMood = NSLocalizedString("mood", comment: "")
             cell.TagTypeTitle.text = localizedMood
-            addTags(cell.tagsScrollview, tags: topMoodTags, row: 1)
+            addTags(cell.tagsScrollview, tags: topMoodTags, row: indexPath.row)
             break
             
         case 3:
             //activity
             let localizedActivity = NSLocalizedString("activity", comment: "")
             cell.TagTypeTitle.text = localizedActivity
-            addTags(cell.tagsScrollview, tags: topActivityTags, row: 2)
+            addTags(cell.tagsScrollview, tags: topActivityTags, row: indexPath.row)
             break
             
         default:
@@ -364,6 +363,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         for i in 0..<tags.count {
             let tag = tags[i]
             let tagButton = UIButton()
+            tagButton.tag = row
             if let tagImage = tag.image {
                 tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal, placeholder: UIImage(named: "hashtag"))
                 tagButton.titleLabel?.backgroundColor = color.black().withAlphaComponent(0.5)
@@ -375,24 +375,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 tagButton.titleLabel?.backgroundColor = .clear
                 tagButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: CGFloat((buttonHeight / 2) - 10), right: 0)
             }
-
-            if i == tags.count - 1 {
-                //determine which feature tag for "more cities, genres, etc."
-                if featureMoreTagIndex == 0 {
-                    tagButton.tag = featureMoreTagIndex
-                } else {
-                    //featureMoreTagIndex = featureMoreTagIndex + 1
-                    tagButton.tag = featureMoreTagIndex
-                }
-                featureMoreTagIndex = featureMoreTagIndex + 1
-                tagButton.addTarget(self, action: #selector(self.didPressViewMoreTagsButton(_:)), for: .touchUpInside)
-            } else {
-                tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
-            }
             
             tagButton.layer.cornerRadius = 5
             tagButton.clipsToBounds = true
-            tagButton.tag = row
             tagButton.setTitle(tag.name, for: .normal)
             tagButton.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
             tagButton.setTitleColor(.white, for: .normal)
@@ -407,25 +392,35 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
             scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
+            
+            if !tags.indices.contains(i + 1) {
+                tagButton.addTarget(self, action: #selector(self.didPressViewMoreTagsButton(_:)), for: .touchUpInside)
+            } else {
+                tagButton.addTarget(self, action: #selector(self.didPressTagButton(_:)), for: .touchUpInside)
+            }
         }
     }
     
     @objc func didPressTagButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
+            print("determine selected Tag: \(sender.tag)")
             determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topGenreTags)
             break
             
         case 1:
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topMoodTags)
+            print("determine selected Tag: \(sender.tag)")
+            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topCityTags)
             break
             
         case 2:
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topActivityTags)
+            print("determine selected Tag: \(sender.tag)")
+            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topMoodTags)
             break
             
         case 3:
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topCityTags)
+            print("determine selected Tag: \(sender.tag)")
+            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topActivityTags)
             break
             
         default:
@@ -442,8 +437,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func determineSelectedTag(selectedTagTitle: String, tags: Array<Tag>) {
+        print(selectedTagTitle)
         for tag in tags {
             if selectedTagTitle == tag.name {
+                print("show sounds \(tag.name)")
                 showSounds(tag, soundType: "discover")
                 MSAnalytics.trackEvent("Selected Tag", withProperties: ["Tag" : "\(selectedTagTitle)"])
             }
@@ -613,7 +610,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //mark: search
     var isSearchActive = false
-    var searchSounds = [Sound]()
     var searchUsers = [Artist]()
     var searchTags = [Tag]()
     var soundList: SoundList!
@@ -657,6 +653,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if searchType == 1 {
             searchUsers(searchBar.text!)
         } else {
+            print("searching sounds")
             soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
         }
         

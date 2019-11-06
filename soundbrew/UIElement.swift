@@ -169,60 +169,28 @@ class UIElement {
         return formattedString
     }
     
-    func createDynamicLink(_ linkType: String, sound: Sound?, artist: Artist?, target: UIViewController) {
-        var objectId = ""
-        var title = ""
-        var description: String!
-        var imageURL = ""
-        if let sound = sound {
-            title = sound.title!
-            description = "\(sound.title!) by \(sound.artist!.name!)"
-            imageURL = sound.artURL!
-            objectId = sound.objectId!
-            
-        } else if let artist = artist {
-            objectId = artist.objectId
-            let localizedCheckout = NSLocalizedString("checkout", comment: "")
-            let localizedPage = NSLocalizedString("page", comment: "")
-            description = "\(localizedCheckout) @sound_brew \(localizedPage)!"
-            if let username = artist.username {
-                if !username.contains("@") {
-                    title = username
-                    
-                } else if let name = artist.name {
-                    title = name
-                    
-                } else {
-                    title = "Soundbrew Artist"
-                }
-            }
-            
-            if let image = artist.image {
-                imageURL = image
-                
-            } else {
-                imageURL = "https://www.soundbrew.app/images/logo_green.jpg"
-            }
+    func getSoundbrewURL(_ objectId: String, path: String) -> URL? {
+        let url = URL(string: "https://www.soundbrew.app/\(path)/\(objectId)")
+        if url != nil {
+           return url
         }
-        guard let link = URL(string: "https://soundbrew.app/\(linkType)/\(objectId)") else { return }
-        let dynamicLinksDomainURIPrefix = "https://soundbrew.page.link"
-        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
-        linkBuilder!.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.soundbrew.soundbrew-artists")
-        linkBuilder!.iOSParameters!.appStoreID = "1438851832"
-        linkBuilder!.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-        linkBuilder!.socialMetaTagParameters!.title = "\(title)"
-        linkBuilder!.socialMetaTagParameters!.descriptionText = description
-        linkBuilder!.socialMetaTagParameters!.imageURL = URL(string: imageURL)
-        linkBuilder!.shorten() { url, warnings, error in
-            if let error = error {
-                print(error)
+        return nil
+    }
+    
+    func createDynamicLink(_ linkType: String, sound: Sound?, artist: Artist?, target: UIViewController) {
+        var url: URL?
+        
+        if let sound = sound {
+            url = self.getSoundbrewURL(sound.objectId!, path: "s")
+        } else if let artist = artist {
+            url = self.getSoundbrewURL(artist.objectId!, path: "u")
+        }
                 
-            } else if let url = url {
-                let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                activityViewController.popoverPresentationController?.sourceView = target.view
-                target.present(activityViewController, animated: true, completion: { () -> Void in
-                })
-            }
+        if let url = url {
+            let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = target.view
+            target.present(activityViewController, animated: true, completion: { () -> Void in
+            })
         }
     }
     

@@ -323,7 +323,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func createDynamicLink(_ object: PFObject) {
+    /*func createDynamicLink(_ object: PFObject) {
         let title = object["title"] as! String
         let description = "\(title) by \(PFUser.current()!.username!)"
         let art = object["songArt"] as! PFFileObject
@@ -352,7 +352,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
-    }
+    }*/
     
     //mark: Snapchat
     var shouldPostToSnapchat = false
@@ -847,7 +847,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func handleSocials(_ object: PFObject) {
         if self.shouldPostLinkToTwitter {
-            self.createDynamicLink(object)
+            let title = object["title"] as! String
+            let objectId = object.objectId!
+            if let url = self.uiElement.getSoundbrewURL(objectId, path: "s") {
+                self.postTweet(url, title: title)
+            }
         }
         
         if self.shouldPostToSnapchat {

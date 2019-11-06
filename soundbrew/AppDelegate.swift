@@ -3,7 +3,7 @@
 //  soundbrew
 //
 //  Created by Dominic  Smith on 9/25/18.
-//  Copyright © 2018 Dominic  Smith. All rights reserved.
+//  Copyright © 2018 Dominic  Smith. All rights reserved. applinks:soundbrew.page.link
 
 import UIKit
 import Parse
@@ -68,6 +68,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     func application(_ application: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            let url = userActivity.webpageURL!
+            
+            let pathComponents = url.pathComponents
+            if pathComponents.contains("s") {
+               self.receivedPostId(url.lastPathComponent)
+
+            } else if pathComponents.contains("u") {
+                self.receivedUserId(url.lastPathComponent)
+            } else {
+                return handleDynamicLink(userActivity)
+            }
+
+        } else {
+            return handleDynamicLink(userActivity)
+        }
+        
+        return false
+    }
+    
+    func handleDynamicLink(_ userActivity: NSUserActivity) -> Bool {
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
             if let error = error {
                 print("dynamic link error: \(error.localizedDescription)")
@@ -75,7 +97,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
             } else if let url = dynamiclink?.url {
                 if let pathComponents = dynamiclink?.url?.pathComponents {
                     if pathComponents.contains("sound") {
-                       // self.playSound(url: url)
                        self.receivedPostId(url.lastPathComponent)
 
                     } else if pathComponents.contains("profile") {
@@ -90,7 +111,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     //called if user is opening for the first time
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-        
         if url.absoluteString.starts(with: "soundbrew") {
             return application(app, open: url,
                                sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
@@ -105,8 +125,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
             if let pathComponents = dynamicLink.url?.pathComponents {
                 if pathComponents.contains("sound") {
-                    //self.playSound(url: url)
-                    //UIElement().setUserDefault("receivedSoundId", value: url.lastPathComponent)
                     self.receivedPostId(url.lastPathComponent)
                     
                 } else if pathComponents.contains("profile") {
@@ -157,25 +175,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         }
     }
     
-   /* func playSound(url: URL) {
-        let player = Player.sharedInstance
-        let objectId = url.lastPathComponent
-        player.loadDynamicLinkSound(objectId)
-        showMainViewController()
-    }*/
-    
     func receivedUserId(_ userId: String) {
         UIElement().setUserDefault("receivedUserId", value: userId)
-        showMainViewController()
+        showMainViewController(1)
     }
     
     func receivedPostId(_ soundId: String) {
         UIElement().setUserDefault("receivedSoundId", value: soundId)
-        showMainViewController()
+        showMainViewController(0)
     }
     
-    func showMainViewController() {
+    func showMainViewController(_ selectedIndex: Int) {
         let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "tabBar") as! UITabBarController
+        tabBarController.selectedIndex = selectedIndex
         window!.rootViewController = tabBarController
     }
 }

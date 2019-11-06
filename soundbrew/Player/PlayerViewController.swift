@@ -304,6 +304,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 self.artistLabel.text = artistName
                 if let artistImage = sound.artist?.image {
                     self.artistImage.kf.setImage(with: URL(string: artistImage))
+                } else {
+                    self.artistImage.image = UIImage(named: "profile_icon")
                 }
                 
             } else {
@@ -864,6 +866,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         player.player = nil
         player.sounds = sounds
         player.currentSound = sounds[0]
+        player.currentSoundIndex = 0
         player.fetchAudioData(0, prepareAndPlay: true)
     }
     
