@@ -27,6 +27,7 @@
 #import "STPEmptyStripeResponse.h"
 #import "STPEphemeralKey.h"
 #import "STPFormEncoder.h"
+#import "STPFPXBankStatusResponse.h"
 #import "STPGenericStripeObject.h"
 #import "STPAppInfo.h"
 #import "STPMultipartFormDataEncoder.h"
@@ -61,6 +62,7 @@ static NSString * const APIEndpointPaymentIntents = @"payment_intents";
 static NSString * const APIEndpointSetupIntents = @"setup_intents";
 static NSString * const APIEndpointPaymentMethods = @"payment_methods";
 static NSString * const APIEndpoint3DS2 = @"3ds2";
+static NSString * const APIEndpointFPXStatus = @"fpx/bank_statuses";
 
 #pragma mark - Stripe
 
@@ -275,9 +277,15 @@ static NSArray<PKPaymentNetwork> *_additionalEnabledApplePayNetworks;
     NSMutableDictionary *params = [@{@"pii": @{ @"personal_id_number": pii }} mutableCopy];
     [[STPTelemetryClient sharedInstance] addTelemetryFieldsToParams:params];
     [self createTokenWithParameters:params completion:completion];
+    [[STPTelemetryClient sharedInstance] sendTelemetryData];}
+
+- (void)createTokenWithSSNLast4:(NSString *)ssnLast4 completion:(STPTokenCompletionBlock)completion {
+    NSMutableDictionary *params = [@{@"pii": @{ @"ssn_last_4": ssnLast4 }} mutableCopy];
+    [[STPTelemetryClient sharedInstance] addTelemetryFieldsToParams:params];
+    [self createTokenWithParameters:params completion:completion];
     [[STPTelemetryClient sharedInstance] sendTelemetryData];
 }
-
+    
 @end
 
 #pragma mark - Connect Accounts
@@ -681,15 +689,29 @@ toCustomerUsingKey:(STPEphemeralKey *)ephemeralKey
 
 - (void)retrievePaymentIntentWithClientSecret:(NSString *)secret
                                    completion:(STPPaymentIntentCompletionBlock)completion {
+    [self retrievePaymentIntentWithClientSecret:secret
+                                         expand:nil
+                                     completion:completion];
+}
+
+- (void)retrievePaymentIntentWithClientSecret:(NSString *)secret
+                                       expand:(nullable NSArray<NSString *> *)expand
+                                   completion:(STPPaymentIntentCompletionBlock)completion {
     NSCAssert(secret != nil, @"'secret' is required to retrieve a PaymentIntent");
     NSCAssert(completion != nil, @"'completion' is required to use the PaymentIntent that is retrieved");
     NSString *identifier = [STPPaymentIntent idFromClientSecret:secret];
 
     NSString *endpoint = [NSString stringWithFormat:@"%@/%@", APIEndpointPaymentIntents, identifier];
 
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+    parameters[@"client_secret"] = secret;
+    if (expand.count > 0) {
+        parameters[@"expand"] = expand;
+    }
+
     [STPAPIRequest<STPPaymentIntent *> getWithAPIClient:self
                                                endpoint:endpoint
-                                             parameters:@{ @"client_secret": secret }
+                                             parameters:[parameters copy]
                                            deserializer:[STPPaymentIntent new]
                                              completion:^(STPPaymentIntent *paymentIntent, __unused NSHTTPURLResponse *response, NSError *error) {
                                                  completion(paymentIntent, error);
@@ -697,6 +719,14 @@ toCustomerUsingKey:(STPEphemeralKey *)ephemeralKey
 }
 
 - (void)confirmPaymentIntentWithParams:(STPPaymentIntentParams *)paymentIntentParams
+                            completion:(STPPaymentIntentCompletionBlock)completion {
+    [self confirmPaymentIntentWithParams:paymentIntentParams
+                                  expand:nil
+                              completion:completion];
+}
+
+- (void)confirmPaymentIntentWithParams:(STPPaymentIntentParams *)paymentIntentParams
+                                expand:(nullable NSArray<NSString *> *)expand
                             completion:(STPPaymentIntentCompletionBlock)completion {
     NSCAssert(paymentIntentParams.clientSecret != nil, @"'clientSecret' is required to confirm a PaymentIntent");
     NSString *identifier = paymentIntentParams.stripeId;
@@ -711,6 +741,9 @@ toCustomerUsingKey:(STPEphemeralKey *)ephemeralKey
         NSMutableDictionary *sourceParamsDict = [params[@"source_data"] mutableCopy];
         [[STPTelemetryClient sharedInstance] addTelemetryFieldsToParams:sourceParamsDict];
         params[@"source_data"] = [sourceParamsDict copy];
+    }
+    if (expand.count > 0) {
+        params[@"expand"] = expand;
     }
 
     [STPAPIRequest<STPPaymentIntent *> postWithAPIClient:self
@@ -786,6 +819,18 @@ toCustomerUsingKey:(STPEphemeralKey *)ephemeralKey
                                                  completion(paymentMethod, error);
                                              }];
 
+}
+
+#pragma mark - FPX
+
+- (void)retrieveFPXBankStatusWithCompletion:(STPFPXBankStatusCompletionBlock)completion {
+    [STPAPIRequest<STPFPXBankStatusResponse *> getWithAPIClient:self
+                                               endpoint:APIEndpointFPXStatus
+                                             parameters:@{ @"account_holder_type": @"individual" }
+                                           deserializer:[STPFPXBankStatusResponse new]
+                                             completion:^(STPFPXBankStatusResponse *statusResponse, __unused NSHTTPURLResponse *response, NSError *error) {
+                                                 completion(statusResponse, error);
+                                             }];
 }
 
 @end

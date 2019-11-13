@@ -403,10 +403,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let soundViewButton = UIButton()
             if row == 0 {
                 //releases
-                soundViewButton.addTarget(self, action: #selector(self.didPressReleaseSound(_:)), for: .touchUpInside)
+                soundViewButton.addTarget(self, action: #selector(self.didPressArtistReleases(_:)), for: .touchUpInside)
             } else {
                 //collection
-                soundViewButton.addTarget(self, action: #selector(self.didPressCollectionSound(_:)), for: .touchUpInside)
+                soundViewButton.addTarget(self, action: #selector(self.didPressArtistCollection(_:)), for: .touchUpInside)
             }
             soundViewButton.tag = i
             scrollview.addSubview(soundViewButton)
@@ -422,13 +422,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressReleaseSound(_ sender: UIButton) {
+    @objc func didPressArtistReleases(_ sender: UIButton) {
         didSelectSound(artistReleases, row: sender.tag)
         
         MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Release Sound", "description": "User pressed song that artists released."])
     }
     
-    @objc func didPressCollectionSound(_ sender: UIButton) {
+    @objc func didPressArtistCollection(_ sender: UIButton) {
         didSelectSound(artistCollection, row: sender.tag)
         
         MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Collection Sound", "description": "User pressed song in artist's collection."])
@@ -436,7 +436,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func didSelectSound(_ sounds: Array<Sound>, row: Int) {
         if let player = self.player {
-            player.sounds = sounds
+            self.player?.sounds = sounds
+            //self.player?.currentSoundIndex = row 
+            //player.sounds = sounds
             player.didSelectSoundAt(row)
             if self.miniPlayerView == nil {
                 self.setUpMiniPlayer()
@@ -485,6 +487,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     var sounds = [Sound]()
                     for object in objects {
                         let sound = self.uiElement.newSoundObject(object)
+                        sound.fetchAudioData()
                         sounds.append(sound)
                     }
                     

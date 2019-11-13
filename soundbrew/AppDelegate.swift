@@ -63,6 +63,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         if let objectId = PFUser.current()?.objectId {
             Customer.shared.getCustomer(objectId)
         }
+        
+        FileManager.default.clearTmpDirectory()
+        
         return true
     }
     
@@ -189,6 +192,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "tabBar") as! UITabBarController
         tabBarController.selectedIndex = selectedIndex
         window!.rootViewController = tabBarController
+    }
+}
+
+extension FileManager {
+    func clearTmpDirectory() {
+        do {
+            let tmpDirURL = FileManager.default.temporaryDirectory
+            let tmpDirectory = try contentsOfDirectory(atPath: tmpDirURL.path)
+            try tmpDirectory.forEach { file in
+                let fileUrl = tmpDirURL.appendingPathComponent(file)
+                try removeItem(atPath: fileUrl.path)
+            }
+        } catch let error {
+           print(error)
+        }
     }
 }
 

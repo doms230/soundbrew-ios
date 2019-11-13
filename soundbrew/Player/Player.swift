@@ -31,6 +31,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
     var didRecordPlay = false
+    var soundsPlayed = 5
     
     override init() {
         super.init()
@@ -61,7 +62,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 let tempAudioFile = try TemporaryFile(creatingTempDirectoryForFilename: "\(audioURL!.lastPathComponent)")
                 
                 self.sounds[currentSoundIndex].tmpFile = tempAudioFile
-                
+                //AVAudioPlayer(
                 try audioData.write(to: tempAudioFile.fileURL, options: .atomic)
                 
                 try session.setCategory(AVAudioSession.Category.playback,
@@ -69,7 +70,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                                         policy: .longForm,
                                         options: [])
                 // Set up the player.
-                self.player = try AVAudioPlayer(contentsOf: tempAudioFile.fileURL)
+                self.player = try AVAudioPlayer(contentsOf: tempAudioFile.fileURL, fileTypeHint: "\(audioURL!.lastPathComponent)")
                 player?.delegate = self
                 
                 // Activate and request the route.
@@ -87,6 +88,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if soundPlayable {
             resetStream()
             self.play()
+            //self.setUpAudioForNextSound()
             
         } else {
             setUpNextSong(false, at: nil)
@@ -192,13 +194,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
             updateUI(sound)
             prepareToPlaySound(sound)
-            setUpAudioForNextSound()
+            checkIfMoreAudioDataShouldBeLoaded()
         }
     }
     
     func clearCurrentSoundTmpData() {
         if self.sounds.indices.contains(self.currentSoundIndex) {
-            self.sounds[self.currentSoundIndex].audio?.clearCachedDataInBackground()
+            //self.sounds[self.currentSoundIndex].audio?.clearCachedDataInBackground()
             DispatchQueue.main.async {
                 if let temporaryFile =  self.sounds[self.currentSoundIndex].tmpFile {
                     do {
@@ -212,11 +214,24 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }        
     }
     
-    func setUpAudioForNextSound() {
-        let nextSoundIndex = currentSoundIndex + 1
+    func checkIfMoreAudioDataShouldBeLoaded() {
+        if soundsPlayed == 5 {
+            soundsPlayed = 0
+            var futureSoundIndex = self.currentSoundIndex + 1
+            if self.sounds.indices.contains(futureSoundIndex) {
+                for _ in 0...5 {
+                    self.sounds[futureSoundIndex].fetchAudioData()
+                    futureSoundIndex+=1
+                }
+            }
+
+        } else {
+            soundsPlayed+=1
+        }
+        /*let nextSoundIndex = currentSoundIndex + 1
         if sounds.indices.contains(nextSoundIndex) && sounds[nextSoundIndex].audioData == nil {
             fetchAudioData(nextSoundIndex, prepareAndPlay: false)
-        }
+        }*/
     }
     
     func determineSoundToPlay(_ didPressGoBackButton: Bool, at: Int?) -> Sound? {
@@ -243,7 +258,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
             self.prepareAndPlay(audioData)
             
         } else {
-            fetchAudioData(currentSoundIndex, prepareAndPlay: true)
+            print("fetching audio data")
+            //fetchAudioData(currentSoundIndex, prepareAndPlay: true)
+            self.sounds[currentSoundIndex].isNextUpToPlay = true
+            self.sounds[currentSoundIndex].fetchAudioData()
         }
     }
     
@@ -254,8 +272,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func incrementPlaylistPositionAndReturnSound() -> Sound {
         self.currentSoundIndex = self.currentSoundIndex + 1
-        
-        if self.currentSoundIndex == sounds.count || !self.sounds.indices.contains(self.currentSoundIndex) {
+        //self.currentSoundIndex == sounds.count ||
+        if !self.sounds.indices.contains(self.currentSoundIndex) {
             //no sounds left, go back to zero.
             self.currentSoundIndex = 0
         }
@@ -277,7 +295,24 @@ class Player: NSObject, AVAudioPlayerDelegate {
         return sound
     }
     
-    func fetchAudioData(_ position: Int, prepareAndPlay: Bool) {
+    /*func fetchAudioData(_ position: Int, prepareAndPlay: Bool) {
+        let soundURL = self.sounds[position].audioURL
+        
+        /*Alamofire.request(soundURL!).responseData { response in
+             guard let data = response.result.value else { return }
+             if let error = response.error {
+                 print("alamofire error: \(error)")
+             } else if prepareAndPlay && self.player == nil {
+                    self.prepareAndPlay(data)
+            
+             } /*else if self.sounds.indices.contains(position + 1) {
+                    self.fetchAudioData(position + 1, prepareAndPlay: false)
+                }*/
+            
+                self.sounds[position].audioData = data
+                print("fetched \(soundURL!)")
+            }*/
+        
         self.sounds[position].audio!.getDataInBackground {
             (audioData: Data?, error: Error?) -> Void in
             if let error = error?.localizedDescription {
@@ -287,13 +322,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 if prepareAndPlay && self.player == nil {
                     self.prepareAndPlay(audioData)
                     
-                } else if self.sounds.indices.contains(position + 1) {
+                } /*else if self.sounds.indices.contains(position + 1) {
                     //self.fetchAudioData(position + 1, prepareAndPlay: false)
-                }
+                }*/
                 self.sounds[position].audioData = audioData
             }
         }
-    }
+    }*/
     
     func incrementStreamCount(_ sound: Sound) {
         if let artistObjectId = sound.artist?.objectId {
@@ -541,7 +576,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     //mark: data
-        
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {
@@ -552,7 +586,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             } else if let user = user {
                 self.sounds[i].artist = UIElement().newArtistObject(user)
                 self.setBackgroundAudioNowPlaying(self.player, sound: self.sounds[i])
-                
             }
         }
     }

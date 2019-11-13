@@ -52,7 +52,7 @@ We also offer all of our UI components bundled into an all-in-one class designed
 We recommend that you install the Stripe iOS SDK using a package manager such as [Cocoapods or Carthage](https://stripe.com/docs/mobile/ios#getting-started). If you prefer to link the library manually, please use a version from our [releases](https://github.com/stripe/stripe-ios/releases) page because we consider the master branch to be unstable.
 
 If you're reading this on GitHub.com, please make sure you are looking at the [tagged version](https://github.com/stripe/stripe-ios/tags) that corresponds to the release you have installed. Otherwise, the instructions and example code may be mismatched with your copy. You can read the latest tagged version of this README and browse the associated code on GitHub using
-[this link](https://github.com/stripe/stripe-ios/tree/v18.0.0).
+[this link](https://github.com/stripe/stripe-ios/tree/v18.2.0).
 
 ## Requirements
 
@@ -72,14 +72,14 @@ There are 3 example apps included in the repository:
   - This example lets you try out the pre-built UI components we provide.
 - [**Custom Integration** Example/Custom Integration/README.md](/Example/Custom%20Integration/README.md)
   - This example demonstrates how to uset push `STPAPIClient` to accept various payment methods.
-- [**Standard Integration** Example/Standard Integration/README.md](/Example/Standard%20Integration/README.md)
+- [**Basic Integration** Example/Basic Integration/README.md](/Example/Basic%20Integration/README.md)
   - This example demonstrates how to build a payment flow using our pre-built UI component integration (`STPPaymentContext`).
 
 ## Card IO
 
 To add card scanning capabilities to our prebuilt UI components, you can simply [install card.io](https://github.com/card-io/card.io-iOS-SDK#setup) alongside our SDK. You'll also need to set `NSCameraUsageDescription` in your application's plist, and provide a reason for accessing the camera (e.g. "To scan cards").
 
-To try this out, you can run `./install_cardio.rb`, which will download and install card.io in the Standard Integration project. Now, when you run the example app on a device, you'll see a "Scan Card" button when adding a new card.
+To try this out, you can run `./install_cardio.rb`, which will download and install card.io in the Basic Integration project. Now, when you run the example app on a device, you'll see a "Scan Card" button when adding a new card.
 
 ## Contributing
 

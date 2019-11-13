@@ -335,11 +335,39 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func updateSounds() {
+    func updateSounds(sounds: [Sound]) {
         self.isUpdatingData = false
+                
         if self.player != nil {
+            //self.player?.sounds = sounds
+            
             if self.sounds.count > 0 {
-                self.player!.fetchAudioData(0, prepareAndPlay: false)
+                var fetchAudioCount = 0
+                for sound in self.sounds {
+                    if sound.audioData == nil && fetchAudioCount < 6 {
+                        sound.fetchAudioData()
+                        fetchAudioCount+=1
+                    }
+                }
+                
+                
+               /* var currentIndex = 0
+                if let CI = self.player?.currentSoundIndex {
+                    currentIndex = CI
+                }
+                
+                self.player?.sounds.forEach { sound in
+                    sound.fetchAudioData()
+                }
+                                
+                if self.player!.sounds[currentIndex].audioData == nil {
+                    //self.player!.fetchAudioData(currentIndex, prepareAndPlay: false)
+                    self.player?.setUpNextSong(false, at: currentIndex)
+                }
+                
+                if self.player!.sounds.indices.contains(1) {
+                    self.player!.fetchAudioData(1, prepareAndPlay: false)
+                }*/
             }
         }
         self.tableView?.reloadData()
@@ -367,7 +395,7 @@ class SoundList: NSObject, PlayerDelegate {
             } else if let object = object {
                 let sound = self.uiElement.newSoundObject(object)
                 self.sounds.append(sound)
-                self.updateSounds()
+                self.updateSounds(sounds: self.sounds)
             }
         }
     }
@@ -434,7 +462,7 @@ class SoundList: NSObject, PlayerDelegate {
                 
                 print("Error: \(error!)")
             }
-            self.updateSounds()
+            self.updateSounds(sounds: self.sounds)
         }
     }
     
@@ -615,7 +643,7 @@ class SoundList: NSObject, PlayerDelegate {
                         let sound = self.uiElement.newSoundObject(object)
                         self.worldCreatedAtSounds.append(sound)
                     }
-                    self.worldCreatedAtSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+                    //self.worldCreatedAtSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                     self.loadWorldTopSounds()
                 }
             }
@@ -642,7 +670,7 @@ class SoundList: NSObject, PlayerDelegate {
                         let sound = self.uiElement.newSoundObject(object)
                         self.worldTopSounds.append(sound)
                     }
-                    self.worldTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
+                    //self.worldTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                     self.mixedWorldSounds = self.mixSounds(self.worldCreatedAtSounds, topSounds: self.worldTopSounds)
                     
                     var newSounds: Array<Sound>!
@@ -656,7 +684,7 @@ class SoundList: NSObject, PlayerDelegate {
                         self.thereIsMoreDataToLoad = false 
                     }
                     
-                    self.updateSounds()
+                    self.updateSounds(sounds: self.sounds)
                     
                 } else {
                     self.thereIsMoreDataToLoad = false

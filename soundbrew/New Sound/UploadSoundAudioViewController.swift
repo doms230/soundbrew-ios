@@ -198,7 +198,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: "\(urls[0])", relevancyScore: 0, audioData: nil, artist: artist, tmpFile: nil, tips: nil, tippers: nil, isDraft: true)
+        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: "\(urls[0])", audioData: nil, artist: artist, tmpFile: nil, tips: nil, tippers: nil, isDraft: true, isNextUpToPlay: false)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     

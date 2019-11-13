@@ -37,6 +37,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    /*override func viewDidDisappear(_ animated: Bool) {
+        let player = Player.sharedInstance
+        for sound in player.sounds {
+            sound.audio?.cancel()
+        }
+    }*/
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
@@ -157,6 +164,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func didSelectRowAt(_ row: Int) {
         if let player = soundList.player {
             player.sounds = soundList.sounds
+           // player.currentSoundIndex = row 
             player.didSelectSoundAt(row)
             if miniPlayerView == nil {
                 self.setUpMiniPlayer()

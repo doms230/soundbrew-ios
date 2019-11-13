@@ -75,8 +75,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //mark: money
-    let tipAmountInCents = [25, 50, 75, 100]
-    var selectedTipAmount = 25
+    let tipAmountInCents = [5, 25, 50, 100]
+    var selectedTipAmount = 5
     var customer = Customer.shared
     var didAddSongToCollection = false
     func showSendMoney() {
@@ -701,16 +701,16 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.view.addSubview(songTitle)
         songTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(songArt)
-            make.right.equalTo(songArt)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         self.view.addSubview(artistButton)
         artistButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(35)
             make.top.equalTo(songTitle.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(songArt)
-            make.right.equalTo(songArt)
+            make.left.equalTo(songTitle)
+            make.right.equalTo(songTitle)
         }
         
         self.artistButton.addSubview(artistLabel)
@@ -819,12 +819,22 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             if error == nil {
                 if let objects = objects {
                     var sounds = [Sound]()
-                    for object in objects {
+                    
+                    for i in 0..<objects.count {
+                        let object = objects[i]
                         let sound = UIElement().newSoundObject(object)
                         sounds.append(sound)
                     }
+                    
+                    /*for object in objects {
+                        let sound = UIElement().newSoundObject(object)
+                        sounds.append(sound)
+                    }*/
                     sounds.shuffle()
                     if shouldSetupPlayer {
+                        print("shouldsetupPLayer")
+                        
+
                         self.resetPlayer(sounds: sounds)
                         self.setSound()
                     } else {
@@ -863,7 +873,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         player.sounds = sounds
         player.currentSound = sounds[0]
         player.currentSoundIndex = 0
-        player.fetchAudioData(0, prepareAndPlay: true)
+        player.setUpNextSong(false, at: 0)
+        player.soundsPlayed = 5
+       /* sounds.forEach { sound in
+            sound.fetchAudioData()
+        }*/
     }
     
     @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {
