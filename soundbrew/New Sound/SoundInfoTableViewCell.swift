@@ -90,11 +90,11 @@ class SoundInfoTableViewCell: UITableViewCell {
         label.textColor = .white
         label.backgroundColor = color.black()
         label.isScrollEnabled = false
-        label.text = "Listen to Untitled on @Soundbrew"
+        label.text = "Listen to Untitled on @soundbrew"
         label.layer.cornerRadius = 3
         label.clipsToBounds = true
         label.layer.borderWidth = 1
-        label.layer.borderColor = UIColor.darkGray.cgColor
+        label.layer.borderColor = color.darkGray().cgColor
         return label
     }()
     
@@ -202,7 +202,7 @@ class SoundInfoTableViewCell: UITableViewCell {
             }
             
             twitterMessageTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(socialSwitch.snp.bottom)
+                make.top.equalTo(socialSwitch.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }

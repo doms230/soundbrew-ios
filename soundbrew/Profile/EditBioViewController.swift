@@ -13,6 +13,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     let uiElement = UIElement()
     let color = Color()
     var artistDelegate: ArtistDelegate?
+    var totalAllowedTextLength = 150
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,7 +93,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let textLength = textView.text.count +  (text.count - range.length)
-        let remainingLength = 150 - textLength
+        let remainingLength = totalAllowedTextLength - textLength
         
         if remainingLength <= 0 {
             bioCount.text = "\(0)"
@@ -101,7 +102,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
             bioCount.text = "\(remainingLength)"
         }
         
-        return textLength <= 150
+        return textLength <= totalAllowedTextLength
     }
     
     var keyboardHeight: CGFloat!

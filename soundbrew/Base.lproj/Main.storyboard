@@ -61,6 +61,7 @@
                     <navigationItem key="navigationItem" id="nxg-Om-mwg"/>
                     <connections>
                         <segue destination="W2D-HU-YWf" kind="presentation" identifier="showTags" id="QFf-vL-w9n"/>
+                        <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditTwitterMessage" id="UgY-SI-XY8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -195,7 +196,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tvS-2b-70E" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3752" y="3172"/>
+            <point key="canvasLocation" x="-3349" y="3142"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="M20-Wr-7YN">
@@ -292,6 +293,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="n4H-QI-4Ol" sceneMemberID="viewController">
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="OnA-Vn-X72"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5ux-yi-Vqb">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -308,7 +310,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xm3-aw-Ekz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3726" y="2369"/>
+            <point key="canvasLocation" x="-3349" y="2446"/>
         </scene>
         <!--Search-->
         <scene sceneID="LYJ-Ge-DSD">
@@ -524,11 +526,12 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
+        <segue reference="UgY-SI-XY8"/>
         <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="xvi-B0-pE3"/>
-        <segue reference="PpL-DV-h1t"/>
-        <segue reference="LnM-xP-wsl"/>
-        <segue reference="mvo-CV-XcF"/>
+        <segue reference="ate-Yt-ICi"/>
+        <segue reference="d1u-up-vYK"/>
+        <segue reference="iDR-Ll-dSf"/>
+        <segue reference="0mA-lO-wOD"/>
     </inferredMetricsTieBreakers>
 </document>

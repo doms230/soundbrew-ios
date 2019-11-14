@@ -16,7 +16,10 @@ import FirebaseDynamicLinks
 import AppCenterAnalytics
 //import Zip
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, UITextViewDelegate {
+    
+    func newArtistInfo(_ value: Artist?) {
+    }
     
     let uiElement = UIElement()
     
@@ -49,11 +52,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.tableView.reloadData()
         }
     }
-    
+        
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navigationController = segue.destination as! UINavigationController
         if segue.identifier == "showTags" {
-            let navi = segue.destination as! UINavigationController
-            let viewController: ChooseTagsViewController = navi.topViewController as! ChooseTagsViewController
+            let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
             viewController.tagDelegate = self
             
             if let tagType = tagType {
@@ -63,7 +66,21 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     viewController.chosenTags = tags
                 }
             }
+        } else if segue.identifier == "showEditTwitterMessage" {
+            let viewController = navigationController.topViewController as! EditBioViewController
+            viewController.bio = self.twitterMessage
+            viewController.artistDelegate = self
+            viewController.totalAllowedTextLength = getAllowedTwitterMessageLength()
         }
+    }
+    
+    func getAllowedTwitterMessageLength() -> Int {
+        let twitterCharacters = 280
+        //all objectIds are 10 characters
+        let urlLength = "https://wwww.soundbrew.app/s/qqqqqqqqqq".count
+        let soundbrewCharacterCount = "@soundbrew".count + 1
+        let totalPreTweetLength = urlLength + soundbrewCharacterCount
+        return twitterCharacters - totalPreTweetLength
     }
     
     //mark: views
@@ -269,11 +286,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.soundThatIsBeingEdited?.artImage = cell.soundArt.imageView?.image
             }
             
-            if cell.inputTitle.text!.isEmpty, let soundTitle = sound.title {
+            if let soundTitle = sound.title {
                 cell.inputTitle.text = soundTitle
             } else {
                 cell.inputTitle.text = "Untitled"
             }
+            /*if cell.inputTitle.text!.isEmpty, let soundTitle = sound.title {
+                cell.inputTitle.text = soundTitle
+            } else {
+                cell.inputTitle.text = "Untitled"
+            }*/
         }
         
         cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
@@ -285,6 +307,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: social
+    var twitterMessage: String!
+    var didTapTwitterMessage = false
     func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var socialTitle: String!
         var tag: Int!
@@ -293,9 +317,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         socialTitle = "Twitter"
         if shouldPostLinkToTwitter {
             cell.socialSwitch.isOn = true
-            cell.titleLabel.isHidden = false
+            cell.twitterMessage.isHidden = false
+            cell.twitterMessageTitle.isHidden = false
+            cell.twitterMessage.text = twitterMessage
+            cell.twitterMessage.delegate = self
         } else {
-            cell.titleLabel.isHidden = true
+            cell.twitterMessage.isHidden = true
+            cell.twitterMessageTitle.isHidden = true
         }
         tag = 0
         
@@ -317,10 +345,32 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.soundTagLabel.text = "\(localizedShareLinkTo) \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
         cell.socialSwitch.tag = tag
+
         tableView.separatorStyle = .none
+       
         return cell
     }
     
+    //changeTwitterMEssage
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textView.resignFirstResponder()
+        self.performSegue(withIdentifier: "showEditTwitterMessage", sender: self)
+    }
+        
+    func changeBio(_ value: String?) {
+        if let newTwitterMessage = value {
+            if newTwitterMessage.contains("@soundbrew") {
+                twitterMessage = newTwitterMessage
+            } else {
+                let newTwitterMessageWithsoundbrewAttached = "\(newTwitterMessage) @soundbrew"
+                twitterMessage = newTwitterMessageWithsoundbrewAttached
+            }
+            self.soundThatIsBeingEdited?.title = self.soundTitle.text
+            self.tableView.reloadData()
+        }
+    }
+        
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
         checkTwitterAuth(sender)
         /*if sender.tag == 0 {
@@ -338,6 +388,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var shouldPostLinkToTwitter = false
     
     func getTwitterUserID() {
+        twitterMessage = "Listen on @soundbrew"
         let store = TWTRTwitter.sharedInstance().sessionStore
         
         if let userId = store.session()?.userID {
@@ -379,7 +430,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let userID = self.twitterUserID {
             let client = TWTRAPIClient(userID: userID)
             let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "Listen to \(title) on @sound_brew \(url)"]
+            let params = ["status": "\(twitterMessage ?? "Listen to \(title) on @soundbrew") \(url)"]
             var clientError : NSError?
             let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
             client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
@@ -391,7 +442,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         let json = try JSONSerialization.jsonObject(with: data, options: [])
                         print("json: \(json)")
                     }
-                } catch let jsonError as NSError {
+                } catch let jsonError {
                     print("json error: \(jsonError.localizedDescription)")
                 }
             }
@@ -521,6 +572,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
+        self.soundThatIsBeingEdited?.title = self.soundTitle.text
         self.tableView.reloadData()
     }
     
