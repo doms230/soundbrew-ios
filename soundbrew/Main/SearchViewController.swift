@@ -82,6 +82,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let viewController = segue.destination as! SoundsViewController
             viewController.selectedTagForFiltering = self.selectedTag
             viewController.soundType = soundType
+            if let tagImage = self.selectedTag.uiImage {
+                viewController.soundHeaderImage = tagImage
+            } else {
+                viewController.soundHeaderImage = UIImage(named: "background")
+            }
             
             let backItem = UIBarButtonItem()
             backItem.title = self.selectedTag.name
@@ -217,9 +222,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     
                 } else if searchType == 2 && soundList != nil {
                     if soundList.sounds.count != 0 {
-                        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-                        cell.backgroundColor = color.black()
-                        return soundList.soundCell(indexPath, cell: cell)
+                        return soundList.soundCell(indexPath, tableView: tableView)
                     } else {
                         return noResultsCell()
                     }
@@ -289,7 +292,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didPressChartsButton(_ sender: UIButton) {
-        let tag = Tag(objectId: nil, name: "new", count: 0, isSelected: false, type: nil, image: nil)
+        let tag = Tag(objectId: nil, name: "new", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
         var soundType = "chart"
         if sender.tag == 1 {
             tag.name = "top"
@@ -363,7 +366,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let tag = tags[i]
             let tagButton = UIButton()
             tagButton.tag = row
-            if let tagImage = tag.image {
+            if let tagImage = tag.imageURL {
                 tagButton.kf.setBackgroundImage(with: URL(string: tagImage), for: .normal, placeholder: UIImage(named: "hashtag"))
                 tagButton.titleLabel?.backgroundColor = color.black().withAlphaComponent(0.5)
                 tagButton.titleLabel?.layer.cornerRadius = 3
@@ -401,30 +404,30 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didPressTagButton(_ sender: UIButton) {
-        switch sender.tag {
+        let typeTags = [topGenreTags, topCityTags, topMoodTags, topActivityTags]
+        
+        determineSelectedTag(sender, tags: typeTags[sender.tag])
+        
+       /* switch sender.tag {
         case 0:
-            print("determine selected Tag: \(sender.tag)")
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topGenreTags)
+            determineSelectedTag(sender, tags: topGenreTags)
             break
             
         case 1:
-            print("determine selected Tag: \(sender.tag)")
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topCityTags)
+            determineSelectedTag(sender, tags: topCityTags)
             break
             
         case 2:
-            print("determine selected Tag: \(sender.tag)")
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topMoodTags)
+            determineSelectedTag(sender, tags: topMoodTags)
             break
             
         case 3:
-            print("determine selected Tag: \(sender.tag)")
-            determineSelectedTag(selectedTagTitle: sender.titleLabel!.text!, tags: topActivityTags)
+            determineSelectedTag(sender, tags: topActivityTags)
             break
             
         default:
             break
-        }
+        }*/
     }
     
     @objc func didPressViewMoreTagsButton(_ sender: UIButton) {
@@ -435,10 +438,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "View All \(selectedTagType)", "description": "User pressed view all button."])
     }
     
-    func determineSelectedTag(selectedTagTitle: String, tags: Array<Tag>) {
-        print(selectedTagTitle)
+    func determineSelectedTag(_ selectedButton: UIButton, tags: Array<Tag>) {
+        let selectedTagTitle = selectedButton.titleLabel!.text!
         for tag in tags {
             if selectedTagTitle == tag.name {
+                tag.uiImage = selectedButton.imageView?.image
                 showSounds(tag, soundType: "discover")
                 MSAnalytics.trackEvent("Selected Tag", withProperties: ["Tag" : "\(selectedTagTitle)"])
             }
@@ -472,10 +476,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
                         
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, image: nil)
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
                         
                         if let image = object["image"] as? PFFileObject {
-                            newTag.image = image.url
+                            newTag.imageURL = image.url
                         }
                         
                         if let tagType = object["type"] as? String {
@@ -490,13 +494,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         self.searchTags = tags
                         
                     } else {
-                        let browseMoreTag = Tag(objectId: nil, name: "", count: 0, isSelected: false, type: nil, image: nil)
+                        let browseMoreTag = Tag(objectId: nil, name: "", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
                         
                         switch type {
                         case "genre":
                             self.topGenreTags = tags
                             let podcastTagURL = "https://www.soundbrew.app/parse/files/A839D96FA14FCC48772EB62B99FA1/1cf81b20a726ecc5a24173bfcec35dc2_Hashtag_long.png"
-                            let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", image: podcastTagURL)
+                            let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", imageURL: podcastTagURL, uiImage: nil)
                             self.topGenreTags.insert(podcastTag, at: 0)
                             browseMoreTag.name = "\(self.localizedMore.capitalized) Genres"
                             self.topGenreTags.append(browseMoreTag)

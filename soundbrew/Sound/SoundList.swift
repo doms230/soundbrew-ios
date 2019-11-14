@@ -80,7 +80,10 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedSound: Sound?
     var descendingOrder = "createdAt"
     
-    func soundCell(_ indexPath: IndexPath, cell: SoundListTableViewCell) -> UITableViewCell {
+    func soundCell(_ indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
+        let soundReuse = "soundReuse"
+        let cell = tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+        cell.backgroundColor = color.black()
         cell.selectionStyle = .none
         
         if sounds.indices.contains(indexPath.row) {
@@ -339,35 +342,15 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = false
                 
         if self.player != nil {
-            //self.player?.sounds = sounds
-            
             if self.sounds.count > 0 {
+                //fetch 1 songs ahead of time
                 var fetchAudioCount = 0
                 for sound in self.sounds {
-                    if sound.audioData == nil && fetchAudioCount < 6 {
+                    if sound.audioData == nil && fetchAudioCount < 2 {
                         sound.fetchAudioData()
                         fetchAudioCount+=1
                     }
                 }
-                
-                
-               /* var currentIndex = 0
-                if let CI = self.player?.currentSoundIndex {
-                    currentIndex = CI
-                }
-                
-                self.player?.sounds.forEach { sound in
-                    sound.fetchAudioData()
-                }
-                                
-                if self.player!.sounds[currentIndex].audioData == nil {
-                    //self.player!.fetchAudioData(currentIndex, prepareAndPlay: false)
-                    self.player?.setUpNextSong(false, at: currentIndex)
-                }
-                
-                if self.player!.sounds.indices.contains(1) {
-                    self.player!.fetchAudioData(1, prepareAndPlay: false)
-                }*/
             }
         }
         self.tableView?.reloadData()
@@ -570,7 +553,7 @@ class SoundList: NSObject, PlayerDelegate {
         let localizedThisSound = NSLocalizedString("thisSound", comment: "")
         let localizedFromSoundbrew = NSLocalizedString("fromSoundbrew", comment: "")
 
-        let menuAlert = UIAlertController(title: "\(localizedRemove)( \(self.sounds[row].title ?? localizedThisSound) \(localizedFromSoundbrew)?", message: nil, preferredStyle: .alert)
+        let menuAlert = UIAlertController(title: "\(localizedRemove) \(self.sounds[row].title ?? localizedThisSound) \(localizedFromSoundbrew)?", message: nil, preferredStyle: .alert)
         
         let localizedNo = NSLocalizedString("no", comment: "")
         menuAlert.addAction(UIAlertAction(title: localizedNo, style: .cancel, handler: nil))

@@ -14,6 +14,24 @@ class SoundListTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
+    //mark: header
+    lazy var headerImage: UIImageView = {
+        let image = UIImageView()
+        return image
+    }()
+    
+    lazy var playButton: UIButton = {
+        let localizedPlay = NSLocalizedString("play", comment: "")
+        let button = UIButton()
+        button.setTitle(localizedPlay, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 30)
+        button.setTitleColor(color.black(), for: .normal)
+        button.backgroundColor = .white
+        button.layer.cornerRadius = 5
+        button.clipsToBounds = true
+        return button
+    }()
+    
     //mark: no sounds
     lazy var headerTitle: UILabel = {
         let label = UILabel()
@@ -145,6 +163,24 @@ class SoundListTableViewCell: UITableViewCell {
             }
             break
             
+        case "soundHeaderReuse":
+            self.addSubview(headerImage)
+            self.addSubview(playButton)
+            headerImage.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(150)
+                make.top.equalTo(self)
+                make.left.equalTo(self)
+                make.right.equalTo(self)
+                make.bottom.equalTo(self)
+            }
+            
+            playButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(50)
+                make.width.equalTo(100)
+                make.centerY.centerX.equalTo(headerImage)
+            }
+            break
+            
         case "soundReuse":
             self.addSubview(menuButton)
             self.menuButton.addSubview(menuImage)
@@ -201,16 +237,18 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(15)
+                //make.height.equalTo(50)
                 make.width.equalTo(50)
-                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.top.equalTo(artistButton.snp.bottom)
+                make.bottom.equalTo(collectorsButton)
+                make.right.equalTo(self)
             }
             
             menuImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
-                make.right.equalTo(menuButton)
-                make.bottom.equalTo(menuButton)
+                make.center.equalTo(menuButton)
+                //make.right.equalTo(menuButton)
+                //make.bottom.equalTo(menuButton)
             }
             
             collectorsButton.snp.makeConstraints { (make) -> Void in

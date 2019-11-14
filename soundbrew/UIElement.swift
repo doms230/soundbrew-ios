@@ -183,7 +183,8 @@ class UIElement {
         if let sound = sound {
             url = self.getSoundbrewURL(sound.objectId!, path: "s")
         } else if let artist = artist {
-            url = self.getSoundbrewURL(artist.objectId!, path: "u")
+            //url = self.getSoundbrewURL(artist.objectId!, path: "u")
+            url = URL(string: "https://www.soundbrew.app/\(artist.username!)")
         }
                 
         if let url = url {
@@ -281,7 +282,6 @@ class UIElement {
             }
         }
 
-        
         let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
         
         if let name = user["artistName"] as? String {
@@ -324,7 +324,7 @@ class UIElement {
         
         let audio = object["audioFile"] as! PFFileObject
         sound.audio = audio
-        //sound.fetchAudioData()
+        
         sound.audioURL = audio.url!
         
         if let title = object["title"] as? String {

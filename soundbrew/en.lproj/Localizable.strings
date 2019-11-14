@@ -176,4 +176,6 @@
 "stripeAddFundsMessage" = "Payments are securely processed by Stripe.";
 "addFundsMessage" = "Artists upload music to Soundbrew for you to enjoy for free without ads. Tipping artists with your Soundbrew funds helps them get paid for their music!";
 "whyAddFundsTitle" = "Why Add Funds?";
+"play" = "Play";
+"twitterMessage" = "Twitter Message";
 

@@ -487,7 +487,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     var sounds = [Sound]()
                     for object in objects {
                         let sound = self.uiElement.newSoundObject(object)
-                        sound.fetchAudioData()
                         sounds.append(sound)
                     }
                     

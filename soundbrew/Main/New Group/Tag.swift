@@ -16,22 +16,24 @@ class Tag {
     var count: Int!
     var type: String?
     var isSelected: Bool!
-    var image: String?
+    var imageURL: String?
+    var uiImage: UIImage?
     
-    init(objectId: String?, name: String!, count: Int!, isSelected: Bool!, type: String?, image: String?) {
+    init(objectId: String?, name: String!, count: Int!, isSelected: Bool!, type: String?, imageURL: String?, uiImage: UIImage?) {
         self.objectId = objectId
         self.name = name
         self.count = count
         self.isSelected = isSelected
         self.type = type
-        self.image = image 
+        self.imageURL = imageURL
+        self.uiImage = uiImage
     }
     
     func cell(_ tableView: UITableView, reuse: String) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         cell.selectionStyle = .gray
         cell.backgroundColor = Color().black()
-        if let image = self.image {
+        if let image = self.imageURL {
             cell.profileImage.kf.setImage(with: URL(string: image))
             
         } else {

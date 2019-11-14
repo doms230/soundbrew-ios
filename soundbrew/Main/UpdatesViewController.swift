@@ -307,7 +307,9 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 
                 self.updates.sort(by: {$0.createdAt > $1.createdAt})
-                
+                if self.updates.count > 0 {
+                    SKStoreReviewController.requestReview()
+                }
                self.tableView.reloadData()
                 
             } else {

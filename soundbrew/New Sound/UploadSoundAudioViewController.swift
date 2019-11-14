@@ -142,9 +142,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
             return cell
             
         } else {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
-            return soundList.soundCell(indexPath, cell: cell)
+            return soundList.soundCell(indexPath, tableView: tableView)
         }
     }
     

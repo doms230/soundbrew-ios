@@ -165,7 +165,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if section == tagSection {
             return 5
         } else if section == socialSection {
-            return 2
+            return 1
         }
         
         return 1
@@ -290,7 +290,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var tag: Int!
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
         
-        if indexPath.row == 0 {
+        socialTitle = "Twitter"
+        if shouldPostLinkToTwitter {
+            cell.socialSwitch.isOn = true
+            cell.titleLabel.isHidden = false
+        } else {
+            cell.titleLabel.isHidden = true
+        }
+        tag = 0
+        
+        /*if indexPath.row == 0 {
             if shouldPostToSnapchat {
                 cell.socialSwitch.isOn = true
             }
@@ -303,7 +312,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.socialSwitch.isOn = true
             }
             tag = 1
-        }
+        }*/
         let localizedShareLinkTo = NSLocalizedString("shareLinkTo", comment: "")
         cell.soundTagLabel.text = "\(localizedShareLinkTo) \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
@@ -313,15 +322,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
-        if sender.tag == 0 {
+        checkTwitterAuth(sender)
+        /*if sender.tag == 0 {
             shouldPostToSnapchat = true
         } else {
             checkTwitterAuth(sender)
-        }
+        }*/
     }
     
     //mark: Snapchat
-    var shouldPostToSnapchat = false
+    //var shouldPostToSnapchat = false
     
     //mark: twitter
     var twitterUserID: String?
@@ -349,6 +359,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             shouldPostLinkToTwitter = false
         }
+        self.tableView.reloadData()
     }
     
     func authenticateTwitter(_ sender: UISwitch) {
@@ -356,6 +367,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let session = session {
                 self.twitterUserID = session.userID
                 self.shouldPostLinkToTwitter = true
+                self.tableView.reloadData()
             } else if let error = error {
                 print("error: \(error.localizedDescription)");
                 sender.isOn = false
@@ -568,7 +580,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 newTag.saveEventually()
             }
         }
-        self.finishUp(true)
+        //self.finishUp(true, object: object)
     }
     
     func loadTag(_ tag: String, type: String?) {
@@ -582,13 +594,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if let type = object["type"] as? String {
                     retreivedType = type
                 }
-                retreivedTag = Tag(objectId: object.objectId, name: object["tag"] as? String, count: 0, isSelected: false, type: retreivedType, image: nil)
+                retreivedTag = Tag(objectId: object.objectId, name: object["tag"] as? String, count: 0, isSelected: false, type: retreivedType, imageURL: nil, uiImage: nil)
                 
             } else {
                 if let type = type {
                     retreivedType = type
                 }
-                retreivedTag = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: retreivedType, image: nil)
+                retreivedTag = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: retreivedType, imageURL: nil, uiImage: nil)
             }
             
             if let type = retreivedType {
@@ -633,7 +645,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let soundFileString = soundThatIsBeingEdited?.audioURL {
                 let soundFileURL = URL(string: soundFileString)
                 let audioFile = try Data(contentsOf: soundFileURL!, options: .uncached)
-                self.soundThatIsBeingEdited?.audio = PFFileObject(name: "audio.\(soundFileURL!.lastPathComponent)", data: audioFile)
+                let name = "audio.\(soundFileURL!.pathExtension)"
+                self.soundThatIsBeingEdited?.audio = PFFileObject(name: name, data: audioFile)
                 self.saveAudioFile(self.soundThatIsBeingEdited!.audio!)
             }
         } catch let error {
@@ -756,10 +769,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (success: Bool, error: Error?) in
             if (success) {
                 if isDraft {
-                    self.finishUp(false)
+                    self.finishUp(false, object: newSound)
                 } else {
                     self.handleSocials(newSound)
                     self.saveTags(tags)
+                    self.finishUp(true, object: newSound)
                     MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
             } else if let error = error {
@@ -794,11 +808,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     (success: Bool, error: Error?) in
                     if (success) {
                         if isDraft {
-                            self.finishUp(false)
+                            self.finishUp(false, object: object)
                         } else {
                             self.saveTags(tags)
                             self.handleSocials(object)
-                            self.finishUp(true)
+                            self.finishUp(true, object: object)
                         }
                         
                     } else if let error = error {
@@ -820,9 +834,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
-        if self.shouldPostToSnapchat {
+        /*if self.shouldPostToSnapchat {
             self.uiElement.shareToSnapchat(self.soundThatIsBeingEdited!)
-        }
+        }*/
     }
     
     func loadCurrentUserCity(_ userId: String) {
@@ -881,11 +895,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func finishUp(_ shouldAskForReview: Bool) {
+    func finishUp(_ shouldPlaySoundAndShowShareOptions: Bool, object: PFObject) {
         self.stopAnimating()
-        if shouldAskForReview {
-            SKStoreReviewController.requestReview()
+        
+        if shouldPlaySoundAndShowShareOptions {
+            let soundId = object.objectId!
+            self.uiElement.setUserDefault("newSoundId", value: soundId)
+            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+        } else {
+            self.uiElement.goBackToPreviousViewController(self)
         }
-        self.uiElement.goBackToPreviousViewController(self)
     }
 }

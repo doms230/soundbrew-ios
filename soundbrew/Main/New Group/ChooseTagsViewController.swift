@@ -125,7 +125,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 && !searchText.isEmpty {
                 
                 let cleanTag = cleanupText(searchText)
-                let tag = Tag(objectId: nil, name: cleanTag, count: 0, isSelected: false, type: self.tagType, image: nil)
+                let tag = Tag(objectId: nil, name: cleanTag, count: 0, isSelected: false, type: self.tagType, imageURL: nil, uiImage: nil)
                 self.filteredTags.append(tag)
             }
         }
@@ -298,7 +298,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             
         } else {
             //means that user is using new tag that hasn't been created yet.
-            let tag = Tag(objectId: nil, name: title, count: 0, isSelected: false, type: tagType, image: nil)
+            let tag = Tag(objectId: nil, name: title, count: 0, isSelected: false, type: tagType, imageURL: nil, uiImage: nil)
             self.chosenTags.append(tag)
         }
         
@@ -412,10 +412,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                         let tagName = object["tag"] as! String
                         let tagCount = object["count"] as! Int
                         
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, image: nil)
+                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
                         
                         if let image = object["image"] as? PFFileObject {
-                            newTag.image = image.url
+                            newTag.imageURL = image.url
                         }
                         
                         if let tagType = object["type"] as? String {

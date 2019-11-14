@@ -28,17 +28,6 @@ class SoundInfoTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var soundTitle: UITextField = {
-        let localizedAddTitle = NSLocalizedString("addTitle", comment: "")
-        let textField = UITextField()
-        textField.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        textField.textColor = .white
-        textField.attributedPlaceholder = NSAttributedString(string: localizedAddTitle,
-                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        textField.borderStyle = .none
-        return textField
-    }()
-    
     lazy var soundTagLabel: UILabel = {
         let localizedTags = NSLocalizedString("tags", comment: "")
         let label = UILabel()
@@ -84,6 +73,29 @@ class SoundInfoTableViewCell: UITableViewCell {
        let socialSwitch = UISwitch()
         socialSwitch.onTintColor = color.blue()
         return socialSwitch
+    }()
+    
+    lazy var twitterMessageTitle: UILabel = {
+        let localizedTwitterMessageTitle = NSLocalizedString("twitterMessage", comment: "")
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.text = localizedTwitterMessageTitle
+        label.textColor = .white
+        return label
+    }()
+    
+    lazy var twitterMessage: UITextView = {
+        let label = UITextView()
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.textColor = .white
+        label.backgroundColor = color.black()
+        label.isScrollEnabled = false
+        label.text = "Listen to Untitled on @Soundbrew"
+        label.layer.cornerRadius = 3
+        label.clipsToBounds = true
+        label.layer.borderWidth = 1
+        label.layer.borderColor = UIColor.darkGray.cgColor
+        return label
     }()
     
     lazy var artistTypeButton: UIButton = {
@@ -175,15 +187,32 @@ class SoundInfoTableViewCell: UITableViewCell {
         case "soundSocialReuse":
             self.addSubview(soundTagLabel)
             self.addSubview(socialSwitch)
+            self.addSubview(twitterMessage)
+            self.addSubview(twitterMessageTitle)
+            
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             soundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(socialSwitch)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            twitterMessageTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(socialSwitch.snp.bottom)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            twitterMessage.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(twitterMessageTitle.snp.bottom).offset(uiElement.topOffset)
+                make.height.equalTo(150)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             break

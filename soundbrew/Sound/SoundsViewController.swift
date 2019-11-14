@@ -19,6 +19,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let uiElement = UIElement()
     let color = Color()
     var soundType: String!
+    var soundHeaderImage: UIImage?
     var userId: String?
     
     override func viewDidLoad() {
@@ -36,13 +37,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             setUpTableView(nil)
         }
     }
-    
-    /*override func viewDidDisappear(_ animated: Bool) {
-        let player = Player.sharedInstance
-        for sound in player.sounds {
-            sound.audio?.cancel()
-        }
-    }*/
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
@@ -98,11 +92,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var tableView = UITableView()
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
+    let soundHeaderReuse = "soundHeaderReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundHeaderReuse)
         tableView.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         
@@ -134,26 +130,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if soundList.sounds.count == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
-            
-            if soundList.isUpdatingData {
-                let localizedLoading = NSLocalizedString("loading", comment: "")
-                cell.headerTitle.text = localizedLoading
-            } else  if soundType == "following" {
-                let localizedLatestReleases = NSLocalizedString("latestReleases", comment: "")
-                cell.headerTitle.text = localizedLatestReleases
-            } else if selectedTagForFiltering != nil {
-                let localizedNoResultsFor = NSLocalizedString("noResultsFor", comment: "")
-                cell.headerTitle.text = "\(localizedNoResultsFor) \(selectedTagForFiltering.name!)"
-            }
-
-            return cell
+            return noSoundCell()
             
         } else {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
-            return soundList.soundCell(indexPath, cell: cell)
+            return soundList.soundCell(indexPath, tableView: tableView)
         }
     }
     
@@ -181,6 +161,30 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 //soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: userId, searchText: nil, followIds: soundList.followUserIds)
             }
         }
+    }
+    
+    func soundHeaderCell() -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundHeaderReuse) as! SoundListTableViewCell
+        cell.headerImage.image = soundHeaderImage
+        
+        return cell
+    }
+    
+    func noSoundCell() -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+        cell.backgroundColor = color.black()
+        if soundList.isUpdatingData {
+            let localizedLoading = NSLocalizedString("loading", comment: "")
+            cell.headerTitle.text = localizedLoading
+        } else  if soundType == "following" {
+            let localizedLatestReleases = NSLocalizedString("latestReleases", comment: "")
+            cell.headerTitle.text = localizedLatestReleases
+        } else if selectedTagForFiltering != nil {
+            let localizedNoResultsFor = NSLocalizedString("noResultsFor", comment: "")
+            cell.headerTitle.text = "\(localizedNoResultsFor) \(selectedTagForFiltering.name!)"
+        }
+        
+        return cell
     }
     
     //mark: miniPlayer

@@ -262,7 +262,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     func setupPlayerView() {
         setupNotificationCenter()
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
-            loadDynamicLinkSound(soundId)
+            UserDefaults.standard.removeObject(forKey: "receivedSoundId")
+            loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
+            
+        } else if let newSoundId = self.uiElement.getUserDefault("newSoundId") as? String {
+            UserDefaults.standard.removeObject(forKey: "newSoundId")
+            loadDynamicLinkSound(newSoundId, shouldShowShareSoundView: true)
             
         } else if let sound = self.player.currentSound {
             self.sound = sound
@@ -849,7 +854,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    func loadDynamicLinkSound(_ objectId: String) {
+    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -857,10 +862,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 print(error)
                 
             } else if let object = object {
-                UserDefaults.standard.removeObject(forKey: "receivedSoundId")
-                let sound = [UIElement().newSoundObject(object)]
-                
-                self.resetPlayer(sounds: sound)
+                let sound = self.uiElement.newSoundObject(object)
+                if shouldShowShareSoundView {
+                    self.uiElement.showShareOptions(self, sound: sound)
+                }
+                self.resetPlayer(sounds: [sound])
                 self.setSound()
                 self.loadYourSoundbrew(false)
             }
