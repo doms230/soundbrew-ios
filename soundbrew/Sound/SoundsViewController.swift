@@ -144,7 +144,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func didSelectRowAt(_ row: Int) {
         if let player = soundList.player {
             player.sounds = soundList.sounds
-           // player.currentSoundIndex = row 
             player.didSelectSoundAt(row)
             if miniPlayerView == nil {
                 self.setUpMiniPlayer()
@@ -218,7 +217,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let player = Player.sharedInstance
         if player.player != nil {
             let modal = PlayerViewController()
-            //modal.player = player
             modal.playerDelegate = self
             self.present(modal, animated: true, completion: nil)
         }

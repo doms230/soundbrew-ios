@@ -183,7 +183,6 @@ class UIElement {
         if let sound = sound {
             url = self.getSoundbrewURL(sound.objectId!, path: "s")
         } else if let artist = artist {
-            //url = self.getSoundbrewURL(artist.objectId!, path: "u")
             url = URL(string: "https://www.soundbrew.app/\(artist.username!)")
         }
                 
@@ -268,7 +267,6 @@ class UIElement {
     
     func sendAlert(_ message: String, toUserId: String) {
         Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
-            //print(response.response as Any)
         }
     }
     

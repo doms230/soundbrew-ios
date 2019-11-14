@@ -237,7 +237,6 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in
-                //make.height.equalTo(50)
                 make.width.equalTo(50)
                 make.top.equalTo(artistButton.snp.bottom)
                 make.bottom.equalTo(collectorsButton)
@@ -247,8 +246,6 @@ class SoundListTableViewCell: UITableViewCell {
             menuImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
                 make.center.equalTo(menuButton)
-                //make.right.equalTo(menuButton)
-                //make.bottom.equalTo(menuButton)
             }
             
             collectorsButton.snp.makeConstraints { (make) -> Void in

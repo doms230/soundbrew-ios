@@ -626,7 +626,6 @@ class SoundList: NSObject, PlayerDelegate {
                         let sound = self.uiElement.newSoundObject(object)
                         self.worldCreatedAtSounds.append(sound)
                     }
-                    //self.worldCreatedAtSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                     self.loadWorldTopSounds()
                 }
             }
@@ -653,7 +652,6 @@ class SoundList: NSObject, PlayerDelegate {
                         let sound = self.uiElement.newSoundObject(object)
                         self.worldTopSounds.append(sound)
                     }
-                    //self.worldTopSounds.sort(by: {$0.relevancyScore > $1.relevancyScore})
                     self.mixedWorldSounds = self.mixSounds(self.worldCreatedAtSounds, topSounds: self.worldTopSounds)
                     
                     var newSounds: Array<Sound>!

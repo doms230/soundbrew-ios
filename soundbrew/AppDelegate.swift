@@ -95,7 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func handleDynamicLink(_ userActivity: NSUserActivity) -> Bool {
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
             if let error = error {
-                print("dynamic link error: \(error.localizedDescription)")
                 
             } else if let url = dynamiclink?.url {
                 if let pathComponents = dynamiclink?.url?.pathComponents {

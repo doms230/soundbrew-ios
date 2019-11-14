@@ -23,7 +23,6 @@ class Sound {
     var tags: Array<String>?
     var plays: Int?
     var createdAt: Date?
-   // var relevancyScore: Int!
     var artist: Artist?
     var tmpFile: TemporaryFile?
     var tips: Int?
@@ -41,7 +40,6 @@ class Sound {
         self.tags = tags
         self.createdAt = createdAt
         self.plays = plays
-        //self.relevancyScore = relevancyScore
         self.audioData = audioData
         self.artist = artist
         self.tmpFile = tmpFile
@@ -62,8 +60,7 @@ class Sound {
                     print("fetched \(self.title!)")
                     self.audioData = audioData
                     if self.isNextUpToPlay {
-                        print("up nex to play")
-                        self.isNextUpToPlay = false 
+                        self.isNextUpToPlay = false
                         let player = Player.sharedInstance
                         if player.player == nil {
                             player.prepareAndPlay(audioData)

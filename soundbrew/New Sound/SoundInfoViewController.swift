@@ -291,11 +291,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else {
                 cell.inputTitle.text = "Untitled"
             }
-            /*if cell.inputTitle.text!.isEmpty, let soundTitle = sound.title {
-                cell.inputTitle.text = soundTitle
-            } else {
-                cell.inputTitle.text = "Untitled"
-            }*/
         }
         
         cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
@@ -327,20 +322,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         tag = 0
         
-        /*if indexPath.row == 0 {
-            if shouldPostToSnapchat {
-                cell.socialSwitch.isOn = true
-            }
-            socialTitle = "Snapchat"
-            tag = 0
-            
-        } else {
-            socialTitle = "Twitter"
-            if shouldPostLinkToTwitter {
-                cell.socialSwitch.isOn = true
-            }
-            tag = 1
-        }*/
         let localizedShareLinkTo = NSLocalizedString("shareLinkTo", comment: "")
         cell.soundTagLabel.text = "\(localizedShareLinkTo) \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
@@ -373,16 +354,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
         checkTwitterAuth(sender)
-        /*if sender.tag == 0 {
-            shouldPostToSnapchat = true
-        } else {
-            checkTwitterAuth(sender)
-        }*/
     }
-    
-    //mark: Snapchat
-    //var shouldPostToSnapchat = false
-    
+        
     //mark: twitter
     var twitterUserID: String?
     var shouldPostLinkToTwitter = false
@@ -632,7 +605,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 newTag.saveEventually()
             }
         }
-        //self.finishUp(true, object: object)
     }
     
     func loadTag(_ tag: String, type: String?) {
@@ -885,10 +857,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.postTweet(url, title: title)
             }
         }
-        
-        /*if self.shouldPostToSnapchat {
-            self.uiElement.shareToSnapchat(self.soundThatIsBeingEdited!)
-        }*/
     }
     
     func loadCurrentUserCity(_ userId: String) {

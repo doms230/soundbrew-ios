@@ -830,16 +830,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                         let sound = UIElement().newSoundObject(object)
                         sounds.append(sound)
                     }
-                    
-                    /*for object in objects {
-                        let sound = UIElement().newSoundObject(object)
-                        sounds.append(sound)
-                    }*/
+
                     sounds.shuffle()
                     if shouldSetupPlayer {
-                        print("shouldsetupPLayer")
-                        
-
                         self.resetPlayer(sounds: sounds)
                         self.setSound()
                     } else {
@@ -880,10 +873,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         player.currentSound = sounds[0]
         player.currentSoundIndex = 0
         player.setUpNextSong(false, at: 0)
-        player.soundsPlayed = 5
-       /* sounds.forEach { sound in
-            sound.fetchAudioData()
-        }*/
+        player.soundsPlayed = 2
     }
     
     @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {

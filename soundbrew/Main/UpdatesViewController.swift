@@ -247,7 +247,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     func loadNewFollows() {
         let query = PFQuery(className: "Follow")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
-        //query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
         var followIds = [String]()
         for update in updates {
@@ -264,7 +263,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if let objects = objects {
                     for object in objects {
                         let userObjectId = object["fromUserId"] as! String
-                        //let userObjectId = object["toUserId"] as! String
                         let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                         let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil, tipId: nil, followId: object.objectId!)
                         self.updates.append(update)
@@ -281,7 +279,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     func loadNewTips() {
         let query = PFQuery(className: "Tip")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
-        //query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
         var tipIds = [String]()
         for update in updates {
             if let tipId = update.tipId {
@@ -297,7 +294,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if let objects = objects {
                     for object in objects {
                         let userObjectId = object["fromUserId"] as! String
-                        //let userObjectId = object["toUserId"] as! String
                         let tipAmount = object["amount"] as! Int
                         let soundId = object["soundId"] as! String
                         let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)

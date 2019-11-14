@@ -193,7 +193,6 @@ class SoundInfoTableViewCell: UITableViewCell {
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             soundTagLabel.snp.makeConstraints { (make) -> Void in

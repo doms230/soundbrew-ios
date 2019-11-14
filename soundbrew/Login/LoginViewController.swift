@@ -43,7 +43,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var passwordText: UITextField = {
         let label = UITextField()
         let localizedString = NSLocalizedString("password", comment: "")
-        //label.placeholder = "Password"
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.backgroundColor = .white
         label.borderStyle = .roundedRect

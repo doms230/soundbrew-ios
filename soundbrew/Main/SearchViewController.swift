@@ -405,35 +405,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func didPressTagButton(_ sender: UIButton) {
         let typeTags = [topGenreTags, topCityTags, topMoodTags, topActivityTags]
-        
         determineSelectedTag(sender, tags: typeTags[sender.tag])
-        
-       /* switch sender.tag {
-        case 0:
-            determineSelectedTag(sender, tags: topGenreTags)
-            break
-            
-        case 1:
-            determineSelectedTag(sender, tags: topCityTags)
-            break
-            
-        case 2:
-            determineSelectedTag(sender, tags: topMoodTags)
-            break
-            
-        case 3:
-            determineSelectedTag(sender, tags: topActivityTags)
-            break
-            
-        default:
-            break
-        }*/
     }
     
     @objc func didPressViewMoreTagsButton(_ sender: UIButton) {
         let selectedTagType = featureTagTypes[sender.tag]
         self.selectedTagType = selectedTagType
-        print(selectedTagType)
         self.performSegue(withIdentifier: "showTags", sender: self)
         MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "View All \(selectedTagType)", "description": "User pressed view all button."])
     }
@@ -654,7 +631,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if searchType == 1 {
             searchUsers(searchBar.text!)
         } else {
-            print("searching sounds")
             soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
         }
         

@@ -307,7 +307,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let localizedLoading = NSLocalizedString("loading", comment: "")
         let button = UIButton()
         button.isEnabled = false
-        //button.backgroundColor = color.blue()
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.setTitle(localizedLoading, for: .normal)

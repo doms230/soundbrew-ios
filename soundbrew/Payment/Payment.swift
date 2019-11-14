@@ -36,15 +36,6 @@ class Payment: NSObject {
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 completion(responseJSON.result)
-                /*switch responseJSON.result {
-                case .success(let json):
-                    let json = JSON(json)
-                    print(json)
-                    completion(nil)
-                    
-                case .failure(let error):
-                    completion(error)
-                }*/
         }
     }
     

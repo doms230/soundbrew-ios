@@ -31,7 +31,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
     var didRecordPlay = false
-    var soundsPlayed = 5
+    var soundsPlayed = 2
     
     override init() {
         super.init()
@@ -215,23 +215,19 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func checkIfMoreAudioDataShouldBeLoaded() {
-        if soundsPlayed == 5 {
+        if soundsPlayed == 2 {
             soundsPlayed = 0
             var futureSoundIndex = self.currentSoundIndex + 1
-            if self.sounds.indices.contains(futureSoundIndex) {
-                for _ in 0...5 {
+            for _ in 0...2 {
+                if self.sounds.indices.contains(futureSoundIndex) {
                     self.sounds[futureSoundIndex].fetchAudioData()
                     futureSoundIndex+=1
                 }
-            }
+             }
 
         } else {
             soundsPlayed+=1
         }
-        /*let nextSoundIndex = currentSoundIndex + 1
-        if sounds.indices.contains(nextSoundIndex) && sounds[nextSoundIndex].audioData == nil {
-            fetchAudioData(nextSoundIndex, prepareAndPlay: false)
-        }*/
     }
     
     func determineSoundToPlay(_ didPressGoBackButton: Bool, at: Int?) -> Sound? {
@@ -258,8 +254,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             self.prepareAndPlay(audioData)
             
         } else {
-            print("fetching audio data")
-            //fetchAudioData(currentSoundIndex, prepareAndPlay: true)
             self.sounds[currentSoundIndex].isNextUpToPlay = true
             self.sounds[currentSoundIndex].fetchAudioData()
         }
@@ -294,41 +288,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         return sound
     }
-    
-    /*func fetchAudioData(_ position: Int, prepareAndPlay: Bool) {
-        let soundURL = self.sounds[position].audioURL
-        
-        /*Alamofire.request(soundURL!).responseData { response in
-             guard let data = response.result.value else { return }
-             if let error = response.error {
-                 print("alamofire error: \(error)")
-             } else if prepareAndPlay && self.player == nil {
-                    self.prepareAndPlay(data)
-            
-             } /*else if self.sounds.indices.contains(position + 1) {
-                    self.fetchAudioData(position + 1, prepareAndPlay: false)
-                }*/
-            
-                self.sounds[position].audioData = data
-                print("fetched \(soundURL!)")
-            }*/
-        
-        self.sounds[position].audio!.getDataInBackground {
-            (audioData: Data?, error: Error?) -> Void in
-            if let error = error?.localizedDescription {
-                print(error)
-                
-            } else if let audioData = audioData {
-                if prepareAndPlay && self.player == nil {
-                    self.prepareAndPlay(audioData)
-                    
-                } /*else if self.sounds.indices.contains(position + 1) {
-                    //self.fetchAudioData(position + 1, prepareAndPlay: false)
-                }*/
-                self.sounds[position].audioData = audioData
-            }
-        }
-    }*/
     
     func incrementStreamCount(_ sound: Sound) {
         if let artistObjectId = sound.artist?.objectId {

@@ -424,21 +424,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressArtistReleases(_ sender: UIButton) {
         didSelectSound(artistReleases, row: sender.tag)
-        
         MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Release Sound", "description": "User pressed song that artists released."])
     }
     
     @objc func didPressArtistCollection(_ sender: UIButton) {
         didSelectSound(artistCollection, row: sender.tag)
-        
         MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Collection Sound", "description": "User pressed song in artist's collection."])
     }
     
     func didSelectSound(_ sounds: Array<Sound>, row: Int) {
         if let player = self.player {
             self.player?.sounds = sounds
-            //self.player?.currentSoundIndex = row 
-            //player.sounds = sounds
             player.didSelectSoundAt(row)
             if self.miniPlayerView == nil {
                 self.setUpMiniPlayer()
@@ -494,8 +490,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         self.artistCollection = sounds
                         self.didLoadCollection = true
                     } else {
-                        self.didloadReleases = true
                         self.artistReleases = sounds
+                        self.didloadReleases = true
                     }
                     self.tableView.reloadData()
 
@@ -617,11 +613,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.profileArtist?.website {
-            let websiteURL = URL(string: website)!
-            if UIApplication.shared.canOpenURL(websiteURL) {
-                UIApplication.shared.open(websiteURL, options: [:], completionHandler: nil)
-                
-                MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Website", "description": "User selected website"])
+            if let websiteURL = URL(string: website) {
+                if UIApplication.shared.canOpenURL(websiteURL) {
+                    UIApplication.shared.open(websiteURL, options: [:], completionHandler: nil)
+                    MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Website", "description": "User selected website"])
+                }
             }
         }
     }

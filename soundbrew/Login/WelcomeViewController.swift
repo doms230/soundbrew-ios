@@ -72,7 +72,6 @@ class WelcomeViewController: UIViewController {
     
     lazy var signinButton: UIButton = {
         let button = UIButton()
-        //button.setTitle("SIGN IN", for: .normal)
         let localizedSignin = NSLocalizedString("signin", comment: "")
         button.setTitle(localizedSignin, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
