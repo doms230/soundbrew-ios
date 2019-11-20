@@ -93,7 +93,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     
     @objc func next(_ sender: UIButton){
         self.usernameText.resignFirstResponder()
-        usernameText.text = self.uiElement.cleanUpText(usernameText.text!)
+        usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
         if validateUsername() {
             checkIfUsernameExistsThenMoveForward()
         }

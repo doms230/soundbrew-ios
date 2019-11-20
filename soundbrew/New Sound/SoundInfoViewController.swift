@@ -33,9 +33,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var didPressUploadButton = false
     
     var soundThatIsBeingEdited: Sound?
-    
-    var uploadButton: UIBarButtonItem!
-    
+        
     let localizedAdd = NSLocalizedString("add", comment: "")
     
     override func viewDidLoad() {
@@ -48,9 +46,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidAppear(_ animated: Bool) {
         //loading city Tag, so want to get most recent data if user updated profile.
-        if tableView != nil {
-            self.tableView.reloadData()
-        }
+        reloadData()
     }
         
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -78,75 +74,74 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let twitterCharacters = 280
         //all objectIds are 10 characters
         let urlLength = "https://wwww.soundbrew.app/s/qqqqqqqqqq".count
-        let soundbrewCharacterCount = "@soundbrew".count + 1
+        let soundbrewCharacterCount = self.uiElement.soundbrewSocialHandle.count + 1
         let totalPreTweetLength = urlLength + soundbrewCharacterCount
         return twitterCharacters - totalPreTweetLength
     }
     
     //mark: views
-    let localizedCancel = NSLocalizedString("cancel", comment: "")
+    var uploadButton: UIBarButtonItem!
+    var backButton: UIBarButtonItem!
     func setUpViews() {
+        var localizedGoback = NSLocalizedString("cancel", comment: "")
         var shouldUploadButtonBeEnabled = false
         if soundThatIsBeingEdited?.objectId != nil {
             shouldUploadButtonBeEnabled = true
-            soundParseFileDidFinishProcessing = true 
+            soundParseFileDidFinishProcessing = true
+            localizedGoback = NSLocalizedString("back", comment: "")
+        } else {
+            localizedGoback = NSLocalizedString("cancel", comment: "")
         }
+        
         let localizedRelease = NSLocalizedString("release", comment: "")
         uploadButton = UIBarButtonItem(title: localizedRelease, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
         
         self.navigationItem.hidesBackButton = true
-        let backButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(didPressCancelButton(_:)))
+        backButton = UIBarButtonItem(title: localizedGoback, style: .plain, target: self, action: #selector(didPressGoBackButton(_:)))
         self.navigationItem.leftBarButtonItem = backButton
     }
     
-    @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
+    @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
         self.soundThatIsBeingEdited?.title = self.soundTitle.text
         if let sound = self.soundThatIsBeingEdited {
             if sound.isDraft! && self.soundParseFileDidFinishProcessing {
-                showDraftOrDiscardMessage()
+                saveDraft()
             } else {
                 self.uiElement.goBackToPreviousViewController(self)
             }
         }
     }
     
-    func showDraftOrDiscardMessage() {
-        let localizedIfYouGobackMessage = NSLocalizedString("ifYouGoBackMessage", comment: "")
-        let menuAlert = UIAlertController(title: localizedIfYouGobackMessage, message: nil , preferredStyle: .actionSheet)
-        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
-        let localizedSaveDraft = NSLocalizedString("saveDraft", comment: "")
-        menuAlert.addAction(UIAlertAction(title: localizedSaveDraft, style: .default, handler: { action in
-            if let sound = self.soundThatIsBeingEdited {
-                if sound.objectId == nil {
-                    self.createSound(sound, isDraft: true)
-                } else {
-                    self.updateSound(sound, isDraft: true)
-                }
+    func saveDraft() {
+        if let sound = self.soundThatIsBeingEdited {
+            if sound.objectId == nil {
+                self.createSound(sound, isDraft: true)
+            } else {
+                self.updateSound(sound, isDraft: true)
             }
-            
-            MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Save Draft", "Description": "User save sound as draft"])
-        }))
-        let localizedDiscard = NSLocalizedString("discard", comment: "")
-        menuAlert.addAction(UIAlertAction(title: localizedDiscard, style: .default, handler: { action in
-            self.uiElement.goBackToPreviousViewController(self)
-            
-            MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "Discard", "Description": "User discarded sound"])
-        }))
-        self.present(menuAlert, animated: true, completion: nil)
+        }
     }
     
     //MARK: Tableview
-    var tableView: UITableView!
+    var tableView = UITableView()
     let soundInfoReuse = "soundInfoReuse"
     let soundTagReuse = "soundTagReuse"
     let soundProgressReuse = "soundProgressReuse"
     let soundSocialReuse = "soundSocialReuse"
     let dividerReuse = "dividerReuse"
     
+    func reloadData() {
+        if  self.soundTitle != nil {
+            self.soundThatIsBeingEdited?.title = self.soundTitle.text
+        }
+        
+        self.tableView.reloadData()
+    }
+    
     func setUpTableView() {
-        tableView = UITableView()
+       // tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
@@ -341,14 +336,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
     func changeBio(_ value: String?) {
         if let newTwitterMessage = value {
-            if newTwitterMessage.contains("@soundbrew") {
+            if newTwitterMessage.contains(self.uiElement.soundbrewSocialHandle) {
                 twitterMessage = newTwitterMessage
             } else {
-                let newTwitterMessageWithsoundbrewAttached = "\(newTwitterMessage) @soundbrew"
+                let newTwitterMessageWithsoundbrewAttached = "\(newTwitterMessage) \(self.uiElement.soundbrewSocialHandle)"
                 twitterMessage = newTwitterMessageWithsoundbrewAttached
             }
-            self.soundThatIsBeingEdited?.title = self.soundTitle.text
-            self.tableView.reloadData()
+            reloadData()
         }
     }
         
@@ -361,15 +355,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var shouldPostLinkToTwitter = false
     
     func getTwitterUserID() {
-        twitterMessage = "Listen on @soundbrew"
+        twitterMessage = "Listen on \(self.uiElement.soundbrewSocialHandle)"
         let store = TWTRTwitter.sharedInstance().sessionStore
         
         if let userId = store.session()?.userID {
             self.twitterUserID = userId
             shouldPostLinkToTwitter = true
-            if self.tableView != nil {
-                self.tableView.reloadData()
-            }
+            reloadData()
         }
     }
     
@@ -383,7 +375,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             shouldPostLinkToTwitter = false
         }
-        self.tableView.reloadData()
+        self.reloadData()
     }
     
     func authenticateTwitter(_ sender: UISwitch) {
@@ -391,7 +383,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let session = session {
                 self.twitterUserID = session.userID
                 self.shouldPostLinkToTwitter = true
-                self.tableView.reloadData()
+                self.reloadData()
             } else if let error = error {
                 print("error: \(error.localizedDescription)");
                 sender.isOn = false
@@ -403,7 +395,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let userID = self.twitterUserID {
             let client = TWTRAPIClient(userID: userID)
             let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "\(twitterMessage ?? "Listen to \(title) on @soundbrew") \(url)"]
+            let params = ["status": "\(twitterMessage ?? "Listen to \(title) on \(self.uiElement.soundbrewSocialHandle)") \(url)"]
             var clientError : NSError?
             let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
             client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
@@ -545,8 +537,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
-        self.soundThatIsBeingEdited?.title = self.soundTitle.text
-        self.tableView.reloadData()
+        self.reloadData()
     }
     
     func combineSelectedTags() -> Array<Tag> {
@@ -654,9 +645,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     break
                 }
             }
-            if self.tableView != nil {
-                self.tableView.reloadData()
-            }
+            self.reloadData()
         }
     }
     
@@ -685,7 +674,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundParseFileDidFinishProcessing = true
+                
                 self.uploadButton.isEnabled = true
+                
+                let localizedSaveDraft = NSLocalizedString("saveDraft", comment: "")
+                
+                self.backButton = UIBarButtonItem(title: localizedSaveDraft, style: .plain, target: self, action: #selector(self.didPressGoBackButton(_:)))
+                self.navigationItem.leftBarButtonItem = self.backButton
+                
                 self.progressSliderTitle.text = localizedAudioProcessingComplete
                 
             } else if let error = error {
@@ -717,7 +713,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
         
         self.soundThatIsBeingEdited?.artImage = image
-        self.tableView.reloadData()
+        self.reloadData()
         
         let proPic = image.jpegData(compressionQuality: 0.5)
         self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)

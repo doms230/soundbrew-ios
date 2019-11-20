@@ -47,7 +47,7 @@
 		F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */; };
 		F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */; };
 		F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */; };
-		F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */; };
+		F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */; };
 		F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */; };
 		F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */; };
 		F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */; };
@@ -186,7 +186,7 @@
 		F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundListTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoViewController.swift; sourceTree = "<group>"; };
 		F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundInfoTableViewCell.swift; sourceTree = "<group>"; };
-		F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadSoundAudioViewController.swift; sourceTree = "<group>"; };
+		F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewSoundViewController.swift; sourceTree = "<group>"; };
 		F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
@@ -381,7 +381,7 @@
 			isa = PBXGroup;
 			children = (
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
-				F2F8B99821DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift */,
+				F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
 			);
 			path = "New Sound";
@@ -778,7 +778,7 @@
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
-				F2F8B99C21DBEF4A0024AFB6 /* UploadSoundAudioViewController.swift in Sources */,
+				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

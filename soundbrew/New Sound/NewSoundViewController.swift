@@ -13,7 +13,7 @@ import SnapKit
 import NVActivityIndicatorView
 import AppCenterAnalytics
 
-class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate {
+class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -188,7 +188,7 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     
     func showUploadSoundFileUI() {
         let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
-        let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .open)
+        let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
         documentPicker.delegate = self
         documentPicker.modalPresentationStyle = .formSheet
         self.present(documentPicker, animated: true, completion: nil)

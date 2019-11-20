@@ -33,7 +33,7 @@ class SnapchatStoriesArtImage: UIView {
     
     lazy var appName: UILabel = {
         let label = UILabel()
-        label.text = "Listen on @sound_brew"
+        label.text = "Listen on \(self.uiElement.soundbrewSocialHandle)"
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         return label

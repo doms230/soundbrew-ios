@@ -35,6 +35,8 @@ class UIElement {
     let localizedMore = NSLocalizedString("more", comment: "")
     let localizedOops = NSLocalizedString("oops", comment: "")
     
+    let soundbrewSocialHandle = "@sound_brew"
+    
     func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
         let uiFont = UIFont(name: "\(mainFont)-bold", size: 17)!
         let buttonTitleSize = (buttonTitle as NSString).size(withAttributes:[.font: uiFont])
@@ -140,7 +142,7 @@ class UIElement {
         UITextField.text = ""
     }
     
-    func cleanUpText(_ text: String) -> String {
+    func cleanUpText(_ text: String, shouldLowercaseText: Bool) -> String {
         var textWithNoSpaces = ""
         let textArray = text.components(separatedBy: " ")
         for text in textArray {
@@ -150,8 +152,12 @@ class UIElement {
         let textWithWhiteSpaceTrimmed = textWithNoSpaces.trimmingCharacters(
             in: NSCharacterSet.whitespacesAndNewlines
         )
+        
+        if shouldLowercaseText {
+            return textWithWhiteSpaceTrimmed.lowercased()
+        }
                 
-        return textWithWhiteSpaceTrimmed.lowercased()
+        return textWithWhiteSpaceTrimmed
     }
     
     //mark: date and time

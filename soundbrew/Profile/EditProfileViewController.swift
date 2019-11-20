@@ -77,9 +77,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        usernameText.text = self.uiElement.cleanUpText(usernameText.text!)
-        emailText.text = self.uiElement.cleanUpText(emailText.text!)
-        websiteText.text = self.uiElement.cleanUpText(websiteText.text!)
+        usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
+        emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
+        websiteText.text = self.uiElement.cleanUpText(websiteText.text!, shouldLowercaseText: true)
         
         if emailText.text != self.artist?.email {
             shouldUpdateEmail = true
@@ -396,7 +396,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 
                 if let username = self.artist?.username {
                     if self.usernameText.text != username {
-                        self.usernameText.text = self.uiElement.cleanUpText(self.usernameText.text!)
+                        self.usernameText.text = self.uiElement.cleanUpText(self.usernameText.text!, shouldLowercaseText: true)
                         user["username"] = self.usernameText.text!
                     }
                 }

@@ -90,7 +90,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         label.textColor = .white
         label.backgroundColor = color.black()
         label.isScrollEnabled = false
-        label.text = "Listen to Untitled on @soundbrew"
+        label.text = "Listen to Untitled on \(self.uiElement.soundbrewSocialHandle)"
         label.layer.cornerRadius = 3
         label.clipsToBounds = true
         label.layer.borderWidth = 1
