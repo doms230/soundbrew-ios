@@ -128,6 +128,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let player = self.player {
             if player.isPlaying {
                 player.pause()
+                sendSoundUpdateToUI()
                 secondsPlayedTimer.invalidate()
             }
         }

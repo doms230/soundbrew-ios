@@ -36,10 +36,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         FirebaseApp.configure()
         
-        //let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
-        let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
+        //usrname: teststripe
+        let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
+        //let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
         let config = STPPaymentConfiguration.shared() 
-        config.publishableKey = liveStripeKey
+        config.publishableKey = testStripeKey
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
         config.companyName = "Soundbrew Artists"
         

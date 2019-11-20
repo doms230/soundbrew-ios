@@ -188,15 +188,18 @@ class UploadSoundAudioViewController: UIViewController, UIDocumentPickerDelegate
     
     func showUploadSoundFileUI() {
         let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
-        let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
+        let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .open)
         documentPicker.delegate = self
         documentPicker.modalPresentationStyle = .formSheet
         self.present(documentPicker, animated: true, completion: nil)
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let fileURL = urls.first else {
+             return
+        }
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: "\(urls[0])", audioData: nil, artist: artist, tmpFile: nil, tips: nil, tippers: nil, isDraft: true, isNextUpToPlay: false)
+        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tips: nil, tippers: nil, isDraft: true, isNextUpToPlay: false)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     

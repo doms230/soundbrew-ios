@@ -33,7 +33,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.navigationItem.leftBarButtonItem = yourSoundbrewButton
         setupPlayerView()
     }
-    
+        
     override func viewDidAppear(_ animated: Bool) {
         self.setSound()
     }
