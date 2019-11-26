@@ -196,6 +196,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if player != nil {
             player?.pause()
             player = nil
+        } else if let sound = self.currentSound {
+            if sound.audioData == nil {
+                //don't want audio to continue downloading while attempting to fetch next song...
+                //holds up everything.
+                sound.audio?.cancel()
+            }
         }
         
         clearCurrentSoundTmpData()

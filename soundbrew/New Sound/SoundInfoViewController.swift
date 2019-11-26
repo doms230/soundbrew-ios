@@ -155,7 +155,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.view.addSubview(tableView)
         
         if soundThatIsBeingEdited?.objectId == nil {
-            processAudioForDatabase(nil)
+            processAudioForDatabase()
         }
     }
     
@@ -201,6 +201,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         switch indexPath.section {
         case soundProgress:
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
+            let localizedProcessingAudio = NSLocalizedString("processingAudio", comment: "")
+            cell.titleLabel.text = localizedProcessingAudio
             self.progressSliderTitle = cell.titleLabel
             self.progressSlider = cell.progressSlider
             //tableView.separatorStyle = .none
@@ -653,19 +655,54 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var progressSlider: UISlider!
     var progressSliderTitle: UILabel!
     
-    func processAudioForDatabase(_ zipFilePath: TemporaryFile?) {
-        do {
-            if let soundFileString = soundThatIsBeingEdited?.audioURL {
-                let soundFileURL = URL(string: soundFileString)
-                let audioFile = try Data(contentsOf: soundFileURL!, options: .uncached)
-                let name = "audio.\(soundFileURL!.pathExtension)"
-                self.soundThatIsBeingEdited?.audio = PFFileObject(name: name, data: audioFile)
-                self.saveAudioFile(self.soundThatIsBeingEdited!.audio!)
+    func processAudioForDatabase() {
+        if let soundFileString = soundThatIsBeingEdited?.audioURL {
+            if let soundFileURL = URL(string: soundFileString) {
+                if pathExtensionIsUncompressed(soundFileURL.pathExtension) {
+                    self.convertAudiotoM4a(soundFileURL)
+                } else {
+                    convertURLToDataAndSavetoDatabase(soundFileURL)
+                }
+                
+            } else {
+                let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
+                self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload)")
             }
+        }
+    }
+    
+    func pathExtensionIsUncompressed(_ pathExtension: String) -> Bool {
+        switch pathExtension {
+        case "wav", "pcm", "aiff":
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func convertURLToDataAndSavetoDatabase(_ soundfileURL: URL) {
+        do {
+            let audioFile = try Data(contentsOf: soundfileURL, options: .uncached)
+            let name = "audio.\(soundfileURL.pathExtension)"
+            self.soundThatIsBeingEdited?.audio = PFFileObject(name: name, data: audioFile)
+            self.saveAudioFile(self.soundThatIsBeingEdited!.audio!)
         } catch let error {
             let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
             self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload) \(error)")
         }
+    }
+    
+    func convertAudiotoM4a(_ audioURL: URL) {
+        let dirPath = FileManager.default.temporaryDirectory
+        let outputURL = dirPath.appendingPathComponent("audio.m4a")
+        let converter = AKConverter(inputURL: audioURL, outputURL: outputURL)
+        converter.start(completionHandler: { error in
+            if let error = error {
+                print(error)
+            } else {
+                self.convertURLToDataAndSavetoDatabase(outputURL)
+            }
+        })
     }
     
     func saveAudioFile(_ soundParseFile: PFFileObject) {
@@ -685,14 +722,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.progressSliderTitle.text = localizedAudioProcessingComplete
                 
             } else if let error = error {
-                self.errorAlert("Sound Processing Failed", message: error.localizedDescription)
+                let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
+                self.errorAlert(localizedProcessingAudio, message: error.localizedDescription)
+                self.progressSliderTitle.text = localizedProcessingAudio
                 
             }
             
         }, progressBlock: {
             (percentDone: Int32) -> Void in
-            let localizedProcessingAudio = NSLocalizedString("processingAudio", comment: "")
-            self.progressSliderTitle.text = localizedProcessingAudio
+            //self.progressSliderTitle.text = localizedProcessingAudio
             self.progressSlider!.value = Float(percentDone)
         })
     }

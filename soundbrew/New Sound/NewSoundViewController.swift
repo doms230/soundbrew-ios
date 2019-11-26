@@ -167,7 +167,8 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     //mark: new sound upload
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        let localizedUpload = NSLocalizedString("upload", comment: "")
+        self.showUploadSoundFileUI()
+       /* let localizedUpload = NSLocalizedString("upload", comment: "")
         let menuAlert = UIAlertController(title: localizedUpload, message: nil , preferredStyle: .actionSheet)
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -181,7 +182,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             UIApplication.shared.open(URL(string: "https://www.soundbrew.app/upload")!, options: [:], completionHandler: nil)
             MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the Web"])
         }))
-        self.present(menuAlert, animated: true, completion: nil)
+        self.present(menuAlert, animated: true, completion: nil)*/
         
         MSAnalytics.trackEvent("UploadSoundViewController", withProperties: ["Button" : "New Upload", "description": "user pressed new upload button"])
     }
