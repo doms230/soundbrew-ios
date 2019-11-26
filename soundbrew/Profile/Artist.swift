@@ -45,9 +45,9 @@ class Artist {
         self.earnings = earnings
     }
     
-    func loadUserInfoFromCloud(_ userId: String, target: UIViewController, cell: ProfileTableViewCell?) {
+    func loadUserInfoFromCloud(_ cell: ProfileTableViewCell?) {
         let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: userId) {
+        query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
             if let error = error {
                 print(error)
@@ -66,23 +66,23 @@ class Artist {
                 
                 if let name = user["artistName"] as? String {
                     self.name = name
-                    if let cell = cell {
+                    /*if let cell = cell {
                         cell.displayNameLabel.text = name
-                    }
+                    }*/
                 }
                 
                 if let city = user["city"] as? String {
                     self.city = city
-                    if let cell = cell {
+                    /*if let cell = cell {
                         cell.city.text = city
-                    }
+                    }*/
                 }
                 
                 if let userImageFile = user["userImage"] as? PFFileObject {
                     self.image = userImageFile.url!
-                    if let cell = cell {
+                    /*if let cell = cell {
                         cell.profileImage.kf.setImage(with: URL(string: userImageFile.url!))
-                    }
+                    }*/
                 }
                 
                 if let bio = user["bio"] as? String {
@@ -91,6 +91,15 @@ class Artist {
                 
                 if let website = user["website"] as? String {
                     self.website = website
+                }
+                
+                if let cell = cell {
+                    cell.displayNameLabel.text = self.name
+                    cell.city.text = self.city
+                    cell.profileImage.kf.setImage(with: URL(string: self.image!))
+                } else {
+                    let player = Player.sharedInstance
+                    player.sendSoundUpdateToUI()
                 }
             }
         }

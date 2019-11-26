@@ -31,7 +31,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
     var didRecordPlay = false
-    var soundsPlayed = 2
+   // var soundsPlayed = 2
     
     override init() {
         super.init()
@@ -87,8 +87,16 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         if soundPlayable {
             resetStream()
+            if sound.artImage == nil {
+                loadArtfileImageData(sound)
+            }
+            
+            if sound.artist?.image == nil {
+                sound.artist?.loadUserInfoFromCloud(nil)
+            }
+            
             self.play()
-            //self.setUpAudioForNextSound()
+            self.fetchAudioFromNextSound()
             
         } else {
             setUpNextSong(false, at: nil)
@@ -193,9 +201,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
         clearCurrentSoundTmpData()
         
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
-            updateUI(sound)
+            currentSound = sound
+            self.sendSoundUpdateToUI()
             prepareToPlaySound(sound)
-            checkIfMoreAudioDataShouldBeLoaded()
         }
     }
     
@@ -215,19 +223,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }        
     }
     
-    func checkIfMoreAudioDataShouldBeLoaded() {
-        if soundsPlayed == 2 {
-            soundsPlayed = 0
-            var futureSoundIndex = self.currentSoundIndex + 1
-            for _ in 0...2 {
-                if self.sounds.indices.contains(futureSoundIndex) {
-                    self.sounds[futureSoundIndex].fetchAudioData()
-                    futureSoundIndex+=1
-                }
-             }
-
-        } else {
-            soundsPlayed+=1
+    func fetchAudioFromNextSound() {
+        let nextIndex = self.currentSoundIndex + 1
+        if self.sounds.indices.contains(nextIndex) {
+            self.sounds[nextIndex].fetchAudioData()
+            self.sounds[nextIndex].isNextUpToPlay = false
         }
     }
     
@@ -257,12 +257,15 @@ class Player: NSObject, AVAudioPlayerDelegate {
         } else {
             self.sounds[currentSoundIndex].isNextUpToPlay = true
             self.sounds[currentSoundIndex].fetchAudioData()
+            
+            //start timer and timeout and skip to next song if audio fetch takes greater than 10 seconds
+            /*Timer.scheduledTimer(withTimeInterval: 59, repeats: false) { (_) in
+                if self.sounds[self.currentSoundIndex].audioData == nil {
+                    self.sounds[self.currentSoundIndex].isNextUpToPlay = false
+                    self.next()
+               }
+            }*/
         }
-    }
-    
-    func updateUI(_ sound: Sound) {
-        currentSound = sound
-        self.sendSoundUpdateToUI()
     }
     
     func incrementPlaylistPositionAndReturnSound() -> Sound {
@@ -500,7 +503,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     return image
             }
         } else {
-            loudSoundAndArtistInfo(sound)
+            //loudSoundAndArtistInfo(sound)
         }
         
         if let player = player {
@@ -514,7 +517,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
-    func loudSoundAndArtistInfo(_ sound: Sound) {
+    func loadArtfileImageData(_ sound: Sound) {
         if let artFile = sound.artFile {
             artFile.getDataInBackground { (imageData: Data?, error: Error?) in
                 if let error = error {
@@ -524,12 +527,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     let image = UIImage(data:imageData)
                     sound.artImage = image
                     
-                    if (sound.artist?.name) != nil {
+                    self.setBackgroundAudioNowPlaying(self.player, sound: sound)
+                    
+                    /*if (sound.artist?.name) != nil {
                         self.setBackgroundAudioNowPlaying(self.player, sound: sound)
                         
                     } else {
                         self.loadUserInfoFromCloud(sound.artist!.objectId, i: self.currentSoundIndex)
-                    }
+                    }*/
                 }
             }
         }

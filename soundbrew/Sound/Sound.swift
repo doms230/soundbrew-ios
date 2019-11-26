@@ -66,6 +66,10 @@ class Sound {
                             player.prepareAndPlay(audioData)
                         }
                     }
+                    
+                    if self.artist?.image == nil {
+                        self.artist?.loadUserInfoFromCloud(nil)
+                    }
                 }
             }
         }

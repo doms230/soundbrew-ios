@@ -313,10 +313,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                     self.artistImage.image = UIImage(named: "profile_icon")
                 }
                 
-            } else {
+            } /*else {
                 self.artistLabel.text = ""
                 loadUserInfoFromCloud(sound.artist!.objectId)
-            }
+            }*/
             
             if playBackButton.superview == nil {
                 showPlayerView()
@@ -528,14 +528,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     var timer = Timer()
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
+    }
     @objc func UpdateTimer(_ timer: Timer) {
         if let currentTime = player.player?.currentTime {
             playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(currentTime)))"
             playBackSlider.value = Float(currentTime)
         }
-    }
-    func startTimer() {
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     
     lazy var playBackCurrentTime: UILabel = {
@@ -873,7 +873,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         player.currentSound = sounds[0]
         player.currentSoundIndex = 0
         player.setUpNextSong(false, at: 0)
-        player.soundsPlayed = 2
+        //player.soundsPlayed = 2
     }
     
     @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {

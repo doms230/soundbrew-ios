@@ -148,6 +148,39 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         })
     }
     
+    func getTwitterImageAndBio() {
+        self.updateUserInfo()
+        
+        /*let client = TWTRAPIClient(userID: twitterID)
+        client.loadUser(withID: twitterID!) {(user, error) in
+           if let userName = user?.screenName{
+            let url = "https://twitter.com/\(userName)/profile_image?size=original")
+           }
+        }*/
+        
+        /*if let userID = self.twitterUserID {
+            let client = TWTRAPIClient(userID: userID)
+            c
+            let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
+            let params = ["status": "\(twitterMessage ?? "Listen to \(title) on \(self.uiElement.soundbrewSocialHandle)") \(url)"]
+            var clientError : NSError?
+            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
+            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
+                if let connectionError = connectionError {
+                    print("Error: \(connectionError)")
+                }
+                do {
+                    if let data = data {
+                        let json = try JSONSerialization.jsonObject(with: data, options: [])
+                        print("json: \(json)")
+                    }
+                } catch let jsonError {
+                    print("json error: \(jsonError.localizedDescription)")
+                }
+            }
+        }*/
+    }
+    
     func updateUserInfo() {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
@@ -167,6 +200,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                     user["twitterID"] = self.twitterID
                     if let twitterUsername = self.twitterUsername {
                         user["website"] = "https://www.twitter.com/\(twitterUsername)"
+                        //
                     }
                     user.saveEventually {
                         (success: Bool, error: Error?) in

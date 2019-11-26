@@ -341,7 +341,7 @@ class SoundList: NSObject, PlayerDelegate {
     func updateSounds(sounds: [Sound]) {
         self.isUpdatingData = false
                 
-        if self.player != nil {
+        /*if self.player != nil {
             if self.sounds.count > 0 {
                 //fetch 1 songs ahead of time
                 var fetchAudioCount = 0
@@ -352,7 +352,7 @@ class SoundList: NSObject, PlayerDelegate {
                     }
                 }
             }
-        }
+        }*/
         self.tableView?.reloadData()
     }
     
