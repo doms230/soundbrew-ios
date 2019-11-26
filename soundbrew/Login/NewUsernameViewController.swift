@@ -11,6 +11,8 @@ import Parse
 import SnapKit
 import NVActivityIndicatorView
 import TwitterKit
+import Kingfisher
+import SwiftyJSON
 
 class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     let uiElement = UIElement()
@@ -21,6 +23,8 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     var authTokenSecret: String?
     var twitterUsername: String?
     var twitterID: String?
+    var twitterBio: String?
+    var twitterImage: PFFileObject?
     
     lazy var usernameText: UITextField = {
         let localizedUsername = NSLocalizedString("username", comment: "")
@@ -133,7 +137,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func authenticateWithTwitter(_ userId: String, auth_token: String, auth_token_secret: String, username: String) {
-        
+                        
         PFUser.logInWithAuthType(inBackground: "twitter", authData: ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]).continueOnSuccessWith(block: {
             (ignored: BFTask!) -> AnyObject? in
             
@@ -142,74 +146,136 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             installation?["user"] = parseUser
             installation?["userId"] = parseUser?.objectId
             installation?.saveEventually()
-            self.updateUserInfo()
+            
+            self.getTwitterImageAndBio()
             
             return AnyObject.self as AnyObject
         })
     }
     
     func getTwitterImageAndBio() {
-        self.updateUserInfo()
-        
-        /*let client = TWTRAPIClient(userID: twitterID)
-        client.loadUser(withID: twitterID!) {(user, error) in
-           if let userName = user?.screenName{
-            let url = "https://twitter.com/\(userName)/profile_image?size=original")
-           }
-        }*/
-        
-        /*if let userID = self.twitterUserID {
+        if let userID = self.twitterID {
             let client = TWTRAPIClient(userID: userID)
-            c
-            let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "\(twitterMessage ?? "Listen to \(title) on \(self.uiElement.soundbrewSocialHandle)") \(url)"]
+            let statusesShowEndpoint = "https://api.twitter.com/1.1/users/show.json"
+            let params = ["user_id": userID]
             var clientError : NSError?
-            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
+            let request = client.urlRequest(withMethod: "GET", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
             client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
                 if let connectionError = connectionError {
                     print("Error: \(connectionError)")
                 }
                 do {
                     if let data = data {
-                        let json = try JSONSerialization.jsonObject(with: data, options: [])
-                        print("json: \(json)")
+                        let jsonData = try JSONSerialization.jsonObject(with: data, options: [])
+                        let json = JSON(jsonData)
+                        
+                        if let description = json["description"].string {
+                            self.twitterBio = description
+                        }
+                                                
+                        if let twitterImageURL = json["profile_image_url_https"].string {
+                            print(twitterImageURL)
+                            //print(self.getProperImageURL(twitterImageURL))
+                            self.getTwitterImageAndUpdateUserInfo(twitterImageURL)
+                        } else {
+                            self.updateUserInfo()
+                        }
                     }
                 } catch let jsonError {
                     print("json error: \(jsonError.localizedDescription)")
                 }
             }
-        }*/
+        }
+    }
+    
+    /*func getProperImageURL(_ twitterImageURL: String) -> String {
+        let url = URL(string: twitterImageURL)
+        let path = url?.absoluteString
+        let urlArray = path!.split{$0 == "/"}.map(String.init)
+        print(urlArray)
+        let urlLast = urlArray.last!
+        let urlLastArray = urlLast.split{$0 == "_"}.map(String.init)
+        print(urlLastArray)
+        var newURL = "https://"
+        
+        for i in 0..<urlArray.count {
+            if i != 0 && i != urlArray.count - 1 {
+                newURL = "\(newURL)/\(urlArray[i])"
+            }
+        }
+        
+        for i in 0..<urlLastArray.count {
+            if i == 0 {
+                newURL = "/\(urlLastArray[0])"
+            } else if i != urlLastArray.count - 1 {
+                newURL = "\(newURL)_\(urlLastArray)"
+            }
+        }
+        
+        newURL = "\(newURL).jpg"
+        
+        return newURL
+    }*/
+    
+    func getTwitterImageAndUpdateUserInfo(_ twitterImageURL: String) {
+        let imageView = UIImageView()
+        imageView.kf.setImage(with: URL(string: twitterImageURL)) { result in
+            switch result {
+            case .success(let value):
+                let chosenProfileImage = value.image.jpegData(compressionQuality: 0.5)
+                let newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
+                newProfileImageFile?.saveInBackground {
+                    (success: Bool, error: Error?) in
+                    if (success) {
+                        self.twitterImage = newProfileImageFile
+                    }
+                    self.updateUserInfo()
+                }
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
     }
     
     func updateUserInfo() {
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                if let _ = user["email"] as? String {
-                    Customer.shared.getCustomer(user.objectId!)
-                    self.stopAnimating()
-                    self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                } else {
-                    user["artistName"] = self.usernameText.text
-                    user["username"] = self.usernameText.text
-                    user["email"] = self.emailString
-                    user["twitterID"] = self.twitterID
-                    if let twitterUsername = self.twitterUsername {
-                        user["website"] = "https://www.twitter.com/\(twitterUsername)"
-                        //
-                    }
-                    user.saveEventually {
-                        (success: Bool, error: Error?) in
-                        if (success) {
-                            Customer.shared.getCustomer(user.objectId!)
-                            self.stopAnimating()
-                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                        } else if let error = error {
-                            UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
+        if let currentUserId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "_User")
+            query.getObjectInBackground(withId: currentUserId) {
+                (user: PFObject?, error: Error?) -> Void in
+                if let error = error {
+                    print(error)
+                    
+                } else if let user = user {
+                    if let _ = user["email"] as? String {
+                        Customer.shared.getCustomer(user.objectId!)
+                        self.stopAnimating()
+                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                    } else {
+                        user["artistName"] = self.usernameText.text
+                        user["username"] = self.usernameText.text
+                        user["email"] = self.emailString
+                        user["twitterID"] = self.twitterID
+                        
+                        if let twitterBio = self.twitterBio {
+                            user["bio"] = twitterBio
+                        }
+                        
+                        if let twitterImage = self.twitterImage {
+                              user["userImage"] = twitterImage
+                        }
+                        
+                        if let twitterUsername = self.twitterUsername {
+                            user["website"] = "https://www.twitter.com/\(twitterUsername)"
+                        }
+                        user.saveEventually {
+                            (success: Bool, error: Error?) in
+                            if (success) {
+                                Customer.shared.getCustomer(user.objectId!)
+                                self.stopAnimating()
+                                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                            } else if let error = error {
+                                UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
+                            }
                         }
                     }
                 }

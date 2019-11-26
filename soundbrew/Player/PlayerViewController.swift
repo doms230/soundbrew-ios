@@ -448,7 +448,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     lazy var artistImage: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "profile_icon")
+       // image.image = UIImage(named: "profile_icon")
         image.layer.cornerRadius = 35 / 2
         image.clipsToBounds = true
         return image
