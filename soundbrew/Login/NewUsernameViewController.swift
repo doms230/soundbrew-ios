@@ -174,8 +174,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                         }
                                                 
                         if let twitterImageURL = json["profile_image_url_https"].string {
-                            print(twitterImageURL)
-                            //print(self.getProperImageURL(twitterImageURL))
                             self.getTwitterImageAndUpdateUserInfo(twitterImageURL)
                         } else {
                             self.updateUserInfo()
@@ -187,35 +185,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             }
         }
     }
-    
-    /*func getProperImageURL(_ twitterImageURL: String) -> String {
-        let url = URL(string: twitterImageURL)
-        let path = url?.absoluteString
-        let urlArray = path!.split{$0 == "/"}.map(String.init)
-        print(urlArray)
-        let urlLast = urlArray.last!
-        let urlLastArray = urlLast.split{$0 == "_"}.map(String.init)
-        print(urlLastArray)
-        var newURL = "https://"
-        
-        for i in 0..<urlArray.count {
-            if i != 0 && i != urlArray.count - 1 {
-                newURL = "\(newURL)/\(urlArray[i])"
-            }
-        }
-        
-        for i in 0..<urlLastArray.count {
-            if i == 0 {
-                newURL = "/\(urlLastArray[0])"
-            } else if i != urlLastArray.count - 1 {
-                newURL = "\(newURL)_\(urlLastArray)"
-            }
-        }
-        
-        newURL = "\(newURL).jpg"
-        
-        return newURL
-    }*/
     
     func getTwitterImageAndUpdateUserInfo(_ twitterImageURL: String) {
         let imageView = UIImageView()

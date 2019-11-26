@@ -215,7 +215,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func clearCurrentSoundTmpData() {
         if self.sounds.indices.contains(self.currentSoundIndex) {
-            //self.sounds[self.currentSoundIndex].audio?.clearCachedDataInBackground()
             DispatchQueue.main.async {
                 if let temporaryFile =  self.sounds[self.currentSoundIndex].tmpFile {
                     do {
@@ -263,14 +262,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         } else {
             self.sounds[currentSoundIndex].isNextUpToPlay = true
             self.sounds[currentSoundIndex].fetchAudioData()
-            
-            //start timer and timeout and skip to next song if audio fetch takes greater than 10 seconds
-            /*Timer.scheduledTimer(withTimeInterval: 59, repeats: false) { (_) in
-                if self.sounds[self.currentSoundIndex].audioData == nil {
-                    self.sounds[self.currentSoundIndex].isNextUpToPlay = false
-                    self.next()
-               }
-            }*/
         }
     }
     
