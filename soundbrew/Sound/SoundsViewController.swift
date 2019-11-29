@@ -97,8 +97,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //mark: tableview
     var tableView = UITableView()
-    //let soundReuse = "soundReuse"
-    let soundReuse = "soundReusev2"
+    let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
     let soundHeaderReuse = "soundHeaderReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
