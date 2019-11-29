@@ -80,9 +80,8 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedSound: Sound?
     var descendingOrder = "createdAt"
     
-    func soundCell(_ indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
-        let soundReuse = "soundReuse"
-        let cell = tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+    func soundCell(_ indexPath: IndexPath, tableView: UITableView, reuse: String) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
         
@@ -295,7 +294,7 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
-        self.sounds.removeAll()
+        //self.sounds.removeAll()
         self.isUpdatingData = true
         
         switch soundType {
@@ -452,6 +451,8 @@ class SoundList: NSObject, PlayerDelegate {
     func loadCollection(_ descendingOrder: String, profileUserId: String) {
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: profileUserId)
+        query.whereKey("soundId", notContainedIn: collectionSoundIds)
+        query.limit = 50
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -476,8 +477,10 @@ class SoundList: NSObject, PlayerDelegate {
     func loadFollowing(_ descendingOrder: String, profileUserId: String) {
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: profileUserId)
+        query.whereKey("toUserId", notContainedIn: followUserIds)
         query.whereKey("isRemoved", equalTo: false)
         query.addDescendingOrder("createdAt")
+        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadCollection = true

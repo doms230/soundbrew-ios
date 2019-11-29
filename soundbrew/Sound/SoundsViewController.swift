@@ -38,6 +38,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+   /* override func didReceiveMemoryWarning() {
+        if self.isViewLoaded && self.view.window == nil {
+            self.view = nil
+            print("did offload view")
+        }
+    }*/
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
@@ -90,7 +97,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //mark: tableview
     var tableView = UITableView()
-    let soundReuse = "soundReuse"
+    //let soundReuse = "soundReuse"
+    let soundReuse = "soundReusev2"
     let noSoundsReuse = "noSoundsReuse"
     let soundHeaderReuse = "soundHeaderReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
@@ -133,7 +141,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             return noSoundCell()
             
         } else {
-            return soundList.soundCell(indexPath, tableView: tableView)
+            return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
         }
     }
     
@@ -154,11 +162,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         if indexPath.row == soundList.sounds.count - 10 && !soundList.isUpdatingData && soundList.thereIsMoreDataToLoad {
-            if soundType == "discover" {
-                soundList.loadWorldCreatedAtSounds()
-            } else {
-                //soundList.loadSounds(soundList.descendingOrder, collectionIds: soundList.collectionSoundIds, userId: userId, searchText: nil, followIds: soundList.followUserIds)
-            }
+            soundList.determineTypeOfSoundToLoad(soundType)
         }
     }
     

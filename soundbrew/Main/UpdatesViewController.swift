@@ -38,6 +38,10 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             let localizedRegisterForUpdatesMessage = NSLocalizedString("registerForUpdatesMessage", comment: "")
             self.uiElement.welcomeAlert(localizedRegisterForUpdatesMessage, target: self)
         }
+        
+        let installation = PFInstallation.current()
+        installation?.badge = 0
+        installation?.saveEventually()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -302,12 +306,11 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                     }
                 }
                 
-                self.updates.sort(by: {$0.createdAt > $1.createdAt})
-                if self.updates.count > 0 {
-                    SKStoreReviewController.requestReview()
-                }
-               self.tableView.reloadData()
-                
+                    self.updates.sort(by: {$0.createdAt > $1.createdAt})
+                   self.tableView.reloadData()
+                    if self.updates.count > 0 {
+                        SKStoreReviewController.requestReview()
+                    }
             } else {
                 print("Error: \(error!)")
             }

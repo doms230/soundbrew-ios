@@ -36,10 +36,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
+        navigationController?.navigationBar.tintColor = .white
+        
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }

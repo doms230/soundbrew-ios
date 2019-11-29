@@ -41,13 +41,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let backItem = UIBarButtonItem()
         backItem.title = localizedBack
         navigationItem.backBarButtonItem = backItem
-        
-        let player = Player.sharedInstance
-        if player.player != nil {
-            self.setUpMiniPlayer()
-        } else if self.tableView == nil {
-            self.setUpTableView(nil)
-        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -222,7 +215,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     
                 } else if searchType == 2 && soundList != nil {
                     if soundList.sounds.count != 0 {
-                        return soundList.soundCell(indexPath, tableView: tableView)
+                        return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
                     } else {
                         return noResultsCell()
                     }

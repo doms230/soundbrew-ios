@@ -95,7 +95,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
             } else if let object = object {
                 object["customerId"] = customerId
-                object["balance"] = 0
+                object["balance"] = 5
                 object.saveEventually()                
             }
         }

@@ -142,7 +142,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             return cell
             
         } else {
-            return soundList.soundCell(indexPath, tableView: tableView)
+            return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
         }
     }
     

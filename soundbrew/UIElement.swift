@@ -15,6 +15,7 @@ import ShareInstagram
 import Alamofire
 import Kingfisher
 import AppCenterAnalytics
+import LinkPresentation
 
 class UIElement {
     let topOffset = 10
@@ -195,6 +196,7 @@ class UIElement {
         if let url = url {
             let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = target.view
+
             target.present(activityViewController, animated: true, completion: { () -> Void in
             })
         }
