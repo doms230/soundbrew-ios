@@ -73,21 +73,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func application(_ application: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         
-        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-            let url = userActivity.webpageURL!
-            
-            let pathComponents = url.pathComponents
-            if pathComponents.contains("s") {
-               self.receivedPostId(url.lastPathComponent)
+            if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+                let url = userActivity.webpageURL!
+                
+                let pathComponents = url.pathComponents
+                print(url.host)
+                print(url.lastPathComponent)
+                if url.host == "www.soundbrew.app" || url.host == "soundbrew.app" {
+                    if pathComponents.contains("s") {
+                       self.receivedPostId(url.lastPathComponent)
 
-            } else if pathComponents.contains("u") {
-                self.receivedUserId(url.lastPathComponent)
-            } else {
+                    } else if pathComponents.contains("u") {
+                        self.receivedUserId(url.lastPathComponent)
+                    } else {
+                        self.receivedUserId(url.lastPathComponent)
+                    }
+                } else {
                 return handleDynamicLink(userActivity)
             }
-
-        } else {
-            return handleDynamicLink(userActivity)
         }
         
         return false

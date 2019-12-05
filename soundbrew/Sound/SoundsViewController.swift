@@ -25,6 +25,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
+        setupNotificationCenter()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -35,6 +36,22 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             setUpMiniPlayer()
         } else {
             setUpTableView(nil)
+        }
+    }
+    
+    func setupNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        
+    }
+    
+    @objc func didReceiveSoundUpdate(){
+        if self.view.window != nil {
+            let player = Player.sharedInstance
+            if player.player != nil {
+                self.setUpMiniPlayer()
+            } else {
+                self.setUpTableView(nil)
+            }
         }
     }
     
@@ -232,6 +249,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.performSegue(withIdentifier: "showAddFunds", sender: self)
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else if artist.objectId == "collectors" {
+                if let currentSound = Player.sharedInstance.currentSound {
+                    soundList.selectedSound = currentSound
+                }
+                self.performSegue(withIdentifier: "showTippers", sender: self)
             } else {
                 soundList.selectedArtist(artist)
             }

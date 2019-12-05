@@ -37,7 +37,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
@@ -112,6 +114,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let viewController = segue.destination as! PeopleViewController
             viewController.loadType = followerOrFollowing
             break
+            
+        case "showTippers":
+            if let currentSound = Player.sharedInstance.currentSound {
+                let viewController = segue.destination as! PeopleViewController
+                viewController.sound = currentSound
+            }
+            let localizedCollectors = NSLocalizedString("collectors", comment: "")
+            let backItem = UIBarButtonItem()
+            backItem.title = localizedCollectors
+            navigationItem.backBarButtonItem = backItem
             
         default:
             break
@@ -244,6 +256,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.performSegue(withIdentifier: "showAddFunds", sender: self)
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else if artist.objectId == "collectors" {
+                self.performSegue(withIdentifier: "showTippers", sender: self)
             } else {
                 if artist.objectId != profileArtist?.objectId {
                     let player = Player.sharedInstance
@@ -598,10 +612,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func setUpNavigationButtons() {
         if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
-            
-            let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
-            
-            self.navigationItem.rightBarButtonItems = [menuButton, shareButton]
+            self.navigationItem.rightBarButtonItem = menuButton
             
         } else {
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))

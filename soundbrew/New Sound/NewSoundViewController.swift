@@ -167,34 +167,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     //mark: new sound upload
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        self.showUploadSoundFileUI()
-       /* let localizedUpload = NSLocalizedString("upload", comment: "")
-        let menuAlert = UIAlertController(title: localizedUpload, message: nil , preferredStyle: .actionSheet)
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
-        let localizedFromTheApp = NSLocalizedString("fromTheApp", comment: "")
-        menuAlert.addAction(UIAlertAction(title: localizedFromTheApp, style: .default, handler: { action in
-            self.showUploadSoundFileUI()
-            MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the App"])
-        }))
-        let localizedFromTheWeb = NSLocalizedString("fromTheWeb", comment: "")
-        menuAlert.addAction(UIAlertAction(title: localizedFromTheWeb, style: .default, handler: { action in
-            UIApplication.shared.open(URL(string: "https://www.soundbrew.app/upload")!, options: [:], completionHandler: nil)
-            MSAnalytics.trackEvent("New Upload", withProperties: ["Button" : "From the Web"])
-        }))
-        self.present(menuAlert, animated: true, completion: nil)*/
-        
-        MSAnalytics.trackEvent("UploadSoundViewController", withProperties: ["Button" : "New Upload", "description": "user pressed new upload button"])
-    }
-    
-    func showUploadSoundFileUI() {
         let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
         let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
         documentPicker.delegate = self
-        documentPicker.modalPresentationStyle = .formSheet
+        documentPicker.modalPresentationStyle = .fullScreen
         self.present(documentPicker, animated: true, completion: nil)
+        MSAnalytics.trackEvent("UploadSoundViewController", withProperties: ["Button" : "New Upload", "description": "user pressed new upload button"])
     }
-    
+        
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileURL = urls.first else {
              return
@@ -252,6 +232,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
                 self.performSegue(withIdentifier: "showAddFunds", sender: self)
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else if artist.objectId == "collectors" {
+                if let currentSound = Player.sharedInstance.currentSound {
+                    soundList.selectedSound = currentSound
+                }
+                self.performSegue(withIdentifier: "showTippers", sender: self)
             } else {
                 soundList.selectedArtist(artist)
             }

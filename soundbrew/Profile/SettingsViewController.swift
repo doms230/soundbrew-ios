@@ -159,6 +159,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             cell.selectionStyle = .none
             let localizedSettings = NSLocalizedString("settings", comment: "")
             cell.displayNameLabel.text = localizedSettings
+            
+            cell.shareButton.addTarget(self, action: #selector(self.didPressShareProfileButton(_:)), for: .touchUpInside)
+            
             return cell
             
         } else {
@@ -238,6 +241,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.profileImage.layer.borderColor = color.black().cgColor
         switch indexPath.row {
         case 0:
+            cell.shareButton.addTarget(self, action: #selector(self.didPressShareProfileButton(_:)), for: .touchUpInside)
             cell.displayNameLabel.text = "\(self.artist?.followerCount ?? 0)"
             cell.username.text = localizedFollowers
             break
@@ -271,6 +275,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         return cell
+    }
+    
+    @objc func didPressShareProfileButton(_ sender: UIButton) {
+        if let artist = Customer.shared.artist {
+            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+            
+            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
+        }
     }
     
     //data

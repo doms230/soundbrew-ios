@@ -8,7 +8,7 @@
 //  This class handles the logic behind showing Sounds Uploaded to Soundbrew.
 //  SoundsViewController.swift utilize this class
 //
-// MARK: tableView, sounds, artist, tags filter, data, miniplayer, comment, search
+// MARK: tableView, sounds, artist, tags filter, data, comment, search
 
 import Foundation
 import UIKit
@@ -289,7 +289,12 @@ class SoundList: NSObject, PlayerDelegate {
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
         cell.artistLabel.textColor = color
-        cell.soundDate.textColor = color
+        if color == .white {
+            cell.soundDate.textColor = .darkGray
+        } else {
+            cell.soundDate.textColor = color
+        }
+        
         cell.collectorsLabel.textColor = color
     }
     

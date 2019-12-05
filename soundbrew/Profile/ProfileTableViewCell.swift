@@ -16,6 +16,12 @@ class ProfileTableViewCell: UITableViewCell {
     
     var isSearchActive = false
     
+    lazy var shareButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "share"), for: .normal)
+        return button
+    }()
+    
     //profile
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
@@ -346,16 +352,24 @@ class ProfileTableViewCell: UITableViewCell {
         case "settingsTitleReuse":
             self.addSubview(seperatorLine)
             self.addSubview(displayNameLabel)
+            self.addSubview(shareButton)
+            
+            shareButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(25)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.right.equalTo(shareButton.snp.left).offset(uiElement.rightOffset)
             }
             
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
-                make.top.equalTo(displayNameLabel.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(shareButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)

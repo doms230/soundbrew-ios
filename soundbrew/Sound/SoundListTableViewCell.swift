@@ -78,7 +78,7 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var dividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 1
-        line.layer.borderColor = color.black().cgColor
+        line.layer.borderColor = UIColor.white.cgColor
         return line
     }()
     
@@ -90,14 +90,14 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var artistImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "profile_icon")
-        image.layer.cornerRadius = 45 / 2
+        image.layer.cornerRadius = 35 / 2
         image.clipsToBounds = true
         return image
     }()
     
     lazy var artistLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 16)
         label.textColor = .white
         return label
     }()
@@ -114,17 +114,16 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var soundTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 16)
         label.textColor = .white
         label.backgroundColor = color.black().withAlphaComponent(0.5)
-        label.numberOfLines = 0
         return label
     }()
     
     lazy var soundDate: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 16)
-        label.textColor = color.darkGray()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.textColor = .darkGray
          label.backgroundColor = color.black().withAlphaComponent(0.5)
         return label
     }()
@@ -209,6 +208,75 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            menuButton.snp.makeConstraints { (make) -> Void in
+                make.width.height.equalTo(50)
+                make.top.equalTo(soundArtImage)
+                //make.bottom.equalTo(collectorsButton)
+                make.right.equalTo(self)
+            }
+            
+            menuImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.center.equalTo(menuButton)
+            }
+            
+            artistButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
+                make.centerY.equalTo(menuButton)
+                //make.top.equalTo(menuButton)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(menuButton.snp.left).offset(uiElement.leftOffset)
+            }
+            artistImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(35)
+                make.top.equalTo(artistButton)
+                make.left.equalTo(artistButton)
+            }
+            artistLabel.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(artistImage)
+                make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(artistButton)
+            }
+            
+            soundTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            soundDate.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(soundTitle)
+            }
+            
+            collectorsButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundDate.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(menuButton.snp.left).offset(uiElement.rightOffset)
+            }
+            
+            collectorsLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(collectorsButton)
+                make.left.equalTo(collectorsButton)
+                make.right.equalTo(collectorsButton)
+            }
+            
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(collectorsButton.snp.bottom)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundArtImage)
+            }
+            
+            
+           /* soundArtImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(125)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundArtImage)
                 make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
@@ -216,7 +284,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             soundDate.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(soundTitle.snp.bottom)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(soundTitle)
             }
@@ -261,6 +329,13 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(collectorsButton)
                 make.right.equalTo(collectorsButton)
             }
+            
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(collectorsButton.snp.bottom)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundArtImage)
+            }*/
             
             break
             

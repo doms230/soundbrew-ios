@@ -146,12 +146,12 @@ class MiniPlayerView: UIButton {
     }
     
     func setupNotificationCenter(){
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceivePreparingSoundNotification), name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
     }
     
-    @objc func didReceiveSound() {
+    @objc func didReceiveSoundUpdate() {
         setSound()
     }
     

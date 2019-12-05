@@ -137,6 +137,7 @@
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showFollowerFollowing" id="Ejz-iv-iC5"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="5zx-sZ-k8y"/>
                         <segue destination="CXo-oV-yRo" kind="show" identifier="showProfile" id="GTm-zV-Pbn"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="ytI-LL-K1c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -156,6 +157,7 @@
                     <navigationItem key="navigationItem" id="5mt-QK-y97"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="AOa-FM-5jw"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="Ei3-uS-wLX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rfo-g5-J6s" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -457,6 +459,7 @@
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Lov-Rl-RRq"/>
+                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="kQN-r3-laz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ior-SH-LjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -525,13 +528,12 @@
         <image name="search_filled" width="23" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="GTm-zV-Pbn"/>
         <segue reference="Pro-Wr-Tmr"/>
         <segue reference="t1V-yP-gW0"/>
         <segue reference="hQD-bY-Uhw"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="AOa-FM-5jw"/>
-        <segue reference="Ejz-iv-iC5"/>
+        <segue reference="Ei3-uS-wLX"/>
         <segue reference="iDR-Ll-dSf"/>
         <segue reference="5zx-sZ-k8y"/>
     </inferredMetricsTieBreakers>

@@ -87,7 +87,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             break
             
         case "showTippers":
-            soundList.prepareToShowTippers(segue)
+            if let currentSound = Player.sharedInstance.currentSound {
+                let viewController = segue.destination as! PeopleViewController
+                viewController.sound = currentSound
+            }
             let localizedCollectors = NSLocalizedString("collectors", comment: "")
             let backItem = UIBarButtonItem()
             backItem.title = localizedCollectors
@@ -568,6 +571,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.performSegue(withIdentifier: "showAddFunds", sender: self)
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else if artist.objectId == "collectors" {
+                self.performSegue(withIdentifier: "showTippers", sender: self)
             } else {
                 if soundList == nil {
                    self.selectedArtist = artist

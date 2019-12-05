@@ -52,6 +52,16 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
+        } else if segue.identifier == "showTippers" {
+            if let currentSound = Player.sharedInstance.currentSound {
+                let viewController = segue.destination as! PeopleViewController
+                viewController.sound = currentSound
+            }
+            
+            let localizedCollectors = NSLocalizedString("collectors", comment: "")
+            let backItem = UIBarButtonItem()
+            backItem.title = localizedCollectors
+            navigationItem.backBarButtonItem = backItem
         }
     }
     
@@ -157,6 +167,8 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.performSegue(withIdentifier: "showAddFunds", sender: self)
             } else if artist.objectId == "signup" {
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
+            } else if artist.objectId == "collectors" {
+                self.performSegue(withIdentifier: "showTippers", sender: self)
             } else {
                 selectedArtist = artist
                 self.performSegue(withIdentifier: "showProfile", sender: self)

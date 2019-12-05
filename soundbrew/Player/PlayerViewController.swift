@@ -69,7 +69,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func setupNotificationCenter(){
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSound), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
@@ -279,7 +279,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             showLoadingSoundbrewSpinner()
         }
     }
-    @objc func didReceiveSound(){
+    @objc func didReceiveSoundUpdate(){
         setSound()
     }
     
@@ -329,10 +329,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if let tippers = sound?.tippers {
             collectors = tippers
         }
+        
         let localizedCollectors = NSLocalizedString("collectors", comment: "")
-
-        let collectorsButton = UIBarButtonItem(title: "\(collectors) \(localizedCollectors)", style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
-        self.navigationItem.rightBarButtonItem = collectorsButton
+        if self.navigationController == nil {
+            self.collectorsButton.setTitle("\(collectors) \(localizedCollectors)", for: .normal)
+        } else {
+            let collectorsButton = UIBarButtonItem(title: "\(collectors) \(localizedCollectors)", style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
+            self.navigationItem.rightBarButtonItem = collectorsButton
+        }
     }
     
     func resetPlayView() {
@@ -361,7 +365,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     @objc func didPressCollectorsButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showTippers", sender: self)
+        if self.navigationController == nil {
+            let collectorsArtist = Artist(objectId: "collectors", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+            self.handleDismissal(collectorsArtist)
+            
+        } else {
+            self.performSegue(withIdentifier: "showTippers", sender: self)
+        }
     }
     
     func updatePlayBackControls() {
@@ -412,6 +422,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.dismiss(animated: true, completion: nil)
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
+    
+    lazy var collectorsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Loading...", for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        button.addTarget(self, action: #selector(self.didPressCollectorsButton(_:)), for: .touchUpInside)
+        return button
+    }()
     
     lazy var appTitle: UILabel = {
         let label = UILabel()
@@ -676,6 +694,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 make.left.equalTo(self.view).offset(uiElement.leftOffset)
             }
             
+            self.view.addSubview(collectorsButton)
+            collectorsButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.view).offset(uiElement.topOffset)
+                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            }
+            
             self.view.addSubview(appTitle)
             appTitle.snp.makeConstraints { (make) -> Void in
                 make.centerX.equalTo(self.view)
@@ -689,7 +713,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 make.left.equalTo(exitButton)
                 make.right.equalTo(self.view).offset(uiElement.rightOffset)
             }
-            
             
         } else {
             self.view.addSubview(songArt)
