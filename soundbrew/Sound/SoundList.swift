@@ -128,7 +128,7 @@ class SoundList: NSObject, PlayerDelegate {
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
             
-            cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
+            /*cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
             cell.collectorsButton.tag = indexPath.row
             let localizedCollector = NSLocalizedString("collector", comment: "")
             if let tippers = sound.tippers {
@@ -140,18 +140,18 @@ class SoundList: NSObject, PlayerDelegate {
                 cell.collectorsLabel.text = "\(tippers) \(tipLabel)"
             } else {
                 cell.collectorsLabel.text = "0 \(localizedCollector)s"
-            }
+            }*/
         }
         
         return cell
     }
     
-    @objc func didPressCollectorsButton(_ sender: UIButton) {
+    /*@objc func didPressCollectorsButton(_ sender: UIButton) {
         self.selectedSound = sounds[sender.tag]
         target.performSegue(withIdentifier: "showTippers", sender: self)
         
         MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
-    }
+    }*/
     
     @objc func didPressArtistButton(_ sender: UIButton) {
         let row = sender.tag
@@ -203,6 +203,8 @@ class SoundList: NSObject, PlayerDelegate {
                             
                             MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Delete Sound", "description": "User pressed Delete Sound."])
                         }))
+                    
+                        menuAlert.addAction(viewCollectorsAction(sound))
                         
                         let localizedCancel = NSLocalizedString("cancel", comment: "")
                         menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -229,11 +231,49 @@ class SoundList: NSObject, PlayerDelegate {
                 
                 MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Report", "description": "User pressed report option."])
             }))
-            let localizedCancel = NSLocalizedString("cancel", comment: "")
-            menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
         
-            target.present(menuAlert, animated: true, completion: nil)
+        menuAlert.addAction(viewCollectorsAction(sound))
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+        
+        target.present(menuAlert, animated: true, completion: nil)
+    }
+    
+    func viewCollectorsAction(_ sound: Sound) -> UIAlertAction {
+        var uiAlertActionString = ""
+        let localizedCollector = NSLocalizedString("collector", comment: "")
+        if let tippers = sound.tippers {
+            var tipLabel = "\(localizedCollector)s"
+            if tippers == 1 {
+                tipLabel = localizedCollector
+            }
+            
+            uiAlertActionString = "\(tippers) \(tipLabel)"
+        } else {
+            uiAlertActionString = "0 \(localizedCollector)s"
         }
+        
+        return  UIAlertAction(title: uiAlertActionString, style: .default, handler: { action in
+            self.selectedSound = sound
+            self.target.performSegue(withIdentifier: "showTippers", sender: self)
+            
+            MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
+        })
+        /*cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
+        cell.collectorsButton.tag = indexPath.row
+        let localizedCollector = NSLocalizedString("collector", comment: "")
+        if let tippers = sound.tippers {
+            var tipLabel = "\(localizedCollector)s"
+            if tippers == 1 {
+                tipLabel = localizedCollector
+            }
+            
+            cell.collectorsLabel.text = "\(tippers) \(tipLabel)"
+        } else {
+            cell.collectorsLabel.text = "0 \(localizedCollector)s"
+        }*/
+    }
     
     func showReportSoundAlert(_ sound: Sound) {
         if let currentUserId = PFUser.current()?.objectId {
