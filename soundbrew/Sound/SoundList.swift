@@ -99,6 +99,21 @@ class SoundList: NSObject, PlayerDelegate {
                 changeArtistSongColor(cell, color: .white, playIconName: "playIcon")
             }
             
+            cell.artistImage.image = UIImage(named: "profile_icon")
+            cell.artistLabel.text = "loading..."
+            if let name = sound.artist?.name {
+                cell.artistLabel.text = name
+                if let image = sound.artist?.image {
+                    cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+                }
+            } else if let artist = sound.artist {
+                artist.loadUserInfoFromCloud(nil, soundCell: cell)
+            }
+            
+            cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
+            cell.artistButton.tag = indexPath.row
+            
+            
             cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
             cell.menuButton.tag = indexPath.row
             
@@ -110,48 +125,12 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
             
-            if let name = sound.artist?.name {
-                cell.artistLabel.text = name
-                if let image = sound.artist?.image {
-                    cell.artistImage.kf.setImage(with: URL(string: image))
-                } else {
-                    cell.artistImage.image = UIImage(named: "profile_icon")
-                }
-                
-            } else {
-                loadArtist(cell, userId: sound.artist!.objectId, row: indexPath.row)
-            }
-            
-            cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
-            cell.artistButton.tag = indexPath.row
-            
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
-            
-            /*cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
-            cell.collectorsButton.tag = indexPath.row
-            let localizedCollector = NSLocalizedString("collector", comment: "")
-            if let tippers = sound.tippers {
-                var tipLabel = "\(localizedCollector)s"
-                if tippers == 1 {
-                    tipLabel = localizedCollector
-                }
-                
-                cell.collectorsLabel.text = "\(tippers) \(tipLabel)"
-            } else {
-                cell.collectorsLabel.text = "0 \(localizedCollector)s"
-            }*/
         }
         
         return cell
     }
-    
-    /*@objc func didPressCollectorsButton(_ sender: UIButton) {
-        self.selectedSound = sounds[sender.tag]
-        target.performSegue(withIdentifier: "showTippers", sender: self)
-        
-        MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
-    }*/
     
     @objc func didPressArtistButton(_ sender: UIButton) {
         let row = sender.tag
@@ -260,19 +239,6 @@ class SoundList: NSObject, PlayerDelegate {
             
             MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
         })
-        /*cell.collectorsButton.addTarget(self, action: #selector(didPressCollectorsButton(_:)), for: .touchUpInside)
-        cell.collectorsButton.tag = indexPath.row
-        let localizedCollector = NSLocalizedString("collector", comment: "")
-        if let tippers = sound.tippers {
-            var tipLabel = "\(localizedCollector)s"
-            if tippers == 1 {
-                tipLabel = localizedCollector
-            }
-            
-            cell.collectorsLabel.text = "\(tippers) \(tipLabel)"
-        } else {
-            cell.collectorsLabel.text = "0 \(localizedCollector)s"
-        }*/
     }
     
     func showReportSoundAlert(_ sound: Sound) {

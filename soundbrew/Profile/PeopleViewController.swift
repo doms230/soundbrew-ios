@@ -97,7 +97,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: searchTagViewReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
-            self.artists[indexPath.row].loadUserInfoFromCloud(cell)
+            self.artists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil)
             
             return cell
         }

@@ -45,7 +45,7 @@ class Artist {
         self.earnings = earnings
     }
     
-    func loadUserInfoFromCloud(_ cell: ProfileTableViewCell?) {
+    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -84,7 +84,7 @@ class Artist {
                     self.website = website
                 }
                 
-                if let cell = cell {
+                if let cell = profileCell {
                     if let name = self.name {
                         cell.displayNameLabel.text = name
                     }
@@ -95,9 +95,21 @@ class Artist {
                         cell.profileImage.kf.setImage(with: URL(string: image))
                     }
                     
+                } else if let cell = soundCell {
+                    cell.artistLabel.text = self.name
+                    if let image = self.image {
+                        cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+                    } else {
+                        cell.artistImage.image = UIImage(named: "profile_icon")
+                    }
+                    
                 } else {
                     let player = Player.sharedInstance
-                    player.sendSoundUpdateToUI()
+                    if let currentSoundArtistObjectId = player.currentSound?.artist?.objectId {
+                        if currentSoundArtistObjectId == self.objectId {
+                            player.sendSoundUpdateToUI()
+                        }
+                    }
                 }
             }
         }
@@ -108,8 +120,8 @@ class Artist {
         
         cell.selectionStyle = .gray
         cell.backgroundColor = Color().black()
-        if let artistImage = self.image {
-            cell.profileImage.kf.setImage(with: URL(string: artistImage))
+        if let image = self.image {
+            cell.profileImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
             
         } else {
             cell.profileImage.image = UIImage(named: "profile_icon")

@@ -63,6 +63,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             navigationItem.backBarButtonItem = backItem
             break
             
+        case "showAddFunds":
+            break 
+            
         default:
             break
         }
@@ -407,6 +410,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                     self.dismiss(animated: true, completion: {() in
                         playerDelegate.selectedArtist(artist)
                     })
+        } else if self.navigationController != nil {
+            self.performSegue(withIdentifier: "showTippers", sender: self)
         } else {
             self.performSegue(withIdentifier: "showProfile", sender: self)
         }
@@ -686,6 +691,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         
         let songArtHeight = (self.view.frame.height / 2) - 50
         //top views
+        self.view.addSubview(artistButton)
+        
         if self.navigationController == nil {
             self.view.addSubview(exitButton)
             exitButton.snp.makeConstraints { (make) -> Void in
@@ -706,26 +713,46 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 make.centerY.equalTo(exitButton)
             }
             
-            self.view.addSubview(songArt)
-            songArt.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(songArtHeight)
+            artistButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
                 make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(exitButton)
                 make.right.equalTo(self.view).offset(uiElement.rightOffset)
             }
             
         } else {
-            self.view.addSubview(songArt)
-            songArt.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(songArtHeight)
+            artistButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(35)
                 make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
                 make.left.equalTo(self.view).offset(uiElement.leftOffset)
                 make.right.equalTo(self.view).offset(uiElement.rightOffset)
             }
         }
         
+        self.artistButton.addSubview(artistImage)
+        artistImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(35)
+            make.left.equalTo(artistButton)
+            make.centerY.equalTo(artistButton)
+            make.top.equalTo(artistButton)
+        }
+        
+        self.artistButton.addSubview(artistLabel)
+        artistLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
+            make.centerY.equalTo(artistButton)
+            make.top.equalTo(artistButton)
+        }
+        
+        self.view.addSubview(songArt)
+        songArt.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(songArtHeight)
+            make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
         //sound views
-                
         self.view.addSubview(songTitle)
         songTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
@@ -733,31 +760,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(artistButton)
-        artistButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(35)
-            make.top.equalTo(songTitle.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(songTitle)
-            make.right.equalTo(songTitle)
-        }
-        
-        self.artistButton.addSubview(artistLabel)
-        artistLabel.snp.makeConstraints { (make) -> Void in
-            make.centerX.equalTo(artistButton)
-            make.top.equalTo(artistButton)
-        }
-        
-        self.artistButton.addSubview(artistImage)
-        artistImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(35)
-            make.right.equalTo(artistLabel.snp.left).offset(-(uiElement.elementOffset))
-            make.centerY.equalTo(artistLabel)
-        }
-        
         //playback views
         self.view.addSubview(playBackSlider)
         playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.artistButton.snp.bottom)
+            make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(songArt)
             make.right.equalTo(songArt)
         }

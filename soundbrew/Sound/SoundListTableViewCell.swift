@@ -10,7 +10,6 @@ import UIKit
 import SnapKit
 
 class SoundListTableViewCell: UITableViewCell {
-
     let uiElement = UIElement()
     let color = Color()
     
@@ -114,16 +113,16 @@ class SoundListTableViewCell: UITableViewCell {
     
     lazy var soundTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 16)
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 18)
         label.textColor = .white
         label.backgroundColor = color.black().withAlphaComponent(0.5)
-        label.numberOfLines = 0
+        label.numberOfLines = 2
         return label
     }()
     
     lazy var soundDate: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.textColor = .darkGray
          label.backgroundColor = color.black().withAlphaComponent(0.5)
         return label
@@ -241,25 +240,26 @@ class SoundListTableViewCell: UITableViewCell {
                 make.centerY.equalTo(artistButton)
             }
             
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            soundDate.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(soundTitle)
-                make.right.equalTo(soundTitle)
-                //make.bottom.equalTo(dividerLine.snp.top).offset(uiElement.bottomOffset)
-            }
-            
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 //make.top.equalTo(soundDate.snp.bottom)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(soundArtImage)
+            }
+            
+            soundDate.snp.makeConstraints { (make) -> Void in
+               // make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(soundTitle)
+                make.bottom.equalTo(dividerLine.snp.top)
+            }
+            
+            soundTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundDate.snp.top).offset(uiElement.bottomOffset)
             }
             break
             
@@ -347,5 +347,4 @@ class SoundListTableViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-
 }

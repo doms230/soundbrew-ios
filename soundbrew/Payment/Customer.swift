@@ -79,6 +79,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     if let customerId = json["id"].string {
                         self.saveCustomer(objectId, customerId: customerId)
                         self.artist?.customerId = customerId
+                        self.artist?.balance = 5 
                     }
                 case .failure(let error):
                     print(error)
