@@ -231,7 +231,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let localizedFollowers = NSLocalizedString("followers", comment: "")
         let localizedFollowing = NSLocalizedString("following", comment: "")
         let localizedEarnings = NSLocalizedString("earnings", comment: "")
-        let localizedFunds = NSLocalizedString("funds", comment: "")
+        let localizedWallet = NSLocalizedString("wallet", comment: "")
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
@@ -266,7 +266,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             } else {
                 cell.displayNameLabel.text = "$0.00"
             }
-            cell.username.text = localizedFunds
+            cell.username.text = localizedWallet
             break
             
         default:

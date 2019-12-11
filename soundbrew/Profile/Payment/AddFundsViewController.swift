@@ -23,6 +23,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         setupView()
         setupPaymentContext()
         updateTotalAndProcessingFee(1)
+        self.title = "Add Funds"
     }
     
     //mark: payments
@@ -50,7 +51,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             self.addCardLabel.text = localizedEdit
         }
         self.purchaseButton.isEnabled = paymentContext.selectedPaymentOption != nil
-        self.purchaseButton.setTitle(localizedPurchase, for: .normal)
+        self.purchaseButton.setTitle("Add Funds to Wallet", for: .normal)
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
     }
@@ -138,7 +139,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     //mark: UI
-    
+    //DELETE
     lazy var balanceTitle: UILabel = {
         let localizedChosenFunds = NSLocalizedString("chosenFunds", comment: "")
         let label = UILabel()
@@ -148,7 +149,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         label.numberOfLines = 0
         return label
     }()
-    
+    //DELETE
     lazy var chosenFundAmount: UIButton = {
         let button = UIButton()
         button.setTitleColor(.white, for: .normal)
@@ -162,7 +163,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         button.tag = 0
         return button
     }()
-    
+    //DELETE
     @objc func didPressFundAmountButton(_ sender: UIButton) {
         let localizedFunds = NSLocalizedString("funds", comment: "")
         let localizedCancel = NSLocalizedString("cancel", comment: "")
@@ -209,12 +210,148 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         return Double(round(100 * x)/100)
     }
     
+    //current balance view
+    
+    lazy var currentBalanceLabel: UILabel = {
+        //let curentBalanceLocalized = NSLocalizedString("currentBalance", comment: "")
+        let label = UILabel()
+        label.text = "Current Balance"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        label.textColor = .white
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    lazy var currentBalanceAmount: UILabel = {
+        //let curentBalanceLocalized = NSLocalizedString("currentBalance", comment: "")
+        var currentBalance = "0"
+        if let balance = Customer.shared.artist?.balance {
+            let formattedBalance = self.uiElement.convertCentsToDollarsAndReturnString(balance, currency: "$")
+            currentBalance = formattedBalance
+        }
+        let label = UILabel()
+        label.text = currentBalance
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        label.textColor = .white
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    
+    //Funds to add View
+    lazy var fundsToAddView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 3
+        view.clipsToBounds = true
+        return view
+    }()
+    
+    lazy var howMuchWouldYouLikeToAddLabel: UILabel = {
+        let label = UILabel()
+        label.text = "How much would you like to add?"
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.textColor = .black
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var oneDollarButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("$1", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.backgroundColor = .white
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.tag = 0
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        button.addTarget(self, action: #selector(self.didPressDollarButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var fiveDollarButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("$5", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .darkGray
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.tag = 1
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        button.addTarget(self, action: #selector(self.didPressDollarButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var tenDollarButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("$10", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .darkGray
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.tag = 2
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
+        button.addTarget(self, action: #selector(self.didPressDollarButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func didPressDollarButton(_ sender: UIButton) {
+        var newFundsToAdd: Double!
+        switch sender.tag {
+        case 0:
+            newFundsToAdd = 1
+            changeButtonView(fiveDollarButton)
+            changeButtonView(tenDollarButton)
+            break
+            
+        case 1:
+            newFundsToAdd = 5
+            changeButtonView(oneDollarButton)
+            changeButtonView(tenDollarButton)
+            break
+            
+        case 2:
+            newFundsToAdd = 10
+            changeButtonView(oneDollarButton)
+            changeButtonView(fiveDollarButton)
+            break
+            
+        default:
+            newFundsToAdd = 1
+            changeButtonView(fiveDollarButton)
+            changeButtonView(tenDollarButton)
+            break
+        }
+        
+        sender.setTitleColor(.white, for: .normal)
+        sender.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        self.updateTotalAndProcessingFee(newFundsToAdd)
+    }
+    
+    func changeButtonView(_ button: UIButton) {
+        button.setBackgroundImage(nil, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .darkGray
+    }
+    
+    
+    //check out view
+    lazy var checkoutView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 3
+        view.clipsToBounds = true
+        return view
+    }()
+    
     lazy var paymentProcessingFeeTitle: UILabel = {
         let localizedPaymentProcessingFee = NSLocalizedString("paymentProcessingFee", comment: "")
         let label = UILabel()
         label.text = localizedPaymentProcessingFee
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        label.textColor = .white 
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        label.textColor = .black
         label.numberOfLines = 0
         return label
     }()
@@ -222,7 +359,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let label = UILabel()
         label.text = "$0.33"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
-        label.textColor = .white
+        label.textColor = .black
         label.numberOfLines = 0
         return label
     }()
@@ -232,7 +369,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let label = UILabel()
         label.text = localizedTotal
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-        label.textColor = .white
+        label.textColor = .black
         label.numberOfLines = 0
         return label
     }()
@@ -240,7 +377,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let label = UILabel()
         label.text = "$1.33"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 25)
-        label.textColor = .white
+        label.textColor = .black
         label.numberOfLines = 0
         return label
     }()
@@ -249,7 +386,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let localizedStripeAddFundsMessage = NSLocalizedString("stripeAddFundsMessage", comment: "")
         let button = UIButton()
         button.setTitle(localizedStripeAddFundsMessage, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.numberOfLines = 0
         button.addTarget(self, action: #selector(didPressStripeAddFundsMessage(_:)), for: .touchUpInside)
@@ -330,46 +467,132 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let questionButton = UIBarButtonItem(image: UIImage(named: "questionMark"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddFundsMessage(_:)))
         self.navigationItem.rightBarButtonItem = questionButton
         
-        self.view.addSubview(chosenFundAmount)
+        /*self.view.addSubview(chosenFundAmount)
         chosenFundAmount.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(100)
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        }*/
         
-        self.view.addSubview(balanceTitle)
+        /*self.view.addSubview(balanceTitle)
         balanceTitle.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(chosenFundAmount)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }*/
+        
+        //current balance view
+        self.view.addSubview(currentBalanceLabel)
+        currentBalanceLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.centerX.equalTo(self.view)
         }
         
-        self.view.addSubview(paymentProcessingFeeTitle)
-        paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(chosenFundAmount.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        self.view.addSubview(currentBalanceAmount)
+        currentBalanceAmount.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(currentBalanceLabel.snp.bottom).offset(uiElement.elementOffset)
+            make.centerX.equalTo(self.view)
         }
-        self.view.addSubview(paymentProcessingFee)
+        
+        
+        //total view
+        self.view.addSubview(checkoutView)
+        checkoutView.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(85)
+            //make.top.equalTo(fundsToAddView.snp.bottom).offset(uiElement.topOffset)
+            make.centerY.equalTo(self.view)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.checkoutView.addSubview(paymentProcessingFeeTitle)
+        paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(checkoutView).offset(uiElement.topOffset)
+            make.left.equalTo(checkoutView).offset(uiElement.leftOffset)
+        }
+        self.checkoutView.addSubview(paymentProcessingFee)
         paymentProcessingFee.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(paymentProcessingFeeTitle)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.right.equalTo(checkoutView).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(totalTitle)
+        self.checkoutView.addSubview(totalTitle)
         totalTitle.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(paymentProcessingFee.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.left.equalTo(checkoutView).offset(uiElement.leftOffset)
         }
-        self.view.addSubview(total)
+        self.checkoutView.addSubview(total)
         total.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(totalTitle)
+            make.right.equalTo(checkoutView).offset(uiElement.rightOffset)
+        }
+        
+        //how much would you like to add view
+        self.view.addSubview(fundsToAddView)
+        fundsToAddView.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(100)
+           // make.top.equalTo(currentBalanceAmount.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(checkoutView.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        self.fundsToAddView.addSubview(howMuchWouldYouLikeToAddLabel)
+        howMuchWouldYouLikeToAddLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(fundsToAddView).offset(uiElement.topOffset)
+            make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
+            make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
+        }
+        
+        self.fundsToAddView.addSubview(fiveDollarButton)
+        fiveDollarButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(self.uiElement.buttonHeight)
+            make.width.equalTo(75)
+            make.top.equalTo(howMuchWouldYouLikeToAddLabel.snp.bottom).offset(uiElement.topOffset)
+            //make.centerY.equalTo(fundsToAddView)
+            make.centerX.equalTo(fundsToAddView)
+        }
+        
+        self.fundsToAddView.addSubview(oneDollarButton)
+        oneDollarButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(self.uiElement.buttonHeight)
+            make.width.equalTo(75)
+            make.top.equalTo(fiveDollarButton)
+            make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
+        }
+        
+        self.fundsToAddView.addSubview(tenDollarButton)
+        tenDollarButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(self.uiElement.buttonHeight)
+            make.width.equalTo(75)
+            make.top.equalTo(fiveDollarButton)
+            make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
+        }
+                
+        
+        //card and purchase view
+        self.view.addSubview(stripeAddFundsMessage)
+        stripeAddFundsMessage.snp.makeConstraints { (make) -> Void in
+            //make.top.equalTo(purchaseButton.snp.bottom).offset(self.uiElement.topOffset)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(uiElement.bottomOffset))
+        }
+        
+        self.view.addSubview(purchaseButton)
+        purchaseButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+           // make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+            make.bottom.equalTo(stripeAddFundsMessage.snp.top).offset(self.uiElement.bottomOffset * 2)
         }
         
         self.view.addSubview(cardButton)
         cardButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(total.snp.bottom).offset(uiElement.topOffset)
+            //make.top.equalTo(total.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(purchaseButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         self.cardButton.addSubview(cardImage)
@@ -388,21 +611,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         addCardLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.cardButton)
             make.right.equalTo(self.cardButton)
-        }
-        
-        self.view.addSubview(purchaseButton)
-        purchaseButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset)
-            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-        }
-        
-        self.view.addSubview(stripeAddFundsMessage)
-        stripeAddFundsMessage.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(purchaseButton.snp.bottom).offset(self.uiElement.topOffset)
-            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
         }
     }
 }

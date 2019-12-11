@@ -67,7 +67,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             break
             
         case "showAddFunds":
-            let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
+            let localizedAddFunds = NSLocalizedString("", comment: "")
             let backItem = UIBarButtonItem()
             backItem.title = localizedAddFunds
             navigationItem.backBarButtonItem = backItem
