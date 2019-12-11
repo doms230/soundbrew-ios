@@ -204,7 +204,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 container.isSideViewControllerPresented = false
                 if let topView = container.topViewController as? UINavigationController {
                     if let view = topView.topViewController as? ProfileViewController {
-                        view.paymentType = paymentType
                         view.performSegue(withIdentifier: "showAddFunds", sender: self)
                     }
                 }

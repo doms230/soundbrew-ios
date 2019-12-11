@@ -26,9 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        UITabBar.appearance().barTintColor = Color().black()
+        UITabBar.appearance().barTintColor = .black
         UITabBar.appearance().tintColor = .white
-        UITabBar.appearance().backgroundColor = Color().black()
+        UITabBar.appearance().backgroundColor = .black
                 
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
         

@@ -29,6 +29,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Soundbrew"
+        
         let yourSoundbrewButton = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(self.didPressYourSoundbrewButton(_:)))
         self.navigationItem.leftBarButtonItem = yourSoundbrewButton
         setupPlayerView()
@@ -36,6 +38,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         
     override func viewDidAppear(_ animated: Bool) {
         self.setSound()
+        customer = Customer.shared
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -64,6 +67,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             break
             
         case "showAddFunds":
+            let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
+            let backItem = UIBarButtonItem()
+            backItem.title = localizedAddFunds
+            navigationItem.backBarButtonItem = backItem
             break 
             
         default:
@@ -141,8 +148,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
-                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                self.handleDismissal(artist)
+                if self.navigationController == nil {
+                    let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                    self.handleDismissal(artist)
+                } else {
+                    self.performSegue(withIdentifier: "showAddFunds", sender: self)
+                }
             }
             alertView.addAction(sendMoneyActionButton)
             
@@ -404,16 +415,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     //mark: View
     let fiveMinutesInSeconds: Double = 5 * 60
+    let artistImageSize = 30
     
     func handleDismissal(_ artist: Artist?) {
         if let playerDelegate = self.playerDelegate {
                     self.dismiss(animated: true, completion: {() in
                         playerDelegate.selectedArtist(artist)
                     })
-        } else if self.navigationController != nil {
-            self.performSegue(withIdentifier: "showTippers", sender: self)
-        } else {
-            self.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
     
@@ -434,6 +442,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         button.addTarget(self, action: #selector(self.didPressCollectorsButton(_:)), for: .touchUpInside)
         return button
+    }()
+    
+    lazy var dividerLine: UIView = {
+        let line = UIView()
+        line.layer.borderWidth = 1
+        line.layer.borderColor = UIColor.darkGray.cgColor
+        return line
     }()
     
     lazy var appTitle: UILabel = {
@@ -472,20 +487,25 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     lazy var artistImage: UIImageView = {
         let image = UIImageView()
        // image.image = UIImage(named: "profile_icon")
-        image.layer.cornerRadius = 35 / 2
+        image.layer.cornerRadius = CGFloat(artistImageSize) / 2
         image.clipsToBounds = true
         return image
     }()
     
     lazy var artistLabel : UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
+        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
         label.textColor = .white
         return label
     }()
     
     @objc func didPressArtistNameButton(_ sender: UIButton) {
-        self.handleDismissal(self.sound?.artist)
+        if self.navigationController == nil {
+            self.handleDismissal(self.sound?.artist)
+        } else {
+            self.performSegue(withIdentifier: "showProfile", sender: self)
+        }
+        
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "ArtistName", "Description": "User clicked on artist's name to go to profile."])
     }
     
@@ -499,7 +519,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     @objc func didPressSendMoneyButton(_ sender: UIButton) {
         if let currentUser = PFUser.current() {
             if currentUser.objectId! == sound?.artist?.objectId {
-                self.uiElement.showAlert("🙃", message: "", target: self)
+                let cannottipyourself = NSLocalizedString("cannottipyourself", comment: "")
+                self.uiElement.showAlert("🙃", message: cannottipyourself, target: self)
             } else if didAddSongToCollection {
                 let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tips!, currency: "$")
                 let localizedYouAdded = NSLocalizedString("youAdded", comment: "")
@@ -692,7 +713,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         let songArtHeight = (self.view.frame.height / 2) - 50
         //top views
         self.view.addSubview(artistButton)
-        
         if self.navigationController == nil {
             self.view.addSubview(exitButton)
             exitButton.snp.makeConstraints { (make) -> Void in
@@ -713,17 +733,27 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 make.centerY.equalTo(exitButton)
             }
             
+            self.view.addSubview(dividerLine)
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(appTitle.snp.bottom).offset(uiElement.topOffset * 2)
+                make.left.equalTo(self.view).offset(uiElement.leftOffset)
+                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            }
+            
             artistButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(self.exitButton.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(exitButton)
+                make.height.equalTo(artistImageSize)
+                make.top.equalTo(self.dividerLine.snp.bottom).offset(uiElement.topOffset)
+                make.centerX.equalTo(self.view)
+                make.left.equalTo(self.view).offset(uiElement.leftOffset)
                 make.right.equalTo(self.view).offset(uiElement.rightOffset)
             }
             
         } else {
             artistButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
+                make.height.equalTo(artistImageSize)
                 make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+                make.centerX.equalTo(self.view)
                 make.left.equalTo(self.view).offset(uiElement.leftOffset)
                 make.right.equalTo(self.view).offset(uiElement.rightOffset)
             }
@@ -731,17 +761,17 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         
         self.artistButton.addSubview(artistImage)
         artistImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(35)
+            make.height.width.equalTo(artistImageSize)
             make.left.equalTo(artistButton)
             make.centerY.equalTo(artistButton)
-            make.top.equalTo(artistButton)
+           // make.top.equalTo(artistButton)
         }
         
         self.artistButton.addSubview(artistLabel)
         artistLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
             make.centerY.equalTo(artistButton)
-            make.top.equalTo(artistButton)
+           // make.top.equalTo(artistButton)
         }
         
         self.view.addSubview(songArt)

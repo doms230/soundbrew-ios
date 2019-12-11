@@ -29,7 +29,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var selectedIndex = 0
     var currentUser: PFUser?
     var player: Player?
-    var paymentType: String!
     var followerOrFollowing: String!
     
     override func viewDidLoad() {
@@ -89,7 +88,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             viewController.profileArtist = selectedArtist
             break
             
-        case "showAddFunds", "showEarnings":
+        case "showAddFunds":
             let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
             let backItem = UIBarButtonItem()
             backItem.title = localizedAddFunds

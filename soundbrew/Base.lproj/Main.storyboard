@@ -66,7 +66,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2778" y="-1239"/>
+            <point key="canvasLocation" x="-2900" y="-1254"/>
         </scene>
         <!--Me-->
         <scene sceneID="Sfx-x4-dys">
@@ -256,7 +256,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" red="0.094117647060000004" green="0.050980392159999999" blue="0.1333333333" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
@@ -358,11 +358,12 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="qF7-cv-MYn"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="217-ix-XIX"/>
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="TH1-Tr-UvO"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Swv-5W-jhe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F4u-qB-maU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3756" y="-2015"/>
+            <point key="canvasLocation" x="-3813" y="-1998"/>
         </scene>
         <!--Earnings View Controller-->
         <scene sceneID="wwU-qi-IOl">
@@ -433,7 +434,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="SRX-FF-mWm"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
@@ -478,7 +479,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" red="0.094117647060000004" green="0.050980392159999999" blue="0.1333333333" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
@@ -502,7 +503,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" red="0.094117647060000004" green="0.050980392159999999" blue="0.1333333333" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
@@ -530,13 +531,13 @@
         <image name="search_filled" width="23" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QFf-vL-w9n"/>
-        <segue reference="UgY-SI-XY8"/>
-        <segue reference="hQD-bY-Uhw"/>
+        <segue reference="Pro-Wr-Tmr"/>
+        <segue reference="t1V-yP-gW0"/>
+        <segue reference="AaU-Nw-Vla"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="xvi-B0-pE3"/>
-        <segue reference="PpL-DV-h1t"/>
-        <segue reference="iDR-Ll-dSf"/>
-        <segue reference="mvo-CV-XcF"/>
+        <segue reference="qF7-cv-MYn"/>
+        <segue reference="TH1-Tr-UvO"/>
+        <segue reference="217-ix-XIX"/>
+        <segue reference="Swv-5W-jhe"/>
     </inferredMetricsTieBreakers>
 </document>

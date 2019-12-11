@@ -323,7 +323,6 @@
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
 				F2FB14CB22CBFBFF00ED157E /* Main */,
-				F2FB14CD22CC106100ED157E /* Payment */,
 				F2EA6F51220BDE89007FA614 /* Player */,
 				F2689899215AF7FB00C21663 /* Sound */,
 			);
@@ -394,9 +393,10 @@
 			isa = PBXGroup;
 			children = (
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
+				F2FB14CD22CC106100ED157E /* Payment */,
+				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
-				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
 				F28A9861222FA5F200C96EED /* EditBioViewController.swift */,
