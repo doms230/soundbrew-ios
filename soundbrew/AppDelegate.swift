@@ -147,12 +147,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         }
         return false
     }
-        
-    /*func applicationDidBecomeActive(_ application: UIApplication) {
-        let installation = PFInstallation.current()
-        installation?.badge = 0
-        installation?.saveEventually()
-    }*/
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let installation = PFInstallation.current()
@@ -220,4 +214,3 @@ extension FileManager {
         }
     }
 }
-

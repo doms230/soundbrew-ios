@@ -84,15 +84,15 @@ class TagTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            
+        
             tagsScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(115)
+                let buttonHeight = 115
+                make.height.equalTo(buttonHeight)
                 make.top.equalTo(TagTypeTitle.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
                 make.bottom.equalTo(self)
             }
-            
             
         } else if reuseIdentifier == "profileSoundReuse" {
             self.addSubview(tagTypeButton)

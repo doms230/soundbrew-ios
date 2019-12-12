@@ -525,13 +525,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     sound.artImage = image
                     
                     self.setBackgroundAudioNowPlaying(self.player, sound: sound)
-                    
-                    /*if (sound.artist?.name) != nil {
-                        self.setBackgroundAudioNowPlaying(self.player, sound: sound)
-                        
-                    } else {
-                        self.loadUserInfoFromCloud(sound.artist!.objectId, i: self.currentSoundIndex)
-                    }*/
                 }
             }
         }

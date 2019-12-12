@@ -55,13 +55,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-   /* override func didReceiveMemoryWarning() {
-        if self.isViewLoaded && self.view.window == nil {
-            self.view = nil
-            print("did offload view")
-        }
-    }*/
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":

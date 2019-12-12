@@ -30,7 +30,7 @@ class ProfileTableViewCell: UITableViewCell {
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
-        image.backgroundColor = .white
+        image.backgroundColor = .black
         return image
     }()
     

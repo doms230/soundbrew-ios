@@ -91,6 +91,7 @@ class SoundListTableViewCell: UITableViewCell {
         image.image = UIImage(named: "profile_icon")
         image.layer.cornerRadius = 35 / 2
         image.clipsToBounds = true
+        image.backgroundColor = .black 
         return image
     }()
     

@@ -348,24 +348,6 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func updateSounds(sounds: [Sound]) {
-        self.isUpdatingData = false
-                
-        /*if self.player != nil {
-            if self.sounds.count > 0 {
-                //fetch 1 songs ahead of time
-                var fetchAudioCount = 0
-                for sound in self.sounds {
-                    if sound.audioData == nil && fetchAudioCount < 2 {
-                        sound.fetchAudioData()
-                        fetchAudioCount+=1
-                    }
-                }
-            }
-        }*/
-        self.tableView?.reloadData()
-    }
-    
     func prepareToShowSoundInfo(_ segue: UIStoryboardSegue) {
         if let selectedSound = self.selectedSound {
             let viewController = segue.destination as! SoundInfoViewController
@@ -388,7 +370,8 @@ class SoundList: NSObject, PlayerDelegate {
             } else if let object = object {
                 let sound = self.uiElement.newSoundObject(object)
                 self.sounds.append(sound)
-                self.updateSounds(sounds: self.sounds)
+                self.isUpdatingData = false
+                self.tableView?.reloadData()
             }
         }
     }
@@ -455,7 +438,8 @@ class SoundList: NSObject, PlayerDelegate {
                 
                 print("Error: \(error!)")
             }
-            self.updateSounds(sounds: self.sounds)
+            self.isUpdatingData = false
+            self.tableView?.reloadData()
         }
     }
     
@@ -679,7 +663,8 @@ class SoundList: NSObject, PlayerDelegate {
                         self.thereIsMoreDataToLoad = false 
                     }
                     
-                    self.updateSounds(sounds: self.sounds)
+                    self.isUpdatingData = false
+                    self.tableView?.reloadData()
                     
                 } else {
                     self.thereIsMoreDataToLoad = false

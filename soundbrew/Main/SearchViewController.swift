@@ -356,6 +356,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonHeight = 115
         let buttonWidth = 170
+        
         var xPositionForFeatureTags = UIElement().leftOffset
         
         for i in 0..<tags.count {

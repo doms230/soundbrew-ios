@@ -326,11 +326,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 } else {
                     self.artistImage.image = UIImage(named: "profile_icon")
                 }
-                
-            } /*else {
-                self.artistLabel.text = ""
-                loadUserInfoFromCloud(sound.artist!.objectId)
-            }*/
+            }
             
             if playBackButton.superview == nil {
                 showPlayerView()
@@ -489,6 +485,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
        // image.image = UIImage(named: "profile_icon")
         image.layer.cornerRadius = CGFloat(artistImageSize) / 2
         image.clipsToBounds = true
+        image.backgroundColor = .black
         return image
     }()
     
