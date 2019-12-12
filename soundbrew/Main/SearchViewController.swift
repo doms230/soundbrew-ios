@@ -388,6 +388,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.top.equalTo(scrollview)
                 make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
             }
+            
             xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
             scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
             

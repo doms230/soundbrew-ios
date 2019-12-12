@@ -22,6 +22,10 @@ class UIElement {
     let leftOffset = 15
     let rightOffset = -15
     let bottomOffset = -10
+    
+    let bottomButtonOffset = -20
+    let topButtonOffset = 20
+    
     let arrowHeightWidth = 10
     let buttonHeight = 40
     let userImageHeightWidth = 40
