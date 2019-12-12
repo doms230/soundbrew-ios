@@ -116,9 +116,11 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.isSelected = false
-        selectedArtist = updates[indexPath.row].artist
-        self.performSegue(withIdentifier: "showProfile", sender: self)
-        MSAnalytics.trackEvent("Updates View Controller", withProperties: ["Button" : "Did Select Person"])
+        if self.updates.indices.contains(indexPath.row) {
+            selectedArtist = updates[indexPath.row].artist
+            self.performSegue(withIdentifier: "showProfile", sender: self)
+            MSAnalytics.trackEvent("Updates View Controller", withProperties: ["Button" : "Did Select Person"])
+        }
     }
     
     //mark: miniPlayer

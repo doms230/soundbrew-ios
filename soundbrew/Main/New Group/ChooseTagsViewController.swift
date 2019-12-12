@@ -185,12 +185,27 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
+        if filteredTags.indices.contains(indexPath.row) {
+            return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
+        }
+        return fillerCell(tableView, reuse: searchTagViewReuse)
     }
     
+    func fillerCell(_ tableView: UITableView, reuse: String) -> UITableViewCell {
+        //issue where cellForRowAt is crashing... putting in filler until figured out exactly what's happening.
+         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
+         cell.selectionStyle = .gray
+         cell.backgroundColor = Color().black()
+         cell.profileImage.image = UIImage(named: "hashtag")
+         cell.displayNameLabel.text = ""
+         return cell
+     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        didSelectRowAt(indexPath.row)
         tableView.deselectRow(at: indexPath, animated: true)
+        if filteredTags.indices.contains(indexPath.row) {
+            didSelectRowAt(indexPath.row)
+        }
     }
     
     func didSelectRowAt(_ row: Int) {

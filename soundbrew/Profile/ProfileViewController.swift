@@ -48,11 +48,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.setUpNavigationButtons()
             
         } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
-            loadUserInfoFromCloud(userId)
+            loadUserInfoFromCloud(userId, username: nil)
             UserDefaults.standard.removeObject(forKey: "receivedUserId")
             self.setUpNavigationButtons()
             
-        } else if let currentArtist = Customer.shared.artist {
+        } else if let username = self.uiElement.getUserDefault("receivedUsername") as? String {
+            print("got username")
+            loadUserInfoFromCloud(nil, username: username)
+            UserDefaults.standard.removeObject(forKey: "receivedUsername")
+            self.setUpNavigationButtons()
+            
+        }  else if let currentArtist = Customer.shared.artist {
             isCurrentUserProfile = true
             self.profileArtist = currentArtist
             self.executeTableViewSoundListFollowStatus()
@@ -665,15 +671,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func loadUserInfoFromCloud(_ userId: String) {
+    func loadUserInfoFromCloud(_ userId: String?, username: String?) {
+        print("loading userInfo")
         let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let user = user {
-                self.profileArtist = self.uiElement.newArtistObject(user)
-                self.executeTableViewSoundListFollowStatus()
-            }
+        if let userId = userId {
+            query.whereKey("objectId", equalTo: userId)
+        } else if let username = username {
+            query.whereKey("username", equalTo: username)
         }
+          query.getFirstObjectInBackground {
+              (user: PFObject?, error: Error?) -> Void in
+                if let user = user {
+                    self.profileArtist = self.uiElement.newArtistObject(user)
+                    self.executeTableViewSoundListFollowStatus()
+                }
+          }
     }
     
     func newFollowRow() {

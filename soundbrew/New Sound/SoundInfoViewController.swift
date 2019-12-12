@@ -748,31 +748,31 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         // Local variable inserted by Swift 4.2 migrator.
         let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
         
-        let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
-        
-        self.soundThatIsBeingEdited?.artImage = image
-        self.reloadData()
-        
-        let proPic = image.jpegData(compressionQuality: 0.5)
-        self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)
-        self.soundThatIsBeingEdited?.artFile!.saveInBackground({
-            (succeeded: Bool, error: Error?) -> Void in
-            if succeeded {
-                self.soundArtDidFinishProcessing = true
-                
-                if self.didPressUploadButton && self.soundParseFileDidFinishProcessing {
-                    self.createSound(self.soundThatIsBeingEdited!, isDraft: false)
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+            self.soundThatIsBeingEdited?.artImage = image
+            self.reloadData()
+            
+            let proPic = image.jpegData(compressionQuality: 0.5)
+            self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)
+            self.soundThatIsBeingEdited?.artFile!.saveInBackground({
+                (succeeded: Bool, error: Error?) -> Void in
+                if succeeded {
+                    self.soundArtDidFinishProcessing = true
+                    
+                    if self.didPressUploadButton && self.soundParseFileDidFinishProcessing {
+                        self.createSound(self.soundThatIsBeingEdited!, isDraft: false)
+                    }
+                    
+                } else if let error = error {
+                    let localizedArtProcessingFailed = NSLocalizedString("artProcessingFailded", comment: "")
+                    self.errorAlert(localizedArtProcessingFailed, message: error.localizedDescription)
                 }
                 
-            } else if let error = error {
-                let localizedArtProcessingFailed = NSLocalizedString("artProcessingFailded", comment: "")
-                self.errorAlert(localizedArtProcessingFailed, message: error.localizedDescription)
-            }
-            
-        }, progressBlock: {
-            (percentDone: Int32) -> Void in
-            // Update your progress spinner here. percentDone will be between 0 and 100.
-        })
+            }, progressBlock: {
+                (percentDone: Int32) -> Void in
+                // Update your progress spinner here. percentDone will be between 0 and 100.
+            })
+        }
         
         dismiss(animated: true, completion: nil)
     }

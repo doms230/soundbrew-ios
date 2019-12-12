@@ -105,10 +105,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.isSelected = false
-        selectedArtist = self.artists[indexPath.row]
-        self.performSegue(withIdentifier: "showProfile", sender: self)
-        
-        MSAnalytics.trackEvent("People View Controller", withProperties: ["Button" : "Did Select Person"])
+        if self.artists.indices.contains(indexPath.row) {
+            selectedArtist = self.artists[indexPath.row]
+            self.performSegue(withIdentifier: "showProfile", sender: self)
+            
+            MSAnalytics.trackEvent("People View Controller", withProperties: ["Button" : "Did Select Person"])
+        }
     }
     
     //mark: selectedArtist

@@ -745,7 +745,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     //mark: dynamic link
     func checkForProfileDynamicLink() {
-        if let _ = self.uiElement.getUserDefault("receivedUserId") as? String {
+        if self.uiElement.getUserDefault("receivedUserId") != nil || self.uiElement.getUserDefault("receivedUsername") != nil {
             self.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }

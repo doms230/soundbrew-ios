@@ -36,7 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         FirebaseApp.configure()
         
-        //usrname: teststripe
+        //usrname: testaccount
+        //password: asdf
         //let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
         let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
         let config = STPPaymentConfiguration.shared() 
@@ -86,7 +87,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                     } else if pathComponents.contains("u") {
                         self.receivedUserId(url.lastPathComponent)
                     } else {
-                        self.receivedUserId(url.lastPathComponent)
+                        print("got userId")
+                        self.receivedUsername(url.lastPathComponent)
                     }
                 } else {
                 return handleDynamicLink(userActivity)
@@ -182,7 +184,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     }
     
     func receivedUserId(_ userId: String) {
+        print(userId)
         UIElement().setUserDefault("receivedUserId", value: userId)
+        showMainViewController(1)
+    }
+    
+    func receivedUsername(_ username: String) {
+        UIElement().setUserDefault("receivedUsername", value: username)
         showMainViewController(1)
     }
     
