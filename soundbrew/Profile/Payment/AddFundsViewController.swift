@@ -167,7 +167,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     //Funds to add View
     lazy var fundsToAddView: UIView = {
         let view = UIView()
-        view.backgroundColor = color.lightBlack()
+        view.backgroundColor = color.purpleBlack()
         view.layer.cornerRadius = 3
         view.clipsToBounds = true
         return view
@@ -263,13 +263,20 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     //check out view
-    
-    lazy var dividerLine: UIView = {
+    lazy var howMuchToAddDividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 1
         line.layer.borderColor = UIColor.white.cgColor
         return line
     }()
+    
+    lazy var totalAmountDividerLine: UIView = {
+        let line = UIView()
+        line.layer.borderWidth = 1
+        line.layer.borderColor = UIColor.white.cgColor
+        return line
+    }()
+    
     
     func updateTotalAndProcessingFee(_ funds: Double) {
         var processingFee: Double!
@@ -368,7 +375,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     lazy var cardImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
-        image.backgroundColor = color.black()
+        image.backgroundColor = color.purpleBlack()
         return image
     }()
     
@@ -432,7 +439,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         //how much would you like to add view
         self.view.addSubview(fundsToAddView)
         fundsToAddView.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(185)
+            make.height.equalTo(300)
             make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -469,8 +476,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
         }
             
-        self.fundsToAddView.addSubview(dividerLine)
-        dividerLine.snp.makeConstraints { (make) -> Void in
+        self.fundsToAddView.addSubview(howMuchToAddDividerLine)
+        howMuchToAddDividerLine.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(0.5)
             make.top.equalTo(tenDollarButton.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
@@ -479,7 +486,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         
         self.fundsToAddView.addSubview(paymentProcessingFeeTitle)
         paymentProcessingFeeTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(howMuchToAddDividerLine.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
         }
         self.fundsToAddView.addSubview(paymentProcessingFee)
@@ -499,48 +506,58 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
         }
         
-        //card and purchase view
-        self.view.addSubview(stripeAddFundsMessage)
-        stripeAddFundsMessage.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(uiElement.bottomOffset))
+        self.fundsToAddView.addSubview(totalAmountDividerLine)
+        totalAmountDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(total.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
+            make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
         }
         
-        self.view.addSubview(purchaseButton)
-        purchaseButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-            make.bottom.equalTo(stripeAddFundsMessage.snp.top).offset(self.uiElement.bottomButtonOffset)
-        }
-        
-        self.view.addSubview(cardButton)
+        self.fundsToAddView.addSubview(cardButton)
         cardButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(purchaseButton.snp.top).offset(uiElement.bottomOffset)
+            make.top.equalTo(self.totalAmountDividerLine.snp.bottom).offset(uiElement.topOffset)
+           // make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
+            //make.bottom.equalTo(purchaseButton.snp.top).offset(uiElement.bottomOffset)
         }
-        
-        
         self.cardButton.addSubview(addCardLabel)
         addCardLabel.snp.makeConstraints { (make) -> Void in
            // make.top.equalTo(self.cardButton)
             make.centerY.equalTo(cardButton)
             make.right.equalTo(self.cardButton)
         }
-        
         self.cardButton.addSubview(cardImage)
         cardImage.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(cardButton)
             make.left.equalTo(self.cardButton)
         }
-        
         self.cardButton.addSubview(cardNumberLastFour)
         cardNumberLastFour.snp.makeConstraints { (make) -> Void in
            // make.top.equalTo(self.cardButton)
             make.centerY.equalTo(cardButton)
             make.left.equalTo(self.cardImage.snp.right)
+        }
+        
+        self.fundsToAddView.addSubview(purchaseButton)
+        purchaseButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset)
+            //make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
+            make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
+            //make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+           // make.bottom.equalTo(stripeAddFundsMessage.snp.top).offset(self.uiElement.bottomButtonOffset)
+        }
+        
+        //stripe message at bottom
+        self.view.addSubview(stripeAddFundsMessage)
+        stripeAddFundsMessage.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(uiElement.bottomOffset))
         }
     }
 }

@@ -44,7 +44,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         if profileArtist != nil {
-            self.executeTableViewSoundListFollowStatus()
+            self.loadProfileData()
             self.setUpNavigationButtons()
             
         } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
@@ -61,7 +61,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }  else if let currentArtist = Customer.shared.artist {
             isCurrentUserProfile = true
             self.profileArtist = currentArtist
-            self.executeTableViewSoundListFollowStatus()
+            self.loadProfileData()
             self.setUpNavigationButtons()
         } else {
             let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
@@ -145,21 +145,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func executeTableViewSoundListFollowStatus() {
+    func loadProfileData() {
         if let username = profileArtist?.username {
             if !username.contains("@") {
                 self.navigationItem.title = username
             }
-        }
-        
-        player = Player.sharedInstance
-        player?.target = self
-        player?.tableView = tableView
-        if self.player?.player != nil {
-            setUpMiniPlayer()
-            
-        } else {
-            setUpTableView(nil)
         }
         
         if currentUser != nil && currentUser?.objectId != profileArtist?.objectId {
@@ -168,6 +158,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         self.loadCollection(self.profileArtist!.objectId)
         self.loadSounds(nil, userId: self.profileArtist?.objectId)
+        self.tableView.refreshControl?.endRefreshing()
     }
     
     //MARK: Tableview
@@ -182,8 +173,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: profileSoundReuse)
-        self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = color.black()
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = color.black()
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
+        tableView.refreshControl = refreshControl
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -197,6 +191,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+    }
+    
+    @objc func refresh(_ sender: UIRefreshControl) {
+       self.loadProfileData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -615,6 +613,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setUpNavigationButtons() {
+        player = Player.sharedInstance
+        player?.target = self
+        player?.tableView = tableView
+        if self.player?.player != nil {
+            setUpMiniPlayer()
+            
+        } else {
+            setUpTableView(nil)
+        }
+        
         if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
@@ -683,7 +691,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
               (user: PFObject?, error: Error?) -> Void in
                 if let user = user {
                     self.profileArtist = self.uiElement.newArtistObject(user)
-                    self.executeTableViewSoundListFollowStatus()
+                    self.loadProfileData()
                 }
           }
     }

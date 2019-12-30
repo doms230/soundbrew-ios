@@ -108,6 +108,7 @@ PODS:
   - TwitterCore (3.2.0)
   - TwitterKit (3.4.2):
     - TwitterCore (>= 3.2.0)
+  - UICircularProgressRing (6.4.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -124,6 +125,7 @@ DEPENDENCIES:
   - Stripe
   - SwiftyJSON
   - TwitterKit
+  - UICircularProgressRing
 
 SPEC REPOS:
   trunk:
@@ -156,6 +158,7 @@ SPEC REPOS:
     - SwiftyJSON
     - TwitterCore
     - TwitterKit
+    - UICircularProgressRing
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
@@ -187,7 +190,8 @@ SPEC CHECKSUMS:
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
+  UICircularProgressRing: 907613633e76e561b972a3868c95517d14c71006
 
-PODFILE CHECKSUM: 5aedbf44a4adf54a5805df6d09667bd69326ab80
+PODFILE CHECKSUM: e3afb66163010212640b524e9b71b3bb25f802f8
 
-COCOAPODS: 1.8.3
+COCOAPODS: 1.8.4

@@ -85,7 +85,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     //mark: tableview
-    var tableView = UITableView()
+    let tableView = UITableView()
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
@@ -96,6 +96,9 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = color.black()
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
+        tableView.refreshControl = refreshControl
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -109,6 +112,10 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+    }
+    
+    @objc func refresh(_ sender: UIRefreshControl) {
+       showSounds()
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

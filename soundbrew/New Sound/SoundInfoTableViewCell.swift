@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import UICircularProgressRing
 
 class SoundInfoTableViewCell: UITableViewCell {
 
@@ -25,6 +26,23 @@ class SoundInfoTableViewCell: UITableViewCell {
         image.clipsToBounds = true
         image.backgroundColor = .lightGray
         image.contentMode = .scaleAspectFill
+        return image
+    }()
+    
+    lazy var audioProgress: UICircularProgressRing = {
+       let audioProgress = UICircularProgressRing()
+        audioProgress.maxValue = 100
+        //audioProgress.style = .bordered(width: 25, color: .white)
+        audioProgress.innerRingColor = color.darkGray()
+        audioProgress.innerRingWidth = 3
+        audioProgress.outerRingColor = color.black()
+        return audioProgress
+    }()
+    
+    lazy var audioProgressImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "sound")
+        
         return image
     }()
     
@@ -51,12 +69,12 @@ class SoundInfoTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var inputTitle: UITextView = {
-        let label = UITextView()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+    lazy var inputTitle: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = .white
         label.backgroundColor = color.black()
-        label.isScrollEnabled = false 
+        label.numberOfLines = 0
         return label
     }()
     
@@ -75,7 +93,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         return socialSwitch
     }()
     
-    lazy var twitterMessageTitle: UILabel = {
+   /* lazy var twitterMessageTitle: UILabel = {
         let localizedTwitterMessageTitle = NSLocalizedString("twitterMessage", comment: "")
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
@@ -96,7 +114,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         label.layer.borderWidth = 1
         label.layer.borderColor = color.darkGray().cgColor
         return label
-    }()
+    }()*/
     
     lazy var artistTypeButton: UIButton = {
         let localizedArtist = NSLocalizedString("artist", comment: "")
@@ -108,7 +126,7 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var dividerLine: UIView = {
         let line = UIView()
-        line.layer.borderWidth = 1
+        line.layer.borderWidth = 0.5
         line.layer.borderColor = color.darkGray().cgColor
         return line
     }()
@@ -149,21 +167,51 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "soundInfoReuse":
-            self.addSubview(soundArt)
+            //self.addSubview(soundArt)
+            self.addSubview(dividerLine)
             self.addSubview(inputTitle)
-            
-            soundArt.snp.makeConstraints { (make) -> Void in
+            self.addSubview(audioProgress)
+            self.addSubview(audioProgressImage)
+            /*soundArt.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }*/
+            
+            audioProgress.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(100)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+               // make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                //make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            inputTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArt)
-                make.left.equalTo(soundArt.snp.right).offset(uiElement.leftOffset)
+            audioProgressImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(50)
+                make.centerX.centerY.equalTo(audioProgress)
+            }
+            
+            /*titleLabel.text = "Title/Description"
+            titleLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(soundArt)
+            }*/
+            
+            inputTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(audioProgress)
+                make.left.equalTo(audioProgress.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(audioProgress.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             break
@@ -187,20 +235,29 @@ class SoundInfoTableViewCell: UITableViewCell {
         case "soundSocialReuse":
             self.addSubview(soundTagLabel)
             self.addSubview(socialSwitch)
-            self.addSubview(twitterMessage)
-            self.addSubview(twitterMessageTitle)
+            self.addSubview(dividerLine)
+            //self.addSubview(twitterMessage)
+            //self.addSubview(twitterMessageTitle)
+            
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
             
             socialSwitch.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             soundTagLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(socialSwitch)
+               // make.top.equalTo(socialSwitch)
+                make.centerY.equalTo(socialSwitch)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            twitterMessageTitle.snp.makeConstraints { (make) -> Void in
+            /*twitterMessageTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(socialSwitch.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
@@ -212,7 +269,7 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
+            }*/
             
             break
             

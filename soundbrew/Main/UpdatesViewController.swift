@@ -74,8 +74,11 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.delegate = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: updatesReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = color.black()
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = color.black()
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
+        tableView.refreshControl = refreshControl
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -89,6 +92,10 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+    }
+    
+    @objc func refresh(_ sender: UIRefreshControl) {
+       loadNewFollows()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -319,12 +326,13 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                         self.updates.append(update)
                     }
                 }
-                
                     self.updates.sort(by: {$0.createdAt > $1.createdAt})
                    self.tableView.reloadData()
+                self.tableView.refreshControl?.endRefreshing()
                     if self.updates.count > 0 {
                         SKStoreReviewController.requestReview()
                     }
+                
             } else {
                 print("Error: \(error!)")
             }

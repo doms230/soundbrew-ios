@@ -380,6 +380,19 @@ class SoundList: NSObject, PlayerDelegate {
     var isUpdatingData = false
     var thereIsMoreDataToLoad = true
     
+    func updateTableView() {
+        print("update tableview")
+        self.isUpdatingData = false
+        if let tableView = self.tableView {
+            tableView.reloadData()
+            print("reload data")
+            if let refreshControl = tableView.refreshControl {
+                print("refresh end")
+                refreshControl.endRefreshing()
+            }
+        }
+    }
+    
     func loadSounds(_ descendingOrder: String, collectionIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?) {
         
         isUpdatingData = true 
@@ -438,8 +451,7 @@ class SoundList: NSObject, PlayerDelegate {
                 
                 print("Error: \(error!)")
             }
-            self.isUpdatingData = false
-            self.tableView?.reloadData()
+            self.updateTableView()
         }
     }
     
@@ -492,56 +504,6 @@ class SoundList: NSObject, PlayerDelegate {
                 
             } else {
                 print("Error: \(error!)")
-            }
-        }
-    }
-    
-    func loadArtist(_ cell: SoundListTableViewCell, userId: String, row: Int) {
-        let query = PFQuery(className:"_User")
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                let artistUsername = user["username"] as? String
-                
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: artistUsername, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                
-                if let name = user["artistName"] as? String {
-                    cell.artistLabel.text = name
-                    artist.name = name
-                }
-                
-                if let verified = user["artistVerified"] as? Bool {
-                    artist.isVerified = verified
-                }
-                
-                if let count = user["followerCount"] as? Int {
-                    artist.followerCount = count
-                }
-                
-                if let city = user["city"] as? String {
-                    artist.city = city
-                }
-                
-                if let image = user["userImage"] as? PFFileObject {
-                    artist.image = image.url
-                    cell.artistImage.kf.setImage(with: URL(string: image.url!))
-                }
-                
-                if let bio = user["bio"] as? String {
-                    artist.bio = bio 
-                }
-                
-                if let website = user["website"] as? String {
-                    artist.website = website
-                }
-                
-                //issue with crashing between loads
-                if self.sounds.indices.contains(row) {
-                    self.sounds[row].artist = artist
-                }
             }
         }
     }
@@ -663,8 +625,7 @@ class SoundList: NSObject, PlayerDelegate {
                         self.thereIsMoreDataToLoad = false 
                     }
                     
-                    self.isUpdatingData = false
-                    self.tableView?.reloadData()
+                    self.updateTableView()
                     
                 } else {
                     self.thereIsMoreDataToLoad = false

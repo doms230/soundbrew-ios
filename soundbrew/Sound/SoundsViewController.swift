@@ -118,7 +118,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundHeaderReuse)
         tableView.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
-        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
+        tableView.refreshControl = refreshControl
+        refreshControl.endRefreshing()
         if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
@@ -132,6 +135,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+    }
+    
+    @objc func refresh(_ sender: UIRefreshControl) {
+       showSounds()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

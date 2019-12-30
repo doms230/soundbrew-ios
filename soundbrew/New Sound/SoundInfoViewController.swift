@@ -14,6 +14,7 @@ import Kingfisher
 import TwitterKit
 import FirebaseDynamicLinks
 import AppCenterAnalytics
+import UICircularProgressRing
 //import Zip
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, UITextViewDelegate {
@@ -28,7 +29,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     let color = Color()
     var soundArtDidFinishProcessing = false
-    var soundTitle: UITextView!
+    var soundTitle: UILabel!
     var soundParseFileDidFinishProcessing = false
     var didPressUploadButton = false
     
@@ -62,11 +63,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     viewController.chosenTags = tags
                 }
             }
-        } else if segue.identifier == "showEditTwitterMessage" {
+        } else if segue.identifier == "showEditTitle" {
             let viewController = navigationController.topViewController as! EditBioViewController
-            viewController.bio = self.twitterMessage
+            if let title = self.soundThatIsBeingEdited?.title {
+                viewController.bio = title
+            }
+            
             viewController.artistDelegate = self
-            viewController.totalAllowedTextLength = getAllowedTwitterMessageLength()
+            //viewController.totalAllowedTextLength = getAllowedTwitterMessageLength()
         }
     }
     
@@ -133,9 +137,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let dividerReuse = "dividerReuse"
     
     func reloadData() {
-        if  self.soundTitle != nil {
+        /*if  self.soundTitle != nil {
             self.soundThatIsBeingEdited?.title = self.soundTitle.text
-        }
+        }*/
         
         self.tableView.reloadData()
     }
@@ -146,7 +150,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
-        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundProgressReuse)
+        //tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundProgressReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundSocialReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
@@ -160,14 +164,22 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if soundThatIsBeingEdited?.objectId != nil {
+        /*if soundThatIsBeingEdited?.objectId != nil {
             return 5
         }
-        return 6
+        //return 6 */
+        
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var tagSection = 3
+        let tagSection = 1
+        if section == tagSection {
+            return 5
+        }
+        return 1
+       /*
+         var tagSection = 3
         var socialSection = 5
         if soundThatIsBeingEdited?.objectId != nil {
             tagSection = 2
@@ -180,13 +192,30 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             return 1
         }
         
-        return 1
+        return 1*/
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: SoundInfoTableViewCell!
+        
+        switch indexPath.section {
+        case 0:
+            cell = titleCell()
+            break
+            
+        case 1:
+            cell = tagCell(indexPath, tableView: tableView)
+            break
+            
+        case 2:
+            cell = socialCell(indexPath)
+            break
+            
+        default:
+            break
+        }
     
-        var soundProgress = 0
+        /*var soundProgress = 0
         var titleSection = 1
         var tagSection = 3
         var socialSection = 5
@@ -201,6 +230,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         switch indexPath.section {
         case soundProgress:
             cell = self.tableView.dequeueReusableCell(withIdentifier: soundProgressReuse) as? SoundInfoTableViewCell
+            cell.backgroundColor = .darkGray
             let localizedProcessingAudio = NSLocalizedString("processingAudio", comment: "")
             cell.titleLabel.text = localizedProcessingAudio
             self.progressSliderTitle = cell.titleLabel
@@ -209,7 +239,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case titleSection:
-            cell = titleImageCell()
+            cell = titleCell()
             break
             
         case tagSection:
@@ -223,7 +253,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         default:
             cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as? SoundInfoTableViewCell
             break
-        }
+        }*/
         
         cell.selectionStyle = .none
         cell.backgroundColor = color.black()
@@ -231,12 +261,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        /*var titleSection = 1
         var tagSection = 3
         if self.soundThatIsBeingEdited?.objectId != nil {
+            titleSection = 0
             tagSection = 2
         }
         
-        if indexPath.section == tagSection {
+        if indexPath.section == titleSection {
+            self.performSegue(withIdentifier: "showEditTitle", sender: self)
+        }*/
+        
+        if indexPath.section == 0 {
+            self.performSegue(withIdentifier: "showEditTitle", sender: self)
+        } else if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
                 self.tagType = "city"
@@ -272,25 +310,26 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func titleImageCell() -> SoundInfoTableViewCell {
+    func titleCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
         
+        //let localizedProcessingAudio = NSLocalizedString("processingAudio", comment: "")
+        //cell.titleLabel.text = localizedProcessingAudio
+        //self.progressSliderTitle = cell.titleLabel
+        self.progressSlider = cell.audioProgress
+        //tableView.separatorStyle = .none
+        
         if let sound = soundThatIsBeingEdited {
-            if let soundArtImage = sound.artImage {
-                cell.soundArt.setImage(soundArtImage, for: .normal)
-            } else if let soundArtURL = sound.artURL {
-                cell.soundArt.kf.setImage(with: URL(string: soundArtURL), for: .normal)
-                self.soundThatIsBeingEdited?.artImage = cell.soundArt.imageView?.image
-            }
-            
             if let soundTitle = sound.title {
                 cell.inputTitle.text = soundTitle
             } else {
-                cell.inputTitle.text = "Untitled"
+                cell.inputTitle.text = "Add Title/Description"
+            }
+            
+            if sound.objectId != nil {
+                cell.audioProgress.value = 100
             }
         }
-        
-        cell.soundArt.addTarget(self, action: #selector(didPressUploadSongArtButton(_:)), for: .touchUpInside)
         
         soundTitle = cell.inputTitle
         tableView.separatorStyle = .singleLine
@@ -298,9 +337,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         return cell
     }
     
+    func changeBio(_ value: String?) {
+        if let newtitle = value {
+            self.soundThatIsBeingEdited?.title = newtitle
+        }
+        reloadData()
+    }
+    
     //mark: social
-    var twitterMessage: String!
-    var didTapTwitterMessage = false
     func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var socialTitle: String!
         var tag: Int!
@@ -309,13 +353,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         socialTitle = "Twitter"
         if shouldPostLinkToTwitter {
             cell.socialSwitch.isOn = true
-            cell.twitterMessage.isHidden = false
-            cell.twitterMessageTitle.isHidden = false
-            cell.twitterMessage.text = twitterMessage
-            cell.twitterMessage.delegate = self
-        } else {
-            cell.twitterMessage.isHidden = true
-            cell.twitterMessageTitle.isHidden = true
         }
         tag = 0
         
@@ -328,26 +365,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
        
         return cell
     }
-    
-    //changeTwitterMEssage
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        textView.resignFirstResponder()
-        self.performSegue(withIdentifier: "showEditTwitterMessage", sender: self)
-    }
-        
-    func changeBio(_ value: String?) {
-        if let newTwitterMessage = value {
-            if newTwitterMessage.contains(self.uiElement.soundbrewSocialHandle) {
-                twitterMessage = newTwitterMessage
-            } else {
-                let newTwitterMessageWithsoundbrewAttached = "\(newTwitterMessage) \(self.uiElement.soundbrewSocialHandle)"
-                twitterMessage = newTwitterMessageWithsoundbrewAttached
-            }
-            reloadData()
-        }
-    }
-        
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
         checkTwitterAuth(sender)
     }
@@ -357,7 +374,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var shouldPostLinkToTwitter = false
     
     func getTwitterUserID() {
-        twitterMessage = "Listen on \(self.uiElement.soundbrewSocialHandle)"
         let store = TWTRTwitter.sharedInstance().sessionStore
         
         if let userId = store.session()?.userID {
@@ -393,11 +409,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
-    func postTweet(_ url: URL, title: String) {
+    func postTweet(_ url: URL, title: String?) {
         if let userID = self.twitterUserID {
             let client = TWTRAPIClient(userID: userID)
             let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "\(twitterMessage ?? "Listen to \(title) on \(self.uiElement.soundbrewSocialHandle)") \(url)"]
+            let params = ["status": "\(title ?? "\(self.uiElement.soundbrewSocialHandle)") \(self.uiElement.soundbrewSocialHandle) \(url)"]
             var clientError : NSError?
             let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
             client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
@@ -652,7 +668,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: audio
-    var progressSlider: UISlider!
+    var progressSlider: UICircularProgressRing!
     var progressSliderTitle: UILabel!
     
     func processAudioForDatabase() {
@@ -706,7 +722,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func saveAudioFile(_ soundParseFile: PFFileObject) {
-        let localizedAudioProcessingComplete = NSLocalizedString("audioProcessingComplete", comment: "")
+       // let localizedAudioProcessingComplete = NSLocalizedString("audioProcessingComplete", comment: "")
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
@@ -719,24 +735,25 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.backButton = UIBarButtonItem(title: localizedSaveDraft, style: .plain, target: self, action: #selector(self.didPressGoBackButton(_:)))
                 self.navigationItem.leftBarButtonItem = self.backButton
                 
-                self.progressSliderTitle.text = localizedAudioProcessingComplete
+//                self.progressSliderTitle.text = localizedAudioProcessingComplete
                 
             } else if let error = error {
                 let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
                 self.errorAlert(localizedProcessingAudio, message: error.localizedDescription)
-                self.progressSliderTitle.text = localizedProcessingAudio
+                //self.progressSliderTitle.text = localizedProcessingAudio
                 
             }
             
         }, progressBlock: {
             (percentDone: Int32) -> Void in
             //self.progressSliderTitle.text = localizedProcessingAudio
-            self.progressSlider!.value = Float(percentDone)
+            //self.progressSlider!.value = Float(percentDone)
+            self.progressSlider.value = CGFloat(percentDone)
         })
     }
     
     //mark: media upload
-    @objc func didPressUploadSongArtButton(_ sender: UIButton){
+    /*@objc func didPressUploadSongArtButton(_ sender: UIButton){
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
@@ -775,27 +792,34 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         dismiss(animated: true, completion: nil)
-    }
+    }*/
     
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+    /*func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
-    }
+    }*/
     
     // Helper function inserted by Swift 4.2 migrator.
-    fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+   /* fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
         return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
     }
     
     // Helper function inserted by Swift 4.2 migrator.
     fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
         return input.rawValue
-    }
+    }*/
     
     //
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        self.soundThatIsBeingEdited?.title = self.soundTitle.text
         if let sound = soundThatIsBeingEdited {
-            if isSoundInfoCorrect(sound) {
+            if sound.objectId != nil {
+                updateSound(sound, isDraft: false)
+            } else if soundParseFileDidFinishProcessing {
+                createSound(sound, isDraft: false)
+            } else {
+                didPressUploadButton = true
+            }
+        }
+            /*if isSoundInfoCorrect(sound) {
                 if sound.objectId != nil {
                     updateSound(sound, isDraft: false)
                 } else if soundParseFileDidFinishProcessing && soundArtDidFinishProcessing {
@@ -804,7 +828,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     didPressUploadButton = true
                 }
             }
-        }
+        }*/
     }
 
     //mark: data
@@ -913,18 +937,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //mark: utility
     func isSoundInfoCorrect(_ sound: Sound) -> Bool {
         let localizedTitleRequired = NSLocalizedString("titleRequired", comment: "")
-        let localizedSoundArtRequired = NSLocalizedString("soundArtRequired", comment: "")
-        let localizedTapGrayBoxArt = NSLocalizedString("tapGrayBoxArt", comment: "")
-        let localizedTapGrayBoxGenre = NSLocalizedString("tapGrayBoxGenre", comment: "")
-        let localizedGenreRequired = NSLocalizedString("genreRequired", comment: "")
-        let localizedMoodRequired = NSLocalizedString("moodRequired", comment: "")
-        let localizedActivityRequired = NSLocalizedString("activityRequired", comment: "")
-        let localizedTapGrayBoxMood = NSLocalizedString("tapGrayBoxMood", comment: "")
-        let localizedTapGrayBoxActivity = NSLocalizedString("tapGrayBoxActivity", comment: "")
+        //let localizedSoundArtRequired = NSLocalizedString("soundArtRequired", comment: "")
+        //let localizedTapGrayBoxArt = NSLocalizedString("tapGrayBoxArt", comment: "")
+        //let localizedTapGrayBoxGenre = NSLocalizedString("tapGrayBoxGenre", comment: "")
+        //let localizedGenreRequired = NSLocalizedString("genreRequired", comment: "")
+        //let localizedMoodRequired = NSLocalizedString("moodRequired", comment: "")
+        //let localizedActivityRequired = NSLocalizedString("activityRequired", comment: "")
+        //let localizedTapGrayBoxMood = NSLocalizedString("tapGrayBoxMood", comment: "")
+        //let localizedTapGrayBoxActivity = NSLocalizedString("tapGrayBoxActivity", comment: "")
         if let sound = soundThatIsBeingEdited {
             if sound.title!.isEmpty {
                 uiElement.showAlert(localizedTitleRequired, message: "", target: self)
-            } else if sound.artFile == nil && sound.artURL == nil {
+            } /*else if sound.artFile == nil && sound.artURL == nil {
                 uiElement.showAlert(localizedSoundArtRequired, message: localizedTapGrayBoxArt, target: self)
             }else if genreTag == nil {
                 uiElement.showAlert(localizedGenreRequired, message: localizedTapGrayBoxGenre, target: self)
@@ -932,7 +956,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 uiElement.showAlert(localizedMoodRequired, message: localizedTapGrayBoxMood, target: self)
             } else if activityTag == nil  {
                 uiElement.showAlert(localizedActivityRequired, message: localizedTapGrayBoxActivity, target: self)
-            } else {
+            }*/ else {
                 return true
             }
         }

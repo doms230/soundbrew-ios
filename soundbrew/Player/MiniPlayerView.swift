@@ -89,7 +89,7 @@ class MiniPlayerView: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = color.lightBlack()
+        self.backgroundColor = color.purpleBlack()
         setupNotificationCenter()
         player = Player.sharedInstance
     }
@@ -184,6 +184,7 @@ class MiniPlayerView: UIButton {
                 activitySpinner.isHidden = true
                 playBackButton.isHidden = false
                 self.isEnabled = true
+                print("set sound miniplayer")
             }
         }
     }
