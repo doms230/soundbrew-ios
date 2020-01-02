@@ -163,7 +163,7 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.top.equalTo(audioProgress)
                 make.left.equalTo(audioProgress.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(dividerLine).offset(uiElement.bottomOffset)
             }
             
             dividerLine.snp.makeConstraints { (make) -> Void in

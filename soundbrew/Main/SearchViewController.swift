@@ -355,7 +355,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func addTags(_ scrollview: UIScrollView, tags: Array<Tag>, row: Int) {
         //not using snpakit to set button frame becuase not able to get button width from button title.
         let buttonHeight = 115
-        let buttonWidth = 170
+        let buttonWidth = 160
         
         var xPositionForFeatureTags = UIElement().leftOffset
         

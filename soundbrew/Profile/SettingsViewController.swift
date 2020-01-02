@@ -200,14 +200,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func showEarningsOrPayments(_ paymentType: String) {
         if paymentType == "funds" {
-            if let container = self.so_containerViewController {
-                container.isSideViewControllerPresented = false
-                if let topView = container.topViewController as? UINavigationController {
-                    if let view = topView.topViewController as? ProfileViewController {
-                        view.performSegue(withIdentifier: "showAddFunds", sender: self)
+            if #available(iOS 13.0, *) {
+                if let container = self.so_containerViewController {
+                    container.isSideViewControllerPresented = false
+                        if let topView = container.topViewController as? UINavigationController {
+                            if let view = topView.topViewController as? ProfileViewController {
+                            view.performSegue(withIdentifier: "showAddFunds", sender: self)
+                            }
+                        }
                     }
-                }
+            } else {
+                self.uiElement.showAlert("Un-Available", message: "Adding funds to your account on iOS 12 is currently un-available. Email support@soundbrew.app for more info.", target: self)
             }
+
         } else {
             let localizedWeeklyEarnings = NSLocalizedString("weeklyEarnings", comment: "")
             let localizedWeeklyEarningsMessage = NSLocalizedString("weeklyEarningsMessage", comment: "")

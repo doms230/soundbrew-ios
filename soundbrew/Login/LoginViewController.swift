@@ -25,6 +25,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     var signupHidden = true
     
     lazy var usernameText: UITextField = {
+    
         let label = UITextField()
         let localizedString = NSLocalizedString("usernameOrEmail", comment: "")
         //label.placeholder = localizedString

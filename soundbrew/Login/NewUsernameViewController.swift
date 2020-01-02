@@ -19,12 +19,18 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     let color = Color()
     
     var emailString: String!
+    
+    //twitter
     var authToken: String?
     var authTokenSecret: String?
     var twitterUsername: String?
     var twitterID: String?
     var twitterBio: String?
     var twitterImage: PFFileObject?
+    
+    //apple
+    var appleID: String?
+    var appleName: String? 
     
     lazy var usernameText: UITextField = {
         let localizedUsername = NSLocalizedString("username", comment: "")
@@ -126,29 +132,41 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameAlreadyInUse)
                 
             } else {
-                if let authToken = self.authToken {
-                    self.authenticateWithTwitter(self.twitterID!, auth_token: authToken, auth_token_secret: self.authTokenSecret!, username: self.usernameText.text!)
+                if let twitterId = self.twitterID {
+                    self.authenticateWith("twitter", userId: twitterId, auth_token: self.authToken, auth_token_secret: self.authTokenSecret!, username: self.usernameText.text!)
                     
+                } else if let appleID = self.appleID {
+                    self.authenticateWith("apple", userId: appleID, auth_token: nil, auth_token_secret: nil, username: self.usernameText.text!)
                 } else {
-                   self.performSegue(withIdentifier: "showPassword", sender: self)
+                    self.performSegue(withIdentifier: "showPassword", sender: self)
                 }
             }
         }
     }
     
-    func authenticateWithTwitter(_ userId: String, auth_token: String, auth_token_secret: String, username: String) {
+    func authenticateWith(_ loginService: String, userId: String, auth_token: String?, auth_token_secret: String?, username: String) {
                         
-        PFUser.logInWithAuthType(inBackground: "twitter", authData: ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]).continueOnSuccessWith(block: {
+        var authData: [String:String]
+        if loginService == "twitter" {
+            authData = ["id": userId, "auth_token": auth_token!, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
+        } else {
+            print("apple userId: \(userId)")
+            authData = ["id": userId]
+        }
+        
+        PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
             (ignored: BFTask!) -> AnyObject? in
-            
             let parseUser = PFUser.current()
             let installation = PFInstallation.current()
             installation?["user"] = parseUser
             installation?["userId"] = parseUser?.objectId
             installation?.saveEventually()
             
-            self.getTwitterImageAndBio()
-            
+            if loginService == "twitter" {
+                self.getTwitterImageAndBio()
+            } else {
+                self.updateUserInfo()
+            }
             return AnyObject.self as AnyObject
         })
     }
@@ -220,10 +238,23 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                         self.stopAnimating()
                         self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                     } else {
-                        user["artistName"] = self.usernameText.text
+                        
+                        if let appleName = self.appleName {
+                            user["artistName"] = appleName
+                        } else {
+                            user["artistName"] = self.usernameText.text
+                        }
+                        
                         user["username"] = self.usernameText.text
                         user["email"] = self.emailString
-                        user["twitterID"] = self.twitterID
+                        
+                        if let appleID = self.appleID {
+                            user["appleID"] = appleID
+                        }
+                        
+                        if let twitterID = self.twitterID {
+                            user["twitterID"] = twitterID
+                        }
                         
                         if let twitterBio = self.twitterBio {
                             user["bio"] = twitterBio

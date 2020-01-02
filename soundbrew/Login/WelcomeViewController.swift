@@ -66,21 +66,57 @@ class WelcomeViewController: UIViewController {
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
         label.text = "Sign In With:"
         label.textColor = .white
+        label.textAlignment = .center
         label.numberOfLines = 0
         return label
     }()
     
-    lazy var signinButton: UIButton = {
+    lazy var signinWithSoundbrewButton: UIButton = {
         let button = UIButton()
-        let localizedSignin = NSLocalizedString("signin", comment: "")
-        button.setTitle(localizedSignin, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        button.setTitleColor(.white, for: .normal)
+        //let localizedSignin = NSLocalizedString("signin", comment: "")
+        //button.setTitle(localizedSignin, for: .normal)
+        //button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        //button.setTitleColor(.white, for: .normal)
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.white.cgColor
-        button.layer.cornerRadius = 3
+        button.layer.cornerRadius = 30
         button.clipsToBounds = true
-        button.addTarget(self, action: #selector(self.didPressSigninButton(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(self.didPressSigninWithSoundbrewButton(_:)), for: .touchUpInside)
+        button.setBackgroundImage(UIImage(named: "appIcon_white"), for: .normal)
+        return button
+    }()
+    
+    lazy var loginInWithTwitterButton: UIButton = {
+        let button = UIButton()
+       // let localizedtwitter = NSLocalizedString("twitter", comment: "")
+        //button.setTitle(localizedtwitter, for: .normal)
+        //button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        //button.setTitleColor(.white, for: .normal)
+        //button.backgroundColor = color.uicolorFromHex(0x1DA1F2)
+        button.setBackgroundImage(UIImage(named: "twitter"), for: .normal)
+        button.layer.cornerRadius = 30
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(didPressLoginWithTwitterButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var twitter: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "twitter")
+        return image
+    }()
+    
+    lazy var signinWithAppleButton: UIButton = {
+        let button = UIButton()
+       // let localizedtwitter = NSLocalizedString("twitter", comment: "")
+        //button.setTitle(localizedtwitter, for: .normal)
+        //button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        //button.setTitleColor(.white, for: .normal)
+        //button.backgroundColor = color.uicolorFromHex(0x1DA1F2)
+        button.setBackgroundImage(UIImage(named: "appleLogo"), for: .normal)
+        button.layer.cornerRadius = 30
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(didPressSigninWithAppleButton(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -95,25 +131,6 @@ class WelcomeViewController: UIViewController {
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(self.didPressSignupButton(_:)), for: .touchUpInside)
         return button
-    }()
-    
-    lazy var loginInWithTwitterButton: UIButton = {
-        let button = UIButton()
-        let localizedtwitter = NSLocalizedString("twitter", comment: "")
-        button.setTitle(localizedtwitter, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = color.uicolorFromHex(0x1DA1F2)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        button.addTarget(self, action: #selector(didPressLoginWithTwitterButton(_:)), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var twitter: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "twitter")
-        return image
     }()
     
     lazy var termsButton: UIButton = {
@@ -155,10 +172,11 @@ class WelcomeViewController: UIViewController {
         self.view.addSubview(signinWithLabel)
         
         self.view.addSubview(skipButton)
-        self.view.addSubview(signinButton)
+        self.view.addSubview(signinWithSoundbrewButton)
         self.view.addSubview(signupButton)
         self.view.addSubview(loginInWithTwitterButton)
-        loginInWithTwitterButton.addSubview(twitter)
+        self.view.addSubview(signinWithAppleButton)
+        //loginInWithTwitterButton.addSubview(twitter)
         self.view.addSubview(termsButton)
         
         appLabel.snp.makeConstraints { (make) -> Void in
@@ -177,30 +195,52 @@ class WelcomeViewController: UIViewController {
             make.height.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
+            make.bottom.equalTo(signinWithLabel.snp.top).offset(uiElement.bottomOffset)
         }
         
-        signupButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
+        signinWithLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(loginInWithTwitterButton.snp.top).offset(uiElement.bottomOffset * 2)
+            make.bottom.equalTo(loginInWithTwitterButton.snp.top).offset(uiElement.bottomOffset)
         }
-        
-        loginInWithTwitterButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
+                
+        /*loginInWithTwitterButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(signinButton.snp.top).offset(uiElement.bottomOffset * 2)
-        }
-        twitter.snp.makeConstraints { (make) -> Void in
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signinWithSoundbrewButton.snp.top).offset(uiElement.bottomOffset * 2)
+        }*/
+        /*twitter.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(50)
             make.top.equalTo(loginInWithTwitterButton)
             make.left.equalTo(loginInWithTwitterButton)
             make.bottom.equalTo(loginInWithTwitterButton)
+        }*/
+        
+        signinWithAppleButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(60)
+            make.left.equalTo(signinWithSoundbrewButton.snp.right).offset(uiElement.leftOffset * 2)
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+           // make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signinWithSoundbrewButton)
         }
         
-        signinButton.snp.makeConstraints { (make) -> Void in
+        loginInWithTwitterButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(60)
+            //make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.signinWithSoundbrewButton.snp.left).offset(uiElement.rightOffset * 2)
+            make.bottom.equalTo(signinWithSoundbrewButton)
+        }
+        
+        signinWithSoundbrewButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(60)
+            //make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.centerX.equalTo(self.view)
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset * 2)
+        }
+        
+        signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -218,7 +258,7 @@ class WelcomeViewController: UIViewController {
         self.uiElement.newRootView("Main", withIdentifier: "tabBar")
     }
     
-    @objc func didPressSigninButton(_ sender: UIButton) {
+    @objc func didPressSigninWithSoundbrewButton(_ sender: UIButton) {
         self.performSegue(withIdentifier: "showSignin", sender: self)
         MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign In Button", "description": "User pressed Sign in button"])
     }
@@ -239,5 +279,16 @@ class WelcomeViewController: UIViewController {
         isLoggingInWithTwitter = true
         self.performSegue(withIdentifier: "showSignup", sender: self)
         MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Twitter Button", "description": "user pressed twitter button"])
+    }
+    
+    @objc func didPressSigninWithAppleButton(_ sender: UIButton) {
+        if #available(iOS 13.0, *) {
+            isLoggingInWithApple = true
+            isLoggingInWithTwitter = false
+            self.performSegue(withIdentifier: "showSignup", sender: self)
+            
+        } else {
+            self.uiElement.showAlert("Un-Available", message: "Sign in with Apple is only available on iOS 13 or newer.", target: self)
+        }
     }
 }

@@ -54,6 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         Parse.initialize(with: configuration)
         
         PFUser.register(self, forAuthType: "twitter")
+        PFUser.register(self, forAuthType: "apple")
         
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
         NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)

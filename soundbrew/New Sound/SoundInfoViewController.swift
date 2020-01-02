@@ -68,7 +68,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let title = self.soundThatIsBeingEdited?.title {
                 viewController.bio = title
             }
-            
+            viewController.totalAllowedTextLength = 50
             viewController.artistDelegate = self
         }
     }
@@ -231,7 +231,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func audioTitleCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
         
-        self.progressSlider = cell.audioProgress
+        self.audioProgress = cell.audioProgress
 
         if let sound = soundThatIsBeingEdited {
             if let soundTitle = sound.title {
@@ -582,7 +582,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: audio
-    var progressSlider: UICircularProgressRing!
+    var audioProgress: UICircularProgressRing!
     var progressSliderTitle: UILabel!
     
     func processAudioForDatabase() {
@@ -655,7 +655,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         }, progressBlock: {
             (percentDone: Int32) -> Void in
-            self.progressSlider.value = CGFloat(percentDone)
+            self.audioProgress.value = CGFloat(percentDone)
         })
     }
     

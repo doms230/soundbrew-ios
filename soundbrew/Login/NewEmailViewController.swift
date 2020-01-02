@@ -3,15 +3,52 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import TwitterKit
+import AuthenticationServices
 
-class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate {
+
+class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate, ASAuthorizationControllerDelegate {
     let color = Color()
     let uiElement = UIElement()
-
-    var authToken: String?
     
     var isLoggingInWithTwitter = false
     var isLoggingInWithApple = false
+    
+    
+    override func viewDidLoad(){
+        super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+
+        if isLoggingInWithTwitter {
+            loginWithTwitter()
+        } else if isLoggingInWithApple {
+            loginWithApple()
+        } else {
+            setupNewEmailView()
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController = segue.destination as! NewUsernameViewController
+        if self.twitterID != nil {
+            prepareTwitterVariables(viewController)
+        } else {
+            prepareAppleVariables(viewController)
+        }
+
+        var nextTitle: String!
+        let localizedUsername = NSLocalizedString("username", comment: "")
+        if authToken != nil {
+            nextTitle = "\(localizedUsername) | 2/2"
+        } else {
+            nextTitle = "\(localizedUsername) | 2/3"
+        }
+        
+        let backItem = UIBarButtonItem()
+        backItem.title = nextTitle
+        navigationItem.backBarButtonItem = backItem
+    }
     
     lazy var titleLabel: UILabel = {
         let localizedPayPalPayoutMessage = NSLocalizedString("payPalPayoutMessage", comment: "")
@@ -55,21 +92,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         return true
     }
     
-    override func viewDidLoad(){
-        super.viewDidLoad()
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
-
-        if isLoggingInWithTwitter {
-            loginWithTwitter()
-        } else if isLoggingInWithApple {
-            //loginWithApple()
-        } else {
-            setupNewEmailView()
-        }
-    }
-    
     func setupNewEmailView() {
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         let cancelButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
@@ -106,27 +128,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         }
         
         emailText.becomeFirstResponder()
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let localizedUsername = NSLocalizedString("username", comment: "")
-        let viewController = segue.destination as! NewUsernameViewController
-        viewController.emailString = emailText.text!
-        viewController.authToken = self.authToken
-        viewController.authTokenSecret = self.authTokenSecret
-        viewController.twitterID = self.twitterID
-        viewController.twitterUsername = self.twitterUsername
-        
-        var nextTitle: String!
-        if authToken != nil {
-            nextTitle = "\(localizedUsername) | 2/2"
-        } else {
-            nextTitle = "\(localizedUsername) | 2/3"
-        }
-        
-        let backItem = UIBarButtonItem()
-        backItem.title = nextTitle
-        navigationItem.backBarButtonItem = backItem
     }
     
     @objc func next(_ sender: UIButton){
@@ -169,51 +170,37 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         self.dismiss(animated: true, completion: nil)
     }
     
-    //MARK: TWITTER
-    var authTokenSecret: String?
-    var twitterUsername: String?
-    var twitterID: String?
-    
-    func loginWithTwitter() {
-        self.startAnimating()
-        let store = TWTRTwitter.sharedInstance().sessionStore
-        if let session = store.session() {
-            store.logOutUserID(session.userID)
+    //login with logic
+    func checkIfUserExists(_ loginInService: String, userID: String, authToken: String?, authTokenSecret: String?, username: String?) {
+        let query = PFQuery(className: "_User")
+        if loginInService == "twitter" {
+            query.whereKey("twitterID", equalTo: userID)
+        } else {
+            query.whereKey("appleID", equalTo: userID)
         }
         
-        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
-            if let session = session {
-                self.checkIfUserExists(session.userID, authToken: session.authToken, authTokenSecret: session.authTokenSecret, username: session.userName)
-                
-            } else if let error = error {
-                print("error: \(error.localizedDescription)");
-                self.stopAnimating()
-                self.dismiss(animated: true, completion: nil)
-            }
-        })
-    }
-    
-    func checkIfUserExists(_ userID: String, authToken: String, authTokenSecret: String, username: String?) {
-        let query = PFQuery(className: "_User")
-        query.whereKey("twitterID", equalTo: userID)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
-                self.PFauthenticateWithTwitter(userID, auth_token: authToken, auth_token_secret: authTokenSecret, username: username)
+                self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken!, auth_token_secret: authTokenSecret!, username: username)
             } else {
-                self.twitterID = userID
-                self.authToken = authToken
-                self.authTokenSecret = authTokenSecret
-                self.twitterUsername = username
                 self.stopAnimating()
                 self.setupNewEmailView()
             }
         }
     }
     
-    func PFauthenticateWithTwitter(_ userId: String, auth_token: String, auth_token_secret: String, username: String?) {
+    func PFauthenticateWith(_ loginService: String, userId: String, auth_token: String, auth_token_secret: String, username: String?) {
         
-        PFUser.logInWithAuthType(inBackground: "twitter", authData: ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]).continueOnSuccessWith(block: {
+        var authData: [String: String]
+
+        if loginService == "twitter" {
+            authData = ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]
+        } else {
+            authData = ["id": userId]
+        }
+         
+        PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
             (ignored: BFTask!) -> AnyObject? in
             
             let parseUser = PFUser.current()
@@ -226,5 +213,93 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             self.uiElement.newRootView("Main", withIdentifier: "tabBar")
             return AnyObject.self as AnyObject
         })
+    }
+    
+    //MARK: TWITTER
+    var authTokenSecret: String?
+    var twitterUsername: String?
+    var twitterID: String?
+    var authToken: String?
+    
+    func prepareTwitterVariables(_ viewController: NewUsernameViewController) {
+        viewController.emailString = emailText.text!
+        viewController.authToken = self.authToken
+        viewController.authTokenSecret = self.authTokenSecret
+        viewController.twitterID = self.twitterID
+        viewController.twitterUsername = self.twitterUsername
+    }
+    
+    func loginWithTwitter() {
+        self.startAnimating()
+        let store = TWTRTwitter.sharedInstance().sessionStore
+        if let session = store.session() {
+            store.logOutUserID(session.userID)
+        }
+        
+        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+            if let session = session {
+                self.twitterID = session.userID
+                self.authToken = session.authToken
+                self.authTokenSecret = session.authTokenSecret
+                self.twitterUsername = session.userName
+                self.checkIfUserExists("twitter", userID: session.userID, authToken: session.authToken, authTokenSecret: session.authTokenSecret, username: session.userName)
+                
+            } else if let error = error {
+                print("error: \(error.localizedDescription)");
+                self.stopAnimating()
+                self.dismiss(animated: true, completion: nil)
+            }
+        })
+    }
+    
+    //apple
+    var appleID: String?
+    var appleName: String?
+    
+    func prepareAppleVariables(_ viewController: NewUsernameViewController) {
+        viewController.appleID = self.appleID
+        if let name = self.appleName {
+            viewController.appleName = name
+        }
+    }
+    
+    func loginWithApple() {
+        if #available(iOS 13.0, *) {
+            let request = ASAuthorizationAppleIDProvider().createRequest()
+            request.requestedScopes = [.fullName, .email]
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            //controller.presentationContextProvider = (self as! ASAuthorizationControllerPresentationContextProviding)
+            controller.performRequests()
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        switch authorization.credential {
+        case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            let appleID = appleIDCredential.user
+            self.appleID = appleID
+            
+            if let name = appleIDCredential.fullName?.givenName {
+                self.appleName = name
+            }
+            
+            if let email = appleIDCredential.email {
+                self.emailText.text = email
+            }
+            
+            self.checkIfUserExists("apple", userID: appleID, authToken: nil, authTokenSecret: nil, username: nil)
+            
+            break
+        default:
+            break
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print(error)
+        self.dismiss(animated: true, completion: nil)
     }
 }

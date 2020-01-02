@@ -84,7 +84,6 @@ class SoundList: NSObject, PlayerDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
-        
         if sounds.indices.contains(indexPath.row) {
             let sound = sounds[indexPath.row]
             if let currentSoundPlaying = self.player?.currentSound {
@@ -381,13 +380,10 @@ class SoundList: NSObject, PlayerDelegate {
     var thereIsMoreDataToLoad = true
     
     func updateTableView() {
-        print("update tableview")
         self.isUpdatingData = false
         if let tableView = self.tableView {
             tableView.reloadData()
-            print("reload data")
             if let refreshControl = tableView.refreshControl {
-                print("refresh end")
                 refreshControl.endRefreshing()
             }
         }
