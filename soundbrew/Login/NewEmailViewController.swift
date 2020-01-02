@@ -31,6 +31,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController = segue.destination as! NewUsernameViewController
+        viewController.emailString = emailText.text!
         if self.twitterID != nil {
             prepareTwitterVariables(viewController)
         } else {
@@ -222,9 +223,8 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     var authToken: String?
     
     func prepareTwitterVariables(_ viewController: NewUsernameViewController) {
-        viewController.emailString = emailText.text!
-        viewController.authToken = self.authToken
-        viewController.authTokenSecret = self.authTokenSecret
+        viewController.twitterAuthToken = self.authToken
+        viewController.twitterAuthTokenSecret = self.authTokenSecret
         viewController.twitterID = self.twitterID
         viewController.twitterUsername = self.twitterUsername
     }
@@ -255,9 +255,11 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     //apple
     var appleID: String?
     var appleName: String?
+    var appleToken: String?
     
     func prepareAppleVariables(_ viewController: NewUsernameViewController) {
         viewController.appleID = self.appleID
+        viewController.appleToken = self.appleToken
         if let name = self.appleName {
             viewController.appleName = name
         }
@@ -280,6 +282,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
             let appleID = appleIDCredential.user
             self.appleID = appleID
+            self.appleToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
             
             if let name = appleIDCredential.fullName?.givenName {
                 self.appleName = name

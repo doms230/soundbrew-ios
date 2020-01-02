@@ -21,8 +21,8 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     var emailString: String!
     
     //twitter
-    var authToken: String?
-    var authTokenSecret: String?
+    var twitterAuthToken: String?
+    var twitterAuthTokenSecret: String?
     var twitterUsername: String?
     var twitterID: String?
     var twitterBio: String?
@@ -31,6 +31,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
     //apple
     var appleID: String?
     var appleName: String? 
+    var appleToken: String?
     
     lazy var usernameText: UITextField = {
         let localizedUsername = NSLocalizedString("username", comment: "")
@@ -133,10 +134,10 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
                 
             } else {
                 if let twitterId = self.twitterID {
-                    self.authenticateWith("twitter", userId: twitterId, auth_token: self.authToken, auth_token_secret: self.authTokenSecret!, username: self.usernameText.text!)
+                    self.authenticateWith("twitter", userId: twitterId, auth_token: self.twitterAuthToken, auth_token_secret: self.twitterAuthTokenSecret!, username: self.usernameText.text!)
                     
                 } else if let appleID = self.appleID {
-                    self.authenticateWith("apple", userId: appleID, auth_token: nil, auth_token_secret: nil, username: self.usernameText.text!)
+                    self.authenticateWith("apple", userId: appleID, auth_token: self.appleToken, auth_token_secret: nil, username: self.usernameText.text!)
                 } else {
                     self.performSegue(withIdentifier: "showPassword", sender: self)
                 }
@@ -151,7 +152,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
             authData = ["id": userId, "auth_token": auth_token!, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
         } else {
             print("apple userId: \(userId)")
-            authData = ["id": userId]
+            authData = ["id": userId, "token": auth_token!]
         }
         
         PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
