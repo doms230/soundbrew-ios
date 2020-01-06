@@ -39,6 +39,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        createUploaderCredit()
         getTwitterUserID()
         getSelectedTags()
         setUpViews()
@@ -212,7 +213,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: credits
-    var credits: Array<Credit>?
+    var credits = [Credit]()
     func creditCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var cell: SoundInfoTableViewCell!
             
@@ -221,19 +222,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
             cell.soundTagLabel.text = "Credits"
                     
-            if let credits = self.credits {
-                if credits.count == 1 {
-                    cell.chosenSoundTagLabel.text = "\(credits.count) Credit"
-                } else {
-                    cell.chosenSoundTagLabel.text = "\(credits.count) Credits"
-                }
-                
-                cell.chosenSoundTagLabel.textColor = .white
-                
+            cell.chosenSoundTagLabel.textColor = .white
+            if credits.count == 1 {
+                cell.chosenSoundTagLabel.text = "\(credits.count) Credit"
             } else {
-                cell.chosenSoundTagLabel.text = localizedAdd.capitalized
-                cell.chosenSoundTagLabel.textColor = color.red()
+                cell.chosenSoundTagLabel.text = "\(credits.count) Credits"
             }
+            
         } else {
             cell = (self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell)
         }
@@ -244,12 +239,22 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func prepareNewCredit(_ navigationController: UINavigationController) {
         let viewController: NewCreditViewController = navigationController.topViewController as! NewCreditViewController
         viewController.creditDelegate = self
-        
-        //TODO: send credits
+        viewController.credits = credits
     }
     
-    func receivedCredits(_ chosenTags: Array<Credit>?) {
-        //TODO: receive credits
+    func receivedCredits(_ chosenCredits: Array<Credit>?) {
+        if let credits = chosenCredits {
+            self.credits = credits
+            self.tableView.reloadData()
+        }
+    }
+    
+    func createUploaderCredit() {
+        let credit = Credit(objectId: nil, artist: nil, title: "Artist", percentage: 85)
+        if let artist = Customer.shared.artist {
+            credit.artist = artist
+        }
+        self.credits.append(credit)
     }
     
     //mark: social
@@ -461,7 +466,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         } else {
             cell.chosenSoundTagLabel.text = localizedAdd.capitalized
-            cell.chosenSoundTagLabel.textColor = color.red()
+            cell.chosenSoundTagLabel.textColor = color.blue()
         }
         tableView.separatorStyle = .singleLine
             break
@@ -481,7 +486,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         } else {
             cell.chosenSoundTagLabel.text = localizedAdd.capitalized
-            cell.chosenSoundTagLabel.textColor = color.red()
+            cell.chosenSoundTagLabel.textColor = color.blue()
         }
     }
     

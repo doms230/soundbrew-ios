@@ -25,5 +25,5 @@ class Credit {
 }
 
 protocol CreditDelegate {
-    func receivedCredits(_ chosenTags: Array<Credit>?)
+    func receivedCredits(_ chosenCredits: Array<Credit>?)
 }

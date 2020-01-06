@@ -21,7 +21,9 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     var loadType = "following"
     var sound: Sound!
     
+    //credits
     var isAddingNewCredit = false
+    var creditArtistObjectIds = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +33,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         navigationController?.navigationBar.tintColor = .white
                 
         if sound == nil || isAddingNewCredit {
+            let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(didPressCancelButton(_:)))
+            self.navigationItem.leftBarButtonItem = cancelButton
             loadFollowersFollowing(loadType)
         } else {
             loadTippers()
@@ -52,16 +56,20 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     //MARK: Tableview
     let tableView = UITableView()
-    let searchTagViewReuse = "searchTagViewReuse"
+    let searchProfileReuse = "searchProfileReuse"
     let noSoundsReuse = "noSoundsReuse"
     let searchReuse = "searchReuse"
     func setUpTableView() {
         self.filteredArtists = self.artists
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         self.tableView.separatorStyle = .none
@@ -91,6 +99,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             let cell = self.tableView.dequeueReusableCell(withIdentifier: searchReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
             self.searchBar = cell.searchBar
+            self.searchBar.delegate = self
             return cell
             
         } else {
@@ -113,7 +122,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 
                 return cell
             } else {
-                let cell = self.tableView.dequeueReusableCell(withIdentifier: searchTagViewReuse) as! ProfileTableViewCell
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
                 cell.backgroundColor = color.black()
                 self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil)
                 return cell
@@ -125,7 +134,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         if indexPath.section == 1 {
             tableView.cellForRow(at: indexPath)?.isSelected = false
             if self.filteredArtists.indices.contains(indexPath.row) {
-                //selectedArtist = self.filteredArtists[indexPath.row]
                 selectedArtist(self.filteredArtists[indexPath.row])
             }
         }
@@ -138,7 +146,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
             if isAddingNewCredit {
-                print("selected artists is adding new credit")
                 if let artistDelegate = self.artistDelegate {
                     self.dismiss(animated: true, completion: {() in
                         artistDelegate.receivedArtist(artist)
@@ -149,24 +156,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 self.performSegue(withIdentifier: "showProfile", sender: self)
                 MSAnalytics.trackEvent("People View Controller", withProperties: ["Button" : "Did Select Person"])
             }
-            
-            
-           /* if isAddingNewCredit {
-                print("selected artists is adding new credit")
-                if let artistDelegate = self.artistDelegate {
-                    self.dismiss(animated: true, completion: {() in
-                        artistDelegate.receivedArtist(artist)
-                    })
-                }
-            } else if artist.objectId == "addFunds" {
-                self.performSegue(withIdentifier: "showAddFunds", sender: self)
-            } else if artist.objectId == "signup" {
-                self.performSegue(withIdentifier: "showWelcome", sender: self)
-            } else {
-                selectedArtist = artist
-                self.performSegue(withIdentifier: "showProfile", sender: self)
-                MSAnalytics.trackEvent("People View Controller", withProperties: ["Button" : "Did Select Person"])
-            }*/
         }
     }
     
@@ -174,9 +163,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let query = PFQuery(className: "Follow")
         if loadType == "followers" {
             query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+            
         } else if loadType == "following" {
             query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
         }
+        
+        query.whereKey("toUserId", notContainedIn: self.creditArtistObjectIds)
         query.whereKey("isRemoved", equalTo: false)
         query.limit = 50
         query.findObjectsInBackground {
@@ -239,7 +231,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isSearchActive = true
-        self.tableView.reloadData()
+        //self.tableView.reloadData()
         searchBar.setShowsCancelButton(true, animated: true)
     }
     
@@ -266,6 +258,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
+        query.whereKey("objectId", notContainedIn: self.creditArtistObjectIds)
         query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -325,7 +318,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 }
                 
                 //self.isLoadingResults = false
-                self.tableView.reloadData()
+               // self.tableView.reloadData()
+                self.tableView.reloadSections([1], with: .automatic)
                 
             } else {
                 print("Error: \(error!)")

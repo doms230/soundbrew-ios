@@ -88,15 +88,21 @@ class Artist {
                     if let name = self.name {
                         cell.displayNameLabel.text = name
                     }
-                    if let city = self.city {
-                        cell.city.text = city
+                    
+                    if let username = self.username {
+                        cell.username.text = "@\(username)"
                     }
+                   /* if let city = self.city {
+                        cell.city.text = city
+                    }*/
                     if let image = self.image {
                         cell.profileImage.kf.setImage(with: URL(string: image))
                     }
                     
                 } else if let cell = soundCell {
+                    //if let 
                     cell.artistLabel.text = self.name
+                    
                     if let image = self.image {
                         cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                     } else {

@@ -81,12 +81,29 @@
                     </view>
                     <navigationItem key="navigationItem" id="MAn-89-9dy"/>
                     <connections>
-                        <segue destination="Btf-EX-uKz" kind="presentation" identifier="showSearchUser" id="vbP-WX-lzC"/>
+                        <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditCreditTitle" id="9UM-NA-8J6"/>
+                        <segue destination="HA0-66-dRP" kind="presentation" identifier="showSearchUser" id="9s0-e6-43t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MBe-x2-tDf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-736.23188405797111" y="-952.23214285714278"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="hBf-Hp-Hp9">
+            <objects>
+                <navigationController id="HA0-66-dRP" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="zZ0-q7-yO2">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="Btf-EX-uKz" kind="relationship" relationship="rootViewController" id="bfU-qG-pE9"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Uus-FA-Kvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2099" y="-543"/>
         </scene>
         <!--Me-->
         <scene sceneID="Sfx-x4-dys">
@@ -570,11 +587,11 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
-        <segue reference="UgY-SI-XY8"/>
+        <segue reference="9UM-NA-8J6"/>
         <segue reference="FZs-ab-ofk"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="ate-Yt-ICi"/>
-        <segue reference="vbP-WX-lzC"/>
+        <segue reference="bfU-qG-pE9"/>
         <segue reference="iDR-Ll-dSf"/>
         <segue reference="0mA-lO-wOD"/>
     </inferredMetricsTieBreakers>

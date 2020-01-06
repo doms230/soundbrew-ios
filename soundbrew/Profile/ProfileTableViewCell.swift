@@ -63,7 +63,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var username: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .white
+        label.textColor = .darkGray
         return label
     }()
     
@@ -280,14 +280,12 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            //username
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage).offset(uiElement.elementOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            //city 
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)

@@ -17,7 +17,6 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
@@ -43,7 +42,12 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     @objc func didPressDoneButton(_ sender: UIButton) {
         if let artistDelegate = self.artistDelegate {
-            artistDelegate.changeBio(inputBio.text)
+            if inputBio.text != "" {
+                let newCreditTitleWithNoSpaces = inputBio.text.trimmingCharacters(
+                    in: NSCharacterSet.whitespacesAndNewlines
+                )
+                artistDelegate.changeBio(newCreditTitleWithNoSpaces)
+            }
         }
         
         self.dismiss(animated: true, completion: nil)

@@ -39,11 +39,16 @@ class SoundInfoTableViewCell: UITableViewCell {
     }()
     
     lazy var soundTagLabel: UILabel = {
-        let localizedTags = NSLocalizedString("tags", comment: "")
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.text = localizedTags
         label.textColor = .white
+        return label
+    }()
+    
+    lazy var username: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.textColor = .darkGray
         return label
     }()
     
@@ -70,21 +75,13 @@ class SoundInfoTableViewCell: UITableViewCell {
         return label
     }()
     
-   /*lazy var percentageSlider: UISlider = {
+   lazy var percentageSlider: UISlider = {
         let slider = UISlider()
         slider.value = 0
         slider.minimumValue = 0
         slider.maximumValue = 100
         slider.tintColor = .white 
         return slider
-    }()*/
-    
-    lazy var percentageStepper: UIStepper = {
-        let stepper = UIStepper()
-        stepper.wraps = true
-        stepper.autorepeat = false
-        stepper.maximumValue = 100
-        return stepper
     }()
     
     lazy var socialSwitch: UISwitch = {
@@ -202,13 +199,13 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "creditReuse":
-            self.addSubview(percentageStepper)
+            self.addSubview(percentageSlider)
             self.addSubview(titleLabel)
             self.addSubview(artistImage)
             self.addSubview(soundTagLabel)
             self.addSubview(artistTypeButton)
             self.addSubview(dividerLine)
-        
+            self.addSubview(username)
             //artist profile picture
             artistImage.layer.cornerRadius = 35/2
             artistImage.snp.makeConstraints { (make) -> Void in
@@ -217,44 +214,44 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            //artist name
+            //username
             soundTagLabel.snp.makeConstraints { (make) -> Void in
-                //make.centerY.equalTo(artistImage)
                 make.top.equalTo(artistImage).offset(-5)
                 make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+               // make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            //artist name 
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundTagLabel)
+                make.left.equalTo(soundTagLabel.snp.right).offset(uiElement.elementOffset)
+               // make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            //credit name
             artistTypeButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(20)
-               // make.top.equalTo(artistImage.snp.bottom).offset(uiElement.topOffset)
                 make.top.equalTo(soundTagLabel.snp.bottom)
-                //make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.left.equalTo(soundTagLabel)
-               // make.bottom.equalTo(soundTagLabel.snp.top).offset(-(uiElement.elementOffset))
             }
             
             //percentage tip
             titleLabel.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
             titleLabel.snp.makeConstraints { (make) -> Void in
-               // make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.elementOffset)
                 make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
             //percentage chooser
-            percentageStepper.snp.makeConstraints { (make) -> Void in
-               // make.width.equalTo(50)
-               // make.top.equalTo(titleLabel.snp.bottom)
+            percentageSlider.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(titleLabel)
-               // make.left.equalTo(titleLabel.snp.right).offset(uiElement.leftOffset)
+                make.left.equalTo(titleLabel.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-               // make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
-                make.top.equalTo(percentageStepper.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)

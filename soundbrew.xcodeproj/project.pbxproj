@@ -399,8 +399,8 @@
 			isa = PBXGroup;
 			children = (
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
-				F2FB14CD22CC106100ED157E /* Payment */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
+				F2FB14CD22CC106100ED157E /* Payment */,
 				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,

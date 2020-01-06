@@ -12,29 +12,48 @@ import Kingfisher
 import SnapKit
 
 class NewCreditViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate {
-    //not used, but required
-    func changeBio(_ value: String?) {
-    }
     
     let color = Color()
     let uiElement = UIElement()
     
     var credits = [Credit]()
-    var uploaderCredit: Credit!
     var creditDelegate: CreditDelegate?
+    var creditTitleCurrentlyBeingEdited: Int!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Credits"
-        uploaderCredit = createUploaderCredit()
-       setUpTableView()
+        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
+        self.navigationItem.rightBarButtonItem = doneButton
+        setUpTableView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navigationController = segue.destination as! UINavigationController
         if segue.identifier == "showSearchUser" {
-            let viewController = segue.destination as! PeopleViewController
+            let viewController: PeopleViewController = navigationController.topViewController as! PeopleViewController
             viewController.artistDelegate = self
             viewController.isAddingNewCredit = true
+            let artists = self.credits.map {$0.artist}
+            let artistObjectIds: [String] = artists.map {$0!.objectId}
+            print("newCredit\(artistObjectIds.count)")
+            viewController.creditArtistObjectIds = artistObjectIds
+            
+        } else if segue.identifier == "showEditCreditTitle" {
+            let viewController: EditBioViewController = navigationController.topViewController as! EditBioViewController
+            viewController.totalAllowedTextLength = 25
+            viewController.artistDelegate = self
+            if let title = self.credits[creditTitleCurrentlyBeingEdited].title {
+                viewController.inputBio.text = title
+            }
+        }
+    }
+    
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+        if let creditDelegate = self.creditDelegate {
+            self.dismiss(animated: true, completion: {() in
+                creditDelegate.receivedCredits(self.credits)
+            })
         }
     }
     
@@ -58,9 +77,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 2
-        } else if section == 1 {
+        if section == 1 {
             return credits.count
         }
         
@@ -70,14 +87,14 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section  {
         case 0:
-            if indexPath.row == 0 {
-                return creditRow(soundbrewCredit(), shouldHideStepper: true, indexPath: indexPath)
-            } else {
-                return creditRow(uploaderCredit, shouldHideStepper: true, indexPath: indexPath)
-            }
+            return creditRow(soundbrewCredit(), shouldEnableSlider: false, indexPath: indexPath)
             
         case 1:
-            return creditRow(credits[indexPath.row], shouldHideStepper: false, indexPath: indexPath)
+            var shouldEnableSlider = true
+            if indexPath.row == 0 {
+                shouldEnableSlider = false
+            }
+            return creditRow(credits[indexPath.row], shouldEnableSlider: shouldEnableSlider, indexPath: indexPath)
             
         default:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: newCreditReuse) as! SoundInfoTableViewCell
@@ -93,7 +110,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func creditRow(_ credit: Credit, shouldHideStepper: Bool, indexPath: IndexPath) -> SoundInfoTableViewCell {
+    func creditRow(_ credit: Credit, shouldEnableSlider: Bool, indexPath: IndexPath) -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: creditReuse) as! SoundInfoTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
@@ -103,90 +120,80 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.artistImage.kf.setImage(with: URL(string: userImage))
             }
             
-            if let name = artist.name {
-                cell.soundTagLabel.text = "\(artist.username!) (\(name))"
-            } else {
-                cell.soundTagLabel.text = artist.username!
+            if let username = artist.username {
+                cell.username.text = "(@\(username))"
             }
             
-            cell.artistTypeButton.setTitle(credit.title!, for: .normal)
+            if let name = artist.name {
+                cell.soundTagLabel.text = name
+            }
+            
+            if let creditTitle = credit.title {
+                cell.artistTypeButton.setTitle(creditTitle, for: .normal)
+            } else {
+                cell.artistTypeButton.setTitle("Add Credit Title", for: .normal)
+            }
+            
+            if indexPath.section == 0 {
+                cell.artistTypeButton.setTitleColor(color.blue(), for: .normal)
+                cell.artistTypeButton.setTitleColor(.darkGray, for: .normal)
+                
+            } else {
+                cell.artistTypeButton.setTitleColor(color.blue(), for: .normal)
+                cell.artistTypeButton.addTarget(self, action: #selector(didPressChangeCreditTitle(_:)), for: .touchUpInside)
+                cell.artistTypeButton.tag = indexPath.row
+            }
+
             cell.titleLabel.text = "Tip Split: \(credit.percentage!)%"
             
-            cell.percentageStepper.value = 0
-            cell.percentageStepper.isHidden = shouldHideStepper
-            cell.percentageStepper.addTarget(self, action: #selector(didPressPercentageStepper(_:)), for: .valueChanged)
-            cell.percentageStepper.tag = indexPath.row
-            //cell.percentageSlider.value = Float(credit.percentage!)
-            //cell.percentageSlider.isEnabled = shouldEnableSlider
-            //cell.percentageSlider.addTarget(self, action: #selector(didChangeTipSplit(_:)), for: .valueChanged)
-            //cell.percentageSlider.tag = indexPath.row
+            cell.percentageSlider.value = Float(credit.percentage!)
+            cell.percentageSlider.isEnabled = shouldEnableSlider
+            cell.percentageSlider.addTarget(self, action: #selector(didChangeTipSplit(_:)), for: .valueChanged)
+            cell.percentageSlider.tag = indexPath.row
         }
         
         return cell
     }
     
-    @objc func didPressPercentageStepper(_ sender: UIStepper) {
-        let currentCreditSplit = self.credits[sender.tag].percentage!
-        
-        let splitsAvailable = 85
-        var totalSplitPercentageAlreadyTaken = 0
-        for credit in self.credits {
-            totalSplitPercentageAlreadyTaken = totalSplitPercentageAlreadyTaken + credit.percentage!
-        }
-        
-        let availableSplits = splitsAvailable - totalSplitPercentageAlreadyTaken
-        
-        if currentCreditSplit != availableSplits {
-            if sender.value == 1 {
-                self.credits[sender.tag].percentage = self.credits[sender.tag].percentage! + 5
-            } else if sender.value == -1 {
-                self.credits[sender.tag].percentage = self.credits[sender.tag].percentage! - 5
-            }            
-            let currentUploaderSplit = self.uploaderCredit.percentage!
-            self.uploaderCredit.percentage = self.credits[sender.tag].percentage! - currentUploaderSplit
-        }
-        
-        sender.value = 0
-        self.tableView.reloadData()
+    @objc func didPressChangeCreditTitle(_ sender: UIButton) {
+        creditTitleCurrentlyBeingEdited = sender.tag
+        self.performSegue(withIdentifier: "showEditCreditTitle", sender: self)
     }
     
-    /*@objc func didChangeTipSplit(_ sender: UISlider) {
-        var totalTipSplits = 0
-        for credit in credits {
-            totalTipSplits = totalTipSplits + credit.percentage!
+    func changeBio(_ value: String?) {
+        if let newCreditTitle = value {
+            self.credits[creditTitleCurrentlyBeingEdited].title = newCreditTitle
+            self.tableView.reloadData()
         }
-        
-        var totalTipSplitsAvailable = 85
-        totalTipSplitsAvailable = totalTipSplitsAvailable - totalTipSplits
-        
+    }
+    
+    @objc func didChangeTipSplit(_ sender: UISlider) {
+        var totalAvailablePercentage = 85
         let selectedSplit = Int(sender.value)
         
-        if selectedSplit <= totalTipSplitsAvailable {
-            self.credits[sender.tag].percentage! = selectedSplit
-            //self.uploaderCredit.percentage! =
+        for i in 0..<self.credits.count {
+            if i != sender.tag && i != 0 {
+                totalAvailablePercentage = totalAvailablePercentage - self.credits[i].percentage!
+            }
+        }
+        
+        if selectedSplit <= totalAvailablePercentage {
+            self.credits[sender.tag].percentage = selectedSplit
+            self.credits[0].percentage = totalAvailablePercentage - selectedSplit
         }
         self.tableView.reloadData()
-        
-    }*/
-        
-    func soundbrewCredit() -> Credit {
-        let credit = Credit(objectId: nil, artist: nil, title: "Facilitator", percentage: 15)
-        let artist = Artist(objectId: "1", name: nil, city: nil, image: "https://www.soundbrew.app/images/logo.png", isVerified: false, username: "soundbrew", website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-        credit.artist = artist
-        return credit
     }
     
-    func createUploaderCredit() -> Credit {
-        let credit = Credit(objectId: nil, artist: nil, title: "Artist", percentage: 85)
-        if let artist = Customer.shared.artist {
-            credit.artist = artist
-        }
+    func soundbrewCredit() -> Credit {
+        let credit = Credit(objectId: nil, artist: nil, title: "Facilitator", percentage: 15)
+        let artist = Artist(objectId: "1", name: "Soundbrew", city: nil, image: "https://www.soundbrew.app/images/logo.png", isVerified: false, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+        credit.artist = artist
         return credit
     }
     
     func receivedArtist(_ value: Artist?) {
         if let artist = value {
-            let credit = Credit(objectId: nil, artist: artist, title: "Add Credit Title", percentage: 0)
+            let credit = Credit(objectId: nil, artist: artist, title: nil, percentage: 0)
             self.credits.append(credit)
             self.tableView.reloadData()
         }
