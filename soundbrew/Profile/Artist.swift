@@ -151,5 +151,5 @@ class Artist {
 protocol ArtistDelegate {
     func changeBio(_ value: String?)
     
-    func newArtistInfo(_ value: Artist?)
+    func receivedArtist(_ value: Artist?)
 }

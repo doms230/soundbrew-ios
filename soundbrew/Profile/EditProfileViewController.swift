@@ -16,7 +16,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     let uiElement = UIElement()
     let color = Color()
-    func newArtistInfo(_ value: Artist?) {
+    func receivedArtist(_ value: Artist?) {
     }
     
     var artist: Artist?
@@ -451,7 +451,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                                 customer.artist?.image = profileImage.url
                             }
                         
-                            artistDelegate.newArtistInfo(customer.artist)
+                            artistDelegate.receivedArtist(customer.artist)
                             
                             customer.update()
                         }

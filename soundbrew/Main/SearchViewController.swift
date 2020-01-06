@@ -673,10 +673,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let usernameQuery = PFQuery(className: "_User")
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         
-        let cityQuery = PFQuery(className: "_User")
-        cityQuery.whereKey("artistName", matchesRegex: text.lowercased())
-        
-        let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery, cityQuery])
+        let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

@@ -10,6 +10,8 @@
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
 		E40829EA236209C800D88B33 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E40829EC236209C800D88B33 /* Localizable.strings */; };
+		E425D7C723C2836A0031DB0B /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C623C2836A0031DB0B /* Credit.swift */; };
+		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -142,6 +144,8 @@
 		E40829E6236204EA00D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		E40829EB236209C800D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E40829ED236209D100D88B33 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E425D7C623C2836A0031DB0B /* Credit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
+		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -350,6 +354,7 @@
 		F2689899215AF7FB00C21663 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				E425D7C623C2836A0031DB0B /* Credit.swift */,
 				F26898A5215B527900C21663 /* Sound.swift */,
 				F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */,
 				F2EA85742244110B005D6153 /* SoundList.swift */,
@@ -385,6 +390,7 @@
 				F2F8B99721DBEF470024AFB6 /* SoundInfoTableViewCell.swift */,
 				F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
+				E425D7C823C289630031DB0B /* NewCreditViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";
@@ -748,6 +754,7 @@
 				F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
+				E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */,
 				E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
 				F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */,
@@ -778,6 +785,7 @@
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
 				F2FB14E622FA335500ED157E /* UpdatesViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
+				E425D7C723C2836A0031DB0B /* Credit.swift in Sources */,
 				F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
 				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,

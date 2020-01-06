@@ -138,7 +138,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func changeBio(_ value: String?) {
     }
     
-    func newArtistInfo(_ value: Artist?) {
+    func receivedArtist(_ value: Artist?) {
         if let artist = value {
             self.profileArtist = artist
             self.tableView.reloadData()

@@ -22,6 +22,24 @@ class ProfileTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search People"
+        //searchBar.delegate = self
+        if #available(iOS 13.0, *) {
+            let searchTextField = searchBar.searchTextField
+            searchTextField.backgroundColor = color.black()
+            searchTextField.textColor = .white
+        } else {
+            let searchTextField = searchBar.value(forKey: "_searchField") as! UITextField
+            searchTextField.backgroundColor = color.black()
+            searchTextField.textColor = .white
+        }
+                
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
+        return searchBar
+    }()
+    
     //profile
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
@@ -173,6 +191,17 @@ class ProfileTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
+            
+        case "searchReuse":
+            self.addSubview(searchBar)
+            searchBar.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
+            
         case "profileReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)

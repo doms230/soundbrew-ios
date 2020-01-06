@@ -17,9 +17,9 @@ import AppCenterAnalytics
 import UICircularProgressRing
 //import Zip
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, UITextViewDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate {
     
-    func newArtistInfo(_ value: Artist?) {
+    func receivedArtist(_ value: Artist?) {
     }
     
     let uiElement = UIElement()
@@ -52,24 +52,22 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let navigationController = segue.destination as! UINavigationController
-        if segue.identifier == "showTags" {
-            let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
-            viewController.tagDelegate = self
+        
+        switch segue.identifier {
+        case "showTags":
+            prepareTagView(navigationController)
+            break
             
-            if let tagType = tagType {
-                viewController.tagType = tagType
-                
-                if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
-                    viewController.chosenTags = tags
-                }
-            }
-        } else if segue.identifier == "showEditTitle" {
-            let viewController = navigationController.topViewController as! EditBioViewController
-            if let title = self.soundThatIsBeingEdited?.title {
-                viewController.bio = title
-            }
-            viewController.totalAllowedTextLength = 50
-            viewController.artistDelegate = self
+        case "showEditTitle":
+            prepareEditTitle(navigationController)
+            break
+            
+        case "showNewCredit":
+            prepareNewCredit(navigationController)
+            break
+            
+        default:
+            break
         }
     }
     
@@ -153,12 +151,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let tagSection = 1
-        if section == tagSection {
+        if section == 1 {
+            return 2
+        } else if section == 2 {
             return 5
         }
         return 1
@@ -173,10 +172,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case 1:
-            cell = tagCell(indexPath, tableView: tableView)
+            cell = creditCell(indexPath)
             break
             
         case 2:
+            cell = tagCell(indexPath, tableView: tableView)
+            break
+            
+        case 3:
             cell = socialCell(indexPath)
             break
             
@@ -190,72 +193,63 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
             self.performSegue(withIdentifier: "showEditTitle", sender: self)
-        } else if indexPath.section == 1 {
-            switch indexPath.row {
-            case 0:
-                self.tagType = "city"
-                break
-            case 1:
-                self.tagType = "genre"
-                break
-                
-            case 2:
-                self.tagType = "mood"
-                break
-                
-            case 3:
-                self.tagType = "activity"
-                break
-                
-            case 4:
-                self.tagType = "more"
-                self.tagsToUpdateInChooseTagsViewController = moreTags
-                break
-                
-            default:
-                break
-            }
+            break
             
-            if self.tagType == "city" {
-                let localizedCityTagTitle = NSLocalizedString("cityTag", comment: "")
-                let localizedCityTagMessage = NSLocalizedString("cityTagMessage", comment: "")
-                self.uiElement.showAlert(localizedCityTagTitle, message: localizedCityTagMessage, target: self)
-            } else {
-                self.performSegue(withIdentifier: showTags, sender: self)
-            }
+        case 1:
+            self.performSegue(withIdentifier: "showNewCredit", sender: self)
+            break
+            
+        case 2:
+            didPressTagSection(indexPath)
+            break
+            
+        default:
+            break
         }
     }
     
-    func audioTitleCell() -> SoundInfoTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
-        
-        self.audioProgress = cell.audioProgress
-
-        if let sound = soundThatIsBeingEdited {
-            if let soundTitle = sound.title {
-                cell.inputTitle.text = soundTitle
-            } else {
-                cell.inputTitle.text = "Add Title/Description"
-            }
+    //mark: credits
+    var credits: Array<Credit>?
+    func creditCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
+        var cell: SoundInfoTableViewCell!
             
-            if sound.objectId != nil {
-                cell.audioProgress.value = 100
+        if indexPath.row == 0 {
+            cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
+            
+            cell.soundTagLabel.text = "Credits"
+                    
+            if let credits = self.credits {
+                if credits.count == 1 {
+                    cell.chosenSoundTagLabel.text = "\(credits.count) Credit"
+                } else {
+                    cell.chosenSoundTagLabel.text = "\(credits.count) Credits"
+                }
+                
+                cell.chosenSoundTagLabel.textColor = .white
+                
+            } else {
+                cell.chosenSoundTagLabel.text = localizedAdd.capitalized
+                cell.chosenSoundTagLabel.textColor = color.red()
             }
+        } else {
+            cell = (self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell)
         }
-        
-        soundTitle = cell.inputTitle
-        tableView.separatorStyle = .singleLine
-        
+
         return cell
     }
     
-    func changeBio(_ value: String?) {
-        if let newtitle = value {
-            self.soundThatIsBeingEdited?.title = newtitle
-        }
-        self.tableView.reloadData()
+    func prepareNewCredit(_ navigationController: UINavigationController) {
+        let viewController: NewCreditViewController = navigationController.topViewController as! NewCreditViewController
+        viewController.creditDelegate = self
+        
+        //TODO: send credits
+    }
+    
+    func receivedCredits(_ chosenTags: Array<Credit>?) {
+        //TODO: receive credits
     }
     
     //mark: social
@@ -369,6 +363,54 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let username = currentUser.username {
                 loadTag(username, type: "artist")
             }
+        }
+    }
+    
+    func prepareTagView(_ navigationController: UINavigationController) {
+        let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
+        viewController.tagDelegate = self
+        
+        if let tagType = tagType {
+            viewController.tagType = tagType
+            
+            if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
+                viewController.chosenTags = tags
+            }
+        }
+    }
+    
+    func didPressTagSection(_ indexPath: IndexPath) {
+        switch indexPath.row {
+        case 0:
+            self.tagType = "city"
+            break
+        case 1:
+            self.tagType = "genre"
+            break
+            
+        case 2:
+            self.tagType = "mood"
+            break
+            
+        case 3:
+            self.tagType = "activity"
+            break
+            
+        case 4:
+            self.tagType = "more"
+            self.tagsToUpdateInChooseTagsViewController = moreTags
+            break
+            
+        default:
+            break
+        }
+        
+        if self.tagType == "city" {
+            let localizedCityTagTitle = NSLocalizedString("cityTag", comment: "")
+            let localizedCityTagMessage = NSLocalizedString("cityTagMessage", comment: "")
+            self.uiElement.showAlert(localizedCityTagTitle, message: localizedCityTagMessage, target: self)
+        } else {
+            self.performSegue(withIdentifier: showTags, sender: self)
         }
     }
     
@@ -581,6 +623,47 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    //mark: Title
+    func prepareEditTitle(_ navigationController: UINavigationController) {
+        let viewController = navigationController.topViewController as! EditBioViewController
+        if let title = self.soundThatIsBeingEdited?.title {
+            viewController.bio = title
+        }
+        viewController.totalAllowedTextLength = 50
+        viewController.artistDelegate = self
+    }
+    
+    func audioTitleCell() -> SoundInfoTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
+        
+        self.audioProgress = cell.audioProgress
+
+        if let sound = soundThatIsBeingEdited {
+            if let soundTitle = sound.title {
+                cell.inputTitle.text = soundTitle
+            } else {
+                cell.inputTitle.text = "Add Title/Description"
+            }
+            
+            if sound.objectId != nil {
+                cell.audioProgress.value = 100
+            }
+        }
+        
+        soundTitle = cell.inputTitle
+        tableView.separatorStyle = .singleLine
+        
+        return cell
+    }
+    
+    //changed Title
+    func changeBio(_ value: String?) {
+        if let newtitle = value {
+            self.soundThatIsBeingEdited?.title = newtitle
+        }
+        self.tableView.reloadData()
+    }
+    
     //mark: audio
     var audioProgress: UICircularProgressRing!
     var progressSliderTitle: UILabel!
@@ -776,18 +859,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: utility
-    func isSoundInfoCorrect(_ sound: Sound) -> Bool {
-        let localizedTitleRequired = NSLocalizedString("titleRequired", comment: "")
-        if let sound = soundThatIsBeingEdited {
-            if sound.title!.isEmpty {
-                uiElement.showAlert(localizedTitleRequired, message: "", target: self)
-            } else {
-                return true
-            }
-        }
-        return false
-    }
-    
     func errorAlert(_ title: String, message: String) {
         let alertController = UIAlertController (title: title, message: message, preferredStyle: .alert)
         

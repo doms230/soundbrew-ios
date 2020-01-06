@@ -62,11 +62,31 @@
                     <connections>
                         <segue destination="W2D-HU-YWf" kind="presentation" identifier="showTags" id="QFf-vL-w9n"/>
                         <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditTitle" id="UgY-SI-XY8"/>
+                        <segue destination="Ply-1L-SRG" kind="presentation" identifier="showNewCredit" id="BKU-FV-DBY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2900" y="-1254"/>
+        </scene>
+        <!--New Credit View Controller-->
+        <scene sceneID="gMb-z9-KTT">
+            <objects>
+                <viewController id="lxV-jO-Kiy" customClass="NewCreditViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3R5-4q-yuI">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="jSo-K4-Y43"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="MAn-89-9dy"/>
+                    <connections>
+                        <segue destination="Btf-EX-uKz" kind="presentation" identifier="showSearchUser" id="vbP-WX-lzC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MBe-x2-tDf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-736.23188405797111" y="-952.23214285714278"/>
         </scene>
         <!--Me-->
         <scene sceneID="Sfx-x4-dys">
@@ -105,7 +125,7 @@
             <objects>
                 <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -118,7 +138,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="229" y="-879"/>
+            <point key="canvasLocation" x="3989.8550724637685" y="-543.08035714285711"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -208,7 +228,7 @@
                     <view key="view" contentMode="scaleToFill" id="dVL-dQ-Z1D">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="C2O-ih-25I"/>
                     </view>
                     <navigationItem key="navigationItem" id="bkc-Sl-S7V"/>
@@ -218,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDm-XZ-FbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-684" y="-1998"/>
+            <point key="canvasLocation" x="-736" y="-1633"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Oz9-Vl-g3k">
@@ -290,7 +310,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="229" y="216"/>
+            <point key="canvasLocation" x="-1152" y="56"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="LMc-NU-utU">
@@ -434,7 +454,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="SRX-FF-mWm"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
@@ -517,6 +537,24 @@
             </objects>
             <point key="canvasLocation" x="-5794" y="-458"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="2Fi-DC-GU0">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ply-1L-SRG" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="KH0-mR-bWc">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="lxV-jO-Kiy" kind="relationship" relationship="rootViewController" id="4U5-ZS-9Cd"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SMl-Fm-hkf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1646.376811594203" y="-952.23214285714278"/>
+        </scene>
     </scenes>
     <resources>
         <image name="heart_filled_nav" width="31" height="31"/>
@@ -531,13 +569,13 @@
         <image name="search_filled" width="23" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Pro-Wr-Tmr"/>
+        <segue reference="QFf-vL-w9n"/>
         <segue reference="UgY-SI-XY8"/>
-        <segue reference="AaU-Nw-Vla"/>
+        <segue reference="FZs-ab-ofk"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="qF7-cv-MYn"/>
-        <segue reference="TH1-Tr-UvO"/>
-        <segue reference="217-ix-XIX"/>
-        <segue reference="Swv-5W-jhe"/>
+        <segue reference="ate-Yt-ICi"/>
+        <segue reference="vbP-WX-lzC"/>
+        <segue reference="iDR-Ll-dSf"/>
+        <segue reference="0mA-lO-wOD"/>
     </inferredMetricsTieBreakers>
 </document>

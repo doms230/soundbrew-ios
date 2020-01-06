@@ -15,17 +15,11 @@ class SoundInfoTableViewCell: UITableViewCell {
     let color = Color()
     let uiElement = UIElement()
     
-    lazy var soundArt: UIButton = {
-        let localizedAddArt = NSLocalizedString("addArt", comment: "")
-       let image = UIButton()
-        image.setTitle(localizedAddArt, for: .normal)
-        image.titleLabel?.textColor = .black
-        image.layer.borderWidth = 1
-        image.layer.borderColor = UIColor.black.cgColor
-        image.layer.cornerRadius = 3
+    lazy var artistImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "profile_icon")
         image.clipsToBounds = true
-        image.backgroundColor = .lightGray
-        image.contentMode = .scaleAspectFill
+        image.backgroundColor = .black
         return image
     }()
     
@@ -41,7 +35,6 @@ class SoundInfoTableViewCell: UITableViewCell {
     lazy var audioProgressImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "sound")
-        
         return image
     }()
     
@@ -77,13 +70,21 @@ class SoundInfoTableViewCell: UITableViewCell {
         return label
     }()
     
-   lazy var progressSlider: UISlider = {
+   /*lazy var percentageSlider: UISlider = {
         let slider = UISlider()
         slider.value = 0
         slider.minimumValue = 0
         slider.maximumValue = 100
         slider.tintColor = .white 
         return slider
+    }()*/
+    
+    lazy var percentageStepper: UIStepper = {
+        let stepper = UIStepper()
+        stepper.wraps = true
+        stepper.autorepeat = false
+        stepper.maximumValue = 100
+        return stepper
     }()
     
     lazy var socialSwitch: UISwitch = {
@@ -95,8 +96,12 @@ class SoundInfoTableViewCell: UITableViewCell {
     lazy var artistTypeButton: UIButton = {
         let localizedArtist = NSLocalizedString("artist", comment: "")
         let button = UIButton()
-        button.setTitleColor(.darkGray, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.setTitle(localizedArtist, for: .normal)
+        button.setTitleColor(color.blue(), for: .normal)
+        //button.layer.borderWidth = 0.5
+        //button.layer.borderColor = color.darkGray().cgColor
+        button.clipsToBounds = true
         return button
     }()
     
@@ -119,27 +124,6 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
-            break
-            
-        case "soundProgressReuse":
-            self.addSubview(progressSlider)
-            self.addSubview(titleLabel)
-            
-            titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            progressSlider.isEnabled = false
-            progressSlider.setThumbImage(UIImage(), for: .normal)
-            progressSlider.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            
             break
             
         case "soundInfoReuse":
@@ -217,49 +201,88 @@ class SoundInfoTableViewCell: UITableViewCell {
             
             break
             
-        case "creditPeopleReuse":
-            self.addSubview(progressSlider)
+        case "creditReuse":
+            self.addSubview(percentageStepper)
             self.addSubview(titleLabel)
-            self.addSubview(soundArt)
+            self.addSubview(artistImage)
             self.addSubview(soundTagLabel)
             self.addSubview(artistTypeButton)
-            
+            self.addSubview(dividerLine)
+        
             //artist profile picture
-            soundArt.layer.cornerRadius = 25
-            soundArt.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
+            artistImage.layer.cornerRadius = 35/2
+            artistImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
             //artist name
             soundTagLabel.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(soundArt)
-                make.left.equalTo(soundArt.snp.right).offset(uiElement.elementOffset)
+                //make.centerY.equalTo(artistImage)
+                make.top.equalTo(artistImage).offset(-5)
+                make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             artistTypeButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(20)
-                make.top.equalTo(self).offset(uiElement.topOffset)
+               // make.top.equalTo(artistImage.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(soundTagLabel.snp.bottom)
+                //make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.left.equalTo(soundTagLabel)
-                make.bottom.equalTo(soundTagLabel.snp.top).offset(-(uiElement.elementOffset))
+               // make.bottom.equalTo(soundTagLabel.snp.top).offset(-(uiElement.elementOffset))
             }
             
             //percentage tip
+            titleLabel.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
             titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundTagLabel.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(soundTagLabel)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+               // make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.elementOffset)
+                make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
             //percentage chooser
-            progressSlider.snp.makeConstraints { (make) -> Void in
+            percentageStepper.snp.makeConstraints { (make) -> Void in
+               // make.width.equalTo(50)
+               // make.top.equalTo(titleLabel.snp.bottom)
                 make.centerY.equalTo(titleLabel)
-                make.left.equalTo(titleLabel.snp.right)
+               // make.left.equalTo(titleLabel.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+               // make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(percentageStepper.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
+            
+            break
+            
+        case "newCreditReuse":
+            self.addSubview(titleLabel)
+            self.addSubview(dividerLine)
+            titleLabel.text = "Add Credit"
+            titleLabel.textColor = .darkGray
+            titleLabel.textAlignment = .center
+            titleLabel.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(50)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            dividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
             break
             
         default:
