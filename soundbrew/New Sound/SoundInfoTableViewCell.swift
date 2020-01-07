@@ -105,7 +105,7 @@ class SoundInfoTableViewCell: UITableViewCell {
     lazy var dividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 0.5
-        line.layer.borderColor = color.darkGray().cgColor
+        line.layer.borderColor = UIColor.darkGray.cgColor
         return line
     }()
     

@@ -107,13 +107,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
         self.soundThatIsBeingEdited?.title = self.soundTitle.text
-        if let sound = self.soundThatIsBeingEdited {
+        self.uiElement.goBackToPreviousViewController(self)
+        /*if let sound = self.soundThatIsBeingEdited {
             if sound.isDraft! && self.soundParseFileDidFinishProcessing {
                 saveDraft()
             } else {
                 self.uiElement.goBackToPreviousViewController(self)
             }
-        }
+        }*/
     }
     
     func saveDraft() {
@@ -255,6 +256,21 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             credit.artist = artist
         }
         self.credits.append(credit)
+    }
+    
+    func saveCredits(_ postId: String) {
+        for credit in credits {
+            let newCredit = PFObject(className: "Credit")
+            if let title = credit.title {
+                newCredit["title"] = title
+            } else {
+                newCredit["title"] = ""
+            }
+            newCredit["percentage"] = credit.percentage!
+            newCredit["userId"] = credit.artist!.objectId!
+            newCredit["postId"] = postId
+            newCredit.saveEventually()
+        }
     }
     
     //mark: social
@@ -631,6 +647,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //mark: Title
     func prepareEditTitle(_ navigationController: UINavigationController) {
         let viewController = navigationController.topViewController as! EditBioViewController
+        viewController.title = "Edit Title/Description"
         if let title = self.soundThatIsBeingEdited?.title {
             viewController.bio = title
         }
@@ -776,6 +793,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["tags"] = sound.tags
         newSound["isDraft"] = isDraft
         newSound["isRemoved"] = isDraft
+        newSound["credits"] = credits.count
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
@@ -784,6 +802,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 } else {
                     self.handleSocials(newSound)
                     self.saveTags(tags)
+                    self.saveCredits(newSound.objectId!)
                     self.finishUp(true, object: newSound)
                     MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
@@ -822,6 +841,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                             self.finishUp(false, object: object)
                         } else {
                             self.saveTags(tags)
+                            self.saveCredits(object.objectId!)
                             self.handleSocials(object)
                             self.finishUp(true, object: object)
                         }

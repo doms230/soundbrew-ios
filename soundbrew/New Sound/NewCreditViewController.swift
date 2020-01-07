@@ -43,6 +43,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             let viewController: EditBioViewController = navigationController.topViewController as! EditBioViewController
             viewController.totalAllowedTextLength = 25
             viewController.artistDelegate = self
+            viewController.title = "Credit Title"
             if let title = self.credits[creditTitleCurrentlyBeingEdited].title {
                 viewController.inputBio.text = title
             }
@@ -100,6 +101,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             let cell = self.tableView.dequeueReusableCell(withIdentifier: newCreditReuse) as! SoundInfoTableViewCell
             cell.backgroundColor = color.black()
             cell.selectionStyle = .none
+            
             return cell
         }
     }
@@ -110,18 +112,34 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if indexPath.section == 1 && indexPath.row != 0 {
+            return true
+        }
+        return false
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if indexPath.row != 0 && indexPath.section == 1 {
+                self.credits.remove(at: indexPath.row)
+                self.tableView.reloadSections([1], with: .automatic)
+            }
+        }
+    }
+    
     func creditRow(_ credit: Credit, shouldEnableSlider: Bool, indexPath: IndexPath) -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: creditReuse) as! SoundInfoTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
-        
+                
         if let artist = credit.artist {
             if let userImage = artist.image {
                 cell.artistImage.kf.setImage(with: URL(string: userImage))
             }
             
             if let username = artist.username {
-                cell.username.text = "(@\(username))"
+                cell.username.text = "@\(username)"
             }
             
             if let name = artist.name {

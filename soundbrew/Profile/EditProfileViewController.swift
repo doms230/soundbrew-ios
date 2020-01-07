@@ -62,6 +62,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             let viewController = navigationController.topViewController as! EditBioViewController
             viewController.bio = self.artist!.bio
             viewController.artistDelegate = self
+            viewController.title = "Edit Bio"
         }
     }
     

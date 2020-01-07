@@ -200,7 +200,7 @@ class UIElement {
         if let url = url {
             let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = target.view
-
+            
             target.present(activityViewController, animated: true, completion: { () -> Void in
             })
         }

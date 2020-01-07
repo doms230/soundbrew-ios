@@ -131,10 +131,20 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.cellForRow(at: indexPath)?.isSelected = false
         if indexPath.section == 1 {
-            tableView.cellForRow(at: indexPath)?.isSelected = false
-            if self.filteredArtists.indices.contains(indexPath.row) {
-                selectedArtist(self.filteredArtists[indexPath.row])
+            if filteredArtists.count == 0 {
+                let url = "https://www.soundbrew.app/ios"
+                let text = "Hey, download and sign up for Soundbrew so I can credit you on my next upload!"
+                let activityViewController = UIActivityViewController(activityItems: [text, url], applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = self.view
+                self.present(activityViewController, animated: true, completion: { () -> Void in
+                })
+                
+            } else {
+                if self.filteredArtists.indices.contains(indexPath.row) {
+                    selectedArtist(self.filteredArtists[indexPath.row])
+                }
             }
         }
     }
