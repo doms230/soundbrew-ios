@@ -184,7 +184,6 @@ class MiniPlayerView: UIButton {
                 activitySpinner.isHidden = true
                 playBackButton.isHidden = false
                 self.isEnabled = true
-                print("set sound miniplayer")
             }
         }
     }

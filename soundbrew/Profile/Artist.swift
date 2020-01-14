@@ -133,14 +133,15 @@ class Artist {
             cell.profileImage.image = UIImage(named: "profile_icon")
         }
         
-        if let name = self.username {
+        if let username = self.username {
+            cell.username.text = username 
             //email was set as username in prior version of Soundbrew and email is private.
-            if name.contains("@") {
+            /*if name.contains("@") {
                 cell.username.text = ""
                 
             } else {
                 cell.username.text = name
-            }
+            }*/
             
         } else {
             cell.username.text = ""

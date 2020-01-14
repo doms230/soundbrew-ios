@@ -31,8 +31,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         super.viewDidLoad()
         self.title = "Soundbrew"
         
-        let yourSoundbrewButton = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(self.didPressYourSoundbrewButton(_:)))
-        self.navigationItem.leftBarButtonItem = yourSoundbrewButton
+        //let yourSoundbrewButton = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(self.didPressYourSoundbrewButton(_:)))
+        //self.navigationItem.leftBarButtonItem = yourSoundbrewButton
         setupPlayerView()
     }
         
@@ -41,7 +41,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         customer = Customer.shared
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+   /* override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
             if let artist = self.sound?.artist {
@@ -76,7 +76,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         default:
             break
         }
-    }
+    }*/
     
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
@@ -289,7 +289,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             player.target = self
             
         } else {
-            loadYourSoundbrew(true)
+            //loadYourSoundbrew(true)
             showLoadingSoundbrewSpinner()
         }
     }
@@ -852,25 +852,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         setSound()
     }
     
-    func loadUserInfoFromCloud(_ userId: String) {
-        let query = PFQuery(className:"_User")
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
-                let artistName = user["artistName"] as? String
-                self.artistLabel.text = artistName
-                if let artistImage = user["userImage"] as? PFFileObject {
-                    self.artistImage.kf.setImage(with: URL(string: artistImage.url!))
-                }
-                self.sound?.artist = self.uiElement.newArtistObject(user)
-            }
-        }
-    }
-    
-    func loadYourSoundbrew(_ shouldSetupPlayer: Bool) {
+    /*func loadYourSoundbrew(_ shouldSetupPlayer: Bool) {
         let query = PFQuery(className: "Post")
         query.whereKey("isRemoved", notEqualTo: true)
         query.addDescendingOrder("tips")
@@ -901,7 +883,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 print("Error: \(error!)")
             }
         }
-    }
+    }*/
     
     func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
         let query = PFQuery(className: "Post")
@@ -915,14 +897,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 if shouldShowShareSoundView {
                     self.uiElement.showShareOptions(self, sound: sound)
                 }
-                self.resetPlayer(sounds: [sound])
+               // self.resetPlayer(sounds: [sound])
                 self.setSound()
-                self.loadYourSoundbrew(false)
+                //self.loadYourSoundbrew(false)
             }
         }
     }
     
-    func resetPlayer(sounds: [Sound]) {
+    /*func resetPlayer(sounds: [Sound]) {
         let player = Player.sharedInstance
         player.player = nil
         player.sounds = sounds
@@ -930,10 +912,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         player.currentSoundIndex = 0
         player.setUpNextSong(false, at: 0)
         //player.soundsPlayed = 2
-    }
+    }*/
     
-    @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {
+   /* @objc func didPressYourSoundbrewButton(_ sender: UIBarButtonItem) {
         self.resetPlayView()
         loadYourSoundbrew(true)
-    }
+    }*/
 }

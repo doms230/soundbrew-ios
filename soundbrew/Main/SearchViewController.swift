@@ -680,7 +680,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if error == nil {
                 if let objects = objects {
                     for user in objects {
-                        let username = user["username"] as? String
+                        let newArtistObject = self.uiElement.newArtistObject(user)
+                        /*let username = user["username"] as? String
                         
                         var email: String?
                         
@@ -704,7 +705,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             if username.contains("@") {
                                 artist.username = ""
                             } else {
-                                artist.username = username
+                                artist.username = "@\(username)"
                             }
                         }
                         
@@ -726,9 +727,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         
                         if let website = user["website"] as? String {
                             artist.website = website
-                        }
+                        }*/
                         
-                        self.searchUsers.append(artist)
+                        self.searchUsers.append(newArtistObject)
                     }
                 }
                 

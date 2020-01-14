@@ -41,7 +41,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func setupNotificationCenter() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
-        
     }
     
     @objc func didReceiveSoundUpdate(){
