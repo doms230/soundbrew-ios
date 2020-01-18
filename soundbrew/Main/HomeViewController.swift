@@ -10,15 +10,15 @@ import UIKit
 import Parse
 import Kingfisher
 
-class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PlayerDelegate {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
     
     let uiElement = UIElement()
     let color = Color()
     var soundList: SoundList!
-    var selectedIndex: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.title = "Stories"
         setupNotificationCenter()
         if let currentUserId = PFUser.current()?.objectId {
             loadFollowing(currentUserId)
@@ -26,12 +26,12 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let player = Player.sharedInstance
+        /*let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
         } else {
-            setupCollectionView(nil)
-        }
+            setUpTableView(nil)
+        }*/
     }
     
     func setupNotificationCenter() {
@@ -43,23 +43,29 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             if player.player != nil {
                 self.setUpMiniPlayer()
             } else {
-                setupCollectionView(nil)
+                setUpTableView(nil)
             }
         }
     }
     
-    var collectionView: UICollectionView!
+    //MARK: Tableview
+    var tableView: UITableView!
+    let homeReuse = "homeReuse"
+    var selectedIndexPath: IndexPath?
     
-    func setupCollectionView(_ miniPlayer: MiniPlayerView?) {
-        collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
-        self.collectionView.dataSource = self
-        self.collectionView.delegate = self
-        self.collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "reuse")
-        self.collectionView.alwaysBounceVertical = true
-        //self.view.addSubview(self.collectionView)
+    func setUpTableView(_ miniPlayer: UIView?) {
+        tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: homeReuse)
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = color.black()
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
+        tableView.refreshControl = refreshControl
         if let miniPlayer = miniPlayer {
-            self.view.addSubview(self.collectionView)
-            self.collectionView.snp.makeConstraints { (make) -> Void in
+            self.view.addSubview(tableView)
+            self.tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
@@ -67,89 +73,82 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             }
             
         } else {
-            self.collectionView.frame = view.bounds
-            self.view.addSubview(collectionView)
+            self.tableView.frame = view.bounds
+            self.view.addSubview(tableView)
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return friendPosts.count
+    @objc func refresh(_ sender: UIRefreshControl) {
+        self.friendsStories.removeAll()
+        if let currentUserId = PFUser.current()?.objectId {
+           loadFollowing(currentUserId)
+        }
     }
     
-    var cell: HomeCollectionViewCell!
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "reuse", for: indexPath) as! HomeCollectionViewCell
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return friendsStories.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
+       
+        let artist = friendsStories[indexPath.row].artist!
+       
+           if let image = artist.image {
+               cell.profileImage.kf.setImage(with: URL(string: image))
+           } else {
+               cell.profileImage.image = UIImage(named: "profile_icon")
+           }
+           
+           if let name = artist.name {
+               cell.displayNameLabel.text = name
+           } else {
+               cell.displayNameLabel.text = "name"
+           }
+       
+           if let username = artist.username {
+               cell.username.text = "@\(username)"
+           } else {
+               cell.username.text = "@username"
+           }
         
-            let artist = friendPosts[indexPath.row].artist!
-            
-            if let image = artist.image {
-                cell.profileImage.kf.setImage(with: URL(string: image))
-            } else {
-                cell.profileImage.image = UIImage(named: "profile_icon")
-            }
-        
-            if let selectedIndex = selectedIndex {
-                if selectedIndex == indexPath.row {
-                    cell.profileImage.layer.borderColor = color.blue().cgColor
-                    cell.profileImage.layer.borderWidth = 5
+            if let didCurrentUserListenToStory = friendsStories[indexPath.row].didListenToLatest {
+                if didCurrentUserListenToStory {
+                    cell.city.text = "Listened"
                 } else {
-                    cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
-                    cell.profileImage.layer.borderWidth = 1
+                    cell.city.text = "Un-Listened"
                 }
-            }
-            
-            if let name = artist.name {
-                cell.displayNameLabel.text = name
             } else {
-                cell.displayNameLabel.text = "name"
+                cell.city.text = ""
             }
-        
-            if let username = artist.username {
-                cell.username.text = "@\(username)"
-            } else {
-                cell.username.text = "@username"
-            }
-            
-        self.cell = cell
-            return cell
+       
+           if let selectedIndexPath = self.selectedIndexPath {
+               if selectedIndexPath == indexPath {
+                   cell.profileImage.layer.borderColor = color.blue().cgColor
+                   cell.profileImage.layer.borderWidth = 5
+               } else {
+                   cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
+                   cell.profileImage.layer.borderWidth = 1
+               }
+           }
+           
+           return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let selectedUserId = self.friendPosts[indexPath.row].artist?.objectId {
-            self.selectedIndex = indexPath.row
-            self.collectionView.reloadData()
-            self.loadCollection(selectedUserId)
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 100, height: 130)
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) //.zero
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            if let selectedUserId = friendsStories[indexPath.row].artist?.objectId {
+                self.selectedIndexPath = indexPath
+                tableView.reloadData()
+                self.loadCollection(selectedUserId)
+            }
     }
     
     //
-    var friendPosts = [Sound]()
-    
+    var friendsStories = [Story]()
     func loadFollowing(_ userId: String) {
         var friends = [Artist]()
         let query = PFQuery(className: "Follow")
@@ -167,12 +166,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                         artist.loadUserInfoFromCloud(nil, soundCell: nil)
                         friends.append(artist)
                     }
-                    //print("friends \(friends.count)")
                     self.loadFriendsLatestSounds(friends)
                 }
-                
-            } else {
-               // print("Error: \(error!)")
             }
         }
     }
@@ -187,50 +182,49 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             query.addDescendingOrder("createdAt")
               query.getFirstObjectInBackground {
                   (object: PFObject?, error: Error?) -> Void in
-                    var post: Sound!
+                    var postCreatedAt: Date?
                     if let object = object {
-                        post = self.uiElement.newSoundObject(object)
-                        post!.artist = friends[i]
-                    } else {
-                        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: nil, audioData: nil, artist: friends[i], tmpFile: nil, tips: nil, tippers: nil, isDraft: nil, isNextUpToPlay: false)
-                        post = sound
+                        postCreatedAt = object.createdAt!
                     }
                                     
-                    let isLastIndex = friends.indices.contains(i + 1)
-                    self.loadLatestCollectedItem(friendId!, latestPost: post, isLastIndex: isLastIndex)
+                    let isNotLastIndex = friends.indices.contains(i + 1)
+                    self.loadLatestCollectedItem(friends[i], postCreatedAt: postCreatedAt, isNotLastIndex: isNotLastIndex)
               }
         }
     }
     
-    func loadLatestCollectedItem(_ friendId: String, latestPost: Sound, isLastIndex: Bool) {
+    func loadLatestCollectedItem(_ friend: Artist, postCreatedAt: Date?, isNotLastIndex: Bool) {
+        let story = Story(friend, lastUpdated: postCreatedAt, didListenToLatest: nil)
+        
         let query = PFQuery(className: "Tip")
-        query.whereKey("fromUserId", equalTo: friendId)
+        query.whereKey("fromUserId", equalTo: friend.objectId!)
         query.addDescendingOrder("createdAt")
           query.getFirstObjectInBackground {
               (object: PFObject?, error: Error?) -> Void in
-                var collectionCreatedAt: Date?
                     if let object = object {
-                        collectionCreatedAt = object.createdAt!
-                    }
-                                
-                //if the last thing the user did was collect audio, want that to be tracked when sorting story
-                if let collectionCreatedAt = collectionCreatedAt {
-                    if let latestPostCreatedAt = latestPost.createdAt {
-                        if collectionCreatedAt > latestPostCreatedAt {
-                            latestPost.createdAt = collectionCreatedAt
+                        //if the last thing the user did was collect audio, want that to be tracked when sorting story
+                        let collectionCreatedAt = object.createdAt!
+                        if let postCreatedAt = postCreatedAt {
+                            if collectionCreatedAt > postCreatedAt {
+                                story.lastUpdated = collectionCreatedAt
+                            }
+                        } else {
+                            story.lastUpdated = collectionCreatedAt
                         }
-                    } else {
-                        latestPost.createdAt = collectionCreatedAt
                     }
-                }
 
-                if latestPost.createdAt != nil {
-                    self.friendPosts.append(latestPost)
+                if story.lastUpdated != nil {
+                    self.friendsStories.append(story)
                 }
                 
-                if isLastIndex {
-                    self.friendPosts.sort(by: {$0.createdAt! > $1.createdAt!})
-                    self.setupCollectionView(nil)
+                if !isNotLastIndex {
+                    self.friendsStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+                    if self.tableView != nil {
+                        self.tableView.refreshControl?.endRefreshing()
+                        self.tableView.reloadData()
+                    } else {
+                        self.setUpTableView(nil)
+                    }
                 }
           }
     }
@@ -251,7 +245,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
-        setupCollectionView(self.miniPlayerView)
+        self.setUpTableView(self.miniPlayerView)
     }
     
     @objc func miniPlayerWasSwiped() {
@@ -288,63 +282,106 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
     }
     
+    
+    //when user taps on profile
+    
     func loadCollection(_ userId: String) {
-        var collectionSoundIds = [String]()
+        var collectedSounds = [Sound]()
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: userId)
         query.addDescendingOrder("createdAt")
         query.limit = 25
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        collectionSoundIds.append(object["soundId"] as! String)
-                    }
+            if let objects = objects {
+                for object in objects {
+                    let objectId = object["soundId"] as! String
+                    let tipDate = object.createdAt!
+                    
+                    let newSound = Sound(objectId: objectId, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, plays: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tips: nil, tippers: nil, currentUserTipDate: tipDate, isDraft: nil, isNextUpToPlay: nil)
+                    collectedSounds.append(newSound)
                 }
-                self.loadSounds(userId, collectionSoundIds: collectionSoundIds)
-                
-            } else {
-                print("Error: \(error!)")
             }
+            
+            self.loadCollectedSound(userId, collectedSounds: collectedSounds)
         }
     }
     
-    func loadSounds(_ userId: String, collectionSoundIds: Array<String>) {
+    func loadCollectedSound(_ userId: String, collectedSounds: [Sound] ) {
+        var collectedSounds = collectedSounds
+        
+        if collectedSounds.count != 0 {
+            for i in 0..<collectedSounds.count {
+                let collectedSound = collectedSounds[i]
+                
+                let query = PFQuery(className: "Post")
+                query.whereKey("objectId", equalTo: collectedSound.objectId!)
+                  query.getFirstObjectInBackground {
+                      (object: PFObject?, error: Error?) -> Void in
+                        if let object = object {
+                            let newSound = self.uiElement.newSoundObject(object)
+                            newSound.currentUserTipDate = collectedSounds[i].currentUserTipDate
+                            collectedSounds[i] = newSound
+                        }
+                    
+                        //runs function before sounds are finished loading so doing this instead
+                        if !collectedSounds.indices.contains(i + 1) {
+                            self.loadSounds(userId, collectedSounds: collectedSounds)
+                        }
+                  }
+            }
+            
+        } else {
+            self.loadSounds(userId, collectedSounds: [])
+        }
+    }
+    
+    func loadSounds(_ userId: String, collectedSounds: [Sound]) {
         let uploadedQuery = PFQuery(className: "Post")
         uploadedQuery.whereKey("isRemoved", notEqualTo: true)
         uploadedQuery.whereKey("isDraft", notEqualTo: true)
         uploadedQuery.whereKey("userId", equalTo: userId)
-        
-        let collectionQuery = PFQuery(className: "Post")
-        collectionQuery.whereKey("isRemoved", notEqualTo:true)
-        collectionQuery.whereKey("isDraft", notEqualTo: true)
-        collectionQuery.whereKey("objectId", containedIn: collectionSoundIds)
-        
-        let query = PFQuery.orQuery(withSubqueries: [uploadedQuery, collectionQuery])
-        query.limit = 50
-        query.addDescendingOrder("createdAt")
-        query.findObjectsInBackground {
+        uploadedQuery.limit = 25
+        uploadedQuery.addDescendingOrder("createdAt")
+        uploadedQuery.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    var sounds = [Sound]()
-                    for object in objects {
-                        let newSoundObject = self.uiElement.newSoundObject(object)
-                        print(newSoundObject.title!)
-                        sounds.append(newSoundObject)
-                    }
-                    
-                    let player = Player.sharedInstance
-                    player.player = nil
-                    player.sounds = sounds
-                    player.currentSound = sounds[0]
-                    player.currentSoundIndex = 0
-                    player.setUpNextSong(false, at: 0)
+            var uploadedSounds = [Sound]()
+            if let objects = objects {
+                for object in objects {
+                    let newSoundObject = self.uiElement.newSoundObject(object)
+                    uploadedSounds.append(newSoundObject)
                 }
-            } else {
-                print("Error: \(error!)")
             }
+            
+            var mergedSounds = [Sound]()
+            if uploadedSounds.count != 0 {
+                mergedSounds.append(contentsOf: uploadedSounds)
+            }
+            if collectedSounds.count != 0 {
+                mergedSounds.append(contentsOf: collectedSounds)
+            }
+            
+            mergedSounds.sort(by: {$0.createdAt! > $1.createdAt!})
+                        
+            print(mergedSounds.count)
+            let player = Player.sharedInstance
+            player.player = nil
+            player.sounds = mergedSounds
+            player.currentSound = mergedSounds[0]
+            player.currentSoundIndex = 0
+            player.setUpNextSong(false, at: 0)
         }
+    }
+}
+
+class Story {
+    var artist: Artist!
+    var lastUpdated: Date?
+    var didListenToLatest: Bool?
+    
+    init(_ artist: Artist, lastUpdated: Date?, didListenToLatest: Bool?) {
+        self.artist = artist
+        self.lastUpdated = lastUpdated
+        self.didListenToLatest = didListenToLatest
     }
 }

@@ -26,10 +26,11 @@ class Sound {
     var artist: Artist?
     var tmpFile: TemporaryFile?
     var tips: Int?
+    var currentUserTipDate: Date?
     var tippers: Int?
     var isDraft: Bool?
 
-    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, plays: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tips: Int?, tippers: Int?, isDraft: Bool?, isNextUpToPlay: Bool! ) {
+    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, plays: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tips: Int?, tippers: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -45,6 +46,7 @@ class Sound {
         self.tmpFile = tmpFile
         self.tips = tips
         self.tippers = tippers
+        self.currentUserTipDate = currentUserTipDate
         self.isDraft = isDraft
         self.isNextUpToPlay = isNextUpToPlay
     }

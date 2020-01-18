@@ -27,7 +27,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var displayNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor = .white
         label.textAlignment = .center
         //label.numberOfLines = 0
@@ -36,7 +36,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var username: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.textColor = .darkGray
         label.textAlignment = .center
         return label
@@ -47,9 +47,10 @@ class HomeCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
 
         self.addSubview(profileImage)
-        profileImage.layer.cornerRadius = 75/2
+        let imageHeightWidth = frame.width / 2 + 50
+        profileImage.layer.cornerRadius = CGFloat(imageHeightWidth / 2)
         profileImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(75)
+            make.height.width.equalTo(imageHeightWidth)
             make.top.equalTo(self).offset(uiElement.topOffset)
             make.centerX.equalTo(self)
         }

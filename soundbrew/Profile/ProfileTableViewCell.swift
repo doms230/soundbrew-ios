@@ -266,10 +266,52 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
-        case "searchProfileReuse":
+        case "homeReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
             self.addSubview(city)
+            self.addSubview(username)
+            self.addSubview(seperatorLine)
+            
+            profileImage.layer.cornerRadius = 75/2
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(75)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
+            }
+            
+            //listen status
+            city.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(username.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }            
+            break
+            
+        case "searchProfileReuse":
+            self.addSubview(profileImage)
+            self.addSubview(displayNameLabel)
             self.addSubview(username)
             
             profileImage.layer.cornerRadius = 25
