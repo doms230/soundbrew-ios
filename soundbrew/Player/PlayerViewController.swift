@@ -31,8 +31,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         super.viewDidLoad()
         self.title = "Soundbrew"
         
-        //let yourSoundbrewButton = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(self.didPressYourSoundbrewButton(_:)))
-        //self.navigationItem.leftBarButtonItem = yourSoundbrewButton
         setupPlayerView()
     }
         
@@ -40,43 +38,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.setSound()
         customer = Customer.shared
     }
-    
-   /* override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case "showProfile":
-            if let artist = self.sound?.artist {
-                let viewController = segue.destination as! ProfileViewController
-                viewController.profileArtist = artist
-            }
-
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showTippers":
-            if let sound = self.sound {
-                let viewController = segue.destination as! PeopleViewController
-                viewController.sound = sound
-            }
-
-            let localizedCollectors = NSLocalizedString("collectors", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedCollectors
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showAddFunds":
-            let localizedAddFunds = NSLocalizedString("", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedAddFunds
-            navigationItem.backBarButtonItem = backItem
-            break 
-            
-        default:
-            break
-        }
-    }*/
     
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
@@ -122,7 +83,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     func sendTip(_ sound: Sound, tipAmount: Int) {
         if customer.artist!.balance! >= tipAmount {
-            self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+            self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             self.didAddSongToCollection = true
             self.sound?.tips = tipAmount
             
@@ -196,7 +157,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             (success: Bool, error: Error?) in
             if error != nil {
                 self.customer.updateBalance(tipAmount)
-                self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
+                self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 self.didAddSongToCollection = false
             }
         }
@@ -233,8 +194,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     func checkIfUserAddedSongToCollection(_ sound: Sound) {
         if PFUser.current() != nil {
-            self.tipButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            self.tipButton.isEnabled = false
+            self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
+            self.likeSoundButton.isEnabled = false
             self.didAddSongToCollection = false
             
             let query = PFQuery(className: "Tip")
@@ -245,12 +206,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                  if let object = object {
                     self.didAddSongToCollection = true
                     self.sound?.tips = (object["amount"] as! Int)
-                    self.tipButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                    self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
                 }
-                self.tipButton.isEnabled = true
+                self.likeSoundButton.isEnabled = true
             }
         } else {
-            self.tipButton.isEnabled = true
+            self.likeSoundButton.isEnabled = true
         }
     }
         
@@ -289,7 +250,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             player.target = self
             
         } else {
-            //loadYourSoundbrew(true)
             showLoadingSoundbrewSpinner()
         }
     }
@@ -333,19 +293,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             }
             
             updatePlayBackControls()
-        }
-
-        var collectors = 0
-        if let tippers = sound?.tippers {
-            collectors = tippers
-        }
-        
-        let localizedCollectors = NSLocalizedString("collectors", comment: "")
-        if self.navigationController == nil {
-            self.collectorsButton.setTitle("\(collectors) \(localizedCollectors)", for: .normal)
-        } else {
-            let collectorsButton = UIBarButtonItem(title: "\(collectors) \(localizedCollectors)", style: .plain, target: self, action: #selector(self.didPressCollectorsButton(_:)))
-            self.navigationItem.rightBarButtonItem = collectorsButton
         }
     }
     
@@ -432,13 +379,31 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
     
-    lazy var collectorsButton: UIButton = {
+    func soundInfoButton(_ imageName: String, count: Int?) -> UIButton {
         let button = UIButton()
-        button.setTitle("Loading...", for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        button.addTarget(self, action: #selector(self.didPressCollectorsButton(_:)), for: .touchUpInside)
+        button.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        self.view.addSubview(button)
+        
+        let imageView = UIImageView()
+        imageView.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
+        imageView.image = UIImage(named: imageName)
+        button.addSubview(imageView)
+        
+        if let count = count {
+            let label = UILabel()
+            label.text = "\(count)"
+            label.textColor = .white
+            label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
+            label.textAlignment = .left
+            button.addSubview(label)
+            label.snp.makeConstraints { (make) -> Void in
+                make.centerX.equalTo(imageView)
+                make.top.equalTo(imageView.snp.bottom).offset(uiElement.elementOffset)
+            }
+        }
+        
         return button
-    }()
+    }
     
     lazy var dividerLine: UIView = {
         let line = UIView()
@@ -470,7 +435,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.textAlignment = .center
-        label.numberOfLines = 2
+        label.numberOfLines = 3
         return label
     }()
     
@@ -482,7 +447,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     lazy var artistImage: UIImageView = {
         let image = UIImageView()
-       // image.image = UIImage(named: "profile_icon")
         image.layer.cornerRadius = CGFloat(artistImageSize) / 2
         image.clipsToBounds = true
         image.backgroundColor = .black
@@ -506,7 +470,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "ArtistName", "Description": "User clicked on artist's name to go to profile."])
     }
     
-    lazy var tipButton: UIButton = {
+    lazy var likeSoundButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressSendMoneyButton(_:)), for: .touchUpInside)
@@ -707,53 +671,165 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     func showPlayerView() {
         self.view.backgroundColor = color.black()
         
-        let songArtHeight = (self.view.frame.height / 2) - 50
+        let songArtHeightWidth = (self.view.frame.height / 2) - 100
+        
         //top views
+        self.view.addSubview(exitButton)
+        exitButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        //TODO: more button
+        
+        self.view.addSubview(appTitle)
+        appTitle.snp.makeConstraints { (make) -> Void in
+            make.centerX.equalTo(self.view)
+            make.centerY.equalTo(exitButton)
+        }
+        
+        self.view.addSubview(dividerLine)
+        dividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(appTitle.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        //sound views
+        self.view.addSubview(songArt)
+        songArt.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(songArtHeightWidth)
+            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset * 3)
+            //make.centerY.equalTo(self.view)
+            make.centerX.equalTo(self.view)
+            //make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(songTitle)
+        songTitle.snp.makeConstraints { (make) -> Void in
+           make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            //make.bottom.equalTo(playBackSlider.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        //sound info
+       /* let menu = soundInfoButton("more", count: nil)
+        menu.snp.makeConstraints { (make) -> Void in
+            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset * 5)
+            make.centerX.equalTo(self.view)
+        }*/
+        
+        let likeCount = 10
+        let likes = soundInfoButton("heart_filled", count: likeCount)
+        likes.snp.makeConstraints { (make) -> Void in
+            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset * 5)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            //make.left.equalTo(menu.snp.right).offset(uiElement.leftOffset)
+        }
+
+        let commentCount = 25
+        let comments = soundInfoButton("comment_filled", count: commentCount)
+        comments.snp.makeConstraints { (make) -> Void in
+            make.bottom.equalTo(likes)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            //make.left.equalTo(likes.snp.right).offset(uiElement.leftOffset * 2)
+        }
+        
+        let playCount = 15
+        let plays = soundInfoButton("play", count: playCount)
+        plays.snp.makeConstraints { (make) -> Void in
+            make.bottom.equalTo(likes)
+            make.centerX.equalTo(self.view)
+           // make.right.equalTo(menu.snp.left).offset(uiElement.rightOffset * 2)
+        }
+                
+       /* let creditCount = 7
+        let creditsButton = soundInfoButton("profile_icon_filled", count: creditCount)
+        creditsButton.snp.makeConstraints { (make) -> Void in
+            make.bottom.equalTo(menu)
+            make.left.equalTo(menu.snp.left).offset(uiElement.leftOffset * 2)
+        }*/
+        
+        self.view.addSubview(playBackButton)
+        playBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(60)
+           // make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
+            make.centerX.equalTo(self.view)
+            make.bottom.equalTo(likes.snp.top).offset(uiElement.bottomOffset * 5)
+        }
+        
+        self.view.addSubview(loadSoundSpinner)
+        loadSoundSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(60)
+            //make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
+            make.centerX.equalTo(self.view)
+            make.bottom.equalTo(playBackButton)
+        }
+        
+        self.view.addSubview(goBackButton)
+        goBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(45)
+            make.centerY.equalTo(playBackButton)
+            make.centerX.equalTo(self.view).offset(-(55 + uiElement.leftOffset))
+        }
+        
+        self.view.addSubview(skipButton)
+        skipButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(45)
+            make.centerY.equalTo(playBackButton)
+            make.centerX.equalTo(self.view).offset(55 + uiElement.leftOffset)
+        }
+        
+        self.view.addSubview(likeSoundButton)
+        likeSoundButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.centerY.equalTo(self.skipButton)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.centerY.equalTo(self.skipButton)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+                
+        //playback views
+        self.view.addSubview(playBackCurrentTime)
+        playBackCurrentTime.snp.makeConstraints { (make) -> Void in
+            //make.top.equalTo(playBackSlider.snp.bottom)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.bottom.equalTo(shareButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        self.view.addSubview(playBackTotalTime)
+        playBackTotalTime.snp.makeConstraints { (make) -> Void in
+           //make.top.equalTo(playBackCurrentTime)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(playBackCurrentTime)
+        }
+        
+        self.view.addSubview(playBackSlider)
+        playBackSlider.snp.makeConstraints { (make) -> Void in
+            //make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(playBackCurrentTime)
+            make.right.equalTo(playBackTotalTime)
+            make.bottom.equalTo(playBackCurrentTime.snp.top)
+        }
+        
         self.view.addSubview(artistButton)
-        if self.navigationController == nil {
-            self.view.addSubview(exitButton)
-            exitButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(self.view).offset(uiElement.topOffset)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            }
-            
-            self.view.addSubview(collectorsButton)
-            collectorsButton.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.view).offset(uiElement.topOffset)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            }
-            
-            self.view.addSubview(appTitle)
-            appTitle.snp.makeConstraints { (make) -> Void in
-                make.centerX.equalTo(self.view)
-                make.centerY.equalTo(exitButton)
-            }
-            
-            self.view.addSubview(dividerLine)
-            dividerLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(appTitle.snp.bottom).offset(uiElement.topOffset * 2)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            }
-            
-            artistButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(artistImageSize)
-                make.top.equalTo(self.dividerLine.snp.bottom).offset(uiElement.topOffset)
-                make.centerX.equalTo(self.view)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            }
-            
-        } else {
-            artistButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(artistImageSize)
-                make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-                make.centerX.equalTo(self.view)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            }
+        artistButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(artistImageSize)
+           // make.width.equalTo(200)
+            make.centerX.equalTo(self.view)
+            //make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.topOffset)
+            //make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(playBackSlider.snp.top).offset(uiElement.bottomOffset)
         }
         
         self.artistButton.addSubview(artistImage)
@@ -761,94 +837,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.height.width.equalTo(artistImageSize)
             make.left.equalTo(artistButton)
             make.centerY.equalTo(artistButton)
-           // make.top.equalTo(artistButton)
         }
         
         self.artistButton.addSubview(artistLabel)
         artistLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
             make.centerY.equalTo(artistButton)
-           // make.top.equalTo(artistButton)
         }
-        
-        self.view.addSubview(songArt)
-        songArt.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(songArtHeight)
-            make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        //sound views
-        self.view.addSubview(songTitle)
-        songTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        //playback views
-        self.view.addSubview(playBackSlider)
-        playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(songArt)
-            make.right.equalTo(songArt)
-        }
-        
-        self.view.addSubview(playBackCurrentTime)
-        playBackCurrentTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playBackSlider.snp.bottom)
-            make.left.equalTo(playBackSlider)
-        }
-        
-        self.view.addSubview(playBackTotalTime)
-        playBackTotalTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playBackCurrentTime)
-            make.right.equalTo(songArt)
-        }
-        
-        self.view.addSubview(playBackButton)
-        playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(65)
-            make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
-            make.centerX.equalTo(self.view)
-        }
-        
-        self.view.addSubview(loadSoundSpinner)
-        loadSoundSpinner.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(65)
-            make.top.equalTo(self.playBackSlider.snp.bottom).offset(uiElement.topOffset)
-            make.centerX.equalTo(self.view)
-        }
-        
-        self.view.addSubview(goBackButton)
-        goBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(55)
-            make.centerY.equalTo(playBackButton)
-            make.centerX.equalTo(self.view).offset(-(55 + uiElement.leftOffset))
-        }
-        
-        self.view.addSubview(skipButton)
-        skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(55)
-            make.centerY.equalTo(playBackButton)
-            make.centerX.equalTo(self.view).offset(55 + uiElement.leftOffset)
-        }
-        
-        self.view.addSubview(tipButton)
-        tipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.centerY.equalTo(self.skipButton)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        self.view.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.centerY.equalTo(self.skipButton)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
+                
         setSound()
     }
     

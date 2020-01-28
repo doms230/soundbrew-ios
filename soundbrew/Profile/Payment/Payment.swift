@@ -65,6 +65,5 @@ class Payment: NSObject {
                     completion(.failure(error))
                 }
         }
-        
     }
 }
