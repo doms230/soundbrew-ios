@@ -28,7 +28,7 @@ target 'soundbrew' do
   pod 'SnapSDK'
   pod 'ShareInstagram'
   pod 'AppCenter'
-  #pod 'MessageViewController'
+  pod 'MessageViewController'
   pod 'Firebase/Core'
   pod 'Firebase/DynamicLinks'
   #pod 'Firebase/AdMob'

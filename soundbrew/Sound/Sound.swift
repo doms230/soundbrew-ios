@@ -70,7 +70,7 @@ class Sound {
                     }
                     
                     if self.artist?.image == nil {
-                        self.artist?.loadUserInfoFromCloud(nil, soundCell: nil)
+                        self.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
                     }
                 }
             }

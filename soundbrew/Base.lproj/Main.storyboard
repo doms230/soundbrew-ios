@@ -455,23 +455,6 @@
             </objects>
             <point key="canvasLocation" x="-3755.0724637681164" y="-1254.2410714285713"/>
         </scene>
-        <!--Player View Controller-->
-        <scene sceneID="ONb-vr-0dI">
-            <objects>
-                <viewController id="UtP-Uh-9hz" customClass="PlayerViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="U3p-s3-Koh">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="QKF-iJ-HXz"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="ZUc-A1-nE7"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="UWh-XQ-3VH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-6139" y="-320"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="WTx-3Q-WJ0">
             <objects>
@@ -517,11 +500,11 @@
             </objects>
             <point key="canvasLocation" x="-3678.2608695652175" y="215.625"/>
         </scene>
-        <!--Updates-->
+        <!--Mentions-->
         <scene sceneID="ivk-k4-ubP">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Updates" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP"/>
+                    <tabBarItem key="tabBarItem" title="Mentions" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x5d-dt-OWZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -583,8 +566,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="heart_filled_nav" width="31" height="31"/>
-        <image name="heart_nav" width="31" height="31"/>
+        <image name="heart_filled_nav" width="25" height="25"/>
+        <image name="heart_nav" width="25" height="25"/>
         <image name="home" width="28" height="28"/>
         <image name="home_filled" width="28" height="28"/>
         <image name="new_nav" width="25" height="25"/>

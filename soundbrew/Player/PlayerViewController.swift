@@ -405,6 +405,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         return button
     }
     
+    @objc func didPressCommentButton(_ sender: UIButton) {
+        let modal = CommentViewController()
+        modal.sound = self.sound
+        if let player = self.player.player {
+            modal.atTime = Float(player.currentTime)
+        }
+        self.present(modal, animated: true, completion: nil)
+    }
+    
     lazy var dividerLine: UIView = {
         let line = UIView()
         line.layer.borderWidth = 1
@@ -681,8 +690,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        //TODO: more button
+        let menu = soundInfoButton("more", count: nil)
+        menu.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(exitButton)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
         
+        //TODO: more button
         self.view.addSubview(appTitle)
         appTitle.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
@@ -717,11 +731,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
         
         //sound info
-       /* let menu = soundInfoButton("more", count: nil)
-        menu.snp.makeConstraints { (make) -> Void in
-            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset * 5)
-            make.centerX.equalTo(self.view)
-        }*/
         
         let likeCount = 10
         let likes = soundInfoButton("heart_filled", count: likeCount)
@@ -733,6 +742,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
 
         let commentCount = 25
         let comments = soundInfoButton("comment_filled", count: commentCount)
+        comments.addTarget(self, action: #selector(self.didPressCommentButton(_:)), for: .touchUpInside)
         comments.snp.makeConstraints { (make) -> Void in
             make.bottom.equalTo(likes)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)

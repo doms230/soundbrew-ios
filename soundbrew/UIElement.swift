@@ -168,7 +168,7 @@ class UIElement {
     //mark: date and time
     func formatDateAndReturnString(_ date: Date) -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM dd,yyyy"
+        dateFormatter.dateFormat = "MMM dd, yyyy"
         return dateFormatter.string(from: date)
     }
     

@@ -45,7 +45,7 @@ class Artist {
         self.earnings = earnings
     }
     
-    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?) {
+    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -56,6 +56,8 @@ class Artist {
                 let username = user["username"] as? String
                 if !username!.contains("@") {
                     self.username = username
+                } else {
+                    self.username = "username"
                 }
                 
                 if let currentUser = PFUser.current() {
@@ -107,6 +109,17 @@ class Artist {
                         cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                     } else {
                         cell.artistImage.image = UIImage(named: "profile_icon")
+                    }
+                    
+                } else if let cell = commentCell {
+                    if let image = self.image {
+                        cell.userImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+                    } else {
+                        cell.userImage.image = UIImage(named: "profile_icon")
+                    }
+                    
+                    if let username = self.username {
+                        cell.username.setTitle(username, for: .normal)
                     }
                     
                 } else {

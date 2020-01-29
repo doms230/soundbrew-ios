@@ -124,7 +124,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             } else {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
                 cell.backgroundColor = color.black()
-                self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil)
+                self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
                 return cell
             }
         }

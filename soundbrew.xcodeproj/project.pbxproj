@@ -18,6 +18,8 @@
 		E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6422234E57470055E65A /* NewPasswordViewController.swift */; };
 		E4C9DCE923CCEB9D003835E5 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCE823CCEB9D003835E5 /* HomeViewController.swift */; };
 		E4C9DCEB23CCECCC003835E5 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCEA23CCECCC003835E5 /* HomeCollectionViewCell.swift */; };
+		E4C9DCEF23E10FE6003835E5 /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCEE23E10FE6003835E5 /* CommentTableViewCell.swift */; };
+		E4C9DCF123E11018003835E5 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCF023E11018003835E5 /* CommentViewController.swift */; };
 		E4EB686D2384B67000FB1D71 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4EB686C2384B67000FB1D71 /* CloudKit.framework */; };
 		E4EB6870238CBC5000FB1D71 /* AKConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EB686F238CBC4F00FB1D71 /* AKConverter.swift */; };
 		F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */; };
@@ -154,6 +156,8 @@
 		E46A6422234E57470055E65A /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasswordViewController.swift; sourceTree = "<group>"; };
 		E4C9DCE823CCEB9D003835E5 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		E4C9DCEA23CCECCC003835E5 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
+		E4C9DCEE23E10FE6003835E5 /* CommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
+		E4C9DCF023E11018003835E5 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		E4EB686C2384B67000FB1D71 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E4EB686F238CBC4F00FB1D71 /* AKConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKConverter.swift; sourceTree = "<group>"; };
 		F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramStoriesArtImage.swift; sourceTree = "<group>"; };
@@ -265,6 +269,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E4C9DCED23E10FC0003835E5 /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				E4C9DCEE23E10FE6003835E5 /* CommentTableViewCell.swift */,
+				E4C9DCF023E11018003835E5 /* CommentViewController.swift */,
+			);
+			path = Comment;
+			sourceTree = "<group>";
+		};
 		F23C620F21DC34DB005C9FF0 /* Login */ = {
 			isa = PBXGroup;
 			children = (
@@ -327,6 +340,7 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F226B5CA2329A47C00C3E951 /* NewUser.storyboard */,
+				E4C9DCED23E10FC0003835E5 /* Comment */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
@@ -767,6 +781,7 @@
 				F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */,
+				E4C9DCEF23E10FE6003835E5 /* CommentTableViewCell.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
@@ -790,6 +805,7 @@
 				F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */,
 				F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */,
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
+				E4C9DCF123E11018003835E5 /* CommentViewController.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
 				F2FB14E622FA335500ED157E /* UpdatesViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,

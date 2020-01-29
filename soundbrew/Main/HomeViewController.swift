@@ -163,7 +163,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     for object in objects {
                         let userId = object["toUserId"] as! String
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                        artist.loadUserInfoFromCloud(nil, soundCell: nil)
+                        artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
                         friends.append(artist)
                     }
                     self.loadFriendsLatestSounds(friends)
