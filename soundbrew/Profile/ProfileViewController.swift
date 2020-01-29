@@ -7,6 +7,8 @@
 //
 // mark: button actions, data, tableview, social buttons
 
+//checing if self.tabBarController != nil  because there is no tabbvarcontroller when going to profile from commentviewcontroller
+
 import UIKit
 import Parse
 import Kingfisher
@@ -42,7 +44,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
-        
+                
         if profileArtist != nil {
             self.loadProfileData()
             self.setUpNavigationButtons()
@@ -71,67 +73,76 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
-        case "showEditProfile":
-            let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedEditProfile
-            navigationItem.backBarButtonItem = backItem
-            
-            let editProfileController = segue.destination as! EditProfileViewController
-            editProfileController.artistDelegate = self
-            break
-            
-        case "showEditSoundInfo":
-            soundList.prepareToShowSoundInfo(segue)
-            break
-            
-        case "showProfile":
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            
-            let viewController = segue.destination as! ProfileViewController
-            viewController.profileArtist = selectedArtist
-            break
-            
-        case "showAddFunds":
-            let localizedAddFunds = NSLocalizedString("", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedAddFunds
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showSounds":
-            let backItem = UIBarButtonItem()
-            backItem.title = showSoundsTitle
-            navigationItem.backBarButtonItem = backItem
-            
-            let viewController = segue.destination as! SoundsViewController
-            viewController.soundType = selectedSoundType
-            viewController.userId = profileArtist?.objectId
-            break
-            
-        case "showFollowerFollowing":
-            let backItem = UIBarButtonItem()
-            backItem.title = followerOrFollowing.capitalized
-            navigationItem.backBarButtonItem = backItem
-            
-            let viewController = segue.destination as! PeopleViewController
-            viewController.loadType = followerOrFollowing
-            break
-            
-        case "showTippers":
-            if let currentSound = Player.sharedInstance.currentSound {
+            case "showEditProfile":
+                let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
+                let backItem = UIBarButtonItem()
+                backItem.title = localizedEditProfile
+                navigationItem.backBarButtonItem = backItem
+                
+                let editProfileController = segue.destination as! EditProfileViewController
+                editProfileController.artistDelegate = self
+                break
+                
+            case "showEditSoundInfo":
+                soundList.prepareToShowSoundInfo(segue)
+                break
+                
+            case "showProfile":
+                let backItem = UIBarButtonItem()
+                backItem.title = ""
+                navigationItem.backBarButtonItem = backItem
+                
+                let viewController = segue.destination as! ProfileViewController
+                viewController.profileArtist = selectedArtist
+                break
+                
+            case "showAddFunds":
+                let localizedAddFunds = NSLocalizedString("", comment: "")
+                let backItem = UIBarButtonItem()
+                backItem.title = localizedAddFunds
+                navigationItem.backBarButtonItem = backItem
+                break
+                
+            case "showSounds":
+                let backItem = UIBarButtonItem()
+                backItem.title = showSoundsTitle
+                navigationItem.backBarButtonItem = backItem
+                
+                let viewController = segue.destination as! SoundsViewController
+                viewController.soundType = selectedSoundType
+                viewController.userId = profileArtist?.objectId
+                break
+                
+            case "showFollowerFollowing":
+                let backItem = UIBarButtonItem()
+                backItem.title = followerOrFollowing.capitalized
+                navigationItem.backBarButtonItem = backItem
+                
                 let viewController = segue.destination as! PeopleViewController
-                viewController.sound = currentSound
-            }
-            let localizedCollectors = NSLocalizedString("collectors", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedCollectors
-            navigationItem.backBarButtonItem = backItem
+                viewController.loadType = followerOrFollowing
+                break
+                
+            case "showTippers":
+                if let currentSound = Player.sharedInstance.currentSound {
+                    let viewController = segue.destination as! PeopleViewController
+                    viewController.sound = currentSound
+                }
+                let localizedCollectors = NSLocalizedString("collectors", comment: "")
+                let backItem = UIBarButtonItem()
+                backItem.title = localizedCollectors
+                navigationItem.backBarButtonItem = backItem
             
-        default:
-            break
+            case "showComments":
+                let player = Player.sharedInstance
+                let viewController = segue.destination as! CommentViewController
+                if let currentSound = player.currentSound, let player = player.player {
+                    viewController.sound = currentSound
+                    viewController.atTime = Float(player.currentTime)
+                }
+                break
+                
+            default:
+                break
         }
     }
     
@@ -255,18 +266,30 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
-            if artist.objectId == "addFunds" {
-                self.performSegue(withIdentifier: "showAddFunds", sender: self)
-            } else if artist.objectId == "signup" {
-                self.performSegue(withIdentifier: "showWelcome", sender: self)
-            } else if artist.objectId == "collectors" {
-                self.performSegue(withIdentifier: "showTippers", sender: self)
-            } else {
-                if artist.objectId != profileArtist?.objectId {
-                    let player = Player.sharedInstance
-                    self.selectedArtist = player.currentSound?.artist
-                    self.performSegue(withIdentifier: "showProfile", sender: self)
-                }
+            switch artist.objectId {
+                case "addFunds":
+                    self.performSegue(withIdentifier: "showAddFunds", sender: self)
+                    break
+                    
+                case "signup":
+                    self.performSegue(withIdentifier: "showWelcome", sender: self)
+                    break
+                    
+                case "collectors":
+                    self.performSegue(withIdentifier: "showTippers", sender: self)
+                    break
+                    
+                case "comments":
+                    self.performSegue(withIdentifier: "showComments", sender: self)
+                    break
+                    
+                default:
+                    if artist.objectId != profileArtist?.objectId {
+                        let player = Player.sharedInstance
+                        self.selectedArtist = player.currentSound?.artist
+                        self.performSegue(withIdentifier: "showProfile", sender: self)
+                    }
+                    break
             }
         }
     }
@@ -451,7 +474,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let player = self.player {
             self.player?.sounds = sounds
             player.didSelectSoundAt(row)
-            if self.miniPlayerView == nil {
+            if self.miniPlayerView == nil && self.tabBarController != nil {
                 self.setUpMiniPlayer()
             }
         }
@@ -616,7 +639,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         player = Player.sharedInstance
         player?.target = self
         player?.tableView = tableView
-        if self.player?.player != nil {
+        if self.player?.player != nil && self.tabBarController != nil {
             setUpMiniPlayer()
             
         } else {

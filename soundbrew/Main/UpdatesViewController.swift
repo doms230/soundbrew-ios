@@ -45,23 +45,39 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showProfile" {
-            let viewController = segue.destination as! ProfileViewController
-            viewController.profileArtist = selectedArtist
+        switch segue.identifier {
+            case "showProfile":
+                let viewController = segue.destination as! ProfileViewController
+                viewController.profileArtist = selectedArtist
+                
+                let backItem = UIBarButtonItem()
+                backItem.title = ""
+                navigationItem.backBarButtonItem = backItem
+                break
+                
+            case "showTippers":
+                if let currentSound = Player.sharedInstance.currentSound {
+                    let viewController = segue.destination as! PeopleViewController
+                    viewController.sound = currentSound
+                }
+                
+                let localizedCollectors = NSLocalizedString("collectors", comment: "")
+                let backItem = UIBarButtonItem()
+                backItem.title = localizedCollectors
+                navigationItem.backBarButtonItem = backItem
+                break
             
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-        } else if segue.identifier == "showTippers" {
-            if let currentSound = Player.sharedInstance.currentSound {
-                let viewController = segue.destination as! PeopleViewController
-                viewController.sound = currentSound
-            }
+            case "showComments":
+                let player = Player.sharedInstance
+                let viewController = segue.destination as! CommentViewController
+                if let currentSound = player.currentSound, let player = player.player {
+                    viewController.sound = currentSound
+                    viewController.atTime = Float(player.currentTime)
+                }
+                break
             
-            let localizedCollectors = NSLocalizedString("collectors", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedCollectors
-            navigationItem.backBarButtonItem = backItem
+        default:
+            break
         }
     }
     
@@ -172,15 +188,27 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
-            if artist.objectId == "addFunds" {
-                self.performSegue(withIdentifier: "showAddFunds", sender: self)
-            } else if artist.objectId == "signup" {
-                self.performSegue(withIdentifier: "showWelcome", sender: self)
-            } else if artist.objectId == "collectors" {
-                self.performSegue(withIdentifier: "showTippers", sender: self)
-            } else {
-                selectedArtist = artist
-                self.performSegue(withIdentifier: "showProfile", sender: self)
+            switch artist.objectId {
+                case "addFunds":
+                    self.performSegue(withIdentifier: "showAddFunds", sender: self)
+                    break
+                    
+                case "signup":
+                    self.performSegue(withIdentifier: "showWelcome", sender: self)
+                    break
+                    
+                case "collectors":
+                    self.performSegue(withIdentifier: "showTippers", sender: self)
+                    break
+                    
+                case "comments":
+                    self.performSegue(withIdentifier: "showComments", sender: self)
+                    break
+                    
+                default:
+                    selectedArtist = artist
+                    self.performSegue(withIdentifier: "showProfile", sender: self)
+                    break
             }
         }
     }

@@ -11,6 +11,7 @@ import MessageViewController
 import Parse
 import Kingfisher
 import AppCenterAnalytics
+import SnapKit
 
 class CommentViewController: MessageViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -21,34 +22,96 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     var sound: Sound?
     var atTime: Float?
     var player = Player.sharedInstance
+    var selectedArtist: Artist?
+    
+    lazy var dividerLine: UIView = {
+        let line = UIView()
+        line.layer.borderWidth = 1
+        line.layer.borderColor = UIColor.darkGray.cgColor
+        return line
+    }()
+    
+    lazy var appTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Soundbrew"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "dismiss"), for: .normal)
+        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressExitButton(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
+         setupNav()
         if let soundId = sound?.objectId {
             loadComments(soundId)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "showProfile":
+            let viewController = segue.destination as! ProfileViewController
+            viewController.profileArtist = selectedArtist
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            break
+                        
+        default:
+            break
+        }
+    }
+    
+    //mark: topview
+    func setupNav() {
+        self.view.addSubview(exitButton)
+        exitButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        self.view.addSubview(appTitle)
+        appTitle.snp.makeConstraints { (make) -> Void in
+            make.centerX.equalTo(self.view)
+            make.centerY.equalTo(exitButton)
+        }
+        
+        self.view.addSubview(dividerLine)
+        dividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(appTitle.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
     }
     
     //mark: MessageView
     func setUpMessageView() {
         borderColor = .lightGray
-        //messageView.inset = UIEdgeInsets(top: 0, left: CGFloat(uiElement.leftOffset), bottom: 0, right: CGFloat(uiElement.rightOffset))
-        //messageView.backgroundColor = color.black()
         messageView.inset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         messageView.font = UIFont(name: uiElement.mainFont, size: 17)
         var placeHolderText = "Add comment"
         if let atTime = self.atTime {
             placeHolderText = "Add comment at \(self.uiElement.formatTime(Double(atTime)))"
         }
-       // messageView.textView.textColor = .white
         
         messageView.textView.placeholderText = placeHolderText
         messageView.textView.placeholderTextColor = .darkGray
-        //messageView.textView.layer.cornerRadius = 10
-        //messageView.textView.layer.borderWidth = 1
-        //messageView.textView.layer.borderColor = color.darkGray().cgColor
-       // messageView.textView.backgroundColor = color.black()
         
         messageView.setButton(title: "Send", for: .normal, position: .right)
         messageView.addButton(target: self, action: #selector(didPressRightButton(_:)), position: .right)
@@ -84,6 +147,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     
     func setUpTableView() {
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.black()
@@ -112,13 +176,17 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             
             let artist = comment.artist
             
+            cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+            cell.userImage.tag = indexPath.row
             if let image = comment.artist.image {
-                cell.userImage.kf.setImage(with: URL(string: image))
+                cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
             } else {
-                cell.userImage.image = UIImage(named: "profile_icon")
+                cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
                 artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell)
             }
             
+            cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+            cell.username.tag = indexPath.row
             if let username = comment.artist.username {
                 cell.username.setTitle(username, for: .normal)
             } else {
@@ -129,7 +197,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             
             let atTime = self.uiElement.formatTime(Double(comment.atTime))
             cell.atTime.setTitle("At \(atTime)", for: .normal)
-            cell.atTime.addTarget(self, action: #selector(self.didPressAtTime(_:)), for: .touchUpInside)
+            cell.atTime.addTarget(self, action: #selector(self.didPressAtTimeButton(_:)), for: .touchUpInside)
             cell.atTime.tag = indexPath.row
             
             let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt)
@@ -139,7 +207,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
         }
     }
     
-    @objc func didPressAtTime(_ sender: UIButton) {
+    @objc func didPressAtTimeButton(_ sender: UIButton) {
         if let player = self.player.player {
             player.currentTime = TimeInterval(self.comments[sender.tag].atTime)
             self.atTime = self.comments[sender.tag].atTime
@@ -147,6 +215,13 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             if !player.isPlaying {
                 self.player.play()
             }
+        }
+    }
+    
+    @objc func didPressProfileButton(_ sender: UIButton) {
+        if let artist = self.comments[sender.tag].artist {
+            selectedArtist = artist
+            self.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
     

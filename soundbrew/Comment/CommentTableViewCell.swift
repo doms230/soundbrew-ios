@@ -15,15 +15,14 @@ class CommentTableViewCell: UITableViewCell {
     
     let profileImageHeightWidth = 35
     
-    lazy var userImage: UIImageView = {
-        let image = UIImageView()
-        image.layer.borderWidth = 1
-        image.layer.borderColor = color.black().cgColor
-        image.clipsToBounds = true
-        image.contentMode = .scaleAspectFill
-        image.image = UIImage(named: "profile_icon")
-        image.backgroundColor = .white
-        return image
+    lazy var userImage: UIButton = {
+        let button = UIButton()
+        button.layer.borderWidth = 1
+        button.clipsToBounds = true
+        button.setImage(UIImage(named: "profile_icon"), for: .normal)
+        button.backgroundColor = .white
+        button.contentMode = .scaleAspectFill
+        return button
     }()
     
     lazy var username: UIButton = {

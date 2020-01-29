@@ -76,7 +76,16 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let backItem = UIBarButtonItem()
             backItem.title = localizedCollectors
             navigationItem.backBarButtonItem = backItem
-            break 
+            break
+            
+        case "showComments":
+            let player = Player.sharedInstance
+            let viewController = segue.destination as! CommentViewController
+            if let currentSound = player.currentSound, let player = player.player {
+                viewController.sound = currentSound
+                viewController.atTime = Float(player.currentTime)
+            }
+            break
             
         default:
             break 
@@ -243,17 +252,26 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: selectedArtist
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
-            if artist.objectId == "addFunds" {
+            switch artist.objectId {
+            case "addFunds":
                 self.performSegue(withIdentifier: "showAddFunds", sender: self)
-            } else if artist.objectId == "signup" {
+                break
+                
+            case "signup":
                 self.performSegue(withIdentifier: "showWelcome", sender: self)
-            } else if artist.objectId == "collectors" {
-                if let currentSound = Player.sharedInstance.currentSound {
-                    soundList.selectedSound = currentSound
-                }
+                break
+                
+            case "collectors":
                 self.performSegue(withIdentifier: "showTippers", sender: self)
-            } else {
+                break
+                
+            case "comments":
+                self.performSegue(withIdentifier: "showComments", sender: self)
+                break
+                
+            default:
                 soundList.selectedArtist(artist)
+                break
             }
         }
     }

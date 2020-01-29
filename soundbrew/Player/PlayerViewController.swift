@@ -109,12 +109,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
-                if self.navigationController == nil {
-                    let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                    self.handleDismissal(artist)
-                } else {
-                    self.performSegue(withIdentifier: "showAddFunds", sender: self)
-                }
+                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                self.handleDismissal(artist)
             }
             alertView.addAction(sendMoneyActionButton)
             
@@ -406,12 +402,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     @objc func didPressCommentButton(_ sender: UIButton) {
-        let modal = CommentViewController()
-        modal.sound = self.sound
-        if let player = self.player.player {
-            modal.atTime = Float(player.currentTime)
-        }
-        self.present(modal, animated: true, completion: nil)
+        let artist = Artist(objectId: "comments", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+        self.handleDismissal(artist)
     }
     
     lazy var dividerLine: UIView = {
@@ -696,7 +688,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        //TODO: more button
         self.view.addSubview(appTitle)
         appTitle.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)

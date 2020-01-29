@@ -113,9 +113,9 @@ class Artist {
                     
                 } else if let cell = commentCell {
                     if let image = self.image {
-                        cell.userImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+                        cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
                     } else {
-                        cell.userImage.image = UIImage(named: "profile_icon")
+                        cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
                     }
                     
                     if let username = self.username {

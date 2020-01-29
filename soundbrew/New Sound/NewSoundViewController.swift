@@ -49,31 +49,40 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
-        case "showEditSoundInfo":
-            var soundToBeEdited: Sound!
-            if let selectedSound = soundList.selectedSound {
-                selectedSound.isDraft = true
-                soundToBeEdited = selectedSound
-            } else {
-                soundToBeEdited = newSound
-            }
-            let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
-            viewController.soundThatIsBeingEdited = soundToBeEdited
-            break
+            case "showEditSoundInfo":
+                var soundToBeEdited: Sound!
+                if let selectedSound = soundList.selectedSound {
+                    selectedSound.isDraft = true
+                    soundToBeEdited = selectedSound
+                } else {
+                    soundToBeEdited = newSound
+                }
+                let viewController: SoundInfoViewController = segue.destination as! SoundInfoViewController
+                viewController.soundThatIsBeingEdited = soundToBeEdited
+                break
+                
+            case "showTippers":
+                soundList.prepareToShowTippers(segue)
+                let backItem = UIBarButtonItem()
+                backItem.title = self.uiElement.localizedCollectors
+                navigationItem.backBarButtonItem = backItem
+                break
+                
+            case "showProfile":
+                soundList.prepareToShowSelectedArtist(segue)
+                let backItem = UIBarButtonItem()
+                backItem.title = ""
+                navigationItem.backBarButtonItem = backItem
+                break
             
-        case "showTippers":
-            soundList.prepareToShowTippers(segue)
-            let backItem = UIBarButtonItem()
-            backItem.title = self.uiElement.localizedCollectors
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            break
+            case "showComments":
+                let player = Player.sharedInstance
+                let viewController = segue.destination as! CommentViewController
+                if let currentSound = player.currentSound, let player = player.player {
+                    viewController.sound = currentSound
+                    viewController.atTime = Float(player.currentTime)
+                }
+                break
             
         default:
             break
@@ -235,17 +244,26 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     //mark: selectedArtist
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
-            if artist.objectId == "addFunds" {
-                self.performSegue(withIdentifier: "showAddFunds", sender: self)
-            } else if artist.objectId == "signup" {
-                self.performSegue(withIdentifier: "showWelcome", sender: self)
-            } else if artist.objectId == "collectors" {
-                if let currentSound = Player.sharedInstance.currentSound {
-                    soundList.selectedSound = currentSound
-                }
-                self.performSegue(withIdentifier: "showTippers", sender: self)
-            } else {
-                soundList.selectedArtist(artist)
+            switch artist.objectId {
+                case "addFunds":
+                    self.performSegue(withIdentifier: "showAddFunds", sender: self)
+                    break
+                    
+                case "signup":
+                    self.performSegue(withIdentifier: "showWelcome", sender: self)
+                    break
+                    
+                case "collectors":
+                    self.performSegue(withIdentifier: "showTippers", sender: self)
+                    break
+                    
+                case "comments":
+                    self.performSegue(withIdentifier: "showComments", sender: self)
+                    break
+                    
+                default:
+                    soundList.selectedArtist(artist)
+                    break
             }
         }
     }
