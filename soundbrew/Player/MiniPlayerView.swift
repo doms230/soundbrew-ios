@@ -61,20 +61,15 @@ class MiniPlayerView: UIButton {
             if let soundPlayer = player.player {
                 if soundPlayer.isPlaying {
                     player.pause()
+                    timer.invalidate()
                     self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                    
                     MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Pause", "description": "User pressed pause."])
                     
                 } else {
                     player.play()
+                    startTimer()
                     self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    
                     MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Play", "description": "User pressed play."])
-                }
-                
-            } else {
-                if player.sounds.count != 0 {
-                    player.didSelectSoundAt(0)
                 }
             }
             
@@ -84,6 +79,27 @@ class MiniPlayerView: UIButton {
         } else {
             activitySpinner.isHidden = false
             playBackButton.isHidden = true
+        }
+    }
+    
+    lazy var playBackSlider: UISlider = {
+        let slider = UISlider()
+        slider.value = 0
+        slider.minimumValue = 0
+        slider.maximumValue = 100
+        slider.tintColor = .white
+        slider.setThumbImage(UIImage(), for: .normal)
+        slider.isEnabled = false
+        return slider
+     }()
+    
+    var timer = Timer()
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
+    }
+    @objc func UpdateTimer(_ timer: Timer) {
+        if let currentTime = player?.player?.currentTime {
+            playBackSlider.value = Float(currentTime)
         }
     }
     
@@ -100,6 +116,14 @@ class MiniPlayerView: UIButton {
     
     override func updateConstraints() {
         if(shouldSetupConstraints) {
+            self.addSubview(playBackSlider)
+            playBackSlider.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(1)
+                make.top.equalTo(self)
+                make.left.equalTo(self)
+                make.right.equalTo(self)
+            }
+            
             self.addSubview(playBackButton)
             playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
             playBackButton.snp.makeConstraints { (make) -> Void in
@@ -119,7 +143,7 @@ class MiniPlayerView: UIButton {
             self.addSubview(songArt)
             songArt.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(40)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
+                make.top.equalTo(playBackSlider).offset(uiElement.elementOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
@@ -135,7 +159,7 @@ class MiniPlayerView: UIButton {
             songTitle.snp.makeConstraints { (make) -> Void in
                 make.left.equalTo(artistName)
                 make.right.equalTo(artistName)
-                make.bottom.equalTo(artistName.snp.top).offset(-(uiElement.elementOffset))
+                make.bottom.equalTo(artistName.snp.top)
             }
             
             shouldSetupConstraints = false
@@ -155,22 +179,17 @@ class MiniPlayerView: UIButton {
         setSound()
     }
     
-    @objc func didReceivePreparingSoundNotification() {
-        self.activitySpinner.isHidden = false
-        playBackButton.isHidden = true
-        self.isEnabled = false
-    }
-    
-    @objc func playbackWasPaused() {
-        self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-    }
-    
     func setSound() {
         if let player = self.player {
             if let currentSound = player.currentSound {
             self.sound = currentSound
             setCurrentSoundView(self.sound!)
             self.playBackButton.isEnabled = true
+            }
+            
+            if let duration = self.player?.player?.duration {
+                playBackSlider.maximumValue = Float(duration)
+                self.startTimer()
             }
             
             if let audioPlayer = player.player {
@@ -186,6 +205,12 @@ class MiniPlayerView: UIButton {
                 self.isEnabled = true
             }
         }
+    }
+    
+    @objc func didReceivePreparingSoundNotification() {
+        self.activitySpinner.isHidden = false
+        playBackButton.isHidden = true
+        self.isEnabled = false
     }
     
     func setCurrentSoundView(_ sound: Sound) {

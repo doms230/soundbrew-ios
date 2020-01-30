@@ -15,14 +15,24 @@ import SnapKit
 
 class CommentViewController: MessageViewController, UITableViewDataSource, UITableViewDelegate {
     
-    var comments = [Comment]()
+    var comments = [Comment?]()
     let uiElement = UIElement()
     let color = Color()
     
     var sound: Sound?
     var atTime: Float?
-    var player = Player.sharedInstance
+    let player = Player.sharedInstance
     var selectedArtist: Artist?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+         setupNav()
+        setUpTableView()
+        if let soundId = sound?.objectId {
+            loadComments(soundId)
+        }
+    }
     
     lazy var dividerLine: UIView = {
         let line = UIView()
@@ -51,15 +61,6 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.backgroundColor = color.black()
-         setupNav()
-        if let soundId = sound?.objectId {
-            loadComments(soundId)
-        }
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
@@ -73,6 +74,29 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
                         
         default:
             break
+        }
+    }
+    
+    func setupNotificationCenter(){
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+    }
+    
+    @objc func didReceiveSoundUpdate() {
+        if let sound = self.player.currentSound {
+            self.sound = sound
+            self.playBackSlider = nil
+            if let objectId = sound.objectId {
+                loadComments(objectId)
+            }
+        }
+    }
+    
+    func setPlaybackSliderValue() {
+        if let duration = self.player.player?.duration {
+            if let playBackSlider = self.playBackSlider {
+                playBackSlider.maximumValue = Float(duration)
+                self.startTimer()
+            }
         }
     }
     
@@ -141,41 +165,132 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     }
     
     //mark: Tableview
-    var tableView = UITableView()
+    let tableView = UITableView()
     let commentReuse = "commentReuse"
     let noSoundsReuse = "noSoundsReuse"
-    
+    let miniPlayerReuse = "miniPlayerReuse"
     func setUpTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
+        tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: miniPlayerReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         self.view.addSubview(tableView)
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        }
+        
         if comments.count == 0 {
             return 1
         }
+        
         return comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if self.comments.count == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
-            cell.headerTitle.text = "No comments yet. Be the first, and comment below. 😎"
-            return cell
-            
+        if indexPath.section == 0 {
+            return miniPlayerCell()
         } else {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: commentReuse) as! CommentTableViewCell
-            cell.backgroundColor = color.black()
-            let comment = comments[indexPath.row]
+            if self.comments.count == 0 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+                cell.backgroundColor = color.black()
+                cell.headerTitle.text = "No comments yet. Be the first, and comment below. 😎"
+                return cell
+                
+            } else {
+                return commentCell(indexPath)
+            }
+        }
+    }
+    
+    func miniPlayerCell() -> CommentTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: miniPlayerReuse) as!
+        CommentTableViewCell
+        cell.backgroundColor = color.black()
+        cell.selectionStyle = .none
+        if let sound = self.sound {
+            if let player = player.player {
+               /* self.playBackSlider = cell.playBackSlider
+                self.setPlaybackSliderValue()*/
+                
+                cell.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
+                if player.isPlaying {
+                    cell.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                    
+                } else {
+                    cell.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                }
+            }
             
+            if let image = sound.artURL {
+                cell.songArt.kf.setImage(with: URL(string: image))
+            } else {
+                cell.songArt.image = UIImage(named: "sound")
+            }
+            
+            if let title = sound.title {
+                cell.songTitle.text = title
+            } else {
+                cell.songTitle.text = "Sound Title"
+            }
+            
+            
+            if let name = sound.artist?.name {
+                cell.artistName.text = name
+                
+            } else {
+                cell.artistName.text = "Artist Name"
+            }
+        }
+        
+        return cell
+    }
+    
+    @objc func didPressPlayBackButton(_ sender: UIButton) {
+        if let soundPlayer = player.player {
+            if soundPlayer.isPlaying {
+                player.pause()
+                timer.invalidate()
+                sender.setImage(UIImage(named: "play"), for: .normal)
+                
+            } else {
+                player.play()
+                startTimer()
+                sender.setImage(UIImage(named: "pause"), for: .normal)
+            }
+        }
+    }
+    
+    var timer = Timer()
+    var playBackSlider: UISlider?
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
+    }
+    @objc func UpdateTimer(_ timer: Timer) {
+        if let currentTime = player.player?.currentTime {
+            if let playBackSlider = playBackSlider {
+                playBackSlider.value = Float(currentTime)
+                print(playBackSlider.value)
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            }
+        }
+    }
+    
+    func commentCell(_ indexPath: IndexPath) -> CommentTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: commentReuse) as! CommentTableViewCell
+        cell.backgroundColor = color.black()
+        cell.selectionStyle = .none
+        if let comment = comments[indexPath.row] {
             let artist = comment.artist
-            
             cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
             cell.userImage.tag = indexPath.row
             if let image = comment.artist.image {
@@ -202,24 +317,28 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             
             let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt)
             cell.date.text = formattedDate
-            
-            return cell
         }
+        
+
+        
+        return cell
     }
     
     @objc func didPressAtTimeButton(_ sender: UIButton) {
         if let player = self.player.player {
-            player.currentTime = TimeInterval(self.comments[sender.tag].atTime)
-            self.atTime = self.comments[sender.tag].atTime
-            messageView.textView.placeholderText = "Add comment at \(self.uiElement.formatTime(Double(atTime!)))"
-            if !player.isPlaying {
-                self.player.play()
+            if let comment = self.comments[sender.tag] {
+                player.currentTime = TimeInterval(comment.atTime)
+                self.atTime = comment.atTime
+                messageView.textView.placeholderText = "Add comment at \(self.uiElement.formatTime(Double(atTime!)))"
+                if !player.isPlaying {
+                    self.player.play()
+                }
             }
         }
     }
     
     @objc func didPressProfileButton(_ sender: UIButton) {
-        if let artist = self.comments[sender.tag].artist {
+        if let artist = self.comments[sender.tag]?.artist {
             selectedArtist = artist
             self.performSegue(withIdentifier: "showProfile", sender: self)
         }
@@ -236,7 +355,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
         newComment.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                self.comments[self.comments.count - 1].objectId = newComment.objectId
+                self.comments[self.comments.count - 1]?.objectId = newComment.objectId
                 MSAnalytics.trackEvent("comment added")
                 
             } else {
@@ -247,6 +366,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     }
     
     func loadComments(_ postId: String) {
+        self.comments.removeAll()
         let query = PFQuery(className: "Comment")
         query.whereKey("postId", equalTo: postId)
         query.whereKey("isRemoved", equalTo: false)
@@ -270,7 +390,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
                 print("Error: \(error!)")
             }
             
-            self.setUpTableView()
+            self.tableView.reloadData()
             self.setUpMessageView()
         }
     }
