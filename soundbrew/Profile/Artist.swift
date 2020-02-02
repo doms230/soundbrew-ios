@@ -9,6 +9,7 @@
 
 import Foundation
 import Parse
+import Kingfisher
 
 class Artist {
     var objectId: String!

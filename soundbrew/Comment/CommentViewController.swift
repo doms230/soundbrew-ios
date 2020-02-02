@@ -7,13 +7,12 @@
 //
 
 import UIKit
-import MessageViewController
 import Parse
 import Kingfisher
 import AppCenterAnalytics
 import SnapKit
-
-class CommentViewController: MessageViewController, UITableViewDataSource, UITableViewDelegate {
+import GrowingTextView
+class CommentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate {
     
     var comments = [Comment?]()
     let uiElement = UIElement()
@@ -27,38 +26,13 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
-         setupNav()
-        setUpTableView()
         if let soundId = sound?.objectId {
-            loadComments(soundId)
+            setupNotificationCenter()
+            setupPlayerView()
+            setupGrowingTextView(soundId)
+        } else {
+            self.dismiss(animated: true, completion: nil)
         }
-    }
-    
-    lazy var dividerLine: UIView = {
-        let line = UIView()
-        line.layer.borderWidth = 1
-        line.layer.borderColor = UIColor.darkGray.cgColor
-        return line
-    }()
-    
-    lazy var appTitle: UILabel = {
-        let label = UILabel()
-        label.text = "Soundbrew"
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
-        label.textAlignment = .center
-        return label
-    }()
-    
-    lazy var exitButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "dismiss"), for: .normal)
-        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
-        return button
-    }()
-    @objc func didPressExitButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
-        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -78,117 +52,296 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     }
     
     func setupNotificationCenter(){
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
     }
-    
     @objc func didReceiveSoundUpdate() {
         if let sound = self.player.currentSound {
-            self.sound = sound
-            self.playBackSlider = nil
-            if let objectId = sound.objectId {
-                loadComments(objectId)
+            self.setupPlayerView()
+            if sound.objectId != self.sound?.objectId {
+                self.sound = sound
+                if let objectId = sound.objectId {
+                    loadComments(objectId)
+                }
             }
         }
     }
     
-    func setPlaybackSliderValue() {
-        if let duration = self.player.player?.duration {
-            if let playBackSlider = self.playBackSlider {
-                playBackSlider.maximumValue = Float(duration)
-                self.startTimer()
+    @objc private func keyboardWillChangeFrame(_ notification: Notification) {
+        if let endFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            var keyboardHeight = UIScreen.main.bounds.height - endFrame.origin.y
+            if #available(iOS 11, *) {
+                if keyboardHeight > 0 {
+                    keyboardHeight = keyboardHeight - view.safeAreaInsets.bottom
+                }
             }
+            textViewBottomConstraint.constant = -keyboardHeight - 8
+            view.layoutIfNeeded()
         }
     }
     
-    //mark: topview
-    func setupNav() {
-        self.view.addSubview(exitButton)
-        exitButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        self.view.addSubview(appTitle)
-        appTitle.snp.makeConstraints { (make) -> Void in
-            make.centerX.equalTo(self.view)
-            make.centerY.equalTo(exitButton)
-        }
-        
-        self.view.addSubview(dividerLine)
-        dividerLine.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(0.5)
-            make.top.equalTo(appTitle.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-    }
+    //growing textview
+    private var inputToolbar: UIView!
+    private var textView: GrowingTextView!
+    private var textViewBottomConstraint: NSLayoutConstraint!
     
-    //mark: MessageView
-    func setUpMessageView() {
-        borderColor = .lightGray
-        messageView.inset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        messageView.font = UIFont(name: uiElement.mainFont, size: 17)
+    func setupGrowingTextView(_ soundId: String) {
         var placeHolderText = "Add comment"
         if let atTime = self.atTime {
             placeHolderText = "Add comment at \(self.uiElement.formatTime(Double(atTime)))"
         }
         
-        messageView.textView.placeholderText = placeHolderText
-        messageView.textView.placeholderTextColor = .darkGray
+        // *** Create GrowingTextView ***
+        textView = GrowingTextView()
+        textView.delegate = self
+        textView.layer.cornerRadius = 4.0
+        textView.maxLength = 200
+        textView.maxHeight = 70
+        textView.trimWhiteSpaceWhenEndEditing = true
+        textView.placeholder = placeHolderText
+        textView.placeholderColor = UIColor(white: 0.8, alpha: 1.0)
+        textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
+        textView.translatesAutoresizingMaskIntoConstraints = false
         
-        messageView.setButton(title: "Send", for: .normal, position: .right)
-        messageView.addButton(target: self, action: #selector(didPressRightButton(_:)), position: .right)
-        messageView.rightButtonTint = color.blue()
+        inputToolbar = UIView()
+        inputToolbar.backgroundColor = color.black()
+        inputToolbar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(inputToolbar)
+        inputToolbar.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
         
-        messageAutocompleteController.tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
-        messageAutocompleteController.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        messageAutocompleteController.tableView.dataSource = self
-        messageAutocompleteController.tableView.delegate = self
-        setup(scrollView: tableView)
+        
+        inputToolbar.addSubview(textView)
+        
+        // *** Autolayout ***
+        let topConstraint = textView.topAnchor.constraint(equalTo: inputToolbar.topAnchor, constant: 8)
+        topConstraint.priority = UILayoutPriority(999)
+        NSLayoutConstraint.activate([
+            inputToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            inputToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            inputToolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            topConstraint
+        ])
+
+        if #available(iOS 11, *) {
+            textViewBottomConstraint = textView.bottomAnchor.constraint(equalTo: inputToolbar.safeAreaLayoutGuide.bottomAnchor, constant: -8)
+            NSLayoutConstraint.activate([
+                textView.leadingAnchor.constraint(equalTo: inputToolbar.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+                textView.trailingAnchor.constraint(equalTo: inputToolbar.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+                textViewBottomConstraint
+                ])
+        } else {
+            textViewBottomConstraint = textView.bottomAnchor.constraint(equalTo: inputToolbar.bottomAnchor, constant: -8)
+            NSLayoutConstraint.activate([
+                textView.leadingAnchor.constraint(equalTo: inputToolbar.leadingAnchor, constant: 8),
+                textView.trailingAnchor.constraint(equalTo: inputToolbar.trailingAnchor, constant: -8),
+                textViewBottomConstraint
+                ])
+        }
+        
+        loadComments(soundId)
     }
     
-    @objc func didPressRightButton(_ sender: UIButton) {
-        if let artist = Customer.shared.artist, let objectId = self.sound?.objectId, let atTime = self.atTime {
-            addNewComment(messageView.text, atTime: Double(atTime), postId: objectId)
-            let comment = Comment(objectId: nil, artist: artist, text: messageView.text, atTime: Float(atTime), createdAt: Date())
-            self.comments.append(comment)
-            messageView.text = ""
-            messageView.textView.resignFirstResponder()
-            self.tableView.reloadData()
-            tableView.scrollToRow(
-                at: IndexPath(row: comments.count - 1, section: 0),
-                at: .bottom,
-                animated: true
-            )
+    func textViewDidChangeHeight(_ textView: GrowingTextView, height: CGFloat) {
+        UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.7, options: [.curveLinear], animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        }, completion: nil)
+    }
+    
+    //player view
+    lazy var playerViewButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressExitButton(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
+        
+    lazy var songTitle: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        if let title = self.sound?.title {
+            label.text = title
+        }
+        return label
+    }()
+    
+    lazy var artistName: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
+        if let name = self.sound?.artist?.name {
+            label.text = name
+        }
+        return label
+    }()
+    
+    lazy var songArt: UIImageView = {
+        let image = UIImageView()
+        image.backgroundColor = .clear
+        image.image = UIImage(named: "sound")
+        return image
+    }()
+    
+    lazy var activitySpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.startAnimating()
+        spinner.isHidden = true
+        return spinner
+    }()
+    
+    lazy var playBackButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "play"), for: .normal)
+        return button
+    }()
+    
+    lazy var playBackSlider: UISlider = {
+        let slider = UISlider()
+        slider.value = 0
+        slider.minimumValue = 0
+        slider.maximumValue = 100
+        slider.tintColor = .white
+        slider.setThumbImage(UIImage(), for: .normal)
+        slider.isEnabled = false
+        return slider
+     }()
+    
+    func setPlaybackSliderValue() {
+        if let player = self.player.player {
+            playBackSlider.maximumValue = Float(player.duration)
+            playBackSlider.value = Float(player.currentTime)
+            if player.isPlaying {
+                self.startTimer()
+            } else {
+                self.timer.invalidate()
+            }
         }
     }
     
+    lazy var commentTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Comments"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        return label
+    }()
+    
+    func setupPlayerView() {
+        print("set up player view")
+        playBackButton.addTarget(self, action: #selector(didPressPlayBackButton(_:)), for: .touchUpInside)
+        if let player = self.player.player {
+            if player.isPlaying {
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+            } else {
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            }
+        }
+        self.view.addSubview(playBackButton)
+        playBackButton.snp.makeConstraints { (make) -> Void in
+            make.width.height.equalTo(50)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(playerViewButton)
+        playerViewButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(playBackButton)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.playBackButton.snp.left).offset(uiElement.leftOffset)
+        }
+        
+        if let image = self.sound?.artURL {
+            songArt.kf.setImage(with: URL(string: image))
+        }
+        self.playerViewButton.addSubview(songArt)
+        songArt.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(playerViewButton)
+            make.left.equalTo(playerViewButton)
+        }
+        
+        self.playerViewButton.addSubview(activitySpinner)
+        activitySpinner.snp.makeConstraints { (make) -> Void in
+            make.width.height.equalTo(30)
+            make.centerY.equalTo(songArt)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        activitySpinner.isHidden = true
+        
+        self.playerViewButton.addSubview(artistName)
+        artistName.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.songArt).offset(uiElement.topOffset)
+            make.left.equalTo(songArt.snp.right).offset(uiElement.elementOffset)
+            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
+        }
+        
+        self.playerViewButton.addSubview(songTitle)
+        songTitle.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(artistName)
+            make.right.equalTo(artistName)
+            make.bottom.equalTo(artistName.snp.top).offset(-(uiElement.elementOffset))
+        }
+        
+        setPlaybackSliderValue()
+        self.view.addSubview(playBackSlider)
+        playBackSlider.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(1)
+            make.top.equalTo(songArt.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(commentTitle)
+        commentTitle.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(playBackSlider.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+    }
+    
+    //growing textview
+    
     //mark: Tableview
-    let tableView = UITableView()
+    var tableView: UITableView!
     let commentReuse = "commentReuse"
     let noSoundsReuse = "noSoundsReuse"
-    let miniPlayerReuse = "miniPlayerReuse"
     func setUpTableView() {
+        tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
-        tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: miniPlayerReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.black()
-        self.tableView.separatorStyle = .none
+        tableView.keyboardDismissMode = .onDrag
+        tableView.separatorStyle = .none
         self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            //for some reason, attachinxg to the bottom of playerdividerline makes the tableview stretch all the way to the bottom of screen
+            make.top.equalTo(self.view).offset(100 + self.uiElement.topOffset)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.inputToolbar.snp.top)
+        }
     }
     
+    /*func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Comments"
+    }*/
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        }
-        
         if comments.count == 0 {
             return 1
         }
@@ -197,91 +350,34 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            return miniPlayerCell()
+        if self.comments.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            cell.headerTitle.text = "No comments yet. Be the first, and comment below. 😎"
+            return cell
+            
         } else {
-            if self.comments.count == 0 {
-                let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-                cell.backgroundColor = color.black()
-                cell.headerTitle.text = "No comments yet. Be the first, and comment below. 😎"
-                return cell
-                
-            } else {
-                return commentCell(indexPath)
-            }
+            return commentCell(indexPath)
         }
-    }
-    
-    func miniPlayerCell() -> CommentTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: miniPlayerReuse) as!
-        CommentTableViewCell
-        cell.backgroundColor = color.black()
-        cell.selectionStyle = .none
-        if let sound = self.sound {
-            if let player = player.player {
-               /* self.playBackSlider = cell.playBackSlider
-                self.setPlaybackSliderValue()*/
-                
-                cell.playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
-                if player.isPlaying {
-                    cell.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    
-                } else {
-                    cell.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                }
-            }
-            
-            if let image = sound.artURL {
-                cell.songArt.kf.setImage(with: URL(string: image))
-            } else {
-                cell.songArt.image = UIImage(named: "sound")
-            }
-            
-            if let title = sound.title {
-                cell.songTitle.text = title
-            } else {
-                cell.songTitle.text = "Sound Title"
-            }
-            
-            
-            if let name = sound.artist?.name {
-                cell.artistName.text = name
-                
-            } else {
-                cell.artistName.text = "Artist Name"
-            }
-        }
-        
-        return cell
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
         if let soundPlayer = player.player {
             if soundPlayer.isPlaying {
                 player.pause()
-                timer.invalidate()
-                sender.setImage(UIImage(named: "play"), for: .normal)
-                
             } else {
                 player.play()
-                startTimer()
-                sender.setImage(UIImage(named: "pause"), for: .normal)
             }
         }
     }
     
     var timer = Timer()
-    var playBackSlider: UISlider?
     func startTimer() {
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     @objc func UpdateTimer(_ timer: Timer) {
         if let currentTime = player.player?.currentTime {
-            if let playBackSlider = playBackSlider {
-                playBackSlider.value = Float(currentTime)
-                print(playBackSlider.value)
-                self.tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
-            }
+            playBackSlider.value = Float(currentTime)
         }
     }
     
@@ -318,9 +414,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt)
             cell.date.text = formattedDate
         }
-        
-
-        
+                
         return cell
     }
     
@@ -329,7 +423,7 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             if let comment = self.comments[sender.tag] {
                 player.currentTime = TimeInterval(comment.atTime)
                 self.atTime = comment.atTime
-                messageView.textView.placeholderText = "Add comment at \(self.uiElement.formatTime(Double(atTime!)))"
+               // messageView.textView.placeholderText = "Add comment at \(self.uiElement.formatTime(Double(atTime!)))"
                 if !player.isPlaying {
                     self.player.play()
                 }
@@ -342,6 +436,46 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
             selectedArtist = artist
             self.performSegue(withIdentifier: "showProfile", sender: self)
         }
+    }
+    
+    //mark: MessageView
+    func setUpMessageView() {
+        /*borderColor = .lightGray
+        messageView.inset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        messageView.font = UIFont(name: uiElement.mainFont, size: 17)
+        var placeHolderText = "Add comment"
+        if let atTime = self.atTime {
+            placeHolderText = "Add comment at \(self.uiElement.formatTime(Double(atTime)))"
+        }
+        
+        messageView.textView.placeholderText = placeHolderText
+        messageView.textView.placeholderTextColor = .darkGray
+        
+        messageView.setButton(title: "Send", for: .normal, position: .right)
+        messageView.addButton(target: self, action: #selector(didPressRightButton(_:)), position: .right)
+        messageView.rightButtonTint = color.blue()
+        
+        messageAutocompleteController.tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
+        messageAutocompleteController.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
+        messageAutocompleteController.tableView.dataSource = self
+        messageAutocompleteController.tableView.delegate = self
+        setup(scrollView: tableView)*/
+    }
+    
+    @objc func didPressRightButton(_ sender: UIButton) {
+        /*if let artist = Customer.shared.artist, let objectId = self.sound?.objectId, let atTime = self.atTime {
+            addNewComment(messageView.text, atTime: Double(atTime), postId: objectId)
+            let comment = Comment(objectId: nil, artist: artist, text: messageView.text, atTime: Float(atTime), createdAt: Date())
+            self.comments.append(comment)
+            messageView.text = ""
+            messageView.textView.resignFirstResponder()
+            self.tableView.reloadData()
+            tableView.scrollToRow(
+                at: IndexPath(row: comments.count - 1, section: 0),
+                at: .bottom,
+                animated: true
+            )
+        }*/
     }
     
     //mark: Data
@@ -385,13 +519,13 @@ class CommentViewController: MessageViewController, UITableViewDataSource, UITab
                         self.comments.append(comment)
                     }
                 }
-                
-            } else {
-                print("Error: \(error!)")
             }
             
-            self.tableView.reloadData()
-            self.setUpMessageView()
+            if self.tableView == nil {
+                self.setUpTableView()
+            } else {
+               self.tableView.reloadData()
+            }
         }
     }
 }

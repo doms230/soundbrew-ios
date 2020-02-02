@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double MessageViewControllerVersionNumber;
-FOUNDATION_EXPORT const unsigned char MessageViewControllerVersionString[];
+FOUNDATION_EXPORT double GrowingTextViewVersionNumber;
+FOUNDATION_EXPORT const unsigned char GrowingTextViewVersionString[];
 

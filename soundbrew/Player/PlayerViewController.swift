@@ -402,8 +402,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     @objc func didPressCommentButton(_ sender: UIButton) {
-        let artist = Artist(objectId: "comments", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-        self.handleDismissal(artist)
+        //let artist = Artist(objectId: "comments", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+        //self.handleDismissal(artist)
+        let modal = CommentViewController()
+        if let sound = self.sound {
+            modal.sound = sound
+        }
+        
+        self.present(modal, animated: true, completion: nil)
+        
     }
     
     lazy var dividerLine: UIView = {

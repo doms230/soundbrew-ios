@@ -14,9 +14,9 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "563D9B0709A54A3BFD6E13DC38D228EB"
-               BuildableName = "MessageViewController.framework"
-               BlueprintName = "MessageViewController"
+               BlueprintIdentifier = "1696A504A8F8B95B82B2382D0A461BF4"
+               BuildableName = "GrowingTextView.framework"
+               BlueprintName = "GrowingTextView"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

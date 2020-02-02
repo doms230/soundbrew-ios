@@ -109,14 +109,14 @@
 			<key>orderHint</key>
 			<integer>14</integer>
 		</dict>
-		<key>Kingfisher.xcscheme</key>
+		<key>GrowingTextView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>15</integer>
 		</dict>
-		<key>MessageViewController.xcscheme</key>
+		<key>Kingfisher.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
