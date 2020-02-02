@@ -333,7 +333,6 @@ class UIElement {
             sound.objectId = objectId
         }
         
-        
         if let audio = object["audioFile"] as? PFFileObject {
             sound.audio = audio
             sound.audioURL = audio.url!

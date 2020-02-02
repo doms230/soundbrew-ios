@@ -307,9 +307,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
     }
-    
-    //growing textview
-    
+        
     //mark: Tableview
     var tableView: UITableView!
     let commentReuse = "commentReuse"
@@ -332,10 +330,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             make.bottom.equalTo(self.inputToolbar.snp.top)
         }
     }
-    
-    /*func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Comments"
-    }*/
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -439,28 +433,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     //mark: MessageView
-    func setUpMessageView() {
-        /*borderColor = .lightGray
-        messageView.inset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        messageView.font = UIFont(name: uiElement.mainFont, size: 17)
-        var placeHolderText = "Add comment"
-        if let atTime = self.atTime {
-            placeHolderText = "Add comment at \(self.uiElement.formatTime(Double(atTime)))"
-        }
-        
-        messageView.textView.placeholderText = placeHolderText
-        messageView.textView.placeholderTextColor = .darkGray
-        
-        messageView.setButton(title: "Send", for: .normal, position: .right)
-        messageView.addButton(target: self, action: #selector(didPressRightButton(_:)), position: .right)
-        messageView.rightButtonTint = color.blue()
-        
-        messageAutocompleteController.tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
-        messageAutocompleteController.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        messageAutocompleteController.tableView.dataSource = self
-        messageAutocompleteController.tableView.delegate = self
-        setup(scrollView: tableView)*/
-    }
     
     @objc func didPressRightButton(_ sender: UIButton) {
         /*if let artist = Customer.shared.artist, let objectId = self.sound?.objectId, let atTime = self.atTime {

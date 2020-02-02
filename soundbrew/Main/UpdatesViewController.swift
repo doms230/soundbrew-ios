@@ -67,15 +67,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 navigationItem.backBarButtonItem = backItem
                 break
             
-            case "showComments":
-                let player = Player.sharedInstance
-                let viewController = segue.destination as! CommentViewController
-                if let currentSound = player.currentSound, let player = player.player {
-                    viewController.sound = currentSound
-                    viewController.atTime = Float(player.currentTime)
-                }
-                break
-            
         default:
             break
         }
@@ -199,10 +190,6 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                     
                 case "collectors":
                     self.performSegue(withIdentifier: "showTippers", sender: self)
-                    break
-                    
-                case "comments":
-                    self.performSegue(withIdentifier: "showComments", sender: self)
                     break
                     
                 default:
