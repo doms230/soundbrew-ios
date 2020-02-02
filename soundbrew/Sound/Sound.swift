@@ -21,16 +21,18 @@ class Sound {
     var artFile: PFFileObject?
     var artImage: UIImage?
     var tags: Array<String>?
-    var plays: Int?
+    var playCount: Int?
+    var commentCount: Int?
+    var creditCount: Int?
     var createdAt: Date?
     var artist: Artist?
     var tmpFile: TemporaryFile?
-    var tips: Int?
+    var tipAmount: Int?
     var currentUserTipDate: Date?
-    var tippers: Int?
+    var tipCount: Int?
     var isDraft: Bool?
 
-    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, plays: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tips: Int?, tippers: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!) {
+    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipAmount: Int?, tipCount: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -40,15 +42,17 @@ class Sound {
         self.artFile = artFile
         self.tags = tags
         self.createdAt = createdAt
-        self.plays = plays
+        self.playCount = playCount
         self.audioData = audioData
         self.artist = artist
         self.tmpFile = tmpFile
-        self.tips = tips
-        self.tippers = tippers
+        self.tipAmount = tipAmount
+        self.tipCount = tipCount
         self.currentUserTipDate = currentUserTipDate
         self.isDraft = isDraft
         self.isNextUpToPlay = isNextUpToPlay
+        self.creditCount = creditCount
+        self.commentCount = commentCount
     }
     
     func fetchAudioData() {

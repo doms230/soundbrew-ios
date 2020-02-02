@@ -148,24 +148,19 @@ class SoundList: NSObject, PlayerDelegate {
         if sounds.indices.contains(sender.tag) {
             let sound = sounds[sender.tag]
             
-            var plays = 0
-            if let soundPlays = sound.plays {
-                plays = soundPlays
-            }
-            
             var tips = 0
-            if let soundTips = sound.tips {
+            if let soundTips = sound.tipCount {
                 tips = soundTips
             }
             let tipsInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(tips, currency: "$")
                         
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
-                    let localizedPlays = NSLocalizedString("plays", comment: "")
+                    //let localizedPlays = NSLocalizedString("plays", comment: "")
                     let localizedTips = NSLocalizedString("tips", comment: "")
                     let localizedIn = NSLocalizedString("in", comment: "")
 
-                    let menuAlert = UIAlertController(title: "\(plays) \(localizedPlays) \n \(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
+                    let menuAlert = UIAlertController(title: "\(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
                         
                         let localizedEditSound = NSLocalizedString("editSound", comment: "")
                         menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
@@ -221,7 +216,7 @@ class SoundList: NSObject, PlayerDelegate {
     func viewCollectorsAction(_ sound: Sound) -> UIAlertAction {
         var uiAlertActionString = ""
         let localizedCollector = NSLocalizedString("collector", comment: "")
-        if let tippers = sound.tippers {
+        if let tippers = sound.tipCount {
             var tipLabel = "\(localizedCollector)s"
             if tippers == 1 {
                 tipLabel = localizedCollector

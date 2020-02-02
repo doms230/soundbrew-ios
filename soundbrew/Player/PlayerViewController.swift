@@ -85,7 +85,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if customer.artist!.balance! >= tipAmount {
             self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             self.didAddSongToCollection = true
-            self.sound?.tips = tipAmount
+            self.sound?.tipAmount = tipAmount
             
             SKStoreReviewController.requestReview()
             
@@ -201,7 +201,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {
                     self.didAddSongToCollection = true
-                    self.sound?.tips = (object["amount"] as! Int)
+                    self.sound?.tipAmount = (object["amount"] as! Int)
                     self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
                 }
                 self.likeSoundButton.isEnabled = true
@@ -491,7 +491,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 let cannottipyourself = NSLocalizedString("cannottipyourself", comment: "")
                 self.uiElement.showAlert("🙃", message: cannottipyourself, target: self)
             } else if didAddSongToCollection {
-                let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tips!, currency: "$")
+                let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tipAmount!, currency: "$")
                 let localizedYouAdded = NSLocalizedString("youAdded", comment: "")
                 let localizedToYourCollection = NSLocalizedString("toYourCollection", comment: "")
                 self.uiElement.showAlert("\(localizedYouAdded) \(self.sound!.title!) \(localizedToYourCollection) \(amountString)", message: "", target: self)
@@ -729,8 +729,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
         
         //sound info
-        
-        let likeCount = 10
+        var likeCount = 0
+        if let likes = self.sound?.tipCount {
+            likeCount = likes
+        }
         let likes = soundInfoButton("heart_filled", count: likeCount)
         likes.snp.makeConstraints { (make) -> Void in
             make.bottom.equalTo(self.view).offset(uiElement.bottomOffset * 5)
@@ -738,7 +740,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             //make.left.equalTo(menu.snp.right).offset(uiElement.leftOffset)
         }
 
-        let commentCount = 25
+        var commentCount = 0
+        if let comments = self.sound?.commentCount {
+            commentCount = comments
+        }
         let comments = soundInfoButton("comment_filled", count: commentCount)
         comments.addTarget(self, action: #selector(self.didPressCommentButton(_:)), for: .touchUpInside)
         comments.snp.makeConstraints { (make) -> Void in
@@ -747,20 +752,16 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             //make.left.equalTo(likes.snp.right).offset(uiElement.leftOffset * 2)
         }
         
-        let playCount = 15
+        var playCount = 0
+        if let plays = self.sound?.playCount {
+            playCount = plays
+        }
         let plays = soundInfoButton("play", count: playCount)
         plays.snp.makeConstraints { (make) -> Void in
             make.bottom.equalTo(likes)
             make.centerX.equalTo(self.view)
            // make.right.equalTo(menu.snp.left).offset(uiElement.rightOffset * 2)
         }
-                
-       /* let creditCount = 7
-        let creditsButton = soundInfoButton("profile_icon_filled", count: creditCount)
-        creditsButton.snp.makeConstraints { (make) -> Void in
-            make.bottom.equalTo(menu)
-            make.left.equalTo(menu.snp.left).offset(uiElement.leftOffset * 2)
-        }*/
         
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
@@ -829,14 +830,24 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.bottom.equalTo(playBackCurrentTime.snp.top)
         }
         
+        
+        if let credits = self.sound?.creditCount {
+            let creditsButton = soundInfoButton("profile_icon_filled", count: credits)
+            creditsButton.snp.makeConstraints { (make) -> Void in
+                //make.left.equalTo(menu.snp.left).offset(uiElement.leftOffset * 2)
+                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+                make.bottom.equalTo(playBackSlider.snp.top).offset(uiElement.bottomOffset)
+            }
+        }
+
         self.view.addSubview(artistButton)
         artistButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(artistImageSize)
-           // make.width.equalTo(200)
-            make.centerX.equalTo(self.view)
+            make.width.equalTo(200)
+            //make.centerX.equalTo(self.view)
             //make.top.equalTo(self.songTitle.snp.bottom).offset(uiElement.topOffset)
-            //make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            //make.right.equalTo(creditsButton.snp.left).offset(uiElement.rightOffset)
             make.bottom.equalTo(playBackSlider.snp.top).offset(uiElement.bottomOffset)
         }
         
