@@ -512,6 +512,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     lazy var artistLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
+        label.textAlignment = .center
         label.textColor = .white
         return label
     }()
@@ -763,6 +764,22 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        //sound views
+        self.view.addSubview(songArt)
+        songArt.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(songArtHeightWidth)
+            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset * 3)
+            make.centerX.equalTo(self.view)
+        }
+        
+        self.view.addSubview(songTitle)
+        songTitle.snp.makeConstraints { (make) -> Void in
+           make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+           // make.bottom.equalTo(self.artistButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
         //sound info
         let creditsButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
         creditsButton.snp.makeConstraints { (make) -> Void in
@@ -779,13 +796,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         let commentsButton = soundInfoButton("comment_filled", buttonType: "comments")
         commentsButton.addTarget(self, action: #selector(self.didPressCommentButton(_:)), for: .touchUpInside)
         commentsButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(creditsButton.snp.right).offset(uiElement.leftOffset * 4)
+            //make.right.equalTo(playsButton.snp.left).offset(uiElement.leftOffset * 4)
+            make.left.equalTo(self.view).offset(self.view.frame.width * 0.25)
             make.bottom.equalTo(creditsButton)
         }
         
         let tagsButton = soundInfoButton("hashtag_filled", buttonType: "tags")
         tagsButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(playsButton.snp.right).offset(uiElement.leftOffset * 4)
+            make.right.equalTo(self.view).offset(-(self.view.frame.width * 0.25))
             make.bottom.equalTo(creditsButton)
         }
         
@@ -861,39 +879,24 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
 
         self.view.addSubview(artistButton)
         artistButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(artistImageSize)
-            make.width.equalTo(200)
+            make.height.equalTo(artistImageSize + 30)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(playBackSlider.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        self.artistButton.addSubview(artistLabel)
+        artistLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(artistButton)
+            make.right.equalTo(artistButton)
+            make.bottom.equalTo(artistButton)
         }
         
         self.artistButton.addSubview(artistImage)
         artistImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(artistImageSize)
-            make.left.equalTo(artistButton)
-            make.centerY.equalTo(artistButton)
-        }
-        
-        self.artistButton.addSubview(artistLabel)
-        artistLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
-            make.centerY.equalTo(artistButton)
-        }
-        
-        //sound views
-        self.view.addSubview(songArt)
-        songArt.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(songArtHeightWidth)
-            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset * 3)
-            make.centerX.equalTo(self.view)
-        }
-        
-        self.view.addSubview(songTitle)
-        songTitle.snp.makeConstraints { (make) -> Void in
-           make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.artistButton.snp.top).offset(uiElement.bottomOffset)
+            make.centerX.equalTo(artistButton)
+            make.bottom.equalTo(artistLabel.snp.top).offset(-(uiElement.elementOffset))
         }
                 
         setSound()

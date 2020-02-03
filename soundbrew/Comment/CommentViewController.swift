@@ -87,6 +87,11 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     private var sendButtomBottomConstraint: NSLayoutConstraint!
     private var sendButton: UIButton!
     func setupGrowingTextView(_ sound: Sound) {
+        if let currentTime = player.player?.currentTime {
+            self.atTime = Float(currentTime)
+        }
+        let formattedCurrentTime = self.uiElement.formatTime(Double(self.atTime))
+
         // *** Create GrowingTextView ***
         textView = GrowingTextView()
         textView.backgroundColor = color.black()
@@ -95,7 +100,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         textView.maxLength = 200
         textView.maxHeight = 70
         textView.trimWhiteSpaceWhenEndEditing = true
-        textView.placeholder = "Add comment at 0s"
+        textView.placeholder = "Add comment at \(formattedCurrentTime)"
         textView.placeholderColor = .darkGray
         textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -409,7 +414,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.comment.text = comment.text
             
             let atTime = self.uiElement.formatTime(Double(comment.atTime))
-            cell.atTime.setTitle("At \(atTime)", for: .normal)
+            cell.atTime.setTitle("\(atTime)", for: .normal)
             cell.atTime.addTarget(self, action: #selector(self.didPressAtTimeButton(_:)), for: .touchUpInside)
             cell.atTime.tag = indexPath.row
             
