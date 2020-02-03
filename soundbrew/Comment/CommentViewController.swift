@@ -19,7 +19,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     let color = Color()
     
     var sound: Sound?
-    var atTime: Float?
+    var atTime: Float = 0
     let player = Player.sharedInstance
     var selectedArtist: Artist?
     
@@ -145,7 +145,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             textViewBottomConstraint
             ])
         
-        
         loadComments(sound)
     }
     
@@ -174,7 +173,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func didPressSendButton(_ sender: UIButton) {
-        if let artist = Customer.shared.artist, let objectId = self.sound?.objectId, let atTime = self.atTime {
+        if let artist = Customer.shared.artist, let objectId = self.sound?.objectId {
             addNewComment(textView.text, atTime: Double(atTime), postId: objectId)
             let comment = Comment(objectId: nil, artist: artist, text: textView.text, atTime: Float(atTime), createdAt: Date())
             self.comments.append(comment)
