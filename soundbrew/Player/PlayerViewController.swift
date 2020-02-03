@@ -781,10 +781,20 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
         
         //sound info
+        var bottomOffsetValue: Int!
+        switch UIDevice.modelName {
+        case "iPhone X", "iPhone XS", "iPhone XS Max", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max":
+            bottomOffsetValue = uiElement.bottomOffset * 5
+            break
+            
+        default:
+            bottomOffsetValue = uiElement.bottomOffset * 2
+            break
+        }
         let creditsButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
         creditsButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset * 5)
+            make.bottom.equalTo(self.view).offset(bottomOffsetValue)
         }
         
         let playsButton = soundInfoButton("play", buttonType: "plays")
