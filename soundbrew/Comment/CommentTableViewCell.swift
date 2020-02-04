@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import ActiveLabel
 
 class CommentTableViewCell: UITableViewCell {
     let color = Color()
@@ -32,8 +33,9 @@ class CommentTableViewCell: UITableViewCell {
         return button
     }()
     
-    lazy var comment: UILabel = {
-        let label = UILabel()
+    lazy var comment: ActiveLabel = {
+        let label = ActiveLabel()
+        label.enabledTypes = [.mention]
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.textColor = .white
         label.numberOfLines = 0

@@ -1,4 +1,5 @@
 PODS:
+  - ActiveLabel (1.1.0)
   - Alamofire (4.9.1)
   - AppCenter (2.5.3):
     - AppCenter/Analytics (= 2.5.3)
@@ -112,6 +113,7 @@ PODS:
   - UICircularProgressRing (6.4.0)
 
 DEPENDENCIES:
+  - ActiveLabel
   - Alamofire
   - AppCenter
   - Firebase/Core
@@ -131,6 +133,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - ActiveLabel
     - Alamofire
     - AppCenter
     - Bolts
@@ -164,6 +167,7 @@ SPEC REPOS:
     - UICircularProgressRing
 
 SPEC CHECKSUMS:
+  ActiveLabel: 5e3f4de79a1952d4604b845a0610d4776e4b82b3
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AppCenter: 765ff38c4d360fc5ec61b61a8be24d74cd6d4d83
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
@@ -196,6 +200,6 @@ SPEC CHECKSUMS:
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
   UICircularProgressRing: 907613633e76e561b972a3868c95517d14c71006
 
-PODFILE CHECKSUM: 74effc42390ec5469b164d7bd5d9ab106b22de29
+PODFILE CHECKSUM: 9ad5c1e8612c4d5ba0d6a41333b8ded316d44a40
 
 COCOAPODS: 1.8.4

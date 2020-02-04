@@ -278,9 +278,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             if let artistName = sound.artist?.name {
                 self.artistLabel.text = artistName
                 if let artistImage = sound.artist?.image {
-                    self.artistImage.kf.setImage(with: URL(string: artistImage))
+                   // self.artistImage.kf.setImage(with: URL(string: artistImage))
+                    self.soundArtistImage.kf.setImage(with: URL(string: artistImage))
                 } else {
-                    self.artistImage.image = UIImage(named: "profile_icon")
+                    self.soundArtistImage.image = UIImage(named: "profile_icon")
                 }
             }
             
@@ -392,11 +393,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         
         let imageView = UIImageView()
         imageView.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
-        imageView.image = UIImage(named: imageName)
+        let originalImage = UIImage(named: imageName)
+        let tintedImage = originalImage?.withRenderingMode(.alwaysTemplate)
+        imageView.image = tintedImage
         button.addSubview(imageView)
         
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .lightGray
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         label.textAlignment = .left
         button.addSubview(label)
@@ -408,11 +411,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if let buttonType = buttonType {
             switch buttonType {
             case "comments":
+                imageView.tintColor = .lightGray
                 self.setCountLabel(label, count: self.sound?.commentCount)
                 self.commentCountLabel = label
                 break
                 
             case "likes":
+                imageView.tintColor = .lightGray
                 self.setCountLabel(label, count: self.sound?.tipCount)
                 self.likeCountLabel = label
                 break
@@ -420,14 +425,19 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             case "credits":
                 self.setCountLabel(label, count: self.sound?.creditCount)
                 self.creditCountLabel = label
+                imageView.layer.cornerRadius = 25 / 2
+                imageView.clipsToBounds = true
+                self.soundArtistImage = imageView
                 break
                 
             case "plays":
+                imageView.tintColor = .lightGray
                 self.setCountLabel(label, count: self.sound?.playCount)
                 self.playCountLabel = label
                 break
                 
             case "tags":
+                imageView.tintColor = .lightGray
                 var tagCount = 0
                 if let tags = self.sound?.tags {
                     tagCount = tags.count
@@ -729,6 +739,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     var playCountLabel: UILabel!
     var likeCountLabel: UILabel!
     var creditCountLabel: UILabel!
+    var soundArtistImage: UIImageView!
     var hashtagCountLabel: UILabel!
     
     func showPlayerView() {
@@ -770,14 +781,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.height.width.equalTo(songArtHeightWidth)
             make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset * 3)
             make.centerX.equalTo(self.view)
-        }
-        
-        self.view.addSubview(songTitle)
-        songTitle.snp.makeConstraints { (make) -> Void in
-           make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-           // make.bottom.equalTo(self.artistButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         //sound info
@@ -886,16 +889,24 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.right.equalTo(playBackTotalTime)
             make.bottom.equalTo(playBackCurrentTime.snp.top)
         }
+        
+        self.view.addSubview(songTitle)
+        songTitle.snp.makeConstraints { (make) -> Void in
+           //make.top.equalTo(self.songArt.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.playBackSlider.snp.top).offset(uiElement.bottomOffset)
+        }
 
-        self.view.addSubview(artistButton)
+        /*self.view.addSubview(artistButton)
         artistButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(artistImageSize + 30)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(playBackSlider.snp.top).offset(uiElement.bottomOffset)
-        }
+        }*/
         
-        self.artistButton.addSubview(artistLabel)
+        /*self.artistButton.addSubview(artistLabel)
         artistLabel.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(artistButton)
             make.right.equalTo(artistButton)
@@ -907,7 +918,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.height.width.equalTo(artistImageSize)
             make.centerX.equalTo(artistButton)
             make.bottom.equalTo(artistLabel.snp.top).offset(-(uiElement.elementOffset))
-        }
+        }*/
                 
         setSound()
     }
