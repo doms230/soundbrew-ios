@@ -17,7 +17,7 @@ import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
 
-class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource {
+class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource, PlayerDelegate {
     
     let color = Color()
     let uiElement = UIElement()
@@ -369,9 +369,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     func handleDismissal(_ artist: Artist?) {
         if let playerDelegate = self.playerDelegate {
-                    self.dismiss(animated: true, completion: {() in
-                        playerDelegate.selectedArtist(artist)
-                    })
+            self.dismiss(animated: true, completion: {() in
+                playerDelegate.selectedArtist(artist)
+            })
+        }
+    }
+    func selectedArtist(_ artist: Artist?) {
+        if let artist = artist {
+            print("got artist on playerview")
+            handleDismissal(artist)
         }
     }
     
@@ -465,6 +471,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     @objc func didPressCommentButton(_ sender: UIButton) {
         let modal = CommentViewController()
         if let sound = self.sound {
+            modal.playerDelegate = self
             modal.sound = sound
         }
         

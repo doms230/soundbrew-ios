@@ -12,7 +12,8 @@ import Kingfisher
 import AppCenterAnalytics
 import SnapKit
 import GrowingTextView
-class CommentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate {
+import NVActivityIndicatorView
+class CommentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate, NVActivityIndicatorViewable {
     
     var comments = [Comment?]()
     let uiElement = UIElement()
@@ -22,6 +23,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     var atTime: Float = 0
     let player = Player.sharedInstance
     var selectedArtist: Artist?
+    
+    var playerDelegate: PlayerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +38,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
             let viewController = segue.destination as! ProfileViewController
@@ -49,7 +52,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         default:
             break
         }
-    }
+    }*/
     
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -412,6 +415,9 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             
             cell.comment.text = comment.text
+            cell.comment.handleMentionTap {userHandle in
+                self.loadArtistAndDissmiss(userHandle)
+            }
             
             let atTime = self.uiElement.formatTime(Double(comment.atTime))
             cell.atTime.setTitle("\(atTime)", for: .normal)
@@ -424,13 +430,36 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 
         return cell
     }
+    func loadArtistAndDissmiss(_ username: String) {
+        self.startAnimating()
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: username)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            self.stopAnimating()
+            if let object = object {
+                let artist = self.uiElement.newArtistObject(object)
+                self.handleDismissal(artist)
+            } else {
+                self.uiElement.showAlert("User doesn't exist.", message: "", target: self)
+            }
+        }
+    }
+    
+    func handleDismissal(_ artist: Artist) {
+        if let playerDelegate = self.playerDelegate {
+            print(playerDelegate)
+            self.dismiss(animated: false, completion: {() in
+                playerDelegate.selectedArtist(artist)
+            })
+        }
+    }
     
     @objc func didPressAtTimeButton(_ sender: UIButton) {
         if let player = self.player.player {
             if let comment = self.comments[sender.tag] {
                 player.currentTime = TimeInterval(comment.atTime)
                 self.atTime = comment.atTime
-               // messageView.textView.placeholderText = "Add comment at \(self.uiElement.formatTime(Double(atTime!)))"
                 if !player.isPlaying {
                     self.player.play()
                 }
@@ -440,8 +469,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     
     @objc func didPressProfileButton(_ sender: UIButton) {
         if let artist = self.comments[sender.tag]?.artist {
-            selectedArtist = artist
-            self.performSegue(withIdentifier: "showProfile", sender: self)
+            handleDismissal(artist)
         }
     }
     

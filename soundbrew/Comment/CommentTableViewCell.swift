@@ -38,6 +38,7 @@ class CommentTableViewCell: UITableViewCell {
         label.enabledTypes = [.mention]
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.textColor = .white
+        label.mentionColor = .darkGray
         label.numberOfLines = 0
         return label
     }()
