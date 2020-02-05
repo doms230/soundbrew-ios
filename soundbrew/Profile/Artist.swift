@@ -149,16 +149,9 @@ class Artist {
         
         if let username = self.username {
             cell.username.text = username 
-            //email was set as username in prior version of Soundbrew and email is private.
-            /*if name.contains("@") {
-                cell.username.text = ""
-                
-            } else {
-                cell.username.text = name
-            }*/
             
         } else {
-            cell.username.text = ""
+            cell.username.text = "username n/a"
         }
         
         if let name = self.name {

@@ -689,56 +689,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if error == nil {
                 if let objects = objects {
                     for user in objects {
-                        let newArtistObject = self.uiElement.newArtistObject(user)
-                        /*let username = user["username"] as? String
-                        
-                        var email: String?
-                        
-                        if let currentUser = PFUser.current() {
-                            if currentUser.objectId! == user.objectId! {
-                                email = user["email"] as? String
-                            }
+                        let artist = self.uiElement.newArtistObject(user)
+                        if artist.username != nil {
+                            self.searchUsers.append(artist)
                         }
-                        
-                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                        
-                        if let followerCount = user["followerCount"] as? Int {
-                            artist.followerCount = followerCount
-                        }
-                        
-                        if let name = user["artistName"] as? String {
-                            artist.name = name
-                        }
-                        
-                        if let username = user["username"] as? String {
-                            if username.contains("@") {
-                                artist.username = ""
-                            } else {
-                                artist.username = "@\(username)"
-                            }
-                        }
-                        
-                        if let city = user["city"] as? String {
-                            artist.city = city
-                        }
-                        
-                        if let userImageFile = user["userImage"] as? PFFileObject {
-                            artist.image = userImageFile.url!
-                        }
-                        
-                        if let bio = user["bio"] as? String {
-                            artist.bio = bio
-                        }
-                        
-                        if let artistVerification = user["artistVerification"] as? Bool {
-                            artist.isVerified = artistVerification
-                        }
-                        
-                        if let website = user["website"] as? String {
-                            artist.website = website
-                        }*/
-                        
-                        self.searchUsers.append(newArtistObject)
                     }
                 }
                 

@@ -38,22 +38,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
-    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case "showProfile":
-            let viewController = segue.destination as! ProfileViewController
-            viewController.profileArtist = selectedArtist
-            
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            break
-                        
-        default:
-            break
-        }
-    }*/
-    
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
@@ -82,7 +66,9 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
-    //growing textview
+    //mark: textview
+    var isSearchingForUserToMention = false
+    var searchUsers = [Artist]()
     private var inputToolbar: UIView!
     private var textView: GrowingTextView!
     var isTextViewEditing = false
@@ -95,7 +81,11 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
         let formattedCurrentTime = self.uiElement.formatTime(Double(self.atTime))
 
-        // *** Create GrowingTextView ***
+        inputToolbar = UIView()
+        inputToolbar.backgroundColor = color.black()
+        inputToolbar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(inputToolbar)
+        
         textView = GrowingTextView()
         textView.backgroundColor = color.black()
         textView.delegate = self
@@ -107,13 +97,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         textView.placeholderColor = .darkGray
         textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
         textView.translatesAutoresizingMaskIntoConstraints = false
-        
-        inputToolbar = UIView()
-        inputToolbar.backgroundColor = color.black()
-        inputToolbar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(inputToolbar)
-        
-        
+        textView.keyboardType = .twitter
         inputToolbar.addSubview(textView)
 
         let buttonWidthHeight = 35
@@ -166,10 +150,41 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         if textView.text.isEmpty {
             sendButton.isHidden = true
             sendButton.isEnabled = false
+            self.commentTitle.text = "Comments"
+            self.isSearchingForUserToMention = false
+            self.tableView.reloadData()
+            
         } else {
             sendButton.isHidden = false
             sendButton.isEnabled = true
+            
+            let textViewArray = textView.text.split{$0 == " "}.map(String.init)
+            let textToSearchWith = textViewArray[textViewArray.count - 1]
+            if textToSearchWith.starts(with: "@") {
+                self.commentTitle.text = "Search Accounts"
+                self.isSearchingForUserToMention = true
+                let textToSearch = getTextWithoutAtSign(textToSearchWith)
+                self.tableView.reloadData()
+                searchUsers(textToSearch)
+            } else {
+                self.commentTitle.text = "Comments"
+                self.isSearchingForUserToMention = false
+                self.tableView.reloadData()
+            }
         }
+    }
+    
+    func getTextWithoutAtSign(_ text: String) -> String {
+        let charactersArray = Array(text)
+        var textWithoutAt = ""
+        for i in 0..<charactersArray.count {
+            let c = charactersArray[i]
+            if i != 0 {
+                textWithoutAt = "\(textWithoutAt)\(c)"
+            }
+        }
+        
+        return textWithoutAt
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -179,7 +194,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     func textViewDidBeginEditing(_ textView: UITextView) {
         self.isTextViewEditing = true
     }
-    
+        
     @objc func didPressSendButton(_ sender: UIButton) {
         if let artist = Customer.shared.artist, let objectId = self.sound?.objectId {
             addNewComment(textView.text, atTime: Double(atTime), postId: objectId)
@@ -197,7 +212,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             )
         }
     }
-    
+
     //player view
     lazy var songArtButton: UIButton = {
         let button = UIButton()
@@ -322,12 +337,14 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     var tableView: UITableView!
     let commentReuse = "commentReuse"
     let noSoundsReuse = "noSoundsReuse"
+    let searchProfileReuse = "searchProfileReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
@@ -346,22 +363,57 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if comments.count == 0 {
-            return 1
+        if isSearchingForUserToMention {
+            if searchUsers.count == 0 {
+                return 1
+            }
+            return searchUsers.count
+            
+        } else {
+            if comments.count == 0 {
+                return 1
+            }
+            return comments.count
         }
-        
-        return comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if self.comments.count == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            cell.backgroundColor = color.black()
-            cell.headerTitle.text = "No comments yet. Be the first, and comment below. 😎"
-            return cell
+        if isSearchingForUserToMention {
+            if searchUsers.count == 0 {
+                return noResultsCell("No accounts found.")
+            }
+             return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
             
         } else {
-            return commentCell(indexPath)
+            if self.comments.count == 0 {
+                return noResultsCell("No comments yet. Be the first, and comment below. 😎")
+                
+            } else {
+                return commentCell(indexPath)
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if isSearchingForUserToMention, let selectedUsername = self.searchUsers[indexPath.row].username {
+            let textViewArray = textView.text.split{$0 == " "}.map(String.init)
+            var newTextView: String!
+            for i in 0..<textViewArray.count {
+                if i == textViewArray.count - 1 {
+                    if i == 0 {
+                        self.textView.text = "\(selectedUsername) "
+                    } else {
+                       self.textView.text = "\(newTextView!) \(selectedUsername) "
+                    }
+                    self.commentTitle.text = "Comments"
+                    self.isSearchingForUserToMention = false
+                    self.tableView.reloadData()
+                } else if i == 0 {
+                    newTextView = "\(textViewArray[i])"
+                } else {
+                    newTextView = "\(newTextView!) \(textViewArray[i])"
+                }
+            }
         }
     }
     
@@ -389,6 +441,13 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 textView.placeholder = "Add comment at \(doubleAtTime)"
             }
         }
+    }
+    
+    func noResultsCell(_ title: String) -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+        cell.backgroundColor = color.black()
+        cell.headerTitle.text = title
+        return cell
     }
     
     func commentCell(_ indexPath: IndexPath) -> CommentTableViewCell {
@@ -528,6 +587,37 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             }
         }
     }
+    
+    func searchUsers(_ text: String) {
+        self.searchUsers.removeAll()
+        let nameQuery = PFQuery(className: "_User")
+        nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
+        nameQuery.whereKey("artistName", matchesRegex: text)
+        
+        let usernameQuery = PFQuery(className: "_User")
+        usernameQuery.whereKey("username", matchesRegex: text.lowercased())
+        let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
+        query.limit = 25
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for user in objects {
+                        let artist = self.uiElement.newArtistObject(user)
+                        if artist.username != nil {
+                            self.searchUsers.append(artist)
+                        }
+                    }
+                }
+                
+                self.tableView.reloadData()
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
 }
 
 class Comment {
