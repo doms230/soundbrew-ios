@@ -161,17 +161,19 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             sendButton.isEnabled = true
             
             let textViewArray = textView.text.split{$0 == " "}.map(String.init)
-            let textToSearchWith = textViewArray[textViewArray.count - 1]
-            if textToSearchWith.starts(with: "@") {
-                self.commentTitle.text = "Search Accounts"
-                self.isSearchingForUserToMention = true
-                let textToSearch = getTextWithoutAtSign(textToSearchWith)
-                self.tableView.isHidden = true
-                searchUsers(textToSearch)
-            } else {
-                self.commentTitle.text = "Comments"
-                self.isSearchingForUserToMention = false
-                self.tableView.reloadData()
+            if textViewArray.count != 0 {
+                let textToSearchWith = textViewArray[textViewArray.count - 1]
+                if textToSearchWith.starts(with: "@") {
+                    self.commentTitle.text = "Search Accounts"
+                    self.isSearchingForUserToMention = true
+                    let textToSearch = getTextWithoutAtSign(textToSearchWith)
+                    self.tableView.isHidden = true
+                    searchUsers(textToSearch)
+                } else {
+                    self.commentTitle.text = "Comments"
+                    self.isSearchingForUserToMention = false
+                    self.tableView.reloadData()
+                }
             }
         }
     }
@@ -202,6 +204,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             addNewComment(textView.text, atTime: Double(atTime), postId: objectId)
             let comment = Comment(objectId: nil, artist: artist, text: textView.text, atTime: Float(atTime), createdAt: Date())
             self.comments.append(comment)
+            self.comments.sort(by: {$0!.atTime < $1!.atTime})
             textView.text = ""
             textView.resignFirstResponder()
             sendButton.isHidden = true
@@ -665,6 +668,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         let query = PFQuery(className: "Comment")
         query.whereKey("postId", equalTo: sound.objectId!)
         query.whereKey("isRemoved", equalTo: false)
+        query.addAscendingOrder("atTime")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
