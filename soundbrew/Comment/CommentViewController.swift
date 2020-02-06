@@ -75,6 +75,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     private var textViewBottomConstraint: NSLayoutConstraint!
     private var sendButtomBottomConstraint: NSLayoutConstraint!
     private var sendButton: UIButton!
+    var mentions = [String]()
     func setupGrowingTextView(_ sound: Sound) {
         if let currentTime = player.player?.currentTime {
             self.atTime = Float(currentTime)
@@ -152,6 +153,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             sendButton.isEnabled = false
             self.commentTitle.text = "Comments"
             self.isSearchingForUserToMention = false
+            self.tableView.isHidden = false
             self.tableView.reloadData()
             
         } else {
@@ -164,7 +166,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 self.commentTitle.text = "Search Accounts"
                 self.isSearchingForUserToMention = true
                 let textToSearch = getTextWithoutAtSign(textToSearchWith)
-                self.tableView.reloadData()
+                self.tableView.isHidden = true
                 searchUsers(textToSearch)
             } else {
                 self.commentTitle.text = "Comments"
@@ -417,6 +419,31 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if indexPath.row != 0 && comments.indices.contains(indexPath.row), let commentId = comments[indexPath.row]?.artist.objectId,
+            let currentUserId = PFUser.current()?.objectId, let soundId = self.sound?.artist?.objectId {
+            if currentUserId == soundId {
+                return true
+            }
+            
+            if currentUserId == commentId {
+                return true
+            }
+        }
+
+        return false
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if let commentId = comments[indexPath.row]?.objectId {
+                self.comments.remove(at: indexPath.row)
+                self.tableView.reloadSections([0], with: .automatic)
+                removeComment(objectId: commentId)
+            }
+        }
+    }
+    
     @objc func didPressPlayBackButton(_ sender: UIButton) {
         if let soundPlayer = player.player {
             if soundPlayer.isPlaying {
@@ -465,8 +492,9 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell)
             }
             
-            cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
             cell.username.tag = indexPath.row
+            cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+            
             if let username = comment.artist.username {
                 cell.username.setTitle(username, for: .normal)
             } else {
@@ -475,34 +503,22 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.comment.text = comment.text
             cell.comment.handleMentionTap {userHandle in
-                self.loadArtistAndDissmiss(userHandle)
+                self.loadArtistFromUsername(userHandle, commentId: nil)
             }
             
             let atTime = self.uiElement.formatTime(Double(comment.atTime))
             cell.atTime.setTitle("\(atTime)", for: .normal)
-            cell.atTime.addTarget(self, action: #selector(self.didPressAtTimeButton(_:)), for: .touchUpInside)
             cell.atTime.tag = indexPath.row
+            cell.atTime.addTarget(self, action: #selector(self.didPressAtTimeButton(_:)), for: .touchUpInside)
+            
+            cell.replyButton.tag = indexPath.row
+            cell.replyButton.addTarget(self, action: #selector(self.didPressReplyButton(_:)), for: .touchUpInside)
             
             let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt)
             cell.date.text = formattedDate
         }
                 
         return cell
-    }
-    func loadArtistAndDissmiss(_ username: String) {
-        self.startAnimating()
-        let query = PFQuery(className: "_User")
-        query.whereKey("username", equalTo: username)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            self.stopAnimating()
-            if let object = object {
-                let artist = self.uiElement.newArtistObject(object)
-                self.handleDismissal(artist)
-            } else {
-                self.uiElement.showAlert("User doesn't exist.", message: "", target: self)
-            }
-        }
     }
     
     func handleDismissal(_ artist: Artist) {
@@ -532,6 +548,13 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    @objc func didPressReplyButton(_ sender: UIButton) {
+        if let username = self.comments[sender.tag]?.artist.username {
+            textView.text = "@\(username) "
+            textView.becomeFirstResponder()
+        }
+    }
+    
     //mark: Data
     func addNewComment(_ text: String, atTime: Double, postId: String) {
         let newComment = PFObject(className: "Comment")
@@ -544,11 +567,90 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             (success: Bool, error: Error?) in
             if success && error == nil {
                 self.comments[self.comments.count - 1]?.objectId = newComment.objectId
+                self.updateCommentCount(postId, byAmount: 1)
+                self.checkForMentions(text, commentId: newComment.objectId!)
                 MSAnalytics.trackEvent("comment added")
                 
             } else {
                 self.comments.removeLast()
                 self.tableView.reloadData()
+            }
+        }
+    }
+    
+    func updateCommentCount(_ objectId: String, byAmount: NSNumber) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let object = object {
+                object.incrementKey("comments", byAmount: byAmount)
+                object.saveEventually()
+            }
+        }
+    }
+    
+    func removeComment(objectId: String) {
+        let query = PFQuery(className: "Comment")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let object = object {
+                object["isRemoved"] = true
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if success && error == nil {
+                        if let objectId = self.sound?.objectId {
+                            self.updateCommentCount(objectId, byAmount: -1)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func checkForMentions(_ text: String, commentId: String) {
+        let textArray = text.split{$0 == " "}.map(String.init)
+        for text in textArray {
+            if text.starts(with: "@") {
+                let textWithoutAt = self.getTextWithoutAtSign(text)
+                loadArtistFromUsername(textWithoutAt, commentId: commentId)
+            }
+        }
+    }
+    
+    func loadArtistFromUsername(_ username: String, commentId: String?) {
+        if commentId == nil {
+            self.startAnimating()
+        }
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: username)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            self.stopAnimating()
+            if let object = object {
+                if let commentId = commentId {
+                    self.newMention(object.objectId!, commentId: commentId)
+                } else {
+                    let artist = self.uiElement.newArtistObject(object)
+                    self.handleDismissal(artist)
+                }
+
+            } else if commentId == nil {
+                self.uiElement.showAlert("User doesn't exist.", message: "", target: self)
+            }
+        }
+    }
+    
+    func newMention(_ userId: String, commentId: String) {
+        let newMention = PFObject(className: "Mention")
+        newMention["postId"] = self.sound?.objectId
+        newMention["commentId"] = commentId
+        newMention["fromUserId"] = PFUser.current()!.objectId
+        newMention["toUserId"] = userId
+        newMention["isRemoved"] = false
+        newMention.saveEventually {
+            (success: Bool, error: Error?) in
+            if success && error == nil {
+                //TODO: send notification
             }
         }
     }
@@ -611,6 +713,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
                 
                 self.tableView.reloadData()
+                self.tableView.isHidden = false
                 
             } else {
                 print("Error: \(error!)")

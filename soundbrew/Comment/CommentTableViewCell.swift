@@ -38,7 +38,7 @@ class CommentTableViewCell: UITableViewCell {
         label.enabledTypes = [.mention]
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.textColor = .white
-        label.mentionColor = .darkGray
+        label.mentionColor = color.uicolorFromHex(0x91d0f5)
         label.numberOfLines = 0
         return label
     }()
@@ -47,6 +47,14 @@ class CommentTableViewCell: UITableViewCell {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
         button.setTitleColor(color.blue(), for: .normal)
+        return button
+    }()
+    
+    lazy var replyButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.setTitleColor(.darkGray, for: .normal)
+        button.setTitle("Reply", for: .normal)
         return button
     }()
     
@@ -72,6 +80,7 @@ class CommentTableViewCell: UITableViewCell {
         self.addSubview(comment)
         self.addSubview(atTime)
         self.addSubview(date)
+        self.addSubview(replyButton)
         
         userImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
         userImage.snp.makeConstraints { (make) -> Void in
@@ -91,17 +100,23 @@ class CommentTableViewCell: UITableViewCell {
             make.right.equalTo(self).offset(uiElement.rightOffset)
         }
         
-        date.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(comment.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(username)
-            make.right.equalTo(atTime.snp.left).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-        }
-        
         atTime.snp.makeConstraints { (make) -> Void in
            // make.centerY.equalTo(userImage)
             make.right.equalTo(self).offset(uiElement.rightOffset)
-            make.bottom.equalTo(date)
+            make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+        }
+        
+        replyButton.snp.makeConstraints { (make) -> Void in
+            //make.left.equalTo(username)
+            make.right.equalTo(atTime.snp.left).offset(uiElement.rightOffset)
+            make.bottom.equalTo(atTime)
+        }
+        
+        date.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(comment.snp.bottom).offset(uiElement.elementOffset)
+            make.left.equalTo(username)
+            //make.right.equalTo(replyButton.snp.left).offset(uiElement.rightOffset)
+            make.bottom.equalTo(atTime)
         }
     }
     
