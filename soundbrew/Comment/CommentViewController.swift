@@ -553,6 +553,10 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     
     @objc func didPressReplyButton(_ sender: UIButton) {
         if let username = self.comments[sender.tag]?.artist.username {
+            if let atTime = self.comments[sender.tag]?.atTime {
+                self.isTextViewEditing = true
+                self.atTime = atTime
+            }
             textView.text = "@\(username) "
             textView.becomeFirstResponder()
         }
