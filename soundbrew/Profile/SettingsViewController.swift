@@ -11,7 +11,7 @@ import Parse
 import SidebarOverlay
 import AppCenterAnalytics
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
     let uiElement = UIElement()
     let color = Color()
     
@@ -24,7 +24,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationController?.navigationBar.tintColor = .white
         
         artist = Customer.shared.artist
-        loadFollowFollowingStats()
+        self.loadEarnings()
+        //loadFollowFollowingStats()
     }
     
     //Mark: sign out
@@ -173,16 +174,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
-                showFollowersOrFollowing("followers")
-                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Followers", "description": "User pressed Followers"])
-                break
-                
-            case 1:
-                showFollowersOrFollowing("following")
-                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Following", "description": "User pressed Following"])
-                break
-                
-            case 2:
                 if #available(iOS 13.0, *) {
                     if let container = self.so_containerViewController {
                         container.isSideViewControllerPresented = false
@@ -195,6 +186,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 } else {
                     self.uiElement.showAlert("Un-Available", message: "Adding funds to your account on iOS 12 is currently un-available. Email support@soundbrew.app for more info.", target: self)
                 }
+                //showFollowersOrFollowing("followers")
+                //MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Followers", "description": "User pressed Followers"])
+                break
+                
+            case 1:
+                //showFollowersOrFollowing("following")
+                //MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Following", "description": "User pressed Following"])
+                self.changeTipAmountDefault()
+                break
+                
+            case 2:
+                cashout()
                 break
                 
             default:
@@ -216,8 +219,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func settingsItemReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
-        let localizedFollowers = NSLocalizedString("followers", comment: "")
-        let localizedFollowing = NSLocalizedString("following", comment: "")
+        //let localizedFollowers = NSLocalizedString("followers", comment: "")
+        //let localizedFollowing = NSLocalizedString("following", comment: "")
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
@@ -226,23 +229,28 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.profileImage.layer.borderColor = color.black().cgColor
         switch indexPath.row {
         case 0:
-            cell.shareButton.addTarget(self, action: #selector(self.didPressShareProfileButton(_:)), for: .touchUpInside)
-            cell.displayNameLabel.text = "\(self.artist?.followerCount ?? 0)"
-            cell.username.text = localizedFollowers
-            break
-            
-        case 1:
-            cell.displayNameLabel.text = "\(self.artist?.followingCount ?? 0)"
-            cell.username.text = localizedFollowing
-            break
-            
-        case 2:
             if let funds = self.artist?.balance {
                 cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
             } else {
                 cell.displayNameLabel.text = "$0.00"
             }
             cell.username.text = "Balance"
+            break
+            
+        case 1:
+            cell.username.text = "= 1 Like"
+            if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
+                let formattedtipAmount = self.uiElement.convertCentsToDollarsAndReturnString(userSavedTipAmount, currency: "$")
+                cell.displayNameLabel.text = "\(formattedtipAmount)"
+                
+            } else {
+                cell.displayNameLabel.text = "setup $$$"
+            }
+            break
+            
+        case 2:
+            cell.displayNameLabel.text = "Cash out"
+            cell.username.text = ""
             break
             
         default:
@@ -257,6 +265,66 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
             
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
+        }
+    }
+    
+    let tipAmountInCents = [5, 25, 50, 100]
+    var selectedTipAmount = 5
+    func changeTipAmountDefault() {
+        let alertView = UIAlertController(
+            title: "1 like = $$$",
+            message: "How much would you like to tip artists when you like a song? \n\n\n\n\n\n\n\n",
+            preferredStyle: .actionSheet)
+        
+        let pickerView = UIPickerView(frame:
+            CGRect(x: 0, y: 45, width: self.view.frame.width, height: 160))
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        alertView.view.addSubview(pickerView)
+        
+        let sendMoneyActionButton = UIAlertAction(title: "Save", style: .default) { (_) -> Void in
+            self.uiElement.setUserDefault("tipAmount", value: self.selectedTipAmount)
+            self.tableView.reloadData()
+        }
+        alertView.addAction(sendMoneyActionButton)
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+        alertView.addAction(cancelAction)
+        
+        present(alertView, animated: true, completion: nil)
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return tipAmountInCents.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        let balanceInDollars = Double(tipAmountInCents[row]) / 100.00
+        let doubleStr = String(format: "%.2f", balanceInDollars)
+        return "$\(doubleStr)"
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedTipAmount = tipAmountInCents[row]
+    }
+    
+    func cashout() {
+        var currentUserBalance = 0
+        if let balance = Customer.shared.artist?.balance {
+            currentUserBalance = balance
+        }
+        
+        let oneHundredDollarsInCents = 10000
+        if currentUserBalance >= oneHundredDollarsInCents {
+            print("TODO: set this up!")
+        } else {
+            let balanceInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserBalance, currency: "$")
+            self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out available when your balance reaches $100", target: self)
         }
     }
     

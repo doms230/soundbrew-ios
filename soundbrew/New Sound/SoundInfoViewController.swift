@@ -260,17 +260,30 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func saveCredits(_ postId: String) {
         for credit in credits {
-            let newCredit = PFObject(className: "Credit")
-            if let title = credit.title {
-                newCredit["title"] = title
-            } else {
-                newCredit["title"] = ""
-            }
-            newCredit["percentage"] = credit.percentage!
-            newCredit["userId"] = credit.artist!.objectId!
-            newCredit["postId"] = postId
-            newCredit.saveEventually()
+            newCredit(credit, postId: postId)
+            newStory(credit, postId: postId)
         }
+    }
+    
+    func newCredit(_ credit: Credit, postId: String) {
+        let newCredit = PFObject(className: "Credit")
+        if let title = credit.title {
+            newCredit["title"] = title
+        } else {
+            newCredit["title"] = ""
+        }
+        newCredit["percentage"] = credit.percentage!
+        newCredit["userId"] = credit.artist!.objectId!
+        newCredit["postId"] = postId
+        newCredit.saveEventually()
+    }
+    
+    func newStory(_ credit: Credit, postId: String) {
+        let newStory = PFObject(className: "Story")
+        newStory["type"] = "credit"
+        newStory["userId"] = credit.artist!.objectId!
+        newStory["postId"] = postId
+        newStory.saveEventually()
     }
     
     //mark: social
@@ -858,7 +871,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func handleSocials(_ object: PFObject) {
         if self.shouldPostLinkToTwitter {
-            let title = object["title"] as! String
+            var title = ""
+            if let objectTitle = object["title"] as? String {
+                title = objectTitle
+            }
             let objectId = object.objectId!
             if let url = self.uiElement.getSoundbrewURL(objectId, path: "s") {
                 self.postTweet(url, title: title)

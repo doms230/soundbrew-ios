@@ -51,36 +51,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     var selectedTipAmount = 5
     var customer = Customer.shared
     var didAddSongToCollection = false
-    /*func showSendMoney() {
-        if let sound = self.sound {
-            let localizedCurrentBalance = NSLocalizedString("currentBalance", comment: "")
-            let localizedTipArtist = NSLocalizedString("tipArtist", comment: "")
-            let balanceInDollars = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
-            let alertView = UIAlertController(
-                title: "\(localizedCurrentBalance) \(balanceInDollars)",
-                message: "\(localizedTipArtist) \n\n\n\n\n\n\n\n",
-                preferredStyle: .actionSheet)
-            
-            let pickerView = UIPickerView(frame:
-                CGRect(x: 0, y: 45, width: self.view.frame.width, height: 160))
-            pickerView.dataSource = self
-            pickerView.delegate = self
-            alertView.view.addSubview(pickerView)
-            
-            let localizedAddToCollection = NSLocalizedString("addToCollection", comment: "")
-
-            let sendMoneyActionButton = UIAlertAction(title: localizedAddToCollection, style: .default) { (_) -> Void in
-                self.sendTip(sound, tipAmount: self.selectedTipAmount)
-            }
-            alertView.addAction(sendMoneyActionButton)
-            
-            let localizedCancel = NSLocalizedString("cancel", comment: "")
-            let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-            alertView.addAction(cancelAction)
-            
-            present(alertView, animated: true, completion: nil)
-        }
-    }*/
     
     func getTipAmountAndLikeSong(){
         if let sound = self.sound {
@@ -207,6 +177,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
         
         incrementSoundTipAmount(sound, tipAmount: tipAmount)
+        newStory(sound.objectId!)
+    }
+    
+    func newStory(_ postId: String) {
+        let newStory = PFObject(className: "Story")
+        newStory["type"] = "like"
+        newStory["userId"] = PFUser.current()!.objectId!
+        newStory["postId"] = postId
+        newStory.saveEventually()
     }
     
     func newTip(_ postId: String, userId: String, tipAmount: Int) {

@@ -113,43 +113,47 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
        
         let artist = friendsStories[indexPath.row].artist!
        
-           if let image = artist.image {
-               cell.profileImage.kf.setImage(with: URL(string: image))
-           } else {
-               cell.profileImage.image = UIImage(named: "profile_icon")
-           }
+        if let image = artist.image {
+            cell.profileImage.kf.setImage(with: URL(string: image))
+        } else {
+            cell.profileImage.image = UIImage(named: "profile_icon")
+        }
            
-           if let name = artist.name {
-               cell.displayNameLabel.text = name
-           } else {
-               cell.displayNameLabel.text = "name"
-           }
+        if let name = artist.name {
+            cell.displayNameLabel.text = name
+        } else {
+            cell.displayNameLabel.text = "name"
+        }
        
-           if let username = artist.username {
-               cell.username.text = "@\(username)"
-           } else {
-               cell.username.text = "@username"
-           }
+        if let username = artist.username {
+            cell.username.text = "@\(username)"
+        } else {
+            cell.username.text = "@username"
+        }
         
-            if let didCurrentUserListenToStory = friendsStories[indexPath.row].didListenToLatest {
-                if didCurrentUserListenToStory {
-                    cell.city.text = "Listened"
+         if let dateCreated = friendsStories[indexPath.row].lastUpdated {
+            cell.city.text = "Last Update: \(self.uiElement.formatDateAndReturnString(dateCreated)))"
+         }
+         
+             /*if let didCurrentUserListenToStory = friendsStories[indexPath.row].didListenToLatest {
+                 if didCurrentUserListenToStory {
+                     cell.city.text = "Listened"
+                 } else {
+                     cell.city.text = "Un-Listened"
+                 }
+             } else {
+                 cell.city.text = ""
+             }*/
+        
+            if let selectedIndexPath = self.selectedIndexPath {
+                if selectedIndexPath == indexPath {
+                    cell.profileImage.layer.borderColor = color.blue().cgColor
+                    cell.profileImage.layer.borderWidth = 5
                 } else {
-                    cell.city.text = "Un-Listened"
+                    cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
+                    cell.profileImage.layer.borderWidth = 1
                 }
-            } else {
-                cell.city.text = ""
             }
-       
-           if let selectedIndexPath = self.selectedIndexPath {
-               if selectedIndexPath == indexPath {
-                   cell.profileImage.layer.borderColor = color.blue().cgColor
-                   cell.profileImage.layer.borderWidth = 5
-               } else {
-                   cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
-                   cell.profileImage.layer.borderWidth = 1
-               }
-           }
            
            return cell
     }
@@ -158,14 +162,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             if let selectedUserId = friendsStories[indexPath.row].artist?.objectId {
                 self.selectedIndexPath = indexPath
                 tableView.reloadData()
-                self.loadCollection(selectedUserId)
+                //self.loadCollection(selectedUserId)
             }
     }
     
     //
     var friendsStories = [Story]()
     func loadFollowing(_ userId: String) {
-        var friends = [Artist]()
+        //var friends = [Artist]()
         let query = PFQuery(className: "Follow")
         query.whereKey("fromUserId", equalTo: userId)
         query.whereKey("isRemoved", equalTo: false)
@@ -179,68 +183,47 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                         let userId = object["toUserId"] as! String
                         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
                         artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
-                        friends.append(artist)
+                        self.loadLatestStory(artist)
                     }
-                    self.loadFriendsLatestSounds(friends)
                 }
             }
         }
     }
     
-    func loadFriendsLatestSounds(_ friends: Array<Artist>) {
-        for i in 0..<friends.count {
-            let friendId = friends[i].objectId
-            let query = PFQuery(className: "Post")
-            query.whereKey("userId", equalTo: friendId!)
-            query.whereKey("isDraft", notEqualTo: true)
-            query.whereKey("isRemoved", notEqualTo: true)
-            query.addDescendingOrder("createdAt")
-              query.getFirstObjectInBackground {
-                  (object: PFObject?, error: Error?) -> Void in
-                    var postCreatedAt: Date?
-                    if let object = object {
-                        postCreatedAt = object.createdAt!
-                    }
-                                    
-                    let isNotLastIndex = friends.indices.contains(i + 1)
-                    self.loadLatestCollectedItem(friends[i], postCreatedAt: postCreatedAt, isNotLastIndex: isNotLastIndex)
-              }
-        }
+    func loadLatestStory(_ friend: Artist) {
+        let query = PFQuery(className: "Story")
+        query.whereKey("userId", equalTo: friend.objectId ?? "")
+        query.addDescendingOrder("createdAt")
+        query.getFirstObjectInBackground {
+              (object: PFObject?, error: Error?) -> Void in
+            var story: Story?
+            if let object = object {
+                story = Story(friend, lastUpdated: object.createdAt, didListenToLatest: false)
+                let postId = object["postId"] as! String
+                self.determineIfUserListened(postId, story: story!)
+            }
+          }
     }
     
-    func loadLatestCollectedItem(_ friend: Artist, postCreatedAt: Date?, isNotLastIndex: Bool) {
-        let story = Story(friend, lastUpdated: postCreatedAt, didListenToLatest: nil)
-        
-        let query = PFQuery(className: "Tip")
-        query.whereKey("fromUserId", equalTo: friend.objectId!)
-        query.addDescendingOrder("createdAt")
-          query.getFirstObjectInBackground {
+    func determineIfUserListened(_ postId: String, story: Story) {
+        let query = PFQuery(className: "Listen")
+        query.whereKey("userId", equalTo: story.artist.objectId!)
+        query.whereKey("postId", equalTo: postId)
+        query.getFirstObjectInBackground {
               (object: PFObject?, error: Error?) -> Void in
-                    if let object = object {
-                        //if the last thing the user did was collect audio, want that to be tracked when sorting story
-                        let collectionCreatedAt = object.createdAt!
-                        if let postCreatedAt = postCreatedAt {
-                            if collectionCreatedAt > postCreatedAt {
-                                story.lastUpdated = collectionCreatedAt
-                            }
-                        } else {
-                            story.lastUpdated = collectionCreatedAt
-                        }
-                    }
-
-                if story.lastUpdated != nil {
-                    self.friendsStories.append(story)
-                }
-                
-                if !isNotLastIndex {
-                    self.friendsStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-                    if self.tableView != nil {
-                        self.tableView.refreshControl?.endRefreshing()
-                        self.tableView.reloadData()
-                    } else {
-                        self.setUpTableView(nil)
-                    }
-                }
+            if object != nil {
+                story.didListenToLatest = true
+                story.lastUpdated = object?.createdAt
+            }
+            self.friendsStories.append(story)
+            
+            self.friendsStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+            if self.tableView != nil {
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+            } else {
+                self.setUpTableView(nil)
+            }
           }
     }
     
@@ -294,97 +277,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             } else {
                 soundList.selectedArtist(artist)
             }
-        }
-    }
-    
-    
-    //when user taps on profile
-    
-    func loadCollection(_ userId: String) {
-        var collectedSounds = [Sound]()
-        let query = PFQuery(className: "Tip")
-        query.whereKey("fromUserId", equalTo: userId)
-        query.addDescendingOrder("createdAt")
-        query.limit = 25
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                for object in objects {
-                    let objectId = object["soundId"] as! String
-                    let tipDate = object.createdAt!
-                    
-                    let newSound = Sound(objectId: objectId, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: tipDate, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil)
-                    collectedSounds.append(newSound)
-                }
-            }
-            
-            self.loadCollectedSound(userId, collectedSounds: collectedSounds)
-        }
-    }
-    
-    func loadCollectedSound(_ userId: String, collectedSounds: [Sound] ) {
-        var collectedSounds = collectedSounds
-        
-        if collectedSounds.count != 0 {
-            for i in 0..<collectedSounds.count {
-                let collectedSound = collectedSounds[i]
-                
-                let query = PFQuery(className: "Post")
-                query.whereKey("objectId", equalTo: collectedSound.objectId!)
-                  query.getFirstObjectInBackground {
-                      (object: PFObject?, error: Error?) -> Void in
-                        if let object = object {
-                            let newSound = self.uiElement.newSoundObject(object)
-                            newSound.currentUserTipDate = collectedSounds[i].currentUserTipDate
-                            collectedSounds[i] = newSound
-                        }
-                    
-                        //runs function before sounds are finished loading so doing this instead
-                        if !collectedSounds.indices.contains(i + 1) {
-                            self.loadSounds(userId, collectedSounds: collectedSounds)
-                        }
-                  }
-            }
-            
-        } else {
-            self.loadSounds(userId, collectedSounds: [])
-        }
-    }
-    
-    func loadSounds(_ userId: String, collectedSounds: [Sound]) {
-        let uploadedQuery = PFQuery(className: "Post")
-        uploadedQuery.whereKey("isRemoved", notEqualTo: true)
-        uploadedQuery.whereKey("isDraft", notEqualTo: true)
-        uploadedQuery.whereKey("userId", equalTo: userId)
-        uploadedQuery.limit = 25
-        uploadedQuery.addDescendingOrder("createdAt")
-        uploadedQuery.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            var uploadedSounds = [Sound]()
-            if let objects = objects {
-                for object in objects {
-                    let newSoundObject = self.uiElement.newSoundObject(object)
-                    uploadedSounds.append(newSoundObject)
-                }
-            }
-            
-            var mergedSounds = [Sound]()
-            if uploadedSounds.count != 0 {
-                mergedSounds.append(contentsOf: uploadedSounds)
-            }
-            if collectedSounds.count != 0 {
-                mergedSounds.append(contentsOf: collectedSounds)
-            }
-            
-            mergedSounds.sort(by: {$0.createdAt! > $1.createdAt!})
-                        
-            print(mergedSounds.count)
-            let player = Player.sharedInstance
-            player.player = nil
-            player.sounds = mergedSounds
-            player.currentSound = mergedSounds[0]
-            player.currentSoundIndex = 0
-            player.setUpNextSong(false, at: 0)
         }
     }
     
