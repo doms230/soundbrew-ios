@@ -17,7 +17,7 @@ import SidebarOverlay
 import TwitterKit
 import AppCenterAnalytics
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -121,16 +121,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let viewController = segue.destination as! PeopleViewController
                 viewController.loadType = followerOrFollowing
                 break
-                
-            case "showTippers":
-                if let currentSound = Player.sharedInstance.currentSound {
-                    let viewController = segue.destination as! PeopleViewController
-                    viewController.sound = currentSound
-                }
-                let localizedCollectors = NSLocalizedString("collectors", comment: "")
-                let backItem = UIBarButtonItem()
-                backItem.title = localizedCollectors
-                navigationItem.backBarButtonItem = backItem
                 
             default:
                 break
@@ -248,6 +238,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let modal = PlayerViewController()
             //modal.player = player
             modal.playerDelegate = self
+            modal.tagDelegate = self 
             self.present(modal, animated: true, completion: nil)
         }
     }
@@ -835,5 +826,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         newFollow["following"] = following
         newFollow["userId"] = userId
         newFollow.saveEventually()
+    }
+    
+    //mark: tags
+    var selectedTagFromPlayerView: Tag!
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        if let tags = chosenTags {
+            self.selectedTagFromPlayerView = tags[0]
+            self.selectedSoundType = "discover"
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+        }
     }
 }

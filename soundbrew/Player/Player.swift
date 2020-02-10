@@ -176,11 +176,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func previous() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-        if let player = self.player {
+        if let player = self.player, let sound = self.currentSound {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
-                setBackgroundAudioNowPlaying(player, sound: self.currentSound!)
-                incrementPlayCount(self.currentSound!)                
+                setBackgroundAudioNowPlaying(player, sound: sound)
+                incrementPlayCount(sound)
+                recordListener(sound)
             } else {
                 self.setUpNextSong(true, at: nil)
             }
@@ -367,6 +368,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             didRecordPlay = true
             if let currentSound = currentSound {
                 incrementPlayCount(currentSound)
+                recordListener(currentSound)
             }
         }
         
@@ -403,6 +405,27 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 }
                 object.incrementKey("plays")
                 object.saveEventually()
+            }
+        }
+    }
+    
+    func recordListener(_ sound: Sound) {
+        if let userId = Customer.shared.artist?.objectId, let postId = sound.objectId {
+            let query = PFQuery(className: "Listen")
+            query.whereKey("userId", equalTo: userId)
+            query.whereKey("postId", equalTo: postId)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    object.incrementKey("count")
+                    object.saveEventually()
+                } else {
+                    let newListenRow = PFObject(className: "Listen")
+                    newListenRow["userId"] = userId
+                    newListenRow["postId"] = postId
+                    newListenRow["count"] = 1
+                    newListenRow.saveEventually()
+                }
             }
         }
     }

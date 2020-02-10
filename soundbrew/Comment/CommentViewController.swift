@@ -275,7 +275,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         let label = UILabel()
         label.text = "Comments"
         label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        label.textAlignment = .center
         return label
     }()
     
@@ -293,6 +294,12 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             make.width.height.equalTo(25)
             make.top.equalTo(self.view).offset(uiElement.topOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(commentTitle)
+        commentTitle.snp.makeConstraints { (make) -> Void in
+            make.centerX.equalTo(self.view)
+            make.centerY.equalTo(self.playBackButton)
         }
         
         if let image = self.sound?.artURL {
@@ -329,13 +336,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
-        
-        self.view.addSubview(commentTitle)
-        commentTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playBackSlider.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
     }
         
     //mark: Tableview
@@ -356,7 +356,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         self.view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) -> Void in
             //for some reason, attachinxg to the bottom of playerdividerline makes the tableview stretch all the way to the bottom of screen
-            make.top.equalTo(self.view).offset(90 + self.uiElement.topOffset)
+            make.top.equalTo(self.view).offset(45 + self.uiElement.topOffset)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.inputToolbar.snp.top)

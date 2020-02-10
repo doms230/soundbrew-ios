@@ -112,7 +112,6 @@ class SoundList: NSObject, PlayerDelegate {
             cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
             cell.artistButton.tag = indexPath.row
             
-            
             cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
             cell.menuButton.tag = indexPath.row
             
@@ -126,6 +125,14 @@ class SoundList: NSObject, PlayerDelegate {
             
             let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
             cell.soundDate.text = formattedDate
+            
+            if let likes = sound.tipCount {
+                cell.likesButton.setTitle("\(likes)", for: .normal)
+               // cell.likesCountLabel.text = "\(likes)"
+            } else {
+                cell.likesButton.setTitle("0", for: .normal)
+                //cell.likesCountLabel.text = "0"
+            }
         }
         
         return cell
@@ -289,13 +296,17 @@ class SoundList: NSObject, PlayerDelegate {
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
         cell.artistLabel.textColor = color
+        let originalImage = UIImage(named: "sendTipColored")
+        let tintedImage = originalImage?.withRenderingMode(.alwaysTemplate)
+        cell.likesButton.setImage(tintedImage, for: .normal)
         if color == .white {
             cell.soundDate.textColor = .darkGray
+            cell.likesCountLabel.textColor = .darkGray
+            cell.likesButton.imageView?.tintColor = .darkGray
         } else {
             cell.soundDate.textColor = color
+            cell.likesButton.imageView?.tintColor = color
         }
-        
-        cell.collectorsLabel.textColor = color
     }
     
     func determineTypeOfSoundToLoad(_ soundType: String) {

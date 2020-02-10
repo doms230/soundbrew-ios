@@ -321,7 +321,7 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil)
+        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, credits: nil, commentCount: nil)
         
         if let createdAt = object.createdAt {
             sound.createdAt = createdAt

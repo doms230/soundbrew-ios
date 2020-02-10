@@ -36,7 +36,6 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             viewController.isAddingNewCredit = true
             let artists = self.credits.map {$0.artist}
             let artistObjectIds: [String] = artists.map {$0!.objectId}
-            print("newCredit\(artistObjectIds.count)")
             viewController.creditArtistObjectIds = artistObjectIds
             
         } else if segue.identifier == "showEditCreditTitle" {
@@ -74,11 +73,11 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 {
+        if section == 0 {
             return credits.count
         }
         
@@ -86,34 +85,29 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section  {
-        case 0:
-            return creditRow(soundbrewCredit(), shouldEnableSlider: false, indexPath: indexPath)
-            
-        case 1:
+        if indexPath.section == 0 {
             var shouldEnableSlider = true
             if indexPath.row == 0 {
                 shouldEnableSlider = false
             }
             return creditRow(credits[indexPath.row], shouldEnableSlider: shouldEnableSlider, indexPath: indexPath)
             
-        default:
+        } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: newCreditReuse) as! SoundInfoTableViewCell
             cell.backgroundColor = color.black()
             cell.selectionStyle = .none
-            
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 2 {
+        if indexPath.section == 1 {
             self.performSegue(withIdentifier: "showSearchUser", sender: self)
         }
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.section == 1 && indexPath.row != 0 {
+        if indexPath.section == 0 && indexPath.row != 0 {
             return true
         }
         return false
@@ -186,7 +180,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didChangeTipSplit(_ sender: UISlider) {
-        var totalAvailablePercentage = 85
+        var totalAvailablePercentage = 100
         let selectedSplit = Int(sender.value)
         
         for i in 0..<self.credits.count {
@@ -200,13 +194,6 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             self.credits[0].percentage = totalAvailablePercentage - selectedSplit
         }
         self.tableView.reloadData()
-    }
-    
-    func soundbrewCredit() -> Credit {
-        let credit = Credit(objectId: nil, artist: nil, title: "Facilitator", percentage: 15)
-        let artist = Artist(objectId: "1", name: "Soundbrew", city: nil, image: "https://www.soundbrew.app/images/logo.png", isVerified: false, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-        credit.artist = artist
-        return credit
     }
     
     func receivedArtist(_ value: Artist?) {

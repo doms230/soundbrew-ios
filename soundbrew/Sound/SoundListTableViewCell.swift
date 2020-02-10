@@ -140,12 +140,13 @@ class SoundListTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var collectorsButton: UIButton = {
+    lazy var likesButton: UIButton = {
         let button = UIButton()
+        button.setImage(UIImage(named: "sendTipColored"), for: .normal)
         return button
     }()
     
-    lazy var collectorsLabel: UILabel = {
+    lazy var likesCountLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
         label.textColor = .white
@@ -199,8 +200,8 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(dividerLine)
             
             //adding seperate stuff because doesn't size right as one button.
-            self.addSubview(collectorsButton)
-            self.collectorsButton.addSubview(collectorsLabel)
+            self.addSubview(likesButton)
+            self.likesButton.addSubview(likesCountLabel)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(125)
@@ -255,6 +256,17 @@ class SoundListTableViewCell: UITableViewCell {
                 make.right.equalTo(soundTitle)
                 make.bottom.equalTo(dividerLine.snp.top)
             }
+            
+            likesButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(soundDate)
+            }
+            
+            /*likesCountLabel.snp.makeConstraints { (make) -> Void in
+                make.right.equalTo(likesButton)
+                make.bottom.equalTo(likesButton)
+            }*/
             
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)

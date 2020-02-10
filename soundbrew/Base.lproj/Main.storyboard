@@ -39,8 +39,8 @@
                     <connections>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="LnM-xP-wsl"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="jCE-No-XFc"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="eKw-d2-ktB"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="8ie-Jd-veP"/>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="KtZ-Sp-Nxi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b6V-Aj-v0g" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -103,9 +103,9 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uus-FA-Kvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3008.6956521739135" y="-543.08035714285711"/>
+            <point key="canvasLocation" x="1307" y="-492"/>
         </scene>
-        <!--Me-->
+        <!--Container View Controller-->
         <scene sceneID="Sfx-x4-dys">
             <objects>
                 <viewController id="SLi-Nt-QNQ" customClass="ContainerViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -115,7 +115,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="IKx-id-dcd"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Me" image="profile_nav" selectedImage="profile_nav_filled" id="9Xb-ZK-TuQ"/>
+                    <tabBarItem key="tabBarItem" title="" image="profile_nav" selectedImage="profile_nav_filled" id="9Xb-ZK-TuQ">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <navigationItem key="navigationItem" id="Q3X-YD-Tkk"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nfq-Si-Szj" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -142,7 +144,7 @@
             <objects>
                 <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -155,14 +157,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4900" y="-543.08035714285711"/>
+            <point key="canvasLocation" x="2230" y="-492"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
             <objects>
                 <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gtO-iq-VKq">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="oar-jn-SDV"/>
@@ -175,7 +177,6 @@
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showFollowerFollowing" id="Ejz-iv-iC5"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="5zx-sZ-k8y"/>
                         <segue destination="CXo-oV-yRo" kind="show" identifier="showProfile" id="GTm-zV-Pbn"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="ytI-LL-K1c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -187,7 +188,7 @@
             <objects>
                 <viewController id="CXo-oV-yRo" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HCd-Pg-5WJ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="qaa-ef-0gE"/>
@@ -195,7 +196,6 @@
                     <navigationItem key="navigationItem" id="5mt-QK-y97"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="AOa-FM-5jw"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="Ei3-uS-wLX"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hyb-Lv-gfH"/>
                         <segue destination="rEM-qb-roe" kind="presentation" identifier="showEditProfile" id="QJt-mb-aGp"/>
                     </connections>
@@ -338,14 +338,34 @@
                     <navigationItem key="navigationItem" id="DQE-st-WjY"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ate-Yt-ICi"/>
-                        <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="iDR-Ll-dSf"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="0mA-lO-wOD"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="d1u-up-vYK"/>
+                        <segue destination="z2Z-3H-bjC" kind="show" identifier="showSounds" id="KO1-9I-QDL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-242.0289855072464" y="55.580357142857139"/>
+            <point key="canvasLocation" x="-68" y="43"/>
+        </scene>
+        <!--Sounds View Controller-->
+        <scene sceneID="uic-Xu-A5d">
+            <objects>
+                <viewController id="z2Z-3H-bjC" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="inD-v4-DU1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="9Wv-YJ-slj"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="MZI-40-vJZ"/>
+                    <connections>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="drQ-xG-RFq"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="OeQ-P7-uu8"/>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="rYx-PH-Ejd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SpS-j2-l8Y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1244" y="386"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="LMc-NU-utU">
@@ -371,11 +391,12 @@
             </objects>
             <point key="canvasLocation" x="-3349" y="2446"/>
         </scene>
-        <!--Search-->
+        <!--Navigation Controller-->
         <scene sceneID="LYJ-Ge-DSD">
             <objects>
                 <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Search" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
+                    <tabBarItem key="tabBarItem" title="" image="search" selectedImage="search_filled" id="fKU-gR-hkK">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                         <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -412,7 +433,6 @@
                         <segue destination="Wod-6r-vBx" kind="show" identifier="showTags" id="ny7-0k-lik"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="qF7-cv-MYn"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="217-ix-XIX"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="TH1-Tr-UvO"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Swv-5W-jhe"/>
                     </connections>
                 </viewController>
@@ -425,7 +445,7 @@
             <objects>
                 <viewController id="zJZ-n2-4Wd" customClass="EarningsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3Pe-9L-Qec">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="MY4-QU-ZFk"/>
@@ -440,7 +460,9 @@
         <scene sceneID="rcF-xS-UMx">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4ef-dR-Glj" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Upload" image="new_nav" selectedImage="new_nav_filled" id="CtQ-Jd-vze"/>
+                    <tabBarItem key="tabBarItem" title="" image="new_nav" selectedImage="new_nav_filled" id="CtQ-Jd-vze">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="New Upload" id="bvA-Tr-Phs"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Y6S-lx-Onz">
@@ -495,18 +517,20 @@
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Lov-Rl-RRq"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="kQN-r3-laz"/>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hdu-6d-8MQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ior-SH-LjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1932" y="-86"/>
         </scene>
-        <!--Mentions-->
+        <!--Navigation Controller-->
         <scene sceneID="ivk-k4-ubP">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Mentions" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP"/>
+                    <tabBarItem key="tabBarItem" title="" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x5d-dt-OWZ">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -544,11 +568,13 @@
             </objects>
             <point key="canvasLocation" x="-736.23188405797111" y="-952.23214285714278"/>
         </scene>
-        <!--Home-->
+        <!--Navigation Controller-->
         <scene sceneID="3Q2-Py-f84">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="KPb-XB-Y0v" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Home" image="home" selectedImage="home_filled" id="EB2-0k-x03"/>
+                    <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="EB2-0k-x03">
+                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="jul-e6-sOp">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
@@ -557,7 +583,6 @@
                     <nil name="viewControllers"/>
                     <connections>
                         <segue destination="9BA-Oz-dbQ" kind="relationship" relationship="rootViewController" id="EZ0-oH-wUW"/>
-                        <segue destination="Btf-EX-uKz" kind="show" identifier="showTippers" id="gQa-Lh-L63"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="jq5-L2-dHH"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="NRS-qK-ROV"/>
                     </connections>
@@ -581,13 +606,13 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
-        <segue reference="UgY-SI-XY8"/>
-        <segue reference="hyb-Lv-gfH"/>
+        <segue reference="9UM-NA-8J6"/>
+        <segue reference="KtZ-Sp-Nxi"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="QJt-mb-aGp"/>
-        <segue reference="gLy-U4-3xr"/>
-        <segue reference="kQN-r3-laz"/>
-        <segue reference="iDR-Ll-dSf"/>
-        <segue reference="Lov-Rl-RRq"/>
+        <segue reference="Nhf-bc-kRf"/>
+        <segue reference="bfU-qG-pE9"/>
+        <segue reference="LnM-xP-wsl"/>
+        <segue reference="jCE-No-XFc"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -517,15 +517,11 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         self.fundsToAddView.addSubview(cardButton)
         cardButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.totalAmountDividerLine.snp.bottom).offset(uiElement.topOffset)
-           // make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
-            //make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
-            //make.bottom.equalTo(purchaseButton.snp.top).offset(uiElement.bottomOffset)
         }
         self.cardButton.addSubview(addCardLabel)
         addCardLabel.snp.makeConstraints { (make) -> Void in
-           // make.top.equalTo(self.cardButton)
             make.centerY.equalTo(cardButton)
             make.right.equalTo(self.cardButton)
         }
@@ -536,7 +532,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         }
         self.cardButton.addSubview(cardNumberLastFour)
         cardNumberLastFour.snp.makeConstraints { (make) -> Void in
-           // make.top.equalTo(self.cardButton)
             make.centerY.equalTo(cardButton)
             make.left.equalTo(self.cardImage.snp.right)
         }
@@ -545,11 +540,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         purchaseButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset)
-            //make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
             make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
             make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
-            //make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-           // make.bottom.equalTo(stripeAddFundsMessage.snp.top).offset(self.uiElement.bottomButtonOffset)
         }
         
         //stripe message at bottom

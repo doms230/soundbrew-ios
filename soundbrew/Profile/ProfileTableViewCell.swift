@@ -40,6 +40,22 @@ class ProfileTableViewCell: UITableViewCell {
         return searchBar
     }()
     
+    //credits
+    lazy var creditPercentage: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.textColor = .darkGray
+        return label
+    }()
+    
+    lazy var creditTitle: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.numberOfLines = 0
+        label.textColor = .darkGray
+        return label
+    }()
+    
     //profile
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
@@ -334,6 +350,47 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(displayNameLabel)
             }
             
+            break
+            
+        case "creditProfileReuse":
+            self.addSubview(profileImage)
+            self.addSubview(displayNameLabel)
+            self.addSubview(username)
+            self.addSubview(creditTitle)
+            self.addSubview(creditPercentage)
+            
+            let profileImageHeightWidth = 75
+            profileImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(profileImageHeightWidth)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            displayNameLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(displayNameLabel.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
+            }
+            
+            creditTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(username.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
+            }
+            
+            creditPercentage.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(creditTitle.snp.bottom)
+                make.left.equalTo(displayNameLabel)
+                make.right.equalTo(displayNameLabel)
+            }
             break
             
         case "searchTagViewReuse":

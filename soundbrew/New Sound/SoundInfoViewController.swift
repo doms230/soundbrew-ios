@@ -251,7 +251,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func createUploaderCredit() {
-        let credit = Credit(objectId: nil, artist: nil, title: "Artist", percentage: 85)
+        let credit = Credit(objectId: nil, artist: nil, title: "Artist", percentage: 100)
         if let artist = Customer.shared.artist {
             credit.artist = artist
         }

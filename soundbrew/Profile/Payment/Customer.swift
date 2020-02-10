@@ -79,7 +79,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     if let customerId = json["id"].string {
                         self.saveCustomer(objectId, customerId: customerId)
                         self.artist?.customerId = customerId
-                        self.artist?.balance = 5 
+                        self.artist?.balance = 0
                     }
                 case .failure(let error):
                     print(error)
@@ -96,8 +96,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
             } else if let object = object {
                 object["customerId"] = customerId
-                object["balance"] = 5
-                object.saveEventually()                
+                object.saveEventually()
             }
         }
     }
@@ -113,7 +112,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: 0, earnings: nil)
                 
                 if let customerId = user["customerId"] as? String {
                     if customerId.isEmpty {
@@ -126,11 +125,11 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     self.create(user.objectId!, email: email, name: username)
                 }
                 
-                var currentBalance = 0
-                if let balance = user["balance"] as? Int {
+                //var currentBalance = 0
+                /*if let balance = user["balance"] as? Int {
                     currentBalance = balance
                 }
-                artist.balance = currentBalance
+                artist.balance = currentBalance*/
                 
                 if let name = user["artistName"] as? String {
                     artist.name = name
@@ -161,7 +160,20 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 }
                 
                 self.artist = artist
-                
+                self.getBalance(user.objectId!)
+            }
+        }
+    }
+    
+    func getBalance(_ userId: String) {
+        let query = PFQuery(className: "Payment")
+        query.whereKey("userId", equalTo: userId)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let balance = object?["tipsSinceLastPayout"] as? Int {
+                self.artist?.balance = balance
+            } else {
+                self.newArtistPaymentRow(userId, tipAmount: 0)
             }
         }
     }
@@ -169,16 +181,28 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     func updateBalance(_ addSubFunds: Int) {
         let newBalance = addSubFunds + self.artist!.balance!
         self.artist?.balance = newBalance
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: self.artist!.objectId) {
-            (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let object = object {
-                object["balance"] = newBalance
-                object.saveEventually()
+        
+        if let artistObjectId = self.artist?.objectId {
+            let query = PFQuery(className: "Payment")
+            query.whereKey("userId", equalTo: artistObjectId)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if error != nil {
+                    self.newArtistPaymentRow(artistObjectId, tipAmount: newBalance)
+                    
+                } else if let object = object {
+                    object["tipsSinceLastPayout"] = newBalance
+                    object.saveEventually()
+                }
             }
         }
+    }
+    
+    func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
+        let newPaymentRow = PFObject(className: "Payment")
+        newPaymentRow["userId"] = artistObjectId
+        newPaymentRow["tipsSinceLastPayout"] = tipAmount
+        newPaymentRow["tips"] = tipAmount
+        newPaymentRow.saveEventually()
     }
 }

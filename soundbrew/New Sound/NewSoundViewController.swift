@@ -13,7 +13,7 @@ import SnapKit
 import NVActivityIndicatorView
 import AppCenterAnalytics
 
-class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate {
+class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate, TagDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -72,6 +72,16 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
                 soundList.prepareToShowSelectedArtist(segue)
                 let backItem = UIBarButtonItem()
                 backItem.title = ""
+                navigationItem.backBarButtonItem = backItem
+                break
+            
+            case "showSounds":
+                let viewController = segue.destination as! SoundsViewController
+                viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
+                viewController.soundType = "discover"
+                
+                let backItem = UIBarButtonItem()
+                backItem.title = self.selectedTagFromPlayerView.name
                 navigationItem.backBarButtonItem = backItem
                 break
             
@@ -187,7 +197,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
              return
         }
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil)
+        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, credits: nil, commentCount: nil)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     
@@ -228,6 +238,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             let modal = PlayerViewController()
             //modal.player = player
             modal.playerDelegate = self
+            modal.tagDelegate = self 
             self.present(modal, animated: true, completion: nil)
         }
     }
@@ -254,4 +265,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             }
         }
     }
+    
+    //mark: tags
+    var selectedTagFromPlayerView: Tag!
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        if let tags = chosenTags {
+            self.selectedTagFromPlayerView = tags[0]
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+        }
+    }
+    
 }

@@ -147,7 +147,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 4
+            return 3
         }
         return 1
     }
@@ -183,40 +183,23 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 2:
-                showEarningsOrPayments("earnings")
-                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Earnings", "description": "User pressed Earnings"])
-                break
-                
-            case 3:
-                showEarningsOrPayments("funds")
-                MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Funds", "description": "User pressed Funds"])
+                if #available(iOS 13.0, *) {
+                    if let container = self.so_containerViewController {
+                        container.isSideViewControllerPresented = false
+                            if let topView = container.topViewController as? UINavigationController {
+                                if let view = topView.topViewController as? ProfileViewController {
+                                view.performSegue(withIdentifier: "showAddFunds", sender: self)
+                                }
+                            }
+                        }
+                } else {
+                    self.uiElement.showAlert("Un-Available", message: "Adding funds to your account on iOS 12 is currently un-available. Email support@soundbrew.app for more info.", target: self)
+                }
                 break
                 
             default:
                 break
             }
-        }
-    }
-    
-    func showEarningsOrPayments(_ paymentType: String) {
-        if paymentType == "funds" {
-            if #available(iOS 13.0, *) {
-                if let container = self.so_containerViewController {
-                    container.isSideViewControllerPresented = false
-                        if let topView = container.topViewController as? UINavigationController {
-                            if let view = topView.topViewController as? ProfileViewController {
-                            view.performSegue(withIdentifier: "showAddFunds", sender: self)
-                            }
-                        }
-                    }
-            } else {
-                self.uiElement.showAlert("Un-Available", message: "Adding funds to your account on iOS 12 is currently un-available. Email support@soundbrew.app for more info.", target: self)
-            }
-
-        } else {
-            let localizedWeeklyEarnings = NSLocalizedString("weeklyEarnings", comment: "")
-            let localizedWeeklyEarningsMessage = NSLocalizedString("weeklyEarningsMessage", comment: "")
-            self.uiElement.showAlert(localizedWeeklyEarnings, message: localizedWeeklyEarningsMessage, target: self)
         }
     }
     
@@ -235,8 +218,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func settingsItemReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let localizedFollowers = NSLocalizedString("followers", comment: "")
         let localizedFollowing = NSLocalizedString("following", comment: "")
-        let localizedEarnings = NSLocalizedString("earnings", comment: "")
-        let localizedWallet = NSLocalizedString("wallet", comment: "")
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
@@ -256,22 +237,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             break
             
         case 2:
-            if let earnings = self.artist?.earnings {
-                cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
-            } else {
-                cell.displayNameLabel.text = "$0.00"
-            }
-            
-            cell.username.text = localizedEarnings
-            break
-            
-        case 3:
             if let funds = self.artist?.balance {
                 cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
             } else {
                 cell.displayNameLabel.text = "$0.00"
             }
-            cell.username.text = localizedWallet
+            cell.username.text = "Balance"
             break
             
         default:

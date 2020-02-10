@@ -100,6 +100,8 @@ class Artist {
                     }*/
                     if let image = self.image {
                         cell.profileImage.kf.setImage(with: URL(string: image))
+                    } else {
+                        cell.profileImage.image = UIImage(named: "profile_icon")
                     }
                     
                 } else if let cell = soundCell {

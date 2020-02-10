@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import Kingfisher
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -25,13 +25,28 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        /*let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        } else {
-            setUpTableView(nil)
-        }*/
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "showProfile":
+            soundList.prepareToShowSelectedArtist(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        case "showSounds":
+            let viewController = segue.destination as! SoundsViewController
+            viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
+            viewController.soundType = "discover"
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = self.selectedTagFromPlayerView.name
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        default:
+            break
+        }
     }
     
     func setupNotificationCenter() {
@@ -298,7 +313,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     let objectId = object["soundId"] as! String
                     let tipDate = object.createdAt!
                     
-                    let newSound = Sound(objectId: objectId, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: tipDate, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil)
+                    let newSound = Sound(objectId: objectId, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: tipDate, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, credits: nil, commentCount: nil)
                     collectedSounds.append(newSound)
                 }
             }
@@ -372,6 +387,16 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             player.setUpNextSong(false, at: 0)
         }
     }
+    
+    //mark: tags
+    var selectedTagFromPlayerView: Tag!
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        if let tags = chosenTags {
+            self.selectedTagFromPlayerView = tags[0]
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+        }
+    }
+    
 }
 
 class Story {

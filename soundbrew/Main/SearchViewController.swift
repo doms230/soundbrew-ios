@@ -12,7 +12,7 @@ import SnapKit
 import Kingfisher
 import AppCenterAnalytics
 
-class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate {
+class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate, TagDelegate {
     let color = Color()
     let uiElement = UIElement()
     var soundType: String!
@@ -56,10 +56,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
             break
             
-        case "showEditSoundInfo":
-            soundList.prepareToShowSoundInfo(segue)
-            break
-            
         case "showTags":
             let desi = segue.destination as! ChooseTagsViewController
             desi.tagType = selectedTagType
@@ -75,26 +71,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let viewController = segue.destination as! SoundsViewController
             viewController.selectedTagForFiltering = self.selectedTag
             viewController.soundType = soundType
-            if let tagImage = self.selectedTag.uiImage {
-                viewController.soundHeaderImage = tagImage
-            } else {
-                viewController.soundHeaderImage = UIImage(named: "background")
-            }
             
             let backItem = UIBarButtonItem()
             backItem.title = self.selectedTag.name
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-            //aka likers
-        case "showTippers":
-            if let currentSound = Player.sharedInstance.currentSound {
-                let viewController = segue.destination as! PeopleViewController
-                viewController.sound = currentSound
-            }
-            let localizedCollectors = NSLocalizedString("collectors", comment: "")
-            let backItem = UIBarButtonItem()
-            backItem.title = localizedCollectors
             navigationItem.backBarButtonItem = backItem
             break
             
@@ -312,6 +291,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var selectedTagType: String!
     let localizedMore = NSLocalizedString("more", comment: "")
     
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        if let tags = chosenTags {
+            showSounds(tags[0], soundType: "discover")
+        }
+    }
+    
     func featureTagCell(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: reuse) as! TagTableViewCell
         cell.selectionStyle = .none
@@ -475,9 +460,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         switch type {
                         case "genre":
                             self.topGenreTags = tags
-                            let podcastTagURL = "https://www.soundbrew.app/parse/files/A839D96FA14FCC48772EB62B99FA1/1cf81b20a726ecc5a24173bfcec35dc2_Hashtag_long.png"
-                            let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", imageURL: podcastTagURL, uiImage: nil)
-                            self.topGenreTags.insert(podcastTag, at: 0)
+                            //let podcastTagURL = "https://www.soundbrew.app/parse/files/A839D96FA14FCC48772EB62B99FA1/1cf81b20a726ecc5a24173bfcec35dc2_Hashtag_long.png"
+                           // let podcastTag = Tag(objectId: "AYfH0Ex5i2", name: "podcast", count: 0, isSelected: false, type: "genre", imageURL: podcastTagURL, uiImage: nil)
+                           // self.topGenreTags.insert(podcastTag, at: 0)
                             browseMoreTag.name = "\(self.localizedMore.capitalized) Genres"
                             self.topGenreTags.append(browseMoreTag)
                             break
@@ -561,6 +546,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if player.player != nil {
             let modal = PlayerViewController()
             modal.playerDelegate = self
+            modal.tagDelegate = self
             self.present(modal, animated: true, completion: nil)
         }
     }
@@ -571,26 +557,26 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
             switch artist.objectId {
-            case "addFunds":
-                self.performSegue(withIdentifier: "showAddFunds", sender: self)
-                break
+                case "addFunds":
+                    self.performSegue(withIdentifier: "showAddFunds", sender: self)
+                    break
+                    
+                case "signup":
+                    self.performSegue(withIdentifier: "showWelcome", sender: self)
+                    break
+                    
+                case "collectors":
+                    self.performSegue(withIdentifier: "showTippers", sender: self)
+                    break
                 
-            case "signup":
-                self.performSegue(withIdentifier: "showWelcome", sender: self)
-                break
-                
-            case "collectors":
-                self.performSegue(withIdentifier: "showTippers", sender: self)
-                break
-                
-            default:
-                if soundList == nil {
-                   self.selectedArtist = artist
-                    self.performSegue(withIdentifier: "showProfile", sender: self)
-                } else {
-                  soundList.selectedArtist(artist)
-                }
-                break
+                default:
+                    if soundList == nil {
+                       self.selectedArtist = artist
+                        self.performSegue(withIdentifier: "showProfile", sender: self)
+                    } else {
+                      soundList.selectedArtist(artist)
+                    }
+                    break
             }
         }
     }

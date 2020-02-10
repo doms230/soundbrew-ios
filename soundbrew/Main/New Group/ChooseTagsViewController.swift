@@ -16,7 +16,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     let uiElement = UIElement()
     let color = Color()
     var selectedArtist: Artist!
-    var selectedTag: Tag!
+    var sound: Sound?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +24,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barTintColor = color.black()
         setUpNavigationBar()
-        loadTags(tagType, searchText: nil)        
+        loadTags(tagType, searchText: nil, tags: sound?.tags)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -48,7 +48,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     //MARK: done Button
     @objc func didPressChooseTagsDoneButton(_ sender: UIBarButtonItem) {
-        handleTagsForDismissal()
+        handleTagsForDismissal(true)
     }
     
     //MARK: SearchBar
@@ -104,11 +104,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text!.isEmpty {
             searchIsActive = false
-            loadTags(tagType, searchText: nil)
+            loadTags(tagType, searchText: nil, tags: sound?.tags)
             
         } else {
             searchIsActive = true
-            loadTags(tagType, searchText: searchText)
+            loadTags(tagType, searchText: searchText, tags: sound?.tags)
         }
     }
     
@@ -210,8 +210,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func didSelectRowAt(_ row: Int) {
         let selectedTag = filteredTags[row]
-        
-        if isSelectingTagsForPlaylist {
+        if self.sound != nil {
+            self.chosenTags.append(selectedTag)
+            handleTagsForDismissal(false)
+        } else if isSelectingTagsForPlaylist {
             self.selectedTag = selectedTag
             self.performSegue(withIdentifier: "showSounds", sender: self)
         } else {
@@ -227,7 +229,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     //if tagtype is nil, means user is creating playlist
     var tagType: String?
-    
+    var selectedTag: Tag!
+
     var tags = [Tag]()
     var filteredTags = [Tag]()
     var featureTagTitles = ["genre", "mood", "activity", "artist", "city", "all"]
@@ -318,7 +321,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
         if tagType != "more" {
-            handleTagsForDismissal()
+            handleTagsForDismissal(true)
         } else {
             self.searchBar.text = ""
             self.tableView.reloadData()
@@ -349,14 +352,15 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         chosenTagsScrollview.contentSize = CGSize(width: xPositionForChosenTags, height: buttonHeight)
     }
     
-    func handleTagsForDismissal() {
+    func handleTagsForDismissal(_ shouldAnimateDismissal: Bool) {
         if let tagDelegate = self.tagDelegate {
             var chosenTags: Array<Tag>?
             if self.chosenTags.count != 0 {
                 chosenTags = self.chosenTags
             }
-            tagDelegate.receivedTags(chosenTags)
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: shouldAnimateDismissal, completion: {() in
+                tagDelegate.receivedTags(chosenTags)
+            })
         }
     }
     
@@ -400,7 +404,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func loadTags(_ type: String?, searchText: String?) {
+    func loadTags(_ type: String?, searchText: String?, tags: Array<String>?) {
         let query = PFQuery(className: "Tag")
         
         if let text = searchText {
@@ -414,6 +418,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             } else {
                 query.whereKey("type", equalTo: type)
             }
+        }
+        
+        if let tags = tags {
+            query.whereKey("tag", containedIn: tags)
         }
         
         query.addDescendingOrder("count")

@@ -13,13 +13,12 @@ import Kingfisher
 import SnapKit
 import AppCenterCrashes
 
-class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate {
+class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate {
     
     var soundList: SoundList!
     let uiElement = UIElement()
     let color = Color()
     var soundType: String!
-    var soundHeaderImage: UIImage?
     var userId: String?
     
     override func viewDidLoad() {
@@ -63,28 +62,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             navigationItem.backBarButtonItem = backItem
             break
             
-        case "showEditSoundInfo":
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            soundList.prepareToShowSoundInfo(segue)
-            break
+        case "showSounds":
+            let viewController = segue.destination as! SoundsViewController
+            viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
+            viewController.soundType = "discover"
             
-        case "showTippers":
-            let localizedCollectors = NSLocalizedString("collectors", comment: "")
-            soundList.prepareToShowTippers(segue)
             let backItem = UIBarButtonItem()
-            backItem.title = localizedCollectors
+            backItem.title = self.selectedTagFromPlayerView.name
             navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showComments":
-            let player = Player.sharedInstance
-            let viewController = segue.destination as! CommentViewController
-            if let currentSound = player.currentSound, let player = player.player {
-                viewController.sound = currentSound
-                viewController.atTime = Float(player.currentTime)
-            }
             break
             
         default:
@@ -189,13 +174,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func soundHeaderCell() -> SoundListTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundHeaderReuse) as! SoundListTableViewCell
-        cell.headerImage.image = soundHeaderImage
-        
-        return cell
-    }
-    
     func noSoundCell() -> SoundListTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
         cell.backgroundColor = color.black()
@@ -245,6 +223,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if player.player != nil {
             let modal = PlayerViewController()
             modal.playerDelegate = self
+            modal.tagDelegate = self 
             self.present(modal, animated: true, completion: nil)
         }
     }
@@ -277,6 +256,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     //mark: tags
-    var selectedTagForFiltering: Tag! 
+    var selectedTagForFiltering: Tag!
+    var selectedTagFromPlayerView: Tag!
+    func receivedTags(_ chosenTags: Array<Tag>?) {
+        if let tags = chosenTags {
+            self.selectedTagFromPlayerView = tags[0]
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+        }
+    }
+    
 }
 
