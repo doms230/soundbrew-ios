@@ -313,7 +313,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     let objectId = object["soundId"] as! String
                     let tipDate = object.createdAt!
                     
-                    let newSound = Sound(objectId: objectId, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: tipDate, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, credits: nil, commentCount: nil)
+                    let newSound = Sound(objectId: objectId, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: tipDate, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil)
                     collectedSounds.append(newSound)
                 }
             }

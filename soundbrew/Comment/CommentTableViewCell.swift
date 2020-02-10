@@ -118,8 +118,6 @@ class CommentTableViewCell: UITableViewCell {
             make.bottom.equalTo(date)
             //make.top.equalTo(date)
         }
-        
-
     }
     
     ///////////

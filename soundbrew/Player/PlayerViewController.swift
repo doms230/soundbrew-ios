@@ -122,11 +122,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             
             SKStoreReviewController.requestReview()
             
-            customer.updateBalance(-tipAmount)
-            //updateArtistPayment(sound, tipAmount: tipAmount)
-            //newTip(sound, tipAmount: tipAmount)
             getCreditsAndSaveTip(sound, tipAmount: tipAmount)
-            incrementTipAmount(sound, tipAmount: tipAmount)
             
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
@@ -192,27 +188,25 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func getCreditsAndSaveTip(_ sound: Sound, tipAmount: Int) {
-        if let credits = sound.credits {
-            for credit in credits {
-                print("credit: \(credit.artist?.objectId)")
-                var tipSplit: Double = 0
+        customer.updateBalance(-tipAmount)
+        if currentSoundCredits.isEmpty {
+            newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
+            updateArtistPayment(sound.artist!.objectId, tipAmount: tipAmount)
+        } else {
+            for credit in currentSoundCredits {
+                var tipSplit: Float = 0
                 if let percentage = credit.percentage {
-                    print("percentage: \(percentage)")
                     if percentage > 0 {
-                        let percentageInDecimalFormat = percentage / 100
-                        tipSplit = Double(percentageInDecimalFormat * tipAmount)
-                        print("split: \(tipSplit)")
-                        //newTip(sound.objectId!, userId: credit.artist!.objectId, tipAmount: tipSplit)
-                        //updateArtistPayment(credit.artist!.objectId, tipAmount: tipAmount)
+                        tipSplit = Float(percentage * tipAmount)
+                        let tipSplitInCents = tipSplit / 100
+                        newTip(sound.objectId!, userId: credit.artist!.objectId, tipAmount: Int(tipSplitInCents))
+                        updateArtistPayment(credit.artist!.objectId, tipAmount: Int(tipSplitInCents))
                     }
                 }
             }
-            
-        } else {
-            print("no credits, tip artist")
-           // newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
-            //updateArtistPayment(sound.artist!.objectId, tipAmount: tipAmount)
         }
+        
+        incrementSoundTipAmount(sound, tipAmount: tipAmount)
     }
     
     func newTip(_ postId: String, userId: String, tipAmount: Int) {
@@ -229,7 +223,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    func incrementTipAmount(_ sound: Sound, tipAmount: Int) {
+    func incrementSoundTipAmount(_ sound: Sound, tipAmount: Int) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
@@ -245,6 +239,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func checkIfUserAddedSongToCollection(_ sound: Sound) {
+        self.currentSoundCredits.removeAll()
         if PFUser.current() != nil {
             self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
             self.likeSoundButton.isEnabled = false
@@ -270,13 +265,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
+    var currentSoundCredits = [Credit]()
     func loadCredits(_ postId: String) {
         let query = PFQuery(className: "Credit")
         query.whereKey("postId", equalTo: postId)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
-                var credits = [Credit]()
                 for object in objects {
                     let userId = object["userId"] as? String
                     let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
@@ -289,11 +284,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                         credit.percentage = percentage
                     }
                     
-                    credits.append(credit)
-                }
-                
-                if self.sound != nil {
-                    self.sound?.credits = credits
+                    self.currentSoundCredits.append(credit)
                 }
             }
         }

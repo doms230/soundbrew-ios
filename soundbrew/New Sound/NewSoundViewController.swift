@@ -197,7 +197,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
              return
         }
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, credits: nil, commentCount: nil)
+        newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     
