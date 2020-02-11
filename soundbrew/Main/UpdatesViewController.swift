@@ -302,7 +302,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 if let objects = objects {
                     for object in objects {
                         let userObjectId = object["fromUserId"] as! String
-                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
                         let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil, tipId: nil, followId: object.objectId!)
                         self.updates.append(update)
                     }
@@ -335,7 +335,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                         let userObjectId = object["fromUserId"] as! String
                         let tipAmount = object["amount"] as! Int
                         let soundId = object["soundId"] as! String
-                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
                         let update = Update(object.updatedAt!, artist: artist, tipAmount: tipAmount, soundId: soundId, soundName: nil, tipId: object.objectId!, followId: nil)
                         self.updates.append(update)
                     }

@@ -243,15 +243,15 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func didSelectSoundAt(row: Int) {
-        if let player = soundList.player {
-            player.didSelectSoundAt(row)
-            if player.player != nil {
-                self.setUpMiniPlayer()
-            } else if self.tableView == nil {
-                self.setUpTableView(nil)
-            } else {
-                self.tableView.reloadData()
-            }
+        //TESTING PLAYER
+        let player = soundList.player
+        player.didSelectSoundAt(row)
+        if player.player != nil {
+            self.setUpMiniPlayer()
+        } else if self.tableView == nil {
+            self.setUpTableView(nil)
+        } else {
+            self.tableView.reloadData()
         }
     }
     

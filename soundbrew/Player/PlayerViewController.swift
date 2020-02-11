@@ -109,7 +109,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 preferredStyle: .alert)
             
             let sendMoneyActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
-                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
                 self.handleDismissal(artist)
             }
             alertView.addAction(sendMoneyActionButton)
@@ -253,7 +253,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
                     
                     let credit = Credit(objectId: object.objectId, artist: artist, title: nil, percentage: 0)
                     if let title = object["title"] as? String {

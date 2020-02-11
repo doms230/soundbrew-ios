@@ -709,11 +709,50 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 (success: Bool, error: Error?) in
                 if success && error == nil {
                     self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: true)
-                    self.uiElement.sendAlert("\(currentUser.username!) Followed You!", toUserId: self.profileArtist!.objectId)
+                    //self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
                     
                 } else {
                     self.profileArtist!.isFollowedByCurrentUser = false
                     self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func checkFollowStatus() {
+        if let currentUserID = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Follow")
+            query.whereKey("fromUserId", equalTo: currentUserID)
+            query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
+            query.whereKey("isRemoved", equalTo: false)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if object != nil && error == nil {
+                    self.profileArtist?.isFollowedByCurrentUser = true
+                } else {
+                    self.profileArtist?.isFollowedByCurrentUser = false
+                }
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    func updateLocalFriendsList(_ shouldAddArtist: Bool, userId: String) {
+        var friendsList = [String]()
+        if let friends = self.uiElement.getUserDefault("friends") as? [String] {
+            friendsList = friends
+        }
+        
+        if shouldAddArtist {
+            friendsList.append(userId)
+            self.uiElement.setUserDefault("friends", value: friendsList)
+        } else {
+            for i in 0..<friendsList.count {
+                let friend = friendsList[i]
+                if friend == userId {
+                    friendsList.remove(at: i)
+                    self.uiElement.setUserDefault("friends", value: friendsList)
+                    break
                 }
             }
         }
@@ -747,11 +786,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     object.saveEventually {
                         (success: Bool, error: Error?) in
                         if success && error == nil {
-                            var incrementFollows = false
-                            if shouldFollowArtist {
-                                incrementFollows = true
-                            }
-                            self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: incrementFollows)
+                            self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: shouldFollowArtist)
                         }
                     }
                 }
@@ -759,37 +794,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func checkFollowStatus() {
-        if let currentUserID = PFUser.current()?.objectId {
-            let query = PFQuery(className: "Follow")
-            query.whereKey("fromUserId", equalTo: currentUserID)
-            query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
-            query.whereKey("isRemoved", equalTo: false)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
-                    self.profileArtist?.isFollowedByCurrentUser = true
-                    
-                } else {
-                    self.profileArtist?.isFollowedByCurrentUser = false
-                }
-                self.tableView.reloadData()
-            }
-        }
-    }
-    
     func updateFollowerCount(artist: Artist, incrementFollows: Bool) {
+        self.updateLocalFriendsList(incrementFollows, userId: artist.objectId!)
+        
         let query = PFQuery(className: "Stats")
         query.whereKey("userId", equalTo: artist.objectId!)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if error != nil {
                 self.newStatsRow(1, following: 0, userId: artist.objectId)
-                
             } else if let object = object {
                 if incrementFollows {
                     object.incrementKey("followers")
-                    
                 } else {
                     object.incrementKey("followers", byAmount: -1)
                 }
@@ -809,7 +825,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 } else if let object = object {
                     if incrementFollows {
                         object.incrementKey("following")
-                        
                     } else {
                         object.incrementKey("following", byAmount: -1)
                     }

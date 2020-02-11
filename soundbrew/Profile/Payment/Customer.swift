@@ -17,9 +17,10 @@ import SwiftyJSON
 class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     static let shared = Customer()
 
-    let starbucksIP = "172.31.99.54"
     let baseURL = URL(string: "https://www.soundbrew.app/customers/")
-    var artist: Artist? 
+    var artist: Artist?
+    let uiElement = UIElement()
+    //let uiElement =
     //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
@@ -112,7 +113,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: 0, earnings: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: 0, earnings: nil, friendObjectIds: nil)
                 
                 if let customerId = user["customerId"] as? String {
                     if customerId.isEmpty {
@@ -160,7 +161,37 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 }
                 
                 self.artist = artist
-                self.getBalance(user.objectId!)
+                if let userId = user.objectId {
+                    self.getFriends(userId)
+                    self.getBalance(userId)
+                }
+            }
+        }
+    }
+    
+    func getFriends(_ userId: String) {
+        if let friendObjectIds = self.uiElement.getUserDefault("friends") as? [String] {
+            self.artist?.friendObjectIds = friendObjectIds
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
+        } else {
+            let query = PFQuery(className: "Follow")
+            query.whereKey("fromUserId", equalTo: userId)
+            query.whereKey("isRemoved", equalTo: false)
+            query.addDescendingOrder("createdAt")
+            query.limit = 100
+            query.findObjectsInBackground {
+                (objects: [PFObject]?, error: Error?) -> Void in
+                if let objects = objects {
+                    var friendObjectIds = [String]()
+                    for object in objects {
+                        if let userId = object["toUserId"] as? String {
+                            friendObjectIds.append(userId)
+                        }
+                    }
+                    self.artist?.friendObjectIds = friendObjectIds
+                    self.uiElement.setUserDefault("friends", value: friendObjectIds)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
+                }
             }
         }
     }

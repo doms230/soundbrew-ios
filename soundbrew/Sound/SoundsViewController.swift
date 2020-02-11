@@ -159,12 +159,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func didSelectRowAt(_ row: Int) {
-        if let player = soundList.player {
-            player.sounds = soundList.sounds
-            player.didSelectSoundAt(row)
-            if miniPlayerView == nil {
-                self.setUpMiniPlayer()
-            }
+        //TESTING: PLAYER
+        let player = soundList.player
+        player.sounds = soundList.sounds
+        player.didSelectSoundAt(row)
+        if miniPlayerView == nil {
+            self.setUpMiniPlayer()
         }
     }
     

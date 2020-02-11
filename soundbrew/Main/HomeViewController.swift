@@ -15,13 +15,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     var soundList: SoundList!
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Stories"
         setupNotificationCenter()
-        if let currentUserId = PFUser.current()?.objectId {
-            loadFollowing(currentUserId)
+        loadFriendStories()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let player = Player.sharedInstance
+        if player.player != nil {
+            setUpMiniPlayer()
+        } else {
+            setUpTableView(nil)
         }
     }
     
@@ -51,6 +58,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func setupNotificationCenter() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveFriendsLoaded), name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
     }
     @objc func didReceiveSoundUpdate(){
         if self.view.window != nil {
@@ -60,6 +69,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             } else {
                 setUpTableView(nil)
             }
+        }
+    }
+    @objc func didReceiveFriendsLoaded() {
+        if !didGetInitialFriendsList {
+            loadFriendStories()
         }
     }
     
@@ -94,10 +108,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
-        self.friendsStories.removeAll()
-        if let currentUserId = PFUser.current()?.objectId {
-           loadFollowing(currentUserId)
-        }
+        loadFriendStories()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -112,6 +123,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
        
         let artist = friendsStories[indexPath.row].artist!
+        
+        if let username = artist.username {
+            cell.username.text = "@\(username)"
+        } else {
+            print("load artist")
+            cell.username.text = "@username"
+            artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
+        }
        
         if let image = artist.image {
             cell.profileImage.kf.setImage(with: URL(string: image))
@@ -124,15 +143,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             cell.displayNameLabel.text = "name"
         }
-       
-        if let username = artist.username {
-            cell.username.text = "@\(username)"
-        } else {
-            cell.username.text = "@username"
-        }
         
          if let dateCreated = friendsStories[indexPath.row].lastUpdated {
-            cell.city.text = "Last Update: \(self.uiElement.formatDateAndReturnString(dateCreated)))"
+            cell.city.text = "Last Update: \(self.uiElement.formatDateAndReturnString(dateCreated))"
          }
          
              /*if let didCurrentUserListenToStory = friendsStories[indexPath.row].didListenToLatest {
@@ -162,47 +175,34 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             if let selectedUserId = friendsStories[indexPath.row].artist?.objectId {
                 self.selectedIndexPath = indexPath
                 tableView.reloadData()
-                //self.loadCollection(selectedUserId)
+                soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
             }
     }
     
     //
     var friendsStories = [Story]()
-    func loadFollowing(_ userId: String) {
-        //var friends = [Artist]()
-        let query = PFQuery(className: "Follow")
-        query.whereKey("fromUserId", equalTo: userId)
-        query.whereKey("isRemoved", equalTo: false)
-        query.addDescendingOrder("createdAt")
-        query.limit = 100
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let userId = object["toUserId"] as! String
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil)
-                        artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
-                        self.loadLatestStory(artist)
-                    }
-                }
+    var didGetInitialFriendsList = false
+    func loadFriendStories() {
+        if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
+            didGetInitialFriendsList = true
+            self.friendsStories.removeAll()
+            for friendUserId in friendUserIds {
+                print(friendUserId)
+                let query = PFQuery(className: "Story")
+                query.whereKey("userId", equalTo: friendUserId)
+                query.addDescendingOrder("createdAt")
+                query.getFirstObjectInBackground {
+                      (object: PFObject?, error: Error?) -> Void in
+                        if let object = object {
+                            let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                            //friend.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
+                            let story = Story(friend, lastUpdated: object.createdAt, didListenToLatest: false)
+                            let postId = object["postId"] as! String
+                            self.determineIfUserListened(postId, story: story)
+                        }
+                  }
             }
         }
-    }
-    
-    func loadLatestStory(_ friend: Artist) {
-        let query = PFQuery(className: "Story")
-        query.whereKey("userId", equalTo: friend.objectId ?? "")
-        query.addDescendingOrder("createdAt")
-        query.getFirstObjectInBackground {
-              (object: PFObject?, error: Error?) -> Void in
-            var story: Story?
-            if let object = object {
-                story = Story(friend, lastUpdated: object.createdAt, didListenToLatest: false)
-                let postId = object["postId"] as! String
-                self.determineIfUserListened(postId, story: story!)
-            }
-          }
     }
     
     func determineIfUserListened(_ postId: String, story: Story) {

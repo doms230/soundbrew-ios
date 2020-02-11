@@ -27,8 +27,9 @@ class Artist {
     var earnings: Int?
     var customerId: String?
     var balance: Int?
+    var friendObjectIds: [String]?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -44,6 +45,7 @@ class Artist {
         self.customerId = customerId
         self.balance = balance
         self.earnings = earnings
+        self.friendObjectIds = friendObjectIds
     }
     
     func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?) {
