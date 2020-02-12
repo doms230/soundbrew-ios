@@ -145,7 +145,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
          if let dateCreated = friendsStories[indexPath.row].lastUpdated {
-            cell.city.text = "Last Update: \(self.uiElement.formatDateAndReturnString(dateCreated))"
+            cell.city.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
          }
          
              /*if let didCurrentUserListenToStory = friendsStories[indexPath.row].didListenToLatest {
@@ -160,11 +160,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
             if let selectedIndexPath = self.selectedIndexPath {
                 if selectedIndexPath == indexPath {
-                    cell.profileImage.layer.borderColor = color.blue().cgColor
-                    cell.profileImage.layer.borderWidth = 5
+                    cell.homebackgroundView.image = UIImage(named: "background")
+                   // cell.profileImage.layer.borderColor = color.blue().cgColor
+                   // cell.profileImage.layer.borderWidth = 5
                 } else {
-                    cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
-                    cell.profileImage.layer.borderWidth = 1
+                    cell.homebackgroundView.image = UIImage()
+                    //cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
+                   // cell.profileImage.layer.borderWidth = 1
                 }
             }
            

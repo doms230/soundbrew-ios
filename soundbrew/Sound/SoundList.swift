@@ -327,8 +327,8 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "follow":
-            if let profileUserId = self.profileUserId {
-                self.loadFollowing(descendingOrder, profileUserId: profileUserId)
+            if let followUserIds = self.uiElement.getUserDefault("friends") as? [String] {
+                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds)
             }
             break
             
@@ -484,35 +484,7 @@ class SoundList: NSObject, PlayerDelegate {
             }
         }
     }
-    
-    var followUserIds = [String]()
-    func loadFollowing(_ descendingOrder: String, profileUserId: String) {
-        let query = PFQuery(className: "Follow")
-        query.whereKey("fromUserId", equalTo: profileUserId)
-        query.whereKey("toUserId", notContainedIn: followUserIds)
-        query.whereKey("isRemoved", equalTo: false)
-        query.addDescendingOrder("createdAt")
-        query.limit = 50
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            self.didLoadCollection = true
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        self.followUserIds.append(object["toUserId"] as! String)
-                    }
-                }
-                
-                if self.soundType == "follow" {
-                    self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: self.followUserIds)
-                }
-                
-            } else {
-                print("Error: \(error!)")
-            }
-        }
-    }
-    
+        
     var storyPostIds = [String]()
     func loadStories(_ userId: String) {
         let query = PFQuery(className: "Story")
@@ -521,17 +493,12 @@ class SoundList: NSObject, PlayerDelegate {
         query.limit = 25
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            self.didLoadCollection = true
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        self.storyPostIds.append(object["postId"] as! String)
-                    }
-                    self.loadSounds(self.descendingOrder, postIds: self.storyPostIds, userId: nil, searchText: nil, followIds: nil)
+            if let objects = objects {
+                for object in objects {
+                    print(object["postId"] as! String)
+                    self.storyPostIds.append(object["postId"] as! String)
                 }
-                
-            } else {
-                print("Error: \(error!)")
+                self.loadSounds(self.descendingOrder, postIds: self.storyPostIds, userId: nil, searchText: nil, followIds: nil)
             }
         }
     }
