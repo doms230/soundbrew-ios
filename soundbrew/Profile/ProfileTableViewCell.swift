@@ -18,7 +18,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     lazy var homebackgroundView: UIImageView = {
         let image = UIImageView()
-        image.backgroundColor = color.purpleBlack()
+        image.backgroundColor = .black
         image.layer.cornerRadius = 5
         image.clipsToBounds = true
         return image
@@ -296,7 +296,7 @@ class ProfileTableViewCell: UITableViewCell {
             self.homebackgroundView.addSubview(displayNameLabel)
             self.homebackgroundView.addSubview(city)
             self.homebackgroundView.addSubview(username)
-           // self.homebackgroundView.addSubview(seperatorLine)
+            self.homebackgroundView.addSubview(userCity)
             
             homebackgroundView.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(100)
@@ -306,31 +306,35 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
-            profileImage.layer.cornerRadius = 75/2
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(75)
-               // make.top.equalTo(homebackgroundView).offset(uiElement.topOffset)
-                make.centerY.equalTo(homebackgroundView)
-                make.left.equalTo(homebackgroundView).offset(uiElement.leftOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            //listen status
+            //latest update type
+            city.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
             city.textColor = .white
             city.snp.makeConstraints { (make) -> Void in
-               // make.top.equalTo(username.snp.bottom).offset(uiElement.topOffset)
-                make.centerY.equalTo(profileImage)
-               // make.left.equalTo(displayNameLabel)
+                make.top.equalTo(homebackgroundView).offset(uiElement.topOffset)
+                make.left.equalTo(homebackgroundView).offset(uiElement.leftOffset)
+            }
+            
+            //date
+            userCity.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+            userCity.textColor = .lightGray
+            userCity.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(city)
                 make.right.equalTo(homebackgroundView).offset(uiElement.rightOffset)
-               // make.bottom.equalTo(homebackgroundView).offset(uiElement.bottomOffset)
+            }
+            
+            let imageHeightWidth = 50
+            profileImage.layer.cornerRadius = CGFloat(imageHeightWidth/2)
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(imageHeightWidth)
+                make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(homebackgroundView).offset(uiElement.leftOffset)
             }
             
             displayNameLabel.textColor = .white
             displayNameLabel.snp.makeConstraints { (make) -> Void in
-                //make.top.equalTo(profileImage)
                 make.centerY.equalTo(profileImage).offset(uiElement.bottomOffset)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(homebackgroundView).offset(uiElement.rightOffset - 100)
+                make.right.equalTo(homebackgroundView).offset(uiElement.rightOffset)
             }
             
             username.textColor = .lightGray
@@ -339,14 +343,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
-            
-          /*  seperatorLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(city.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(homebackgroundView).offset(uiElement.rightOffset)
-                make.bottom.equalTo(homebackgroundView)
-            }            */
             break
             
         case "searchProfileReuse":

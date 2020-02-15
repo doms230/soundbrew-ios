@@ -15,9 +15,10 @@ import TwitterKit
 import FirebaseDynamicLinks
 import AppCenterAnalytics
 import UICircularProgressRing
+import CropViewController
 //import Zip
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate, CropViewControllerDelegate {
     
     func receivedArtist(_ value: Artist?) {
     }
@@ -28,10 +29,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var artistName: String?
     
     let color = Color()
-    var soundArtDidFinishProcessing = false
-    var soundTitle: UILabel!
-    var soundParseFileDidFinishProcessing = false
+    var soundArtDidFinishProcessing = true
     var didPressUploadButton = false
+    //var soundParseFileDidFinishProcessing = false
+    var soundTitle: UILabel!
     
     var soundThatIsBeingEdited: Sound?
         
@@ -89,7 +90,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var shouldUploadButtonBeEnabled = false
         if soundThatIsBeingEdited?.objectId != nil {
             shouldUploadButtonBeEnabled = true
-            soundParseFileDidFinishProcessing = true
+            //soundParseFileDidFinishProcessing = true
             localizedGoback = NSLocalizedString("back", comment: "")
         } else {
             localizedGoback = NSLocalizedString("cancel", comment: "")
@@ -170,7 +171,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         switch indexPath.section {
         case 0:
-            cell = audioTitleCell()
+            cell = audioImageTitleCell()
             break
             
         case 1:
@@ -668,10 +669,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         viewController.artistDelegate = self
     }
     
-    func audioTitleCell() -> SoundInfoTableViewCell {
+    func audioImageTitleCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
         
         self.audioProgress = cell.audioProgress
+        
+        cell.soundArtImageButton.addTarget(self, action: #selector(self.didPressUploadSoundArtButton(_:)), for: .touchUpInside)
 
         if let sound = soundThatIsBeingEdited {
             if let soundTitle = sound.title {
@@ -682,6 +685,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if sound.objectId != nil {
                 cell.audioProgress.value = 100
+            }
+            
+            if let image = sound.artImage {
+                cell.soundArtImageButton.setImage(image, for: .normal)
             }
         }
         
@@ -757,7 +764,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
-                self.soundParseFileDidFinishProcessing = true
+               // self.soundParseFileDidFinishProcessing = true
                 
                 self.uploadButton.isEnabled = true
                 
@@ -777,29 +784,125 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
+    //mark: sound art upload
+    @objc func didPressUploadSoundArtButton(_ sender: UIButton){
+        self.soundArtDidFinishProcessing = false
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = false
+        imagePicker.sourceType = .photoLibrary
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // Local variable inserted by Swift 4.2 migrator.
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        var selectedImage: UIImage?
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+            selectedImage = image
+        }
+        
+        dismiss(animated: true, completion: {() in
+            if let image = selectedImage {
+                self.presentImageCropViewController(image)
+            }
+        })
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+        self.soundArtDidFinishProcessing = true 
+    }
+    
+    // Helper function inserted by Swift 4.2 migrator.
+    fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+        return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+    }
+    
+    // Helper function inserted by Swift 4.2 migrator.
+    fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+        return input.rawValue
+    }
+    
+    func presentImageCropViewController(_ image: UIImage) {
+        let cropViewController = CropViewController(croppingStyle: .default, image: image)
+        cropViewController.aspectRatioLockEnabled = true
+        cropViewController.aspectRatioPickerButtonHidden = true
+        cropViewController.aspectRatioPreset = .presetSquare
+        cropViewController.resetAspectRatioEnabled = false
+        cropViewController.delegate = self
+        present(cropViewController, animated: true, completion: nil)
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+                    self.soundThatIsBeingEdited?.artImage = image
+        self.tableView.reloadData()
+        
+        let proPic = image.jpegData(compressionQuality: 0.5)
+        self.soundThatIsBeingEdited?.artFile = PFFileObject(name: "soundArt.jpeg", data: proPic!)
+        self.soundThatIsBeingEdited?.artFile!.saveInBackground({
+            (succeeded: Bool, error: Error?) -> Void in
+            if succeeded {
+                self.soundArtDidFinishProcessing = true
+                
+                if self.didPressUploadButton {
+                    self.handleUploadButtonAction()
+                }
+                
+            } else if let error = error {
+                self.stopAnimating()
+                let localizedArtProcessingFailed = NSLocalizedString("artProcessingFailded", comment: "")
+                self.errorAlert(localizedArtProcessingFailed, message: error.localizedDescription)
+            }
+            
+        }, progressBlock: {
+            (percentDone: Int32) -> Void in
+            // Update your progress spinner here. percentDone will be between 0 and 100.
+        })
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+        dismiss(animated: true, completion: nil)
+        self.soundArtDidFinishProcessing = true
+    }
+    
+    
     //
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        if let sound = soundThatIsBeingEdited {
+        self.didPressUploadButton = true
+        handleUploadButtonAction()
+    }
+    
+    func handleUploadButtonAction() {
+        self.startAnimating()
+        if self.soundArtDidFinishProcessing, let sound = soundThatIsBeingEdited {
             if sound.objectId != nil {
+                updateSound(sound, isDraft: false)
+            } else {
+                createSound(sound, isDraft: false)
+            }
+            
+            /*if sound.objectId != nil {
                 updateSound(sound, isDraft: false)
             } else if soundParseFileDidFinishProcessing {
                 createSound(sound, isDraft: false)
             } else {
                 didPressUploadButton = true
-            }
+            }*/
         }
     }
 
     //mark: data
     func createSound(_ sound: Sound, isDraft: Bool) {
-        self.startAnimating()
         let tags = combineSelectedTags()
         let newSound = PFObject(className: "Post")
         newSound["userId"] = sound.artist!.objectId
+        newSound["audioFile"] = sound.audio!
         if let title = sound.title {
             newSound["title"] = title
         }
-        newSound["audioFile"] = sound.audio!
         if let artFile = sound.artFile {
             newSound["songArt"] = artFile
         }
@@ -828,7 +931,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func updateSound(_ sound: Sound, isDraft: Bool) {
-        self.startAnimating()
         let tags = combineSelectedTags()
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {

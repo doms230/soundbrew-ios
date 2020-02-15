@@ -35,6 +35,7 @@ target 'soundbrew' do
   #pod 'Firebase/AdMob'
   pod 'TwitterKit'
   pod 'ActiveLabel'
+  pod 'CropViewController'
   #pod 'FacebookCore', '~> 0.5.0'
   #pod 'FacebookLogin', '~> 0.5.0'
   #pod 'FacebookShare', '~> 0.5.0'

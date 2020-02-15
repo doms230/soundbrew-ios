@@ -102,7 +102,11 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            self.performSegue(withIdentifier: "showSearchUser", sender: self)
+            if credits.count == 17 {
+                self.uiElement.showAlert("Limit Reached", message: "You can credit up to 17 people", target: self)
+            } else {
+                self.performSegue(withIdentifier: "showSearchUser", sender: self)
+            }
         }
     }
     
@@ -115,9 +119,12 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            if indexPath.row != 0 && indexPath.section == 1 {
+            if indexPath.section == 0 && indexPath.row != 0 {
+                if let percentage = self.credits[indexPath.row].percentage {
+                    addSplitAmountBackToUploader(percentage)
+                }
                 self.credits.remove(at: indexPath.row)
-                self.tableView.reloadSections([1], with: .automatic)
+                self.tableView.reloadData()
             }
         }
     }
@@ -194,6 +201,10 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             self.credits[0].percentage = totalAvailablePercentage - selectedSplit
         }
         self.tableView.reloadData()
+    }
+    
+    func addSplitAmountBackToUploader(_ amount: Int) {
+        self.credits[0].percentage = self.credits[0].percentage! + amount
     }
     
     func receivedArtist(_ value: Artist?) {

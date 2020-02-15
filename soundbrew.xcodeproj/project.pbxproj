@@ -430,9 +430,9 @@
 		F2FB14CB22CBFBFF00ED157E /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				E4C9DCE823CCEB9D003835E5 /* HomeViewController.swift */,
 				F2F122D822FBCA50002DA196 /* SearchViewController.swift */,
 				F2FB14E522FA335500ED157E /* UpdatesViewController.swift */,
-				E4C9DCE823CCEB9D003835E5 /* HomeViewController.swift */,
 				F2FB14D022CC142C00ED157E /* Tag */,
 			);
 			path = Main;
@@ -1012,7 +1012,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrew/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1037,7 +1037,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 8963R7TGNB;
 				INFOPLIST_FILE = soundbrew/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

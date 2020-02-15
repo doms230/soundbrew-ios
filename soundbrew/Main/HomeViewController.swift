@@ -112,22 +112,31 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return friendsStories.count
+        if section == 0 {
+            return unListenedStories.count
+        }
+        return listenedStories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
-       
-        let artist = friendsStories[indexPath.row].artist!
+        cell.selectionStyle = .none
+        var story: Story!
+        if indexPath.section == 0 {
+            story = unListenedStories[indexPath.row]
+        } else {
+            story = listenedStories[indexPath.row]
+        }
+        
+        let artist = story.artist!
         
         if let username = artist.username {
             cell.username.text = "@\(username)"
         } else {
-            print("load artist")
             cell.username.text = "@username"
             artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
         }
@@ -144,52 +153,70 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.displayNameLabel.text = "name"
         }
         
-         if let dateCreated = friendsStories[indexPath.row].lastUpdated {
-            cell.city.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
-         }
-         
-             /*if let didCurrentUserListenToStory = friendsStories[indexPath.row].didListenToLatest {
-                 if didCurrentUserListenToStory {
-                     cell.city.text = "Listened"
-                 } else {
-                     cell.city.text = "Un-Listened"
-                 }
-             } else {
-                 cell.city.text = ""
-             }*/
+        if let dateCreated = story.lastUpdated {
+            cell.userCity.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
+        }
         
-            if let selectedIndexPath = self.selectedIndexPath {
-                if selectedIndexPath == indexPath {
-                    cell.homebackgroundView.image = UIImage(named: "background")
-                   // cell.profileImage.layer.borderColor = color.blue().cgColor
-                   // cell.profileImage.layer.borderWidth = 5
-                } else {
-                    cell.homebackgroundView.image = UIImage()
-                    //cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
-                   // cell.profileImage.layer.borderWidth = 1
-                }
+        if let selectedIndexPath = self.selectedIndexPath {
+            if selectedIndexPath == indexPath {
+                cell.homebackgroundView.image = UIImage(named: "background")
+            } else {
+                cell.homebackgroundView.image = UIImage()
             }
+        }
+        
+        if indexPath.section == 0 {
+            cell.homebackgroundView.backgroundColor = .darkGray
+        } else {
+            cell.homebackgroundView.backgroundColor = color.purpleBlack()
+        }
+        
+        if let type = story.type {
+            cell.city.text = "New \(type.capitalized)"
+        }        
            
            return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            if let selectedUserId = friendsStories[indexPath.row].artist?.objectId {
-                self.selectedIndexPath = indexPath
-                tableView.reloadData()
-                soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+       /* if let indexPath = self.selectedIndexPath {
+            if indexPath.section == 0 {
+                removeUnlistenedStoryAndAddToListenedStories(indexPath.row, story: unListenedStories[indexPath.row])
             }
+        }*/
+        
+        var story: Story!
+        if indexPath.section == 0 {
+            story = unListenedStories[indexPath.row]
+        } else {
+            story = listenedStories[indexPath.row]
+        }
+        
+        if let selectedUserId = story.artist?.objectId {
+            self.selectedIndexPath = indexPath
+            tableView.reloadData()
+            
+            soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        }
+    }
+    
+    func removeUnlistenedStoryAndAddToListenedStories(_ row: Int, story: Story) {
+        self.unListenedStories.remove(at: row)
+        listenedStories.append(story)
+        self.listenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+        self.tableView.reloadData()
     }
     
     //
-    var friendsStories = [Story]()
+    var unListenedStories = [Story]()
+    var listenedStories = [Story]()
     var didGetInitialFriendsList = false
     func loadFriendStories() {
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
-            self.friendsStories.removeAll()
+            self.unListenedStories.removeAll()
+            self.listenedStories.removeAll()
             for friendUserId in friendUserIds {
-                print(friendUserId)
                 let query = PFQuery(className: "Story")
                 query.whereKey("userId", equalTo: friendUserId)
                 query.addDescendingOrder("createdAt")
@@ -197,8 +224,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                       (object: PFObject?, error: Error?) -> Void in
                         if let object = object {
                             let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                            //friend.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
-                            let story = Story(friend, lastUpdated: object.createdAt, didListenToLatest: false)
+                            let story = Story(friend, lastUpdated: object.createdAt, type: nil)
+                            if let type = object["type"] as? String {
+                                story.type = type
+                            }
                             let postId = object["postId"] as! String
                             self.determineIfUserListened(postId, story: story)
                         }
@@ -209,17 +238,19 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func determineIfUserListened(_ postId: String, story: Story) {
         let query = PFQuery(className: "Listen")
-        query.whereKey("userId", equalTo: story.artist.objectId!)
+        query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
         query.whereKey("postId", equalTo: postId)
         query.getFirstObjectInBackground {
               (object: PFObject?, error: Error?) -> Void in
             if object != nil {
-                story.didListenToLatest = true
-                story.lastUpdated = object?.createdAt
+                print(object!["postId"] as! String)
+                self.listenedStories.append(story)
+                self.listenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+            } else {
+                self.unListenedStories.append(story)
+                self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
             }
-            self.friendsStories.append(story)
             
-            self.friendsStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
                 self.tableView.reloadData()
@@ -296,11 +327,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
 class Story {
     var artist: Artist!
     var lastUpdated: Date?
-    var didListenToLatest: Bool?
-    
-    init(_ artist: Artist, lastUpdated: Date?, didListenToLatest: Bool?) {
+    var type: String?
+    init(_ artist: Artist, lastUpdated: Date?, type: String?) {
         self.artist = artist
         self.lastUpdated = lastUpdated
-        self.didListenToLatest = didListenToLatest
+        self.type = type
     }
 }

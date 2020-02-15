@@ -10,6 +10,7 @@ PODS:
   - AppCenter/Crashes (2.5.3):
     - AppCenter/Core
   - Bolts/Tasks (1.9.0)
+  - CropViewController (2.5.2)
   - Firebase/Core (6.14.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.1.7)
@@ -116,6 +117,7 @@ DEPENDENCIES:
   - ActiveLabel
   - Alamofire
   - AppCenter
+  - CropViewController
   - Firebase/Core
   - Firebase/DynamicLinks
   - GrowingTextView
@@ -137,6 +139,7 @@ SPEC REPOS:
     - Alamofire
     - AppCenter
     - Bolts
+    - CropViewController
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -171,6 +174,7 @@ SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AppCenter: 765ff38c4d360fc5ec61b61a8be24d74cd6d4d83
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
+  CropViewController: 1aac40093c5739e60d992b04724a55d12a689a4c
   Firebase: 0219bb4782eb1406f1b9b0628a2e625484ce910d
   FirebaseAnalytics: f68b9f3f1241385129ae0a83b63627fc420c05e5
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -200,6 +204,6 @@ SPEC CHECKSUMS:
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
   UICircularProgressRing: 907613633e76e561b972a3868c95517d14c71006
 
-PODFILE CHECKSUM: 9ad5c1e8612c4d5ba0d6a41333b8ded316d44a40
+PODFILE CHECKSUM: d43e201db9d6a9d8ac9e3a7caf49713c6df20e25
 
 COCOAPODS: 1.8.4

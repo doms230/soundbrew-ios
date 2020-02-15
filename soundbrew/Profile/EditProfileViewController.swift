@@ -11,8 +11,9 @@ import SnapKit
 import Parse
 import NVActivityIndicatorView
 import Kingfisher
+import CropViewController
 
-class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate {
+class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate, CropViewControllerDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -263,19 +264,38 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     //mark: media
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         // Local variable inserted by Swift 4.2 migrator.
-        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)        
-        let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
-        
-        profileImage.image = image 
-        
-        let chosenProfileImage = image.jpegData(compressionQuality: 0.5)
-        newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
-        newProfileImageFile?.saveInBackground()
-        
-        dismiss(animated: true, completion: nil)
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        var selectedImage: UIImage?
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+            selectedImage = image
+        }
+                
+        dismiss(animated: true, completion: {() in
+            if let image = selectedImage {
+                self.presentImageCropViewController(image)
+            }
+        })
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func presentImageCropViewController(_ image: UIImage) {
+        let cropViewController = CropViewController(croppingStyle: .circular, image: image)
+        cropViewController.aspectRatioLockEnabled = true
+        cropViewController.aspectRatioPickerButtonHidden = true
+        cropViewController.aspectRatioPreset = .presetSquare
+        cropViewController.resetAspectRatioEnabled = false
+        cropViewController.delegate = self
+        present(cropViewController, animated: true, completion: nil)
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        profileImage.image = image
+        let chosenProfileImage = image.jpegData(compressionQuality: 0.5)
+        newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
+        newProfileImageFile?.saveInBackground()
         dismiss(animated: true, completion: nil)
     }
     

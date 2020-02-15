@@ -32,9 +32,11 @@ class SoundInfoTableViewCell: UITableViewCell {
         return audioProgress
     }()
     
-    lazy var audioProgressImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "sound")
+    lazy var soundArtImageButton: UIButton = {
+        let image = UIButton()
+        image.setImage(UIImage(named: "add_image"), for: .normal)
+        image.layer.cornerRadius = 5
+        image.clipsToBounds = true 
         return image
     }()
     
@@ -127,16 +129,16 @@ class SoundInfoTableViewCell: UITableViewCell {
             self.addSubview(dividerLine)
             self.addSubview(inputTitle)
             self.addSubview(audioProgress)
-            self.addSubview(audioProgressImage)
+            self.addSubview(soundArtImageButton)
             
             audioProgress.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
+                make.height.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            audioProgressImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
+            soundArtImageButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(75)
                 make.centerX.centerY.equalTo(audioProgress)
             }
             
