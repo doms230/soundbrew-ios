@@ -33,7 +33,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 setUpTableView(nil)
             }
             
-            loadNewFollows()
+            loadNewMentions()
         } else {
             let localizedRegisterForUpdatesMessage = NSLocalizedString("registerForUpdatesMessage", comment: "")
             self.uiElement.welcomeAlert(localizedRegisterForUpdatesMessage, target: self)
@@ -100,7 +100,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
-       loadNewFollows()
+       loadNewMentions()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -210,7 +210,13 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.backgroundColor = color.black()
         let update = self.updates[indexPath.row]
         
-        if let image = update.artist.image {
+        if let username = update.artist.username {
+            
+        } else {
+            loadUserInfoFromCloud(update.artist.objectId, cell: cell, indexPath: indexPath)
+        }
+        
+       /* if let image = update.artist.image {
             cell.profileImage.kf.setImage(with: URL(string: image))
             let name = self.getName(update.artist)
             if update.soundId != nil {
@@ -224,7 +230,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         } else {
             loadUserInfoFromCloud(update.artist.objectId, cell: cell, indexPath: indexPath)
-        }
+        }*/
         
         //createdAt
         cell.city.text = self.uiElement.formatDateAndReturnString(update.createdAt)
@@ -245,13 +251,14 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.profileImage.kf.setImage(with: URL(string: userImageFile))
                 }
                 self.updates[indexPath.row].artist = artist
-                if let soundId = self.updates[indexPath.row].soundId {
+                
+               /* if let soundId = self.updates[indexPath.row].soundId {
                     self.loadSound(soundId, cell: cell, indexPath: indexPath)
                 } else {
                     let name = self.getName(artist)
                     cell.displayNameLabel.text = "\(name) \(self.localizedFollowedYou)"
                     cell.displayNameLabel.textColor = .white
-                }
+                }*/
             }
         }
     }
@@ -283,7 +290,38 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
         return ""
     }
     
-    func loadNewFollows() {
+    func loadNewMentions() {
+        let query = PFQuery(className: "Mention")
+        query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+        query.limit = 50
+        query.addDescendingOrder("createdAt")
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let userObjectId = object["fromUserId"] as! String
+                        let artist = Artist(objectId: userObjectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                        let update = Update(object.createdAt!, artist: artist, tipAmount: nil, soundId: nil, soundName: nil, tipId: nil, followId: object.objectId!)
+                        self.updates.append(update)
+                    }
+                }
+                
+                    self.updates.sort(by: {$0.createdAt > $1.createdAt})
+                   self.tableView.reloadData()
+                self.tableView.refreshControl?.endRefreshing()
+                    if self.updates.count > 0 {
+                        SKStoreReviewController.requestReview()
+                    }
+                
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
+    /*func loadNewFollows() {
         let query = PFQuery(className: "Follow")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         query.whereKey("isRemoved", equalTo: false)
@@ -313,9 +351,9 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 print("Error: \(error!)")
             }
         }
-    }
+    }*/
     
-    func loadNewTips() {
+    /*func loadNewTips() {
         let query = PFQuery(className: "Tip")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         var tipIds = [String]()
@@ -351,7 +389,7 @@ class UpdatesViewController: UIViewController, UITableViewDelegate, UITableViewD
                 print("Error: \(error!)")
             }
         }
-    }
+    }*/
     
     //mark: tags
     var selectedTagFromPlayerView: Tag!

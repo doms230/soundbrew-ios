@@ -118,17 +118,31 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return unListenedStories.count
+        } else if section == 1 {
+            return listenedStories.count
         }
-        return listenedStories.count
+        
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        /*if indexPath.section == 0 {
+            let yourSoundbrewCell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
+            yourSoundbrewCell.selectionStyle = .none
+            yourSoundbrewCell.displayNameLabel.text = "Your Soundbrew"
+            yourSoundbrewCell.username.text = "A playlist of recommended music."
+            yourSoundbrewCell.profileImage.image = UIImage(named: "appy")
+            yourSoundbrewCell.userCity.text = ""
+        }*/
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
         var story: Story!
+        
         if indexPath.section == 0 {
             story = unListenedStories[indexPath.row]
-        } else {
+        } else if indexPath.section == 1 {
             story = listenedStories[indexPath.row]
         }
         
@@ -175,9 +189,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.city.text = "New \(type.capitalized)"
         }        
            
-           return cell
+        return cell
     }
-    
+        
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        /* if let indexPath = self.selectedIndexPath {
             if indexPath.section == 0 {

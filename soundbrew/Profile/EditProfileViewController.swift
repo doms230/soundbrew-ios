@@ -393,13 +393,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func changeBio(_ value: String?) {
-        let localizedAdd = NSLocalizedString("add", comment: "")
         if let newBioText = value {
-            if newBioText != "\(localizedAdd) Bio" {
-                artist!.bio = newBioText
-                self.tableView.reloadData()
-            }
+            artist!.bio = newBioText
+        } else {
+            artist!.bio = nil
         }
+        self.tableView.reloadData()
     }
     
     //MARK: Data

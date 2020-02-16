@@ -32,7 +32,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var soundArtDidFinishProcessing = true
     var didPressUploadButton = false
     //var soundParseFileDidFinishProcessing = false
-    var soundTitle: UILabel!
+   // var soundTitle: UILabel!
     
     var soundThatIsBeingEdited: Sound?
         
@@ -107,8 +107,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
-        self.soundThatIsBeingEdited?.title = self.soundTitle.text
-        self.uiElement.goBackToPreviousViewController(self)
+       // self.soundThatIsBeingEdited?.title = self.soundTitle.text
+        //self.uiElement.goBackToPreviousViewController(self)
         /*if let sound = self.soundThatIsBeingEdited {
             if sound.isDraft! && self.soundParseFileDidFinishProcessing {
                 saveDraft()
@@ -116,6 +116,35 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.uiElement.goBackToPreviousViewController(self)
             }
         }*/
+        
+        /*if self.soundTitle.text != "Add Title/Description" {
+            self.soundThatIsBeingEdited?.title = self.soundTitle.text
+        }*/
+        
+        var titleMessage: String!
+        if self.soundThatIsBeingEdited?.objectId != nil {
+            titleMessage = "Update the changes you made to this upload?"
+        } else {
+            titleMessage = "Save this upload for later?"
+        }
+        
+        let alertController = UIAlertController (title: titleMessage, message: "", preferredStyle: .actionSheet)
+        
+        let yesAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
+            self.saveDraft()
+        }
+        alertController.addAction(yesAction)
+        
+        let noAction = UIAlertAction(title: "No", style: .default) { (_) -> Void in
+            self.uiElement.goBackToPreviousViewController(self)
+        }
+        alertController.addAction(noAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
+        }
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func saveDraft() {
@@ -679,6 +708,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let sound = soundThatIsBeingEdited {
             if let soundTitle = sound.title {
                 cell.inputTitle.text = soundTitle
+                /*if soundTitle == "" {
+                    cell.inputTitle.text = "Add Title/Description"
+                } else {
+                    cell.inputTitle.text = soundTitle
+                }*/
+                
             } else {
                 cell.inputTitle.text = "Add Title/Description"
             }
@@ -686,13 +721,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if sound.objectId != nil {
                 cell.audioProgress.value = 100
             }
-            
+                        
             if let image = sound.artImage {
                 cell.soundArtImageButton.setImage(image, for: .normal)
+            } else if let imageURL = sound.artURL {
+                cell.soundArtImageButton.kf.setImage(with: URL(string: imageURL), for: .normal)
             }
         }
         
-        soundTitle = cell.inputTitle
+       // soundTitle = cell.inputTitle
         tableView.separatorStyle = .singleLine
         
         return cell
@@ -702,6 +739,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func changeBio(_ value: String?) {
         if let newtitle = value {
             self.soundThatIsBeingEdited?.title = newtitle
+            print("got value")
+        } else {
+            print("nil")
+            self.soundThatIsBeingEdited?.title = nil
         }
         self.tableView.reloadData()
     }
@@ -768,10 +809,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 self.uploadButton.isEnabled = true
                 
-                let localizedSaveDraft = NSLocalizedString("saveDraft", comment: "")
+              /*  let localizedSaveDraft = NSLocalizedString("saveDraft", comment: "")
                 
                 self.backButton = UIBarButtonItem(title: localizedSaveDraft, style: .plain, target: self, action: #selector(self.didPressGoBackButton(_:)))
-                self.navigationItem.leftBarButtonItem = self.backButton
+                self.navigationItem.leftBarButtonItem = self.backButton*/
                                 
             } else if let error = error {
                 let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")

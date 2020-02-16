@@ -42,14 +42,15 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
     
     @objc func didPressDoneButton(_ sender: UIButton) {
         if let artistDelegate = self.artistDelegate {
-            if inputBio.text != "" {
+            if inputBio.text == "" {
+                artistDelegate.changeBio(nil)
+            } else {
                 let newCreditTitleWithNoSpaces = inputBio.text.trimmingCharacters(
                     in: NSCharacterSet.whitespacesAndNewlines
                 )
                 artistDelegate.changeBio(newCreditTitleWithNoSpaces)
-            }
+            }            
         }
-        
         self.dismiss(animated: true, completion: nil)
     }
     

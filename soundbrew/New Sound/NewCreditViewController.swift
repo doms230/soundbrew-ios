@@ -153,7 +153,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.artistTypeButton.setTitle("Add Credit Title", for: .normal)
             }
             
-            if indexPath.section == 0 {
+            if indexPath.row == 0 {
                 cell.artistTypeButton.setTitleColor(color.blue(), for: .normal)
                 cell.artistTypeButton.setTitleColor(.darkGray, for: .normal)
                 
@@ -182,8 +182,10 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     func changeBio(_ value: String?) {
         if let newCreditTitle = value {
             self.credits[creditTitleCurrentlyBeingEdited].title = newCreditTitle
-            self.tableView.reloadData()
+        } else {
+            self.credits[creditTitleCurrentlyBeingEdited].title = nil
         }
+        self.tableView.reloadData()
     }
     
     @objc func didChangeTipSplit(_ sender: UISlider) {

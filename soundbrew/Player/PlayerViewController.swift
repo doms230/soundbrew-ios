@@ -31,7 +31,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Soundbrew"
-        
         setupPlayerView()
     }
         
@@ -608,11 +607,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 self.uiElement.showAlert("🙃", message: cannottipyourself, target: self)
             } else if didAddSongToCollection {
                 let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tipAmount!, currency: "$")
-                let localizedYouAdded = NSLocalizedString("youAdded", comment: "")
-                let localizedToYourCollection = NSLocalizedString("toYourCollection", comment: "")
-                self.uiElement.showAlert("\(localizedYouAdded) \(self.sound!.title!) \(localizedToYourCollection) \(amountString)", message: "", target: self)
+                self.uiElement.showAlert("You liked this song for \(amountString)", message: "", target: self)
             } else {
-                //showSendMoney()
                 getTipAmountAndLikeSong()
             }
         } else {
