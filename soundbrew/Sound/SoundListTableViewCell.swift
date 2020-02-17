@@ -140,10 +140,10 @@ class SoundListTableViewCell: UITableViewCell {
         return image
     }()
     
-    lazy var likesButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "sendTipColored"), for: .normal)
-        return button
+    lazy var likesImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "sendTipColored")
+        return image
     }()
     
     lazy var likesCountLabel: UILabel = {
@@ -200,8 +200,8 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(dividerLine)
             
             //adding seperate stuff because doesn't size right as one button.
-            self.addSubview(likesButton)
-            self.likesButton.addSubview(likesCountLabel)
+            self.addSubview(likesImage)
+            self.addSubview(likesCountLabel)
             
             soundArtImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(125)
@@ -257,17 +257,17 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(dividerLine.snp.top)
             }
             
-            likesButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(15)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+            likesCountLabel.snp.makeConstraints { (make) -> Void in
+                make.right.equalTo(soundDate)
                 make.bottom.equalTo(soundDate)
             }
             
-            /*likesCountLabel.snp.makeConstraints { (make) -> Void in
-                make.right.equalTo(likesButton)
-                make.bottom.equalTo(likesButton)
-            }*/
-            
+            likesImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(15)
+                make.right.equalTo(likesCountLabel.snp.left).offset(-(uiElement.elementOffset))
+                make.bottom.equalTo(soundDate)
+            }
+                        
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)

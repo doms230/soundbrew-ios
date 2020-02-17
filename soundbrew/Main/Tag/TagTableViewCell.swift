@@ -36,14 +36,14 @@ class TagTableViewCell: UITableViewCell {
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.text = localizedViewAll
         label.textColor = .white
+        label.numberOfLines = 0
         return label
     }()
     
     lazy var newChartsButton: UIButton = {
-        let localizedNew = NSLocalizedString("new", comment: "")
+        //let localizedNew = NSLocalizedString("new", comment: "")
         let button = UIButton()
-        button.setTitle(localizedNew, for: .normal)
-        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+       // button.setTitle(localizedNew, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.layer.cornerRadius = 5
         button.clipsToBounds = true
@@ -115,7 +115,7 @@ class TagTableViewCell: UITableViewCell {
             TagTypeTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(tagTypeButton)
                 make.left.equalTo(tagTypeButton)
-                make.right.equalTo(viewAllLabel.snp.left).offset(uiElement.rightOffset)
+              //  make.right.equalTo(viewAllLabel.snp.left).offset(uiElement.rightOffset)
                 make.bottom.equalTo(tagTypeButton)
             }
             
@@ -129,38 +129,12 @@ class TagTableViewCell: UITableViewCell {
             
         } else {
             self.addSubview(newChartsButton)
-            self.addSubview(topChartsButton)
-            self.addSubview(followButton)
-            self.addSubview(TagTypeTitle)
-            
-            TagTypeTitle.text = "Releases"
-            TagTypeTitle.snp.makeConstraints { (make) -> Void in
+            newChartsButton.setBackgroundImage(UIImage(named: "topChartsImage"), for: .normal)
+            newChartsButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            newChartsButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(100)
-                make.height.equalTo(50)
-                make.top.equalTo(TagTypeTitle.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            topChartsButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(100)
-                make.height.equalTo(50)
-                make.top.equalTo(newChartsButton)
-                make.left.equalTo(newChartsButton.snp.right).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            followButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(115)
-                make.height.equalTo(50)
-                make.top.equalTo(newChartsButton)
-                make.left.equalTo(topChartsButton.snp.right).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
         }

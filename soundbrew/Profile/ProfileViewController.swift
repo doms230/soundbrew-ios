@@ -236,7 +236,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let player = Player.sharedInstance
         if player.player != nil {
             let modal = PlayerViewController()
-            //modal.player = player
             modal.playerDelegate = self
             modal.tagDelegate = self 
             self.present(modal, animated: true, completion: nil)

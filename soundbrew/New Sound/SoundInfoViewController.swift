@@ -708,12 +708,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let sound = soundThatIsBeingEdited {
             if let soundTitle = sound.title {
                 cell.inputTitle.text = soundTitle
-                /*if soundTitle == "" {
-                    cell.inputTitle.text = "Add Title/Description"
-                } else {
-                    cell.inputTitle.text = soundTitle
-                }*/
-                
             } else {
                 cell.inputTitle.text = "Add Title/Description"
             }
@@ -729,7 +723,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
-       // soundTitle = cell.inputTitle
         tableView.separatorStyle = .singleLine
         
         return cell
@@ -739,9 +732,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func changeBio(_ value: String?) {
         if let newtitle = value {
             self.soundThatIsBeingEdited?.title = newtitle
-            print("got value")
         } else {
-            print("nil")
             self.soundThatIsBeingEdited?.title = nil
         }
         self.tableView.reloadData()

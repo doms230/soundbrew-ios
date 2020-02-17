@@ -215,11 +215,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.newChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
             cell.newChartsButton.tag = 0
             
-            cell.topChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
+           /* cell.topChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
             cell.topChartsButton.tag = 1
             
             cell.followButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
-            cell.followButton.tag = 2
+            cell.followButton.tag = 2*/
             
             return cell
         }
@@ -268,15 +268,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didPressChartsButton(_ sender: UIButton) {
-        let tag = Tag(objectId: nil, name: "new", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
-        var soundType = "chart"
-        if sender.tag == 1 {
-            tag.name = "top"
-        } else if sender.tag == 2 {
-            tag.name = "following"
-            soundType = "follow"
-        }
-        showSounds(tag, soundType: soundType)
+        let tag = Tag(objectId: nil, name: "Weekly Top Charts", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+        showSounds(tag, soundType: "chart")
     }
     
     //mark: tags

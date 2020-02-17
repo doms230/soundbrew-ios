@@ -118,11 +118,9 @@ class SoundList: NSObject, PlayerDelegate {
             cell.soundDate.text = formattedDate
             
             if let likes = sound.tipCount {
-                cell.likesButton.setTitle("\(likes)", for: .normal)
-               // cell.likesCountLabel.text = "\(likes)"
+                cell.likesCountLabel.text = "\(likes)"
             } else {
-                cell.likesButton.setTitle("0", for: .normal)
-                //cell.likesCountLabel.text = "0"
+                cell.likesCountLabel.text = "0"
             }
         }
         
@@ -289,14 +287,15 @@ class SoundList: NSObject, PlayerDelegate {
         cell.artistLabel.textColor = color
         let originalImage = UIImage(named: "sendTipColored")
         let tintedImage = originalImage?.withRenderingMode(.alwaysTemplate)
-        cell.likesButton.setImage(tintedImage, for: .normal)
+        cell.likesImage.image = tintedImage
         if color == .white {
             cell.soundDate.textColor = .darkGray
             cell.likesCountLabel.textColor = .darkGray
-            cell.likesButton.imageView?.tintColor = .darkGray
+            cell.likesImage.tintColor = .darkGray
         } else {
             cell.soundDate.textColor = color
-            cell.likesButton.imageView?.tintColor = color
+            cell.likesCountLabel.textColor = color
+            cell.likesImage.tintColor = color
         }
     }
     
@@ -305,11 +304,12 @@ class SoundList: NSObject, PlayerDelegate {
         
         switch soundType {
         case "chart":
-            loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: nil)
+            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil)
             break
             
         case "discover":
-            self.loadWorldCreatedAtSounds()
+           // loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, selectedTagForFiltering: selectedTagForFiltering)
+            loadWorldCreatedAtSounds()
             break
             
         case "uploads":
@@ -391,7 +391,7 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func loadSounds(_ descendingOrder: String, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?) {
+    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?) {
         
         isUpdatingData = true 
         
@@ -407,6 +407,13 @@ class SoundList: NSObject, PlayerDelegate {
         
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
+        }
+        
+        if let descendingOrder = descendingOrder {
+            query.addDescendingOrder(descendingOrder)
+        } else {
+            query.whereKey("createdAt", greaterThanOrEqualTo: Date().previous(.friday))
+            query.addDescendingOrder("tippers")
         }
         
         if let searchText = searchText {
@@ -425,7 +432,6 @@ class SoundList: NSObject, PlayerDelegate {
            query.whereKey("isRemoved", notEqualTo: true)
         }
         
-        query.addDescendingOrder(descendingOrder)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -544,13 +550,13 @@ class SoundList: NSObject, PlayerDelegate {
         let totalSoundsCount = createdAtSounds.count + topSounds.count
         for i in 0..<totalSoundsCount {
             if i % 2 == 0 {
-                if createdAtSounds.indices.contains(i / 2) {
-                    mixSounds.append(createdAtSounds[i / 2])
+                if topSounds.indices.contains(i / 2) {
+                    mixSounds.append(topSounds[i / 2])
                 }
                 
             } else {
-                if topSounds.indices.contains(i / 2) {
-                    mixSounds.append(topSounds[i / 2])
+                if createdAtSounds.indices.contains(i / 2) {
+                    mixSounds.append(createdAtSounds[i / 2])
                 }
             }
         }
