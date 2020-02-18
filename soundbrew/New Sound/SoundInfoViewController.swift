@@ -1049,7 +1049,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if shouldPlaySoundAndShowShareOptions {
             let soundId = object.objectId!
-            self.uiElement.setUserDefault("newSoundId", value: soundId)
+            self.uiElement.setUserDefault(soundId, key: "newSoundId")
             self.uiElement.newRootView("Main", withIdentifier: "tabBar")
         } else {
             self.uiElement.goBackToPreviousViewController(self)

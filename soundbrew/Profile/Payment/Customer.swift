@@ -189,7 +189,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                         }
                     }
                     self.artist?.friendObjectIds = friendObjectIds
-                    self.uiElement.setUserDefault("friends", value: friendObjectIds)
+                    self.uiElement.setUserDefault(friendObjectIds, key: "friends")
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
                 }
             }

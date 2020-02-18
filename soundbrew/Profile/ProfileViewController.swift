@@ -744,13 +744,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if shouldAddArtist {
             friendsList.append(userId)
-            self.uiElement.setUserDefault("friends", value: friendsList)
+            self.uiElement.setUserDefault(friendsList, key: "friends")
         } else {
             for i in 0..<friendsList.count {
                 let friend = friendsList[i]
                 if friend == userId {
                     friendsList.remove(at: i)
-                    self.uiElement.setUserDefault("friends", value: friendsList)
+                    self.uiElement.setUserDefault(friendsList, key: "friends")
                     break
                 }
             }

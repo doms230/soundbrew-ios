@@ -172,7 +172,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     //login with logic
-    func checkIfUserExists(_ loginInService: String, userID: String, authToken: String?, authTokenSecret: String?, username: String?) {
+    func checkIfUserExists(_ loginInService: String, userID: String, authToken: String, authTokenSecret: String?, username: String?) {
         let query = PFQuery(className: "_User")
         if loginInService == "twitter" {
             query.whereKey("twitterID", equalTo: userID)
@@ -183,7 +183,11 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
-                self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken!, auth_token_secret: authTokenSecret!, username: username)
+                print("apple userId: \(userID)")
+              //  print("auth token: \(authToken)")
+               // print("auth token secret: \(authTokenSecret!)")
+                //print("username: \(username)")
+                self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken, auth_token_secret: nil, username: username)
             } else {
                 self.stopAnimating()
                 self.setupNewEmailView()
@@ -191,14 +195,15 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         }
     }
     
-    func PFauthenticateWith(_ loginService: String, userId: String, auth_token: String, auth_token_secret: String, username: String?) {
+    func PFauthenticateWith(_ loginService: String, userId: String, auth_token: String, auth_token_secret: String?, username: String?) {
         
         var authData: [String: String]
 
         if loginService == "twitter" {
-            authData = ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret ]
+            authData = ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
         } else {
-            authData = ["id": userId]
+            //authData = ["id": userId]
+            authData = ["id": userId, "token": auth_token]
         }
          
         PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
@@ -292,7 +297,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 self.emailText.text = email
             }
             
-            self.checkIfUserExists("apple", userID: appleID, authToken: nil, authTokenSecret: nil, username: nil)
+            self.checkIfUserExists("apple", userID: appleID, authToken: self.appleToken!, authTokenSecret: nil, username: nil)
             
             break
         default:

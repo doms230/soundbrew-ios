@@ -20,6 +20,8 @@ class ProfileTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.backgroundColor = .black
         image.layer.cornerRadius = 5
+      //  image.layer.borderColor = color.purpleBlack().cgColor
+       // image.layer.borderWidth = 0.5
         image.clipsToBounds = true
         return image
     }()
@@ -68,7 +70,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
         image.layer.borderWidth = 1
-        image.layer.borderColor = UIColor.black.cgColor
+        image.layer.borderColor = UIColor.darkGray.cgColor
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
@@ -287,62 +289,70 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
-            
             break
             
         case "homeReuse":
-            self.addSubview(homebackgroundView)
-            self.homebackgroundView.addSubview(profileImage)
-            self.homebackgroundView.addSubview(displayNameLabel)
-            self.homebackgroundView.addSubview(city)
-            self.homebackgroundView.addSubview(username)
-            self.homebackgroundView.addSubview(userCity)
-            
-            homebackgroundView.snp.makeConstraints { (make) -> Void in
+           // self.addSubview(homebackgroundView)
+            self.addSubview(profileImage)
+            self.addSubview(displayNameLabel)
+            self.addSubview(city)
+            self.addSubview(username)
+            self.addSubview(userCity)
+            self.addSubview(seperatorLine)
+           /* homebackgroundView.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            //latest update type
-            city.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-            city.textColor = .white
-            city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(homebackgroundView).offset(uiElement.topOffset)
-                make.left.equalTo(homebackgroundView).offset(uiElement.leftOffset)
-            }
-            
-            //date
-            userCity.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-            userCity.textColor = .lightGray
-            userCity.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(city)
-                make.right.equalTo(homebackgroundView).offset(uiElement.rightOffset)
-            }
+            }*/
             
             let imageHeightWidth = 50
             profileImage.layer.cornerRadius = CGFloat(imageHeightWidth/2)
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(imageHeightWidth)
-                make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(homebackgroundView).offset(uiElement.leftOffset)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
             displayNameLabel.textColor = .white
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(profileImage).offset(uiElement.bottomOffset)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(homebackgroundView).offset(uiElement.rightOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            username.textColor = .lightGray
+            username.textColor = .darkGray
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
+            
+            //date
+            userCity.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+            userCity.textColor = .darkGray
+            userCity.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(username)
+            }
+            
+            //latest update type
+            city.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+            city.textColor = .darkGray
+            city.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(userCity)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            seperatorLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(city.snp.bottom)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
+            
             break
             
         case "searchProfileReuse":

@@ -23,7 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         return true 
     }
     var window: UIWindow?
-
+    let uiElement = UIElement()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         UITabBar.appearance().barTintColor = .black
@@ -182,17 +183,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     func receivedUserId(_ userId: String) {
         print(userId)
-        UIElement().setUserDefault("receivedUserId", value: userId)
+        self.uiElement.setUserDefault(userId, key: "receivedUserId")
         showMainViewController(1)
     }
     
     func receivedUsername(_ username: String) {
-        UIElement().setUserDefault("receivedUsername", value: username)
+        self.uiElement.setUserDefault(username, key: "receivedUsername")
         showMainViewController(1)
     }
     
     func receivedPostId(_ soundId: String) {
-        UIElement().setUserDefault("receivedSoundId", value: soundId)
+        self.uiElement.setUserDefault(soundId, key: "receivedSoundId")
         showMainViewController(0)
     }
     

@@ -48,6 +48,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
+            if self.uiElement.getUserDefault("friends") != nil {
+                self.uiElement.setUserDefault(nil, key: "friends")
+            }
             self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
             MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Sign out", "description": "User pressed Sign out"])
         }))
@@ -283,7 +286,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         alertView.view.addSubview(pickerView)
         
         let sendMoneyActionButton = UIAlertAction(title: "Save", style: .default) { (_) -> Void in
-            self.uiElement.setUserDefault("tipAmount", value: self.selectedTipAmount)
+            self.uiElement.setUserDefault(self.selectedTipAmount, key: "tipAmount")
             self.tableView.reloadData()
         }
         alertView.addAction(sendMoneyActionButton)

@@ -18,7 +18,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = "Stories"
+        self.navigationItem.title = "Soundbrew"
         setupNotificationCenter()
         loadFriendStories()
     }
@@ -80,6 +80,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: Tableview
     var tableView: UITableView!
     let homeReuse = "homeReuse"
+    let noSoundsReuse = "noSoundsReuse"
     var selectedIndexPath: IndexPath?
     
     func setUpTableView(_ miniPlayer: UIView?) {
@@ -87,6 +88,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: homeReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
         let refreshControl = UIRefreshControl()
@@ -135,61 +137,68 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             yourSoundbrewCell.profileImage.image = UIImage(named: "appy")
             yourSoundbrewCell.userCity.text = ""
         }*/
+         let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
+         cell.selectionStyle = .none
+         var story: Story!
+         
+         if indexPath.section == 0 {
+             story = unListenedStories[indexPath.row]
+         } else if indexPath.section == 1 {
+             story = listenedStories[indexPath.row]
+         }
+         
+         let artist = story.artist!
+         
+         if let username = artist.username {
+             cell.username.text = "@\(username)"
+         } else {
+             cell.username.text = "@username"
+             artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
+         }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
-        cell.selectionStyle = .none
-        var story: Story!
+         if let image = artist.image {
+             cell.profileImage.kf.setImage(with: URL(string: image))
+         } else {
+             cell.profileImage.image = UIImage(named: "profile_icon")
+         }
+            
+         if let name = artist.name {
+             cell.displayNameLabel.text = name
+         } else {
+             cell.displayNameLabel.text = "name"
+         }
+         
+         if let dateCreated = story.lastUpdated {
+             cell.userCity.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
+         }
+         
+         if let selectedIndexPath = self.selectedIndexPath {
+             if selectedIndexPath == indexPath {
+                 self.changeArtistStoryColor(cell, color: color.blue())
+             } else {
+                 self.changeArtistStoryColor(cell, color: .white)
+             }
+         }
+         
+         if let type = story.type {
+             cell.city.text = "New \(type.capitalized)"
+         }
+            
+         return cell
         
-        if indexPath.section == 0 {
-            story = unListenedStories[indexPath.row]
-        } else if indexPath.section == 1 {
-            story = listenedStories[indexPath.row]
-        }
-        
-        let artist = story.artist!
-        
-        if let username = artist.username {
-            cell.username.text = "@\(username)"
+
+    }
+    
+    func changeArtistStoryColor(_ cell: ProfileTableViewCell, color: UIColor) {
+        cell.username.textColor = color
+        cell.displayNameLabel.textColor = color
+        if color == .white {
+            cell.userCity.textColor = .darkGray
+            cell.city.textColor = .darkGray
         } else {
-            cell.username.text = "@username"
-            artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
+            cell.userCity.textColor = color
+            cell.city.textColor = color
         }
-       
-        if let image = artist.image {
-            cell.profileImage.kf.setImage(with: URL(string: image))
-        } else {
-            cell.profileImage.image = UIImage(named: "profile_icon")
-        }
-           
-        if let name = artist.name {
-            cell.displayNameLabel.text = name
-        } else {
-            cell.displayNameLabel.text = "name"
-        }
-        
-        if let dateCreated = story.lastUpdated {
-            cell.userCity.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
-        }
-        
-        if let selectedIndexPath = self.selectedIndexPath {
-            if selectedIndexPath == indexPath {
-                cell.homebackgroundView.image = UIImage(named: "background")
-            } else {
-                cell.homebackgroundView.image = UIImage()
-            }
-        }
-        
-        if indexPath.section == 0 {
-            cell.homebackgroundView.backgroundColor = .darkGray
-        } else {
-            cell.homebackgroundView.backgroundColor = color.purpleBlack()
-        }
-        
-        if let type = story.type {
-            cell.city.text = "New \(type.capitalized)"
-        }        
-           
-        return cell
     }
 
         
@@ -231,22 +240,25 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             didGetInitialFriendsList = true
             self.unListenedStories.removeAll()
             self.listenedStories.removeAll()
-            for friendUserId in friendUserIds {
+            for i in 0..<friendUserIds.count {
+                let friendUserId = friendUserIds[i]
                 let query = PFQuery(className: "Story")
                 query.whereKey("userId", equalTo: friendUserId)
                 query.addDescendingOrder("createdAt")
                 query.getFirstObjectInBackground {
                       (object: PFObject?, error: Error?) -> Void in
-                        if let object = object {
-                            let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                            let story = Story(friend, lastUpdated: object.createdAt, type: nil)
-                            if let type = object["type"] as? String {
-                                story.type = type
-                            }
-                            let postId = object["postId"] as! String
-                            self.determineIfUserListened(postId, story: story)
+                    if let object = object {
+                        let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                        let story = Story(friend, lastUpdated: object.createdAt, type: nil)
+                        if let type = object["type"] as? String {
+                            story.type = type
                         }
-                  }
+                        let postId = object["postId"] as! String
+                            self.determineIfUserListened(postId, story: story)
+                    } else if !friendUserIds.indices.contains(i + 1) && self.unListenedStories.count == 0 && self.listenedStories.count == 0 {
+                            self.setUpOrReloadTableView()
+                    }
+                }
             }
         }
     }
@@ -266,13 +278,17 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
             }
             
-            if self.tableView != nil {
-                self.tableView.refreshControl?.endRefreshing()
-                self.tableView.reloadData()
-            } else {
-                self.setUpTableView(nil)
-            }
+            self.setUpOrReloadTableView()
           }
+    }
+    
+    func setUpOrReloadTableView() {
+        if self.tableView != nil {
+            self.tableView.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
+        } else {
+            self.setUpTableView(nil)
+        }
     }
     
     //mark: miniPlayer

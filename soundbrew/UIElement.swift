@@ -124,7 +124,7 @@ class UIElement {
         target.present(alertController, animated: true, completion: nil)
     }
     
-    func setUserDefault(_ key: String, value: Any) {
+    func setUserDefault(_ value: Any?, key: String) {
         UserDefaults.standard.set(value, forKey: key)
         UserDefaults.standard.synchronize()
     }

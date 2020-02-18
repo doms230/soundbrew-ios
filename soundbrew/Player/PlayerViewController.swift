@@ -69,7 +69,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                     alertView.view.addSubview(pickerView)
                     
                     let sendMoneyActionButton = UIAlertAction(title: "Save & Tip", style: .default) { (_) -> Void in
-                        self.uiElement.setUserDefault("tipAmount", value: self.selectedTipAmount)
+                        self.uiElement.setUserDefault(self.selectedTipAmount, key: "tipAmount")
                         self.sendTip(sound, tipAmount: self.selectedTipAmount)
                     }
                     alertView.addAction(sendMoneyActionButton)
