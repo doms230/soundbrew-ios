@@ -160,10 +160,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         customer.updateBalance(-tipAmount)
         if currentSoundCredits.isEmpty {
             newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
+            self.newMention(sound, toUserId: sound.artist!.objectId)
             updateArtistPayment(sound.artist!.objectId, tipAmount: tipAmount)
         } else {
             for credit in currentSoundCredits {
-                self.newMention(sound.objectId!, toUserId: credit.artist!.objectId)
                 if credit.artist!.objectId == sound.artist!.objectId {
                     newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
                 }
@@ -196,24 +196,19 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         newTip["toUserId"] = userId
         newTip["amount"] = tipAmount
         newTip["soundId"] = postId
-        newTip.saveEventually{
-            (success: Bool, error: Error?) in
-            if success {
-                
-            }
-        }
+        newTip.saveEventually()
     }
     
-    func newMention(_ postId: String, toUserId: String) {
+    func newMention(_ sound: Sound, toUserId: String) {
         let newMention = PFObject(className: "Mention")
         newMention["type"] = "like"
         newMention["fromUserId"] = PFUser.current()!.objectId!
         newMention["toUserId"] = toUserId
-        newMention["postId"] = postId
+        newMention["postId"] = sound.objectId!
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                //TODO: notification self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
+                self.uiElement.sendAlert("liked \(sound.title!)!", toUserId: toUserId)
             }
         }
     }

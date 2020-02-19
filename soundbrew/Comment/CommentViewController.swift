@@ -684,7 +684,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                //TODO: notification self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
+                self.uiElement.sendAlert("mentioned you in a comment", toUserId: userId)
             }
         }
     }

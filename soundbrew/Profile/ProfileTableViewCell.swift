@@ -35,14 +35,19 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Search People"
+        searchBar.backgroundColor = color.black()
+        searchBar.tintColor = .darkGray
+        searchBar.backgroundImage = UIImage()
         //searchBar.delegate = self
         if #available(iOS 13.0, *) {
             let searchTextField = searchBar.searchTextField
             searchTextField.backgroundColor = color.black()
+            searchTextField.tintColor = .darkGray
             searchTextField.textColor = .white
         } else {
             let searchTextField = searchBar.value(forKey: "_searchField") as! UITextField
             searchTextField.backgroundColor = color.black()
+            searchTextField.tintColor = .darkGray
             searchTextField.textColor = .white
         }
                 
@@ -221,10 +226,10 @@ class ProfileTableViewCell: UITableViewCell {
         case "searchReuse":
             self.addSubview(searchBar)
             searchBar.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.top.equalTo(self)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(self)
             }
             break
             
@@ -480,6 +485,7 @@ class ProfileTableViewCell: UITableViewCell {
             
             //Followers count, following count, earnings count, funds count
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
+            //displayNameLabel.textAlignment = .center
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
@@ -488,6 +494,7 @@ class ProfileTableViewCell: UITableViewCell {
             
             // follower label, following label, earnings label, funds labele
             username.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+            //username.textAlignment = .center
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(self).offset(uiElement.leftOffset)

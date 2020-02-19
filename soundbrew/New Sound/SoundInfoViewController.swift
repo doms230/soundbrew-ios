@@ -288,10 +288,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.credits.append(credit)
     }
     
-    func saveCredits(_ postId: String) {
-        for credit in credits {
-            newCredit(credit, postId: postId)
-            newStory(credit, postId: postId)
+    func saveCredits(_ sound: Sound) {
+        let postId = sound.objectId!
+        for i in 0..<credits.count {
+            let credit = credits[i]
+            if i == 0 {
+                newStory(credit, postId: postId, type: "upload")
+            } else {
+                newCredit(credit, postId: postId)
+                newStory(credit, postId: postId, type: "credit")
+                self.uiElement.sendAlert("credited you on their new release '\(sound.title ?? "")'", toUserId: credit.artist!.objectId)
+            }
         }
     }
     
@@ -308,9 +315,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newCredit.saveEventually()
     }
     
-    func newStory(_ credit: Credit, postId: String) {
+    func newStory(_ credit: Credit, postId: String, type: String) {
         let newStory = PFObject(className: "Story")
-        newStory["type"] = "credit"
+        newStory["type"] = type
         newStory["userId"] = credit.artist!.objectId!
         newStory["postId"] = postId
         newStory.saveEventually()
@@ -950,7 +957,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 } else {
                     self.handleSocials(newSound)
                     self.saveTags(tags)
-                    self.saveCredits(newSound.objectId!)
+                    sound.objectId = newSound.objectId
+                    self.saveCredits(sound)
                     self.finishUp(true, object: newSound)
                     MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
@@ -981,6 +989,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 object["tags"] = tags.map {$0.name}
                 object["isDraft"] = isDraft
                 object["isRemoved"] = isDraft
+                object["credits"] = self.credits.count
                 object.saveEventually {
                     (success: Bool, error: Error?) in
                     if (success) {
@@ -988,7 +997,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                             self.finishUp(false, object: object)
                         } else {
                             self.saveTags(tags)
-                            self.saveCredits(object.objectId!)
+                            sound.objectId = object.objectId
+                            self.saveCredits(sound)
                             self.handleSocials(object)
                             self.finishUp(true, object: object)
                         }

@@ -18,6 +18,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.barTintColor = color.black()
+        view.backgroundColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         self.navigationItem.title = "Soundbrew"
         setupNotificationCenter()
         loadFriendStories()
@@ -40,7 +43,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
+            let viewController = segue.destination as! ProfileViewController
+            viewController.profileArtist = selectedArtist
+            
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
@@ -56,7 +61,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             navigationItem.backBarButtonItem = backItem
             break
             
+        case "showTags":
+            let viewController = segue.destination as! SoundsViewController
+            viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
+            viewController.soundType = "discover"
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = self.selectedTagFromPlayerView.name
+            navigationItem.backBarButtonItem = backItem
+            break
+            
         default:
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
             break
         }
     }
@@ -124,7 +142,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 && unListenedStories.count != 0 {
-            return listenedStories.count
+            return unListenedStories.count
         }
         
         return 1
@@ -135,8 +153,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             return storyCell(indexPath)
         } else if unListenedStories.count == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-                cell.selectionStyle = .none
-            cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will create a playlist from their latest releases, credits, and likes."
+            cell.selectionStyle = .none
+            cell.backgroundColor = color.black()
+            cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will create a playlist from their latest updates and show them here."
             return cell
         } else {
             return storyCell(indexPath)
@@ -146,6 +165,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func storyCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
         if indexPath.section == 0 {
             cell.displayNameLabel.text = "Your Soundbrew"
             cell.username.text = "A playlist of recommended music."
@@ -251,14 +271,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                         if let type = object["type"] as? String {
                             story.type = type
                         }
-                        //let postId = object["postId"] as! String
                         self.unListenedStories.append(story)
                         self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
                         self.setUpOrReloadTableView()
-                           // self.determineIfUserListened(postId, story: story)
-                    } /*else if !friendUserIds.indices.contains(i + 1) && self.unListenedStories.count == 0 && self.listenedStories.count == 0 {
-                            self.setUpOrReloadTableView()
-                    }*/
+                    }
                 }
             }
         }
@@ -324,10 +340,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         if player.player != nil {
             let modal = PlayerViewController()
             modal.playerDelegate = self
+            modal.tagDelegate = self 
             self.present(modal, animated: true, completion: nil)
         }
     }
     
+    var selectedArtist: Artist?
     func selectedArtist(_ artist: Artist?) {
         if let artist = artist {
             if artist.objectId == "addFunds" {
@@ -340,7 +358,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
                 self.performSegue(withIdentifier: "showTippers", sender: self)
             } else {
-                soundList.selectedArtist(artist)
+                self.selectedArtist = artist
+                self.performSegue(withIdentifier: "showProfile", sender: self)
             }
         }
     }
@@ -367,7 +386,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     self.uiElement.showShareOptions(self, sound: sound)
                 }
                 self.resetPlayer(sounds: [sound])
-                //self.loadYourSoundbrew(false)
             }
         }
     }
@@ -379,42 +397,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         player.currentSound = sounds[0]
         player.currentSoundIndex = 0
         player.setUpNextSong(false, at: 0)
-        //player.soundsPlayed = 2
     }
-    
-    /*func loadYourSoundbrew(_ shouldSetupPlayer: Bool) {
-        let query = PFQuery(className: "Post")
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("tips")
-        query.limit = 100
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    var sounds = [Sound]()
-                    
-                    for i in 0..<objects.count {
-                        let object = objects[i]
-                        let sound = UIElement().newSoundObject(object)
-                        sounds.append(sound)
-                    }
-
-                    sounds.shuffle()
-                    if shouldSetupPlayer {
-                        self.resetPlayer(sounds: sounds)
-                        f
-                    } else {
-                        let player = Player.sharedInstance
-                        player.sounds = sounds
-                    }
-                }
-                
-            } else {
-                print("Error: \(error!)")
-            }
-        }
-    }*/
-    
 }
 
 class Story {

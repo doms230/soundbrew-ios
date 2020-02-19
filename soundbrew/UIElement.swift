@@ -278,7 +278,15 @@ class UIElement {
     }
     
     func sendAlert(_ message: String, toUserId: String) {
-        Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .post, parameters: ["message": message, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
+        let artist = Customer.shared.artist
+        var name = ""
+        if let username = artist?.username {
+            name = username
+        } else if let displayName = artist?.name {
+            name = displayName
+        }
+        let alertMessage = "\(name) \(message)"
+        Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": alertMessage, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
         }
     }
     

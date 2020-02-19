@@ -126,12 +126,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     self.create(user.objectId!, email: email, name: username)
                 }
                 
-                //var currentBalance = 0
-                /*if let balance = user["balance"] as? Int {
-                    currentBalance = balance
-                }
-                artist.balance = currentBalance*/
-                
                 if let name = user["artistName"] as? String {
                     artist.name = name
                 }

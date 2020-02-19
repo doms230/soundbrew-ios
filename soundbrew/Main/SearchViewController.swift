@@ -61,6 +61,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                soundList.prepareToShowSelectedArtist(segue)
             }
             
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            
             break
             
         case "showTags":
@@ -71,7 +75,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
-            
             break
             
         case "showSounds":

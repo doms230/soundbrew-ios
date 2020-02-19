@@ -128,10 +128,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
        showSounds()
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    /*
+     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let localizedDrafts = NSLocalizedString("drafts", comment: "")
         return localizedDrafts
-    }
+    }*/
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1

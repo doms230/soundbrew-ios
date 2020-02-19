@@ -737,7 +737,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 (success: Bool, error: Error?) in
                 if success && error == nil {
                     self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: true)
-                    self.newMention(currentUser.objectId!)
+                    self.newMention(self.profileArtist!.objectId)
                 } else {
                     self.profileArtist!.isFollowedByCurrentUser = false
                     self.tableView.reloadData()
@@ -747,6 +747,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func newMention(_ toUserId: String) {
+       // self.uiElement.sendAlert("followed you!", toUserId: self.profileArtist!.objectId)
         let newMention = PFObject(className: "Mention")
         newMention["type"] = "follow"
         newMention["fromUserId"] = PFUser.current()!.objectId!
@@ -754,7 +755,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                //TODO: notification self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
+                self.uiElement.sendAlert("followed you!", toUserId: self.profileArtist!.objectId)
             }
         }
     }
@@ -892,6 +893,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let tags = chosenTags {
             self.selectedTagFromPlayerView = tags[0]
             self.selectedSoundType = "discover"
+            self.showSoundsTitle = tags[0].name
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }

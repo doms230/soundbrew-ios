@@ -136,6 +136,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         tableView.backgroundColor = color.black()
+        tableView.tintColor = color.black()
         self.view.addSubview(tableView)
         if sound == nil {
             tableView.frame = view.bounds
@@ -299,8 +300,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         } else if loadType == "following" {
             query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
         }
-        
-        query.whereKey("toUserId", notContainedIn: self.creditArtistObjectIds)
         query.whereKey("isRemoved", equalTo: false)
         query.limit = 50
         query.findObjectsInBackground {
@@ -409,6 +408,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         cell.searchBar.backgroundColor = color.black()
         self.searchBar = cell.searchBar
         self.searchBar.delegate = self
+        searchBar.becomeFirstResponder()
         return cell
     }
     

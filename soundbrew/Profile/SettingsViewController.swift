@@ -233,17 +233,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         switch indexPath.row {
         case 0:
-            if let followerCount = self.artist?.followerCount {
-                cell.displayNameLabel.text = "\(followerCount)"
+            var followerCount = 0
+            if let count = self.artist?.followerCount {
+                followerCount = count
             }
+            cell.displayNameLabel.text = "\(followerCount)"
             let localizedFollowing = NSLocalizedString("followers", comment: "")
             cell.username.text = localizedFollowing
             break
             
         case 1:
-            if let followingCount = self.artist?.followingCount {
-                cell.displayNameLabel.text = "\(followingCount)"
+            var followingCount = 0
+            if let count = self.artist?.followingCount {
+                followingCount = count 
             }
+            cell.displayNameLabel.text = "\(followingCount)"
             let localizedFollowing = NSLocalizedString("following", comment: "")
             cell.username.text = localizedFollowing
             break
@@ -297,7 +301,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             preferredStyle: .actionSheet)
         
         let pickerView = UIPickerView(frame:
-            CGRect(x: 0, y: 45, width: self.view.frame.width, height: 160))
+            CGRect(x: 20, y: 45, width: self.view.frame.width, height: 160))
         pickerView.dataSource = self
         pickerView.delegate = self
         alertView.view.addSubview(pickerView)
