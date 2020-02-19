@@ -149,7 +149,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         self.loadCollection(self.profileArtist!.objectId)
-        self.loadSounds(nil, userId: self.profileArtist?.objectId)
+        self.loadCredits(self.profileArtist!.objectId)
+        self.loadSounds(nil, creditIds: nil, userId: self.profileArtist?.objectId)
         self.tableView.refreshControl?.endRefreshing()
     }
     
@@ -190,7 +191,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -274,9 +275,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //mark: sounds
     var artistReleases = [Sound]()
     var artistCollection = [Sound]()
+    var artistCredits = [Sound]()
     var collectionSoundIds = [String]()
+    var creditSoundIds = [String]()
     var didloadReleases = false
     var didLoadCollection = false
+    var didLoadCredits = false
     var showSoundsTitle: String!
     var selectedSoundType: String!
     let localizedCollection = NSLocalizedString("collection", comment: "")
@@ -292,7 +296,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         }
         
-        if indexPath.section == 1 {
+        cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
+        switch indexPath.section {
+        case 1:
             let localizedNoReleasesYet = NSLocalizedString("noReleasesYet", comment: "")
 
             cell.TagTypeTitle.text = "Releases"
@@ -300,14 +306,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.viewAllLabel.isHidden = true
                 addNoSounds(cell.tagsScrollview, title: localizedNoReleasesYet)
             } else {
-                cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
                 cell.tagTypeButton.tag = 0
                 cell.viewAllLabel.isHidden = false
                 addSounds(cell.tagsScrollview, sounds: artistReleases, row: 0)
             }
+            break
             
-        } else {
-            
+        case 2:
             let localizedNothingInCollection = NSLocalizedString("nothingInCollection", comment: "")
 
             cell.TagTypeTitle.text = localizedCollection
@@ -315,11 +320,26 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.viewAllLabel.isHidden = true
                 addNoSounds(cell.tagsScrollview, title: localizedNothingInCollection)
             } else {
-                cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
                 cell.tagTypeButton.tag = 1
                 cell.viewAllLabel.isHidden = false
                 addSounds(cell.tagsScrollview, sounds: artistCollection, row: 1)
             }
+            break
+            
+        case 3:
+            cell.TagTypeTitle.text = "Credits"
+            if artistCollection.count == 0 && didLoadCredits  {
+                cell.viewAllLabel.isHidden = true
+                addNoSounds(cell.tagsScrollview, title: "They haven't been credited on any sounds yet.")
+            } else {
+                cell.tagTypeButton.tag = 2
+                cell.viewAllLabel.isHidden = false
+                addSounds(cell.tagsScrollview, sounds: artistCredits, row: 2)
+            }
+            break
+            
+        default:
+            break
         }
         
         return cell 
@@ -327,17 +347,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressViewAllSoundsButton(_ sender: UIButton) {
         if let artist = self.profileArtist {
-            if sender.tag == 0 {
+            switch sender.tag {
+            case 0:
                 showSoundsTitle = "\(artist.username!)'s Releases"
                 selectedSoundType = "uploads"
+                break
                 
-                MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "View all Releases", "description": "User pressed view all releases."])
-
-            } else {
+            case 1:
                 showSoundsTitle = "\(artist.username!)'s \(localizedCollection)"
                 selectedSoundType = "collection"
+                break
                 
-                MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "View all Collection", "description": "User pressed view all collection."])
+            case 2:
+                showSoundsTitle = "\(artist.username!)'s Credits"
+                selectedSoundType = "credit"
+                break
+                
+            default:
+                break
             }
         }
         self.performSegue(withIdentifier: "showSounds", sender: self)
@@ -439,12 +466,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressArtistReleases(_ sender: UIButton) {
         didSelectSound(artistReleases, row: sender.tag)
-        MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Release Sound", "description": "User pressed song that artists released."])
     }
     
     @objc func didPressArtistCollection(_ sender: UIButton) {
         didSelectSound(artistCollection, row: sender.tag)
-        MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Collection Sound", "description": "User pressed song in artist's collection."])
     }
     
     func didSelectSound(_ sounds: Array<Sound>, row: Int) {
@@ -471,18 +496,36 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     }
                 }
                 
-                self.loadSounds(self.collectionSoundIds, userId: nil)
-                
-            } else {
-                print("Error: \(error!)")
+                self.loadSounds(self.collectionSoundIds, creditIds: nil, userId: nil)
             }
         }
     }
     
-    func loadSounds(_ collectionIds: Array<String>?, userId: String?) {
+    func loadCredits(_ profileUserId: String) {
+        let query = PFQuery(className: "Credit")
+        query.whereKey("userId", equalTo: profileUserId)
+        query.addDescendingOrder("createdAt")
+        query.limit = 5
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        self.creditSoundIds.append(object["postId"] as! String)
+                    }
+                }
+                
+                self.loadSounds(nil, creditIds: self.creditSoundIds, userId: nil)
+            }
+        }
+    }
+    
+    func loadSounds(_ collectionIds: Array<String>?, creditIds: Array<String>?, userId: String?) {
         let query = PFQuery(className: "Post")
         if let collectionIds = collectionIds {
             query.whereKey("objectId", containedIn: collectionIds)
+        } else if let creditIds = creditIds {
+            query.whereKey("objectId", containedIn: creditIds)
         }
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
@@ -504,18 +547,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     if collectionIds != nil {
                         self.artistCollection = sounds
                         self.didLoadCollection = true
+                    } else if creditIds != nil {
+                        self.artistCredits = sounds
+                        self.didLoadCredits = true
                     } else {
                         self.artistReleases = sounds
                         self.didloadReleases = true
                     }
                     self.tableView.reloadData()
-
-                } else {
-                    print("no colection 1")
                 }
-                
-            } else {
-                print("Error: \(error!)")
             }
         }
     }
@@ -656,7 +696,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let container = self.so_containerViewController {
             let sideView = container.sideViewController as! SettingsViewController
             sideView.artist = Customer.shared.artist
-            sideView.loadFollowFollowingStats()
+            sideView.loadFollowerFollowingStats()
             sideView.tableView.reloadData()
             container.isSideViewControllerPresented = true
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Settings", "description": "User pressed settings button"])
@@ -708,12 +748,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 (success: Bool, error: Error?) in
                 if success && error == nil {
                     self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: true)
-                    //self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
-                    
+                    self.newMention(currentUser.objectId!)
                 } else {
                     self.profileArtist!.isFollowedByCurrentUser = false
                     self.tableView.reloadData()
                 }
+            }
+        }
+    }
+    
+    func newMention(_ toUserId: String) {
+        let newMention = PFObject(className: "Mention")
+        newMention["type"] = "follow"
+        newMention["fromUserId"] = PFUser.current()!.objectId!
+        newMention["toUserId"] = toUserId
+        newMention.saveEventually {
+            (success: Bool, error: Error?) in
+            if success && error == nil {
+                //TODO: notification self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
             }
         }
     }
@@ -786,6 +838,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         (success: Bool, error: Error?) in
                         if success && error == nil {
                             self.updateFollowerCount(artist: self.profileArtist!, incrementFollows: shouldFollowArtist)
+                            if shouldFollowArtist {
+                                self.newMention(self.profileArtist!.objectId!)
+                            }
                         }
                     }
                 }

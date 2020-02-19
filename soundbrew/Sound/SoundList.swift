@@ -24,7 +24,7 @@ class SoundList: NSObject, PlayerDelegate {
     var profileUserId: String?
     let player = Player.sharedInstance
     var collectionSoundIds = [String]()
-
+    var creditSoundIds = [String]()
     var soundType: String!
     var didLoadCollection = false
     var searchText: String?
@@ -158,27 +158,25 @@ class SoundList: NSObject, PlayerDelegate {
 
                     let menuAlert = UIAlertController(title: "\(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
                         
+                    if let isDraft = sound.isDraft, isDraft {
                         let localizedEditSound = NSLocalizedString("editSound", comment: "")
                         menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
                             self.selectedSound = sound
                             self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
-                            
-                            MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Edit Sound", "description": "User pressed Edit Sound Info."])
                         }))
-                        
-                        let localizedDeleteSound = NSLocalizedString("deleteSound", comment: "")
-                        menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
-                            self.deleteSong(sound.objectId!, row: row)
-                            
-                            MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Delete Sound", "description": "User pressed Delete Sound."])
+                    }
+
+                    let localizedDeleteSound = NSLocalizedString("deleteSound", comment: "")
+                    menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
+                        self.deleteSong(sound.objectId!, row: row)
                         }))
                     
-                        menuAlert.addAction(viewCollectorsAction(sound))
+                    menuAlert.addAction(viewCollectorsAction(sound))
                         
-                        let localizedCancel = NSLocalizedString("cancel", comment: "")
-                        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+                    let localizedCancel = NSLocalizedString("cancel", comment: "")
+                    menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
                         
-                        target.present(menuAlert, animated: true, completion: nil)
+                    target.present(menuAlert, animated: true, completion: nil)
                     
                 } else {
                     showOtherMenuAlert(sound)
@@ -188,8 +186,6 @@ class SoundList: NSObject, PlayerDelegate {
                 showOtherMenuAlert(sound)
             }
         }
-        
-        MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Menu", "description": "User pressed menu button."])
     }
     
     func showOtherMenuAlert(_ sound: Sound) {
@@ -197,8 +193,6 @@ class SoundList: NSObject, PlayerDelegate {
         let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
             menuAlert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
                 self.showReportSoundAlert(sound)
-                
-                MSAnalytics.trackEvent("Soundlist Menu", withProperties: ["Button" : "Report", "description": "User pressed report option."])
             }))
         
         menuAlert.addAction(viewCollectorsAction(sound))
@@ -226,8 +220,6 @@ class SoundList: NSObject, PlayerDelegate {
         return  UIAlertAction(title: uiAlertActionString, style: .default, handler: { action in
             self.selectedSound = sound
             self.target.performSegue(withIdentifier: "showTippers", sender: self)
-            
-            MSAnalytics.trackEvent("SoundList", withProperties: ["Button" : "Collectors", "description": "User pressed view collectors button."])
         })
     }
     
@@ -273,9 +265,6 @@ class SoundList: NSObject, PlayerDelegate {
                 (success: Bool, error: Error?) in
                 if (success) {
                     self.uiElement.showAlert(localizedThankyou, message: localizedReceivedReport, target: self.target)
-                    MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Report"])
-                } else if let error = error {
-                    MSAnalytics.trackEvent("Error", withProperties: ["Error" : "\(error.localizedDescription)", "Class and Line": "SoundList, line 265"])
                 }
             }
         }))
@@ -303,12 +292,14 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = true
         
         switch soundType {
+        case "yourSoundbrew":
+            loadYourSoundbrew()
+            break
         case "chart":
             loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil)
             break
             
         case "discover":
-           // loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, selectedTagForFiltering: selectedTagForFiltering)
             loadWorldCreatedAtSounds()
             break
             
@@ -319,6 +310,12 @@ class SoundList: NSObject, PlayerDelegate {
         case "collection":
             if let profileUserId = self.profileUserId {
                 self.loadCollection(descendingOrder, profileUserId: profileUserId)
+            }
+            break
+            
+        case "credit":
+            if let profileUserId = self.profileUserId {
+                self.loadCredit(descendingOrder, profileUserId: profileUserId)
             }
             break
             
@@ -490,6 +487,27 @@ class SoundList: NSObject, PlayerDelegate {
             }
         }
     }
+    
+    func loadCredit(_ descendingOrder: String, profileUserId: String) {
+        let query = PFQuery(className: "Credit")
+        query.whereKey("userId", equalTo: profileUserId)
+        query.whereKey("postId", notContainedIn: collectionSoundIds)
+        query.limit = 50
+        query.addDescendingOrder("createdAt")
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            self.didLoadCollection = true
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        self.creditSoundIds.append(object["postId"] as! String)
+                    }
+                }
+                
+                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil)
+            }
+        }
+    }
         
     var storyPostIds = [String]()
     func loadStories(_ userId: String) {
@@ -635,6 +653,27 @@ class SoundList: NSObject, PlayerDelegate {
             } else {
                 self.thereIsMoreDataToLoad = false
                 print("Error: \(error!)")
+            }
+        }
+    }
+    
+    func loadYourSoundbrew() {
+        let query = PFQuery(className: "Post")
+        query.whereKey("isRemoved", notEqualTo: true)
+        query.addDescendingOrder("tips")
+        query.limit = 100
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        let sound = UIElement().newSoundObject(object)
+                        self.sounds.append(sound)
+                    }
+                    self.sounds.shuffle()
+                    self.player.sounds = self.sounds
+                    self.player.didSelectSoundAt(0)
+                }
             }
         }
     }

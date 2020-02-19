@@ -23,7 +23,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     var atTime: Float = 0
     let player = Player.sharedInstance
     var selectedArtist: Artist?
-    
+    var selectedCommentFromMentions: String? 
+    var mentionedRowToScrollTo = 0
     var playerDelegate: PlayerDelegate?
     
     override func viewDidLoad() {
@@ -281,6 +282,12 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }()
     
     func setupPlayerView() {
+       /* if let currentSound = self.player.currentSound, currentSound.objectId != self.sound?.objectId {
+            setupCurrentSoundPlayer()
+        } else {
+            setupCurrentSoundPlayer()
+        }*/
+        
         playBackButton.addTarget(self, action: #selector(didPressPlayBackButton(_:)), for: .touchUpInside)
         if let player = self.player.player {
             if player.isPlaying {
@@ -335,6 +342,19 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             make.top.equalTo(songArtButton.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+    }
+    
+    func setupCurrentSoundPlayer() {
+        if let sound = self.sound {
+            var sounds = [Sound]()
+            sounds.append(sound)
+            let player = Player.sharedInstance
+            player.player = nil
+            player.sounds = sounds
+            player.currentSound = sounds[0]
+            player.currentSoundIndex = 0
+            player.setUpNextSong(false, at: 0)
         }
     }
         
@@ -423,7 +443,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.row != 0 && comments.indices.contains(indexPath.row), let commentId = comments[indexPath.row]?.artist.objectId,
+        if indexPath.row != 0 && comments.indices.contains(indexPath.row), let commentId = comments[indexPath.row]?.artist?.objectId,
             let currentUserId = PFUser.current()?.objectId, let soundId = self.sound?.artist?.objectId {
             if currentUserId == soundId {
                 return true
@@ -488,7 +508,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             let artist = comment.artist
             cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
             cell.userImage.tag = indexPath.row
-            if let image = comment.artist.image {
+            if let image = comment.artist?.image {
                 cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
             } else {
                 cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
@@ -498,7 +518,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.username.tag = indexPath.row
             cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
             
-            if let username = comment.artist.username {
+            if let username = comment.artist?.username {
                 cell.username.setTitle(username, for: .normal)
             } else {
                 cell.username.setTitle("username", for: .normal)
@@ -517,8 +537,14 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.replyButton.tag = indexPath.row
             cell.replyButton.addTarget(self, action: #selector(self.didPressReplyButton(_:)), for: .touchUpInside)
             
-            let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt)
+            let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt!)
             cell.date.text = formattedDate
+           
+            if let selectedCommentFromMentions = self.selectedCommentFromMentions {
+                if selectedCommentFromMentions == comment.objectId {
+                    cell.backgroundColor = .lightGray
+                }
+            }
         }
                 
         return cell
@@ -552,7 +578,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func didPressReplyButton(_ sender: UIButton) {
-        if let username = self.comments[sender.tag]?.artist.username {
+        if let username = self.comments[sender.tag]?.artist?.username {
             if let atTime = self.comments[sender.tag]?.atTime {
                 self.isTextViewEditing = true
                 self.atTime = atTime
@@ -575,6 +601,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             if success && error == nil {
                 self.comments[self.comments.count - 1]?.objectId = newComment.objectId
                 self.updateCommentCount(postId, byAmount: 1)
+                self.newMention(self.sound!.artist!.objectId, commentId: newComment.objectId!)
                 self.checkForMentions(text, commentId: newComment.objectId!)
                 MSAnalytics.trackEvent("comment added")
                 
@@ -634,7 +661,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             (object: PFObject?, error: Error?) -> Void in
             self.stopAnimating()
             if let object = object {
-                if let commentId = commentId {
+                if let commentId = commentId, username != self.sound?.artist?.username {
                     self.newMention(object.objectId!, commentId: commentId)
                 } else {
                     let artist = self.uiElement.newArtistObject(object)
@@ -649,15 +676,15 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func newMention(_ userId: String, commentId: String) {
         let newMention = PFObject(className: "Mention")
-        newMention["postId"] = self.sound?.objectId
+        //newMention["postId"] = self.sound?.objectId
+        newMention["type"] = "comment"
         newMention["commentId"] = commentId
         newMention["fromUserId"] = PFUser.current()!.objectId
         newMention["toUserId"] = userId
-        newMention["isRemoved"] = false
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                //TODO: send notification
+                //TODO: notification self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
             }
         }
     }
@@ -675,17 +702,21 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         query.addAscendingOrder("atTime")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let text = object["text"] as! String
-                        let atTime = object["atTime"] as! Double
-                        let userId = object["userId"] as! String
-                        
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                        let comment = Comment(objectId: object.objectId!, artist: artist, text: text, atTime: Float(atTime), createdAt: object.createdAt!)
-                        
-                        self.comments.append(comment)
+            if let objects = objects {
+                for object in objects {
+                    let text = object["text"] as! String
+                    let atTime = object["atTime"] as! Double
+                    let userId = object["userId"] as! String
+                    
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                    let comment = Comment(objectId: object.objectId!, artist: artist, text: text, atTime: Float(atTime), createdAt: object.createdAt!)
+                    
+                    self.comments.append(comment)
+                    
+                    if let selectedCommentFromMentions = self.selectedCommentFromMentions {
+                        if selectedCommentFromMentions != comment.objectId {
+                            self.mentionedRowToScrollTo = self.mentionedRowToScrollTo + 1
+                        }
                     }
                 }
             }
@@ -694,6 +725,11 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 self.setUpTableView()
             } else {
                self.tableView.reloadData()
+            }
+            
+            if self.selectedCommentFromMentions != nil {
+                let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
+                self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             }
         }
     }
@@ -733,12 +769,12 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
 
 class Comment {
     var objectId: String?
-    var artist: Artist!
+    var artist: Artist?
     var text: String!
     var atTime: Float!
-    var createdAt: Date!
+    var createdAt: Date?
     
-    init(objectId: String?, artist: Artist!, text: String!, atTime: Float!, createdAt: Date!) {
+    init(objectId: String?, artist: Artist?, text: String!, atTime: Float!, createdAt: Date?) {
         self.objectId = objectId
         self.artist = artist
         self.text = text

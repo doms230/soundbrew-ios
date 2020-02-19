@@ -21,6 +21,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.navigationItem.title = "Soundbrew"
         setupNotificationCenter()
         loadFriendStories()
+        
+        if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
+            UserDefaults.standard.removeObject(forKey: "receivedSoundId")
+            loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -118,9 +123,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return unListenedStories.count
-        } else if section == 1 {
+        if section == 1 && unListenedStories.count != 0 {
             return listenedStories.count
         }
         
@@ -128,65 +131,69 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        /*if indexPath.section == 0 {
-            let yourSoundbrewCell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
-            yourSoundbrewCell.selectionStyle = .none
-            yourSoundbrewCell.displayNameLabel.text = "Your Soundbrew"
-            yourSoundbrewCell.username.text = "A playlist of recommended music."
-            yourSoundbrewCell.profileImage.image = UIImage(named: "appy")
-            yourSoundbrewCell.userCity.text = ""
-        }*/
-         let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
-         cell.selectionStyle = .none
-         var story: Story!
-         
-         if indexPath.section == 0 {
+        if indexPath.section == 0 {
+            return storyCell(indexPath)
+        } else if unListenedStories.count == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+                cell.selectionStyle = .none
+            cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will create a playlist from their latest releases, credits, and likes."
+            return cell
+        } else {
+            return storyCell(indexPath)
+        }
+    }
+    
+    func storyCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
+        cell.selectionStyle = .none
+        if indexPath.section == 0 {
+            cell.displayNameLabel.text = "Your Soundbrew"
+            cell.username.text = "A playlist of recommended music."
+            cell.profileImage.image = UIImage(named: "appy")
+            cell.userCity.text = ""
+        } else {
+             var story: Story!
              story = unListenedStories[indexPath.row]
-         } else if indexPath.section == 1 {
-             story = listenedStories[indexPath.row]
-         }
-         
-         let artist = story.artist!
-         
-         if let username = artist.username {
-             cell.username.text = "@\(username)"
-         } else {
-             cell.username.text = "@username"
-             artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
-         }
-        
-         if let image = artist.image {
-             cell.profileImage.kf.setImage(with: URL(string: image))
-         } else {
-             cell.profileImage.image = UIImage(named: "profile_icon")
-         }
             
-         if let name = artist.name {
-             cell.displayNameLabel.text = name
-         } else {
-             cell.displayNameLabel.text = "name"
-         }
-         
-         if let dateCreated = story.lastUpdated {
-             cell.userCity.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
-         }
-         
-         if let selectedIndexPath = self.selectedIndexPath {
-             if selectedIndexPath == indexPath {
-                 self.changeArtistStoryColor(cell, color: color.blue())
+             let artist = story.artist!
+             
+             if let username = artist.username {
+                 cell.username.text = "@\(username)"
              } else {
-                 self.changeArtistStoryColor(cell, color: .white)
+                 cell.username.text = "@username"
+                 artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
              }
-         }
-         
-         if let type = story.type {
-             cell.city.text = "New \(type.capitalized)"
-         }
             
-         return cell
+             if let image = artist.image {
+                 cell.profileImage.kf.setImage(with: URL(string: image))
+             } else {
+                 cell.profileImage.image = UIImage(named: "profile_icon")
+             }
+                
+             if let name = artist.name {
+                 cell.displayNameLabel.text = name
+             } else {
+                 cell.displayNameLabel.text = "name"
+             }
+             
+             if let dateCreated = story.lastUpdated {
+                 cell.userCity.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
+             }
+             
+             if let type = story.type {
+                 cell.city.text = "New \(type.capitalized)"
+             }
+        }
         
-
+        if let selectedIndexPath = self.selectedIndexPath {
+            if selectedIndexPath == indexPath {
+                self.changeArtistStoryColor(cell, color: color.blue())
+            } else {
+                self.changeArtistStoryColor(cell, color: .white)
+            }
+        }
+        
+        return cell
     }
     
     func changeArtistStoryColor(_ cell: ProfileTableViewCell, color: UIColor) {
@@ -203,23 +210,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
 
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       /* if let indexPath = self.selectedIndexPath {
-            if indexPath.section == 0 {
-                removeUnlistenedStoryAndAddToListenedStories(indexPath.row, story: unListenedStories[indexPath.row])
-            }
-        }*/
-        
-        var story: Story!
         if indexPath.section == 0 {
-            story = unListenedStories[indexPath.row]
-        } else {
-            story = listenedStories[indexPath.row]
-        }
-        
-        if let selectedUserId = story.artist?.objectId {
             self.selectedIndexPath = indexPath
             tableView.reloadData()
+            soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
             
+        } else if let selectedUserId = unListenedStories[indexPath.row].artist.objectId {
+            self.selectedIndexPath = indexPath
+            tableView.reloadData()
             soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         }
     }
@@ -253,11 +251,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                         if let type = object["type"] as? String {
                             story.type = type
                         }
-                        let postId = object["postId"] as! String
-                            self.determineIfUserListened(postId, story: story)
-                    } else if !friendUserIds.indices.contains(i + 1) && self.unListenedStories.count == 0 && self.listenedStories.count == 0 {
+                        //let postId = object["postId"] as! String
+                        self.unListenedStories.append(story)
+                        self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+                        self.setUpOrReloadTableView()
+                           // self.determineIfUserListened(postId, story: story)
+                    } /*else if !friendUserIds.indices.contains(i + 1) && self.unListenedStories.count == 0 && self.listenedStories.count == 0 {
                             self.setUpOrReloadTableView()
-                    }
+                    }*/
                 }
             }
         }
@@ -352,6 +353,67 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
+    
+    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: objectId) {
+            (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let object = object {
+                let sound = self.uiElement.newSoundObject(object)
+                if shouldShowShareSoundView {
+                    self.uiElement.showShareOptions(self, sound: sound)
+                }
+                self.resetPlayer(sounds: [sound])
+                //self.loadYourSoundbrew(false)
+            }
+        }
+    }
+    
+    func resetPlayer(sounds: [Sound]) {
+        let player = Player.sharedInstance
+        player.player = nil
+        player.sounds = sounds
+        player.currentSound = sounds[0]
+        player.currentSoundIndex = 0
+        player.setUpNextSong(false, at: 0)
+        //player.soundsPlayed = 2
+    }
+    
+    /*func loadYourSoundbrew(_ shouldSetupPlayer: Bool) {
+        let query = PFQuery(className: "Post")
+        query.whereKey("isRemoved", notEqualTo: true)
+        query.addDescendingOrder("tips")
+        query.limit = 100
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if error == nil {
+                if let objects = objects {
+                    var sounds = [Sound]()
+                    
+                    for i in 0..<objects.count {
+                        let object = objects[i]
+                        let sound = UIElement().newSoundObject(object)
+                        sounds.append(sound)
+                    }
+
+                    sounds.shuffle()
+                    if shouldSetupPlayer {
+                        self.resetPlayer(sounds: sounds)
+                        f
+                    } else {
+                        let player = Player.sharedInstance
+                        player.sounds = sounds
+                    }
+                }
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }*/
     
 }
 

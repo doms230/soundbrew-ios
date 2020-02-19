@@ -12,6 +12,7 @@
 		E40829EA236209C800D88B33 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E40829EC236209C800D88B33 /* Localizable.strings */; };
 		E425D7C723C2836A0031DB0B /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C623C2836A0031DB0B /* Credit.swift */; };
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
+		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -62,7 +63,6 @@
 		F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */; };
 		F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */; };
 		F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14D322CD1A1900ED157E /* Customer.swift */; };
-		F2FB14E622FA335500ED157E /* UpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB14E522FA335500ED157E /* UpdatesViewController.swift */; };
 		FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921914671D6205F63B619F10 /* Pods_soundbrew.framework */; };
 /* End PBXBuildFile section */
 
@@ -149,6 +149,7 @@
 		E40829ED236209D100D88B33 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E425D7C623C2836A0031DB0B /* Credit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
+		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -207,7 +208,6 @@
 		F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFundsViewController.swift; sourceTree = "<group>"; };
 		F2FB14D322CD1A1900ED157E /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
-		F2FB14E522FA335500ED157E /* UpdatesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesViewController.swift; sourceTree = "<group>"; };
 		FB21B064ABB30A8D9A4DED97 /* Pods-soundbrewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-soundbrewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-soundbrewTests/Pods-soundbrewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -432,7 +432,7 @@
 			children = (
 				E4C9DCE823CCEB9D003835E5 /* HomeViewController.swift */,
 				F2F122D822FBCA50002DA196 /* SearchViewController.swift */,
-				F2FB14E522FA335500ED157E /* UpdatesViewController.swift */,
+				E4262A5323FC3E3200107A1D /* MentionsViewController.swift */,
 				F2FB14D022CC142C00ED157E /* Tag */,
 			);
 			path = Main;
@@ -782,6 +782,7 @@
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,
+				E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */,
 				F2F8B9A221DBEF640024AFB6 /* EditProfileViewController.swift in Sources */,
 				F2EA85752244110B005D6153 /* SoundList.swift in Sources */,
 				F2FB14D222CC328D00ED157E /* AddFundsViewController.swift in Sources */,
@@ -803,7 +804,6 @@
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				E4C9DCF123E11018003835E5 /* CommentViewController.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
-				F2FB14E622FA335500ED157E /* UpdatesViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				E425D7C723C2836A0031DB0B /* Credit.swift in Sources */,
 				F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */,

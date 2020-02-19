@@ -816,7 +816,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
-    //mark: sound art upload
+    //mark: media upload
     @objc func didPressUploadSoundArtButton(_ sender: UIButton){
         self.soundArtDidFinishProcessing = false
         let imagePicker = UIImagePickerController()

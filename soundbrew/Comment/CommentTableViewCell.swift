@@ -28,7 +28,7 @@ class CommentTableViewCell: UITableViewCell {
     
     lazy var username: UIButton = {
         let button = UIButton()
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         button.setTitleColor(.white, for: .normal)
         return button
     }()
@@ -36,7 +36,7 @@ class CommentTableViewCell: UITableViewCell {
     lazy var comment: ActiveLabel = {
         let label = ActiveLabel()
         label.enabledTypes = [.mention]
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.font = UIFont(name: uiElement.mainFont, size: 15)
         label.textColor = .white
         label.mentionColor = color.blue()
         label.numberOfLines = 0
@@ -78,6 +78,7 @@ class CommentTableViewCell: UITableViewCell {
         self.addSubview(userImage)
         self.addSubview(username)
         self.addSubview(comment)
+        //self.comment.addSubview(username)
         self.addSubview(atTime)
         self.addSubview(date)
         self.addSubview(replyButton)
@@ -102,8 +103,8 @@ class CommentTableViewCell: UITableViewCell {
         
         date.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(comment.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(username)
-            make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            make.left.equalTo(comment)
+            make.bottom.equalTo(self)
 
         }
         replyButton.snp.makeConstraints { (make) -> Void in

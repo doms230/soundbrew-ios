@@ -17,6 +17,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     let color = Color()
     var selectedArtist: Artist!
     var sound: Sound?
+    var isViewTagsFromSound = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,6 +102,42 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
+    lazy var exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "dismiss"), for: .normal)
+        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressExitButton(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    lazy var appTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Tags"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    func setupTopView() {
+        self.view.addSubview(exitButton)
+        exitButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.top.equalTo(self.view).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+        }
+        
+        self.view.addSubview(appTitle)
+        appTitle.snp.makeConstraints { (make) -> Void in
+            make.centerX.equalTo(self.view)
+            make.centerY.equalTo(exitButton)
+        }
+        
+        self.setUpTableView()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text!.isEmpty {
             searchIsActive = false
@@ -161,11 +198,20 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
         view.addSubview(tableView)
-        tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view)
+        if isViewTagsFromSound {
+            tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.exitButton.snp.bottom)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.view)
+            }
+        } else {
+            tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.view)
+            }
         }
     }
     
@@ -472,7 +518,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 
                 if self.tableView == nil {
-                    self.setupChooseTagsView()
+                    if self.isViewTagsFromSound {
+                        self.setupTopView()
+                    } else {
+                        self.setupChooseTagsView()
+                    }
                     
                 } else {
                     self.tableView.reloadData()

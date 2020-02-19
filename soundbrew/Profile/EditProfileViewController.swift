@@ -282,7 +282,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func presentImageCropViewController(_ image: UIImage) {
-        let cropViewController = CropViewController(croppingStyle: .circular, image: image)
+        let cropViewController = CropViewController(croppingStyle: .default, image: image)
         cropViewController.aspectRatioLockEnabled = true
         cropViewController.aspectRatioPickerButtonHidden = true
         cropViewController.aspectRatioPreset = .presetSquare
@@ -291,7 +291,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         present(cropViewController, animated: true, completion: nil)
     }
     
-    func cropViewController(_ cropViewController: CropViewController, didCropToCircularImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
         profileImage.image = image
         let chosenProfileImage = image.jpegData(compressionQuality: 0.5)
         newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)

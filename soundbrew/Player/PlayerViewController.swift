@@ -163,12 +163,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             updateArtistPayment(sound.artist!.objectId, tipAmount: tipAmount)
         } else {
             for credit in currentSoundCredits {
+                self.newMention(sound.objectId!, toUserId: credit.artist!.objectId)
+                if credit.artist!.objectId == sound.artist!.objectId {
+                    newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
+                }
                 var tipSplit: Float = 0
                 if let percentage = credit.percentage {
                     if percentage > 0 {
                         tipSplit = Float(percentage * tipAmount)
                         let tipSplitInCents = tipSplit / 100
-                        newTip(sound.objectId!, userId: credit.artist!.objectId, tipAmount: Int(tipSplitInCents))
                         updateArtistPayment(credit.artist!.objectId, tipAmount: Int(tipSplitInCents))
                     }
                 }
@@ -196,7 +199,21 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         newTip.saveEventually{
             (success: Bool, error: Error?) in
             if success {
-               // self.uiElement.sendAlert("\(PFUser.current()!.username!) liked \(sound.title!)!", toUserId: sound.artist!.objectId)
+                
+            }
+        }
+    }
+    
+    func newMention(_ postId: String, toUserId: String) {
+        let newMention = PFObject(className: "Mention")
+        newMention["type"] = "like"
+        newMention["fromUserId"] = PFUser.current()!.objectId!
+        newMention["toUserId"] = toUserId
+        newMention["postId"] = postId
+        newMention.saveEventually {
+            (success: Bool, error: Error?) in
+            if success && error == nil {
+                //TODO: notification self.uiElement.sendAlert("\(currentUser.username!) followed you!", toUserId: self.profileArtist!.objectId)
             }
         }
     }
@@ -289,15 +306,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     //mark: sound
     func setupPlayerView() {
         setupNotificationCenter()
-        if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
-            UserDefaults.standard.removeObject(forKey: "receivedSoundId")
-            loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
-            
-        } else if let newSoundId = self.uiElement.getUserDefault("newSoundId") as? String {
-            UserDefaults.standard.removeObject(forKey: "newSoundId")
-            loadDynamicLinkSound(newSoundId, shouldShowShareSoundView: true)
-            
-        } else if let sound = self.player.currentSound {
+        if let sound = self.player.currentSound {
             self.sound = sound
             showPlayerView()
             player.target = self
@@ -343,7 +352,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                     tagCount = tags.count
                 }
                 setCountLabel(self.hashtagCountLabel, count: tagCount)
-                setCountLabel(self.creditCountLabel, count: sound.creditCount)
+                //credits should be atleast 1 because of uploading artist where sounds were uplaoded before credits were a thing.
+                var creditCount = 1
+                if let count = sound.creditCount {
+                    creditCount = count
+                }
+                setCountLabel(self.creditCountLabel, count: creditCount)
                 if let artistImage = sound.artist?.image {
                     self.soundArtistImage.kf.setImage(with: URL(string: artistImage))
                 } else {
@@ -454,7 +468,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             switch buttonType {
             case "comments":
                 imageView.tintColor = .lightGray
-                self.setCountLabel(label, count: self.sound?.commentCount)
+                var commentCount = 1
+                if let soundCommentCount = self.sound?.commentCount {
+                    commentCount = soundCommentCount
+                }
+                self.setCountLabel(label, count: commentCount)
                 self.commentCountLabel = label
                 break
                 
@@ -544,6 +562,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             let tagsModal = ChooseTagsViewController()
             tagsModal.tagDelegate = self
             tagsModal.sound = sound
+            tagsModal.isViewTagsFromSound = true 
             self.present(tagsModal, animated: true, completion: nil)
         }
     }
@@ -809,11 +828,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        let menu = soundInfoButton("more", buttonType: nil)
+        /*let menu = soundInfoButton("more", buttonType: nil)
         menu.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(exitButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        }*/
         
         self.view.addSubview(appTitle)
         appTitle.snp.makeConstraints { (make) -> Void in
@@ -825,7 +844,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.view.addSubview(songArt)
         songArt.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(songArtHeightWidth)
-            make.top.equalTo(menu.snp.bottom).offset(uiElement.topOffset * 3)
+            make.top.equalTo(exitButton.snp.bottom).offset(uiElement.topOffset * 3)
             make.centerX.equalTo(self.view)
         }
         
@@ -980,7 +999,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }*/
     
-    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
+    /*func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -997,7 +1016,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 //self.loadYourSoundbrew(false)
             }
         }
-    }
+    }*/
     
     /*func resetPlayer(sounds: [Sound]) {
         let player = Player.sharedInstance

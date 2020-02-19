@@ -34,7 +34,7 @@ class SoundListTableViewCell: UITableViewCell {
     //mark: no sounds
     lazy var headerTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.numberOfLines = 0
         label.textColor = .white
         return label

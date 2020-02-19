@@ -70,7 +70,7 @@ class ProfileTableViewCell: UITableViewCell {
     lazy var profileImage: UIImageView = {
         let image = UIImageView()
         image.layer.borderWidth = 1
-        image.layer.borderColor = UIColor.darkGray.cgColor
+        image.layer.borderColor = color.purpleBlack().cgColor
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "profile_icon")
@@ -444,7 +444,7 @@ class ProfileTableViewCell: UITableViewCell {
             
             break
             
-        case "updatesReuse":
+        case "mentionsReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
             self.addSubview(username)

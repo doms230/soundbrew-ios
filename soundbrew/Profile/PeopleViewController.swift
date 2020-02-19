@@ -31,15 +31,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
+        
+        setupTopView()
         
         if sound == nil {
             loadFollowersFollowing(loadType)
         } else {
-            setupTopView()
             switch loadType {
             case "likes":
                 loadLikes()
@@ -74,17 +71,13 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
     lazy var exitButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "dismiss"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
         return button
     }()
-    @objc func didPressExitButton(_ sender: UIButton) {
+    @objc func didPressExitButton(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
@@ -100,18 +93,29 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     //mark: top view
     func setupTopView() {
-        self.view.addSubview(exitButton)
-        exitButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
-        appTitle.text = loadType.capitalized
-        self.view.addSubview(appTitle)
-        appTitle.snp.makeConstraints { (make) -> Void in
-            make.centerX.equalTo(self.view)
-            make.centerY.equalTo(exitButton)
+        if isAddingNewCredit {
+            print("asfd")
+            let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressExitButton(_:)))
+            navigationItem.leftBarButtonItem = cancelButton
+        } else if sound != nil {
+            self.title = "\(loadType.capitalized)"
+            self.view.addSubview(exitButton)
+            exitButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(25)
+                make.top.equalTo(self.view).offset(uiElement.topOffset)
+                make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            }
+            
+            appTitle.text = loadType.capitalized
+            self.view.addSubview(appTitle)
+            appTitle.snp.makeConstraints { (make) -> Void in
+                make.centerX.equalTo(self.view)
+                make.centerY.equalTo(exitButton)
+            }
         }
     }
     
@@ -146,58 +150,77 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if loadType == "credits" {
-            return 1
-        }
-        return 2
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if loadType == "credits" {
-            if self.soundCredits.count != 0 {
-                return soundCredits.count
-            }
-        }
-        
-        if section == 1 {
-            if filteredArtists.count != 0 {
-                return filteredArtists.count
-            }
+        if isAddingNewCredit {
+            return 2
         }
         
         return 1
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if loadType == "credits" {
-            return creditsCell(indexPath)
-        } else if indexPath.section == 0  {
-            return searchCell()
-        } else if filteredArtists.count == 0 {
-            return noResultsCell()
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if isAddingNewCredit {
+            if section == 1 && self.filteredArtists.count != 0 {
+                return filteredArtists.count
+            }
         } else {
-            return peopleCell(indexPath)
+            if loadType == "credits" && self.soundCredits.count != 0 {
+                return soundCredits.count
+            } else if filteredArtists.count != 0 {
+                return filteredArtists.count
+            }
+        }
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if isAddingNewCredit {
+            if indexPath.section == 0 {
+                return searchCell()
+            } else {
+                 if filteredArtists.count == 0 {
+                    return noResultsCell()
+                } else {
+                    return peopleCell(indexPath)
+                }
+            }
+
+        } else {
+            if loadType == "credits" {
+                return creditsCell(indexPath)
+            } else if filteredArtists.count == 0 {
+                return noResultsCell()
+            } else {
+                return peopleCell(indexPath)
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.isSelected = false
-        if loadType == "credits" {
-            if self.soundCredits.indices.contains(indexPath.row) {
-                selectedArtist(self.soundCredits[indexPath.row].artist)
+        
+        if isAddingNewCredit {
+            if indexPath.section == 1 {
+                if filteredArtists.count == 0 {
+                    let url = "https://www.soundbrew.app/ios"
+                    let text = "Hey, download and sign up for Soundbrew so I can credit you on my next upload!"
+                    let activityViewController = UIActivityViewController(activityItems: [text, url], applicationActivities: nil)
+                    activityViewController.popoverPresentationController?.sourceView = self.view
+                    self.present(activityViewController, animated: true, completion: { () -> Void in
+                    })
+                    
+                } else if self.filteredArtists.indices.contains(indexPath.row) {
+                        selectedArtist(self.filteredArtists[indexPath.row])
+                }
             }
             
-        } else if indexPath.section == 1 {
-            if filteredArtists.count == 0 {
-                let url = "https://www.soundbrew.app/ios"
-                let text = "Hey, download and sign up for Soundbrew so I can credit you on my next upload!"
-                let activityViewController = UIActivityViewController(activityItems: [text, url], applicationActivities: nil)
-                activityViewController.popoverPresentationController?.sourceView = self.view
-                self.present(activityViewController, animated: true, completion: { () -> Void in
-                })
+        } else {
+            if loadType == "credits" {
+                if self.soundCredits.indices.contains(indexPath.row) {
+                    selectedArtist(self.soundCredits[indexPath.row].artist)
+                }
                 
             } else if self.filteredArtists.indices.contains(indexPath.row) {
-                    selectedArtist(self.filteredArtists[indexPath.row])
+                selectedArtist(self.filteredArtists[indexPath.row])
             }
         }
     }
@@ -481,5 +504,4 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             }
         }
     }
-    
 }

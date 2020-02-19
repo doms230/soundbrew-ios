@@ -24,8 +24,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationController?.navigationBar.tintColor = .white
         
         artist = Customer.shared.artist
-        self.loadEarnings()
-        //loadFollowFollowingStats()
+        loadFollowerFollowingStats()
     }
     
     //Mark: sign out
@@ -151,7 +150,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 3
+            return 5
         }
         return 1
     }
@@ -177,6 +176,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
+                showFollowersOrFollowing("followers")
+                break
+                
+            case 1:
+                showFollowersOrFollowing("following")
+                break
+                
+            case 2:
                 if #available(iOS 13.0, *) {
                     if let container = self.so_containerViewController {
                         container.isSideViewControllerPresented = false
@@ -189,17 +196,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 } else {
                     self.uiElement.showAlert("Un-Available", message: "Adding funds to your account on iOS 12 is currently un-available. Email support@soundbrew.app for more info.", target: self)
                 }
-                //showFollowersOrFollowing("followers")
-                //MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Followers", "description": "User pressed Followers"])
                 break
                 
-            case 1:
-                //showFollowersOrFollowing("following")
-                //MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Following", "description": "User pressed Following"])
+            case 3:
                 self.changeTipAmountDefault()
                 break
                 
-            case 2:
+            case 4:
                 cashout()
                 break
                 
@@ -222,16 +225,30 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func settingsItemReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
-        //let localizedFollowers = NSLocalizedString("followers", comment: "")
-        //let localizedFollowing = NSLocalizedString("following", comment: "")
-        
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
         cell.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         cell.profileImage.layer.borderColor = color.black().cgColor
+        
         switch indexPath.row {
         case 0:
+            if let followerCount = self.artist?.followerCount {
+                cell.displayNameLabel.text = "\(followerCount)"
+            }
+            let localizedFollowing = NSLocalizedString("followers", comment: "")
+            cell.username.text = localizedFollowing
+            break
+            
+        case 1:
+            if let followingCount = self.artist?.followingCount {
+                cell.displayNameLabel.text = "\(followingCount)"
+            }
+            let localizedFollowing = NSLocalizedString("following", comment: "")
+            cell.username.text = localizedFollowing
+            break
+            
+        case 2:
             if let funds = self.artist?.balance {
                 cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
             } else {
@@ -240,7 +257,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             cell.username.text = "Balance"
             break
             
-        case 1:
+        case 3:
             cell.username.text = "= 1 Like"
             if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
                 let formattedtipAmount = self.uiElement.convertCentsToDollarsAndReturnString(userSavedTipAmount, currency: "$")
@@ -251,7 +268,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             break
             
-        case 2:
+        case 4:
             cell.displayNameLabel.text = "Cash out"
             cell.username.text = ""
             break
@@ -332,7 +349,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //data
-    func loadFollowFollowingStats() {
+    func loadFollowerFollowingStats() {
         if let currentUserID = PFUser.current()?.objectId {
             let query = PFQuery(className: "Stats")
             query.whereKey("userId", equalTo: currentUserID)

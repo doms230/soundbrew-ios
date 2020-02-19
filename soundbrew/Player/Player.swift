@@ -253,7 +253,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     }
                 }
             }
-        }        
+        }
     }
     
     func fetchAudioFromNextSound() {

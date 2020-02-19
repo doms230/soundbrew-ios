@@ -41,6 +41,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let backItem = UIBarButtonItem()
         backItem.title = localizedBack
         navigationItem.backBarButtonItem = backItem
+        
+        let player = Player.sharedInstance
+        if player.player != nil {
+            setUpMiniPlayer()
+        } else {
+            setUpTableView(nil)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
