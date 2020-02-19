@@ -55,7 +55,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.setUpNavigationButtons()
             
         } else if let username = self.uiElement.getUserDefault("receivedUsername") as? String {
-            print("got username")
             loadUserInfoFromCloud(nil, username: username)
             UserDefaults.standard.removeObject(forKey: "receivedUsername")
             self.setUpNavigationButtons()
@@ -328,9 +327,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         case 3:
             cell.TagTypeTitle.text = "Credits"
-            if artistCollection.count == 0 && didLoadCredits  {
+            if artistCredits.count == 0 && didLoadCredits  {
                 cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: "They haven't been credited on any sounds yet.")
+                addNoSounds(cell.tagsScrollview, title: "No credits yet.")
             } else {
                 cell.tagTypeButton.tag = 2
                 cell.viewAllLabel.isHidden = false
@@ -631,17 +630,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch sender.tag {
         case 0:
             self.performSegue(withIdentifier: "showEditProfile", sender: self)
-            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Edit Profile", "description": "User pressed song in artist's collection."])
             break
             
         case 1:
             updateFollowStatus(false)
-            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Un-Follow", "description": "User un-followed artist"])
             break
             
         case 2:
             updateFollowStatus(true)
-            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Follow", "description": "User followed artist"])
             break
             
         default:
@@ -678,7 +674,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if let websiteURL = URL(string: website) {
                 if UIApplication.shared.canOpenURL(websiteURL) {
                     UIApplication.shared.open(websiteURL, options: [:], completionHandler: nil)
-                    MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Website", "description": "User selected website"])
                 }
             }
         }
@@ -687,8 +682,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
         if let artist = profileArtist {
             self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
-            
-            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
         }
     }
     
@@ -699,7 +692,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             sideView.loadFollowerFollowingStats()
             sideView.tableView.reloadData()
             container.isSideViewControllerPresented = true
-            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Settings", "description": "User pressed settings button"])
         }
     }
     
@@ -720,7 +712,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func loadUserInfoFromCloud(_ userId: String?, username: String?) {
-        print("loading userInfo")
         let query = PFQuery(className: "_User")
         if let userId = userId {
             query.whereKey("objectId", equalTo: userId)

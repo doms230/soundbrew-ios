@@ -249,6 +249,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.isLoadingMentions = false
+            self.tableView.refreshControl?.endRefreshing()
             if error == nil, let objects = objects {
                 for object in objects {
                     let fromuserId = object["fromUserId"] as! String
@@ -270,14 +271,9 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             } else {
                 self.doneLoadingMentions = true
-                self.finishLoadingAction()
+                self.tableView.reloadData()
             }
         }
-    }
-    
-    func finishLoadingAction() {
-        self.tableView.reloadData()
-        self.tableView.refreshControl?.endRefreshing()
     }
     
     func loadComment(_ commentId: String, mention: Mention) {
@@ -316,7 +312,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 let artist = self.uiElement.newArtistObject(user)
                 mention.artist = artist
                 self.mentions.append(mention)
-                self.finishLoadingAction()
+                self.tableView.reloadData()
             }
         }
     }
