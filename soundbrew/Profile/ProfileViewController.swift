@@ -312,12 +312,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case 2:
-            let localizedNothingInCollection = NSLocalizedString("nothingInCollection", comment: "")
-
-            cell.TagTypeTitle.text = localizedCollection
+            cell.TagTypeTitle.text = "Likes"
             if artistCollection.count == 0 && didLoadCollection  {
                 cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: localizedNothingInCollection)
+                addNoSounds(cell.tagsScrollview, title: "No Likes yet.")
             } else {
                 cell.tagTypeButton.tag = 1
                 cell.viewAllLabel.isHidden = false

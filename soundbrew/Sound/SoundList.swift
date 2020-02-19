@@ -171,7 +171,6 @@ class SoundList: NSObject, PlayerDelegate {
                         self.deleteSong(sound.objectId!, row: row)
                         }))
                     
-                    menuAlert.addAction(viewCollectorsAction(sound))
                         
                     let localizedCancel = NSLocalizedString("cancel", comment: "")
                     menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -194,33 +193,11 @@ class SoundList: NSObject, PlayerDelegate {
             menuAlert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
                 self.showReportSoundAlert(sound)
             }))
-        
-        menuAlert.addAction(viewCollectorsAction(sound))
-        
+                
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
         
         target.present(menuAlert, animated: true, completion: nil)
-    }
-    
-    func viewCollectorsAction(_ sound: Sound) -> UIAlertAction {
-        var uiAlertActionString = ""
-        let localizedCollector = NSLocalizedString("collector", comment: "")
-        if let tippers = sound.tipCount {
-            var tipLabel = "\(localizedCollector)s"
-            if tippers == 1 {
-                tipLabel = localizedCollector
-            }
-            
-            uiAlertActionString = "\(tippers) \(tipLabel)"
-        } else {
-            uiAlertActionString = "0 \(localizedCollector)s"
-        }
-        
-        return  UIAlertAction(title: uiAlertActionString, style: .default, handler: { action in
-            self.selectedSound = sound
-            self.target.performSegue(withIdentifier: "showTippers", sender: self)
-        })
     }
     
     func showReportSoundAlert(_ sound: Sound) {
