@@ -845,8 +845,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         
         //sound info
         var bottomOffsetValue: Int!
+        print(UIDevice.modelName)
         switch UIDevice.modelName {
-        case "iPhone X", "iPhone XS", "iPhone XS Max", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max":
+        case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
             bottomOffsetValue = uiElement.bottomOffset * 5
             break
             

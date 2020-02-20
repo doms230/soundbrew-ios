@@ -154,11 +154,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             let cell = tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
-            if storiesAreLoading {
-                cell.headerTitle.text = ""
-            } else {
-                cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will create a playlist from their latest updates and show them here."
-            }
+            cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will show you a playlist of their latest updates."
 
             return cell
         } else {

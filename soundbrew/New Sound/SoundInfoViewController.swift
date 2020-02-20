@@ -31,8 +31,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let color = Color()
     var soundArtDidFinishProcessing = true
     var didPressUploadButton = false
-    //var soundParseFileDidFinishProcessing = false
-   // var soundTitle: UILabel!
+    var soundParseFileDidFinishProcessing = false
     
     var soundThatIsBeingEdited: Sound?
         
@@ -107,44 +106,34 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
-       // self.soundThatIsBeingEdited?.title = self.soundTitle.text
-        //self.uiElement.goBackToPreviousViewController(self)
-        /*if let sound = self.soundThatIsBeingEdited {
-            if sound.isDraft! && self.soundParseFileDidFinishProcessing {
-                saveDraft()
+        if self.soundParseFileDidFinishProcessing {
+            var titleMessage: String!
+            if self.soundThatIsBeingEdited?.objectId != nil {
+                titleMessage = "Update the changes you made to this upload?"
             } else {
+                titleMessage = "Save this upload for later?"
+            }
+            
+            let alertController = UIAlertController (title: titleMessage, message: "", preferredStyle: .actionSheet)
+            
+            let yesAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
+                self.saveDraft()
+            }
+            alertController.addAction(yesAction)
+            
+            let noAction = UIAlertAction(title: "No", style: .default) { (_) -> Void in
                 self.uiElement.goBackToPreviousViewController(self)
             }
-        }*/
-        
-        /*if self.soundTitle.text != "Add Title/Description" {
-            self.soundThatIsBeingEdited?.title = self.soundTitle.text
-        }*/
-        
-        var titleMessage: String!
-        if self.soundThatIsBeingEdited?.objectId != nil {
-            titleMessage = "Update the changes you made to this upload?"
+            alertController.addAction(noAction)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
+            }
+            alertController.addAction(cancelAction)
+            
+            self.present(alertController, animated: true, completion: nil)
         } else {
-            titleMessage = "Save this upload for later?"
-        }
-        
-        let alertController = UIAlertController (title: titleMessage, message: "", preferredStyle: .actionSheet)
-        
-        let yesAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
-            self.saveDraft()
-        }
-        alertController.addAction(yesAction)
-        
-        let noAction = UIAlertAction(title: "No", style: .default) { (_) -> Void in
             self.uiElement.goBackToPreviousViewController(self)
         }
-        alertController.addAction(noAction)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
-        }
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
     func saveDraft() {
@@ -180,6 +169,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if soundThatIsBeingEdited?.objectId == nil {
             processAudioForDatabase()
+        } else {
+            self.soundParseFileDidFinishProcessing = true 
         }
     }
     
@@ -795,14 +786,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
-               // self.soundParseFileDidFinishProcessing = true
-                
+                self.soundParseFileDidFinishProcessing = true
                 self.uploadButton.isEnabled = true
-                
-              /*  let localizedSaveDraft = NSLocalizedString("saveDraft", comment: "")
-                
-                self.backButton = UIBarButtonItem(title: localizedSaveDraft, style: .plain, target: self, action: #selector(self.didPressGoBackButton(_:)))
-                self.navigationItem.leftBarButtonItem = self.backButton*/
                                 
             } else if let error = error {
                 let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
