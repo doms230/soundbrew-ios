@@ -155,6 +155,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let installation = PFInstallation.current()
         installation?.setDeviceTokenFrom(deviceToken)
+        installation?.badge = 0
         installation?.saveEventually()
     }
     

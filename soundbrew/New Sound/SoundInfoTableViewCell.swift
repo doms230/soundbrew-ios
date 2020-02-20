@@ -118,6 +118,7 @@ class SoundInfoTableViewCell: UITableViewCell {
         case "dividerReuse":
             self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)

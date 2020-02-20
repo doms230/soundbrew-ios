@@ -15,7 +15,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     let uiElement = UIElement()
     let color = Color()
     var soundList: SoundList!
-        
+    var storiesAreLoading = true
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -24,7 +24,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.navigationItem.title = "Soundbrew"
         setupNotificationCenter()
         loadFriendStories()
-        
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
@@ -155,7 +154,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             let cell = tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
-            cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will create a playlist from their latest updates and show them here."
+            if storiesAreLoading {
+                cell.headerTitle.text = ""
+            } else {
+                cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will create a playlist from their latest updates and show them here."
+            }
+
             return cell
         } else {
             return storyCell(indexPath)
@@ -254,6 +258,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     var listenedStories = [Story]()
     var didGetInitialFriendsList = false
     func loadFriendStories() {
+        self.storiesAreLoading = true
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             self.unListenedStories.removeAll()
@@ -300,6 +305,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setUpOrReloadTableView() {
+        self.storiesAreLoading = false
         if self.tableView != nil {
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()

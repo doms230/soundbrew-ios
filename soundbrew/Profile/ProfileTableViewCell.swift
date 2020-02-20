@@ -338,7 +338,7 @@ class ProfileTableViewCell: UITableViewCell {
             userCity.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
             userCity.textColor = .darkGray
             userCity.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(username)
             }
             

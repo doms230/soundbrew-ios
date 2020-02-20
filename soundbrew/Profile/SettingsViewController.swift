@@ -51,7 +51,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
             self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
-            MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Sign out", "description": "User pressed Sign out"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
     }
@@ -68,8 +67,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @objc func didPressProvideFeedbackButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/support")!, options: [:], completionHandler: nil)
-        
-        MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Support", "description": "User pressed Support"])
     }
     
     lazy var connectWithUsButton: UIButton = {
@@ -88,15 +85,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
         menuAlert.addAction(UIAlertAction(title: "Twitter", style: .default, handler: { action in
         UIApplication.shared.open(URL(string: "https://www.twitter.com/sound_brew")!, options: [:], completionHandler: nil)
-            MSAnalytics.trackEvent("Connect With Us", withProperties: ["Button" : "Twitter", "description": "User pressed twitter"])
         }))
         menuAlert.addAction(UIAlertAction(title: "Instagram", style: .default, handler: { action in
             UIApplication.shared.open(URL(string: "https://www.instagram.com/sound_brew")!, options: [:], completionHandler: nil)
-            MSAnalytics.trackEvent("Connect With Us", withProperties: ["Button" : "Instagram", "description": "User pressed instagram"])
         }))
         self.present(menuAlert, animated: true, completion: nil)
-        
-        MSAnalytics.trackEvent("Settings View Controller", withProperties: ["Button" : "Connect With Us", "description": "User pressed connect with us button"])
     }
     
     func setupBottomButtons() {

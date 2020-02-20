@@ -100,6 +100,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.keyboardType = .twitter
+        textView.textColor = .white
         inputToolbar.addSubview(textView)
 
         let buttonWidthHeight = 35
@@ -729,7 +730,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             
             if self.selectedCommentFromMentions != nil {
                 let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
-                self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
             }
         }
     }

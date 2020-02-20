@@ -53,8 +53,7 @@ class UIElement {
     
     //This is used to make sure that top offset is below navigation bar
     func uiViewTopOffset(_ target: UIViewController ) -> CGFloat {
-        return UIApplication.shared.statusBarFrame.size.height +
-            (target.navigationController?.navigationBar.frame.height ?? 0.0) + CGFloat(topOffset)
+        return(target.navigationController?.navigationBar.frame.height ?? 0.0) + CGFloat(topOffset)
     }
     
     func newRootView(_ storyBoard: String, withIdentifier: String) {

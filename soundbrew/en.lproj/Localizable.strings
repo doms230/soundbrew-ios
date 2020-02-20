@@ -60,7 +60,7 @@
 "mood" = "mood";
 "activity" = "activity";
 "more" = "more";
-"shareLinkTo" = "Share Link To";
+"shareLinkTo" = "Share Link to";
 "issueWithUpload" = "There was an issue with your audio processing:";
 "audioProcessingComplete" = "Audio Processing Complete.";
 "processingAudio" = "Processing Audio...";

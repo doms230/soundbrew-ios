@@ -175,6 +175,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
         tableView.frame = view.bounds
+        tableView.separatorStyle = .none 
         self.view.addSubview(tableView)
         
         if soundThatIsBeingEdited?.objectId == nil {
@@ -339,8 +340,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.soundTagLabel.text = "\(localizedShareLinkTo) \(socialTitle!)"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
         cell.socialSwitch.tag = tag
-
-        tableView.separatorStyle = .none
        
         return cell
     }
@@ -502,21 +501,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.chosenSoundTagLabel.text = localizedNone
                 cell.chosenSoundTagLabel.textColor = .darkGray
             }
-            tableView.separatorStyle = .none
             break
         case 1:
             determineTag(cell, soundTagLabel: "Genre \(localizedTag)", tag: self.genreTag)
-            tableView.separatorStyle = .none
             break
             
         case 2:
             determineTag(cell, soundTagLabel: "\(self.uiElement.localizedMood.capitalized) \(localizedTag)", tag: self.moodTag)
-            tableView.separatorStyle = .none
             break
             
         case 3:
             determineTag(cell, soundTagLabel: "\(self.uiElement.localizedActivity.capitalized) \(localizedTag)", tag: self.activityTag)
-            tableView.separatorStyle = .none
             break
             
         case 4:
@@ -534,7 +529,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.chosenSoundTagLabel.text = localizedAdd.capitalized
             cell.chosenSoundTagLabel.textColor = color.blue()
         }
-        tableView.separatorStyle = .singleLine
             break
             
         default:
@@ -729,9 +723,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.soundArtImageButton.kf.setImage(with: URL(string: imageURL), for: .normal)
             }
         }
-        
-        tableView.separatorStyle = .singleLine
-        
+                
         return cell
     }
     

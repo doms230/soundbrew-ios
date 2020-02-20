@@ -32,9 +32,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         }
             
         self.loadMentions()
-          let installation = PFInstallation.current()
-          installation?.badge = 0
-          installation?.saveEventually()
       }
       
       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
