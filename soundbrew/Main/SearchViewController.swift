@@ -224,13 +224,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.backgroundColor = color.black()
             cell.newChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
             cell.newChartsButton.tag = 0
-            
-           /* cell.topChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
-            cell.topChartsButton.tag = 1
-            
-            cell.followButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
-            cell.followButton.tag = 2*/
-            
             return cell
         }
         return featureTagCell(indexPath)

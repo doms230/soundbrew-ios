@@ -464,6 +464,7 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             //person username
+            displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.top)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)

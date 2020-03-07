@@ -692,9 +692,10 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func loadComments(_ sound: Sound) {
         self.comments.removeAll()
+        
         if let soundArtist = sound.artist{
             let comment = Comment(objectId: nil, artist: soundArtist, text: sound.title, atTime: 0, createdAt: sound.createdAt)
-            self.comments.append(comment)
+            self.comments.insert(comment, at: 0)
         }
         
         let query = PFQuery(className: "Comment")

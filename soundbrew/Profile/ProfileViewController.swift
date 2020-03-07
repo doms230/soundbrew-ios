@@ -282,7 +282,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var didLoadCredits = false
     var showSoundsTitle: String!
     var selectedSoundType: String!
-    let localizedCollection = NSLocalizedString("collection", comment: "")
     
     func soundsReuse(_ indexPath: IndexPath) -> TagTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundReuse) as! TagTableViewCell
@@ -343,28 +342,41 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressViewAllSoundsButton(_ sender: UIButton) {
+        var shouldSegueToSounds = true
         if let artist = self.profileArtist {
             switch sender.tag {
             case 0:
                 showSoundsTitle = "\(artist.username!)'s Releases"
                 selectedSoundType = "uploads"
+                if self.artistReleases.count == 0 {
+                    shouldSegueToSounds = false
+                }
                 break
                 
             case 1:
-                showSoundsTitle = "\(artist.username!)'s \(localizedCollection)"
+                showSoundsTitle = "\(artist.username!)'s Likes"
                 selectedSoundType = "collection"
+                if self.artistCollection.count == 0 {
+                    shouldSegueToSounds = false
+                }
                 break
                 
             case 2:
                 showSoundsTitle = "\(artist.username!)'s Credits"
                 selectedSoundType = "credit"
+                if self.artistCredits.count == 0 {
+                    shouldSegueToSounds = false
+                }
                 break
                 
             default:
                 break
             }
         }
-        self.performSegue(withIdentifier: "showSounds", sender: self)
+        
+        if shouldSegueToSounds {
+            self.performSegue(withIdentifier: "showSounds", sender: self)
+        }
     }
     
     func addNoSounds(_ scrollview: UIScrollView, title: String) {

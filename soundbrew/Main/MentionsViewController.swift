@@ -309,6 +309,8 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 let artist = self.uiElement.newArtistObject(user)
                 mention.artist = artist
                 self.mentions.append(mention)
+               let sortedMentions =  self.mentions.sorted(by: {$0.createdAt > $1.createdAt})
+                self.mentions = sortedMentions
                 self.tableView.reloadData()
             }
         }
