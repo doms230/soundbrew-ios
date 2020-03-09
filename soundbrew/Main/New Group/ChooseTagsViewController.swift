@@ -205,13 +205,16 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.view)
             }
-        } else {
+        } else if tagType == "more" {
             tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.view)
             }
+            
+        } else {
+            tableView.frame = self.view.bounds
         }
     }
     
@@ -309,9 +312,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 addChosenTagButton(self.chosenTags[i].name, tag: i)
             }
             
-        } else {
+        } /*else {
            addChooseTagsLabel()
-        }
+        }*/
         
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in

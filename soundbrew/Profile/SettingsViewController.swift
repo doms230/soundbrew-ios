@@ -294,9 +294,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             preferredStyle: .actionSheet)
         
         let pickerView = UIPickerView(frame:
-            CGRect(x: 20, y: 45, width: self.view.frame.width, height: 160))
+            CGRect(x: 0, y: 45, width: UIScreen.main.bounds.width - 25, height: 160))
         pickerView.dataSource = self
         pickerView.delegate = self
+        determineSelectedRowForPickerView(pickerView)
         alertView.view.addSubview(pickerView)
         
         let sendMoneyActionButton = UIAlertAction(title: "Save", style: .default) { (_) -> Void in
@@ -330,6 +331,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         selectedTipAmount = tipAmountInCents[row]
     }
     
+    func determineSelectedRowForPickerView(_ pickerView: UIPickerView) {
+        if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
+            var row = 0
+            for i in 0..<tipAmountInCents.count {
+                if tipAmountInCents[i] == userSavedTipAmount {
+                    row = i
+                }
+            }
+            pickerView.selectRow(row, inComponent: 0, animated: false)
+        }
+    }
+        
     func cashout() {
         var currentUserBalance = 0
         if let balance = Customer.shared.artist?.balance {

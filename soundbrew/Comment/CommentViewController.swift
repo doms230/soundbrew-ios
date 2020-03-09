@@ -650,7 +650,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 loadArtistFromUsername(textWithoutAt, commentId: commentId)
             }
         }
-    }
+    }   
     
     func loadArtistFromUsername(_ username: String, commentId: String?) {
         if commentId == nil {
@@ -662,7 +662,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             (object: PFObject?, error: Error?) -> Void in
             self.stopAnimating()
             if let object = object {
-                if let commentId = commentId, username != self.sound?.artist?.username {
+                if let commentId = commentId {
                     self.newMention(object.objectId!, commentId: commentId)
                 } else {
                     let artist = self.uiElement.newArtistObject(object)
@@ -693,9 +693,10 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     func loadComments(_ sound: Sound) {
         self.comments.removeAll()
         
-        if let soundArtist = sound.artist{
+        if let soundArtist = sound.artist {
+            print("got sound artist in loadComments")
             let comment = Comment(objectId: nil, artist: soundArtist, text: sound.title, atTime: 0, createdAt: sound.createdAt)
-            self.comments.insert(comment, at: 0)
+            self.comments.append(comment)
         }
         
         let query = PFQuery(className: "Comment")

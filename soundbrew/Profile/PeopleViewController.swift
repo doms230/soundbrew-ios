@@ -31,7 +31,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupTopView()
         
         if sound == nil {
@@ -187,8 +186,14 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
 
         } else {
             if loadType == "credits" {
-                return creditsCell(indexPath)
-            } else if filteredArtists.count == 0 {
+                if soundCredits.count == 0 {
+                    return noResultsCell()
+                } else {
+                    return creditsCell(indexPath)
+                }
+            }
+            
+            if filteredArtists.count == 0 {
                 return noResultsCell()
             } else {
                 return peopleCell(indexPath)

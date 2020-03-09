@@ -41,9 +41,7 @@ class TagTableViewCell: UITableViewCell {
     }()
     
     lazy var newChartsButton: UIButton = {
-        //let localizedNew = NSLocalizedString("new", comment: "")
         let button = UIButton()
-       // button.setTitle(localizedNew, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.layer.cornerRadius = 5
         button.clipsToBounds = true

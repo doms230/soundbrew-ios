@@ -246,7 +246,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func didSelectSoundAt(row: Int) {
-        //TESTING PLAYER
         let player = soundList.player
         player.didSelectSoundAt(row)
         if player.player != nil {
@@ -407,7 +406,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func loadTags(_ type: String, searchText: String?) {
-        
         let query = PFQuery(className: "Tag")
 
         if let text = searchText {
@@ -490,21 +488,25 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     }
                 }
                 
-                self.isLoadingResults = false
-                let player = Player.sharedInstance
-                if player.player != nil {
-                    self.setUpMiniPlayer()
-                } else if self.tableView == nil {
-                    self.setUpTableView(nil)
-                } else {
-                    self.tableView.reloadData()
-                }
+                self.handleTableViewLogic()
                 
             } else {
                 print("Error: \(error!)")
                 let localizedOops = NSLocalizedString("oops", comment: "")
                 self.uiElement.showAlert(localizedOops, message: "\(error!.localizedDescription)", target: self)
             }
+        }
+    }
+    
+    func handleTableViewLogic() {
+        self.isLoadingResults = false
+        let player = Player.sharedInstance
+        if player.player != nil {
+            self.setUpMiniPlayer()
+        } else if self.tableView == nil {
+            self.setUpTableView(nil)
+        } else {
+            self.tableView.reloadData()
         }
     }
     
