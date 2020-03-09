@@ -206,9 +206,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func didSelectSoundAt(_ i: Int) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: i)
-        if let tableView = self.tableView {
-            tableView.reloadData()
-        }
         
         MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
     }

@@ -38,9 +38,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
+        
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
@@ -68,6 +66,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
             self.uiElement.welcomeAlert(localizedRegisterForUpdates, target: self)
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

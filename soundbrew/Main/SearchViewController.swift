@@ -45,8 +45,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
-        } else {
-            setUpTableView(nil)
         }
     }
     
@@ -526,7 +524,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
-        setUpTableView(miniPlayerView)
+        if self.tableView != nil {
+            setUpTableView(miniPlayerView)
+        }
     }
     
     @objc func miniPlayerWasSwiped() {

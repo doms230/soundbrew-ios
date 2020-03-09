@@ -35,7 +35,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var displayNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         label.textColor = .white
         label.textAlignment = .center
         //label.numberOfLines = 0
@@ -44,7 +44,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var username: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.textColor = .white
         label.textAlignment = .center
         return label
@@ -52,7 +52,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var storyType: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 14)
+        label.font = UIFont(name: uiElement.mainFont, size: 16)
         label.textColor = .white
         label.textAlignment = .center
         return label
@@ -70,9 +70,10 @@ class HomeCollectionViewCell: UICollectionViewCell {
         }
         
         self.view.addSubview(profileImage)
-        profileImage.layer.cornerRadius = 75/2
+        let profileImageHeightWidth = 75
+        profileImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
         profileImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(75)
+            make.height.width.equalTo(profileImageHeightWidth)
             make.top.equalTo(view).offset(uiElement.topOffset)
             make.centerX.equalTo(view)
         }
