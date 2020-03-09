@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import Kingfisher
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate {
+class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PlayerDelegate, TagDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -35,7 +35,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         if player.player != nil {
             setUpMiniPlayer()
         } else {
-            setUpTableView(nil)
+            setupCollectionView(nil)
         }
     }
     
@@ -89,7 +89,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             if player.player != nil {
                 self.setUpMiniPlayer()
             } else {
-                setUpTableView(nil)
+                setupCollectionView(nil)
             }
         }
     }
@@ -99,26 +99,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    //MARK: Tableview
-    var tableView: UITableView!
-    let homeReuse = "homeReuse"
-    let noSoundsReuse = "noSoundsReuse"
+    var collectionView: UICollectionView!
     var selectedIndexPath: IndexPath?
+    var cell: HomeCollectionViewCell!
     
-    func setUpTableView(_ miniPlayer: UIView?) {
-        tableView = UITableView()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: homeReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = color.black()
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
-        tableView.refreshControl = refreshControl
+    func setupCollectionView(_ miniPlayer: MiniPlayerView?) {
+        collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        self.collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "reuse")
+        self.collectionView.alwaysBounceVertical = true
+        //self.view.addSubview(self.collectionView)
         if let miniPlayer = miniPlayer {
-            self.view.addSubview(tableView)
-            self.tableView.snp.makeConstraints { (make) -> Void in
+            self.view.addSubview(self.collectionView)
+            self.collectionView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
@@ -126,93 +120,106 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
         } else {
-            self.tableView.frame = view.bounds
-            self.view.addSubview(tableView)
+            self.collectionView.frame = view.bounds
+            self.view.addSubview(collectionView)
         }
     }
     
-    @objc func refresh(_ sender: UIRefreshControl) {
-        loadFriendStories()
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return unListenedStories.count
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        return storyCell(indexPath)
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 && unListenedStories.count != 0 {
-            return unListenedStories.count
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let selectedUserId = unListenedStories[indexPath.row].artist.objectId {
+            self.selectedIndexPath = indexPath
+            collectionView.reloadData()
+            soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         }
-        
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            return storyCell(indexPath)
-        } else if unListenedStories.count == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-            cell.selectionStyle = .none
-            cell.backgroundColor = color.black()
-            cell.headerTitle.text = "Welcome to Soundbrew! \nWhen you follow people, Soundbrew will show you a playlist of their latest updates."
 
-            return cell
-        } else {
-            return storyCell(indexPath)
-        }
+        /*if indexPath.section == 0 {
+            self.selectedIndexPath = indexPath
+            collectionView.reloadData()
+            soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+            
+        } else if let selectedUserId = unListenedStories[indexPath.row].artist.objectId {
+            self.selectedIndexPath = indexPath
+            collectionView.reloadData()
+            soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        }*/
     }
     
-    func storyCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: homeReuse) as! ProfileTableViewCell
-        cell.selectionStyle = .none
-        cell.backgroundColor = color.black()
-        if indexPath.section == 0 {
-            cell.displayNameLabel.text = "Your Soundbrew"
-            cell.username.text = "A playlist of recommended music."
-            cell.profileImage.image = UIImage(named: "appy")
-            cell.userCity.text = ""
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let collectionViewSize = collectionView.frame.size.width
+        return CGSize(width: collectionViewSize/2, height: collectionViewSize/2)
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) //.zero
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+ 
+    
+    func storyCell(_ indexPath: IndexPath) -> HomeCollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "reuse", for: indexPath) as! HomeCollectionViewCell
+        
+        let story = unListenedStories[indexPath.row]
+        let artist = unListenedStories[indexPath.row].artist!
+        
+        if let image = artist.image {
+            cell.profileImage.kf.setImage(with: URL(string: image))
         } else {
-             var story: Story!
-             story = unListenedStories[indexPath.row]
-            
-             let artist = story.artist!
-             
-             if let username = artist.username {
-                 cell.username.text = "@\(username)"
-             } else {
-                 cell.username.text = "@username"
-                 artist.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil)
-             }
-            
-             if let image = artist.image {
-                 cell.profileImage.kf.setImage(with: URL(string: image))
-             } else {
-                 cell.profileImage.image = UIImage(named: "profile_icon")
-             }
-                
-             if let name = artist.name {
-                 cell.displayNameLabel.text = name
-             } else {
-                 cell.displayNameLabel.text = "name"
-             }
-             
-             if let dateCreated = story.lastUpdated {
-                 cell.userCity.text = "\(self.uiElement.formatDateAndReturnString(dateCreated))"
-             }
-             
-             if let type = story.type {
-                 cell.city.text = "New \(type.capitalized)"
-             }
+            cell.profileImage.image = UIImage(named: "profile_icon")
         }
         
         if let selectedIndexPath = self.selectedIndexPath {
-            if selectedIndexPath == indexPath {
-                self.changeArtistStoryColor(cell, color: color.blue())
+            if selectedIndexPath.row == indexPath.row {
+                cell.view.image = UIImage(named: "background")
+                //cell.profileImage.layer.borderColor = color.blue().cgColor
+                //cell.profileImage.layer.borderWidth = 5
             } else {
-                self.changeArtistStoryColor(cell, color: .white)
+                cell.view.image = UIImage()
+                //cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
+                //cell.profileImage.layer.borderWidth = 1
             }
         }
+            
+        if let name = artist.name {
+            cell.displayNameLabel.text = name
+        } else {
+            cell.displayNameLabel.text = "name"
+        }
         
+        if let username = artist.username {
+            cell.username.text = "@\(username)"
+        } else {
+            cell.username.text = "@username"
+            artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell)
+        }
+        
+        if let storyType = story.type {
+            cell.storyType.text = "New \(storyType.capitalized)"
+        }
+            
+        self.cell = cell
         return cell
     }
     
@@ -227,10 +234,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.city.textColor = color
         }
     }
-
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+        /*if indexPath.section == 0 {
             self.selectedIndexPath = indexPath
             tableView.reloadData()
             soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
@@ -239,14 +245,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.selectedIndexPath = indexPath
             tableView.reloadData()
             soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-        }
+        }*/
     }
     
     func removeUnlistenedStoryAndAddToListenedStories(_ row: Int, story: Story) {
         self.unListenedStories.remove(at: row)
         listenedStories.append(story)
         self.listenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-        self.tableView.reloadData()
+      //  self.tableView.reloadData()
     }
     
     //
@@ -302,11 +308,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func setUpOrReloadTableView() {
         self.storiesAreLoading = false
-        if self.tableView != nil {
-            self.tableView.refreshControl?.endRefreshing()
-            self.tableView.reloadData()
+        if self.collectionView != nil {
+           // self.tableView.refreshControl?.endRefreshing()
+           // self.tableView.reloadData()
+            self.collectionView.reloadData()
         } else {
-            self.setUpTableView(nil)
+            self.setupCollectionView(nil)
         }
     }
     
@@ -326,7 +333,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
-        self.setUpTableView(self.miniPlayerView)
+        self.setupCollectionView(self.miniPlayerView)
     }
     
     @objc func miniPlayerWasSwiped() {

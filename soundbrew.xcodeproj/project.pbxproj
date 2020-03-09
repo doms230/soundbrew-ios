@@ -13,6 +13,7 @@
 		E425D7C723C2836A0031DB0B /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C623C2836A0031DB0B /* Credit.swift */; };
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
+		E43AB27F24169BED003263C9 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB27E24169BED003263C9 /* HomeCollectionViewCell.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -150,6 +151,7 @@
 		E425D7C623C2836A0031DB0B /* Credit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credit.swift; sourceTree = "<group>"; };
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
+		E43AB27E24169BED003263C9 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 		F2FB14CB22CBFBFF00ED157E /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				E43AB27E24169BED003263C9 /* HomeCollectionViewCell.swift */,
 				E4C9DCE823CCEB9D003835E5 /* HomeViewController.swift */,
 				F2F122D822FBCA50002DA196 /* SearchViewController.swift */,
 				E4262A5323FC3E3200107A1D /* MentionsViewController.swift */,
@@ -772,6 +775,7 @@
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,
 				E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */,
+				E43AB27F24169BED003263C9 /* HomeCollectionViewCell.swift in Sources */,
 				E4C9DCE923CCEB9D003835E5 /* HomeViewController.swift in Sources */,
 				E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,

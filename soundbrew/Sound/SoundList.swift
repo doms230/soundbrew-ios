@@ -97,7 +97,7 @@ class SoundList: NSObject, PlayerDelegate {
                     cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                 }
             } else if let artist = sound.artist {
-                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil)
+                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, HomeCollectionCell: nil)
             }
             
             cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)

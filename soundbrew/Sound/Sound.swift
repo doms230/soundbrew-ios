@@ -74,7 +74,7 @@ class Sound {
                     }
                     
                     if self.artist?.image == nil {
-                        self.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil)
+                        self.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: nil)
                     }
                 }
             }
