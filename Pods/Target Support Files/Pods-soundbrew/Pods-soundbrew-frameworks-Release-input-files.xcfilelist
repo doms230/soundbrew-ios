@@ -7,9 +7,11 @@ ${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework
 ${BUILT_PRODUCTS_DIR}/GrowingTextView/GrowingTextView.framework
 ${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework
 ${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework
+${BUILT_PRODUCTS_DIR}/OnboardKit/OnboardKit.framework
 ${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework
 ${BUILT_PRODUCTS_DIR}/PINOperation/PINOperation.framework
 ${BUILT_PRODUCTS_DIR}/Parse/Parse.framework
+${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework
 ${BUILT_PRODUCTS_DIR}/ShareInstagram/ShareInstagram.framework
 ${BUILT_PRODUCTS_DIR}/SidebarOverlay/SidebarOverlay.framework
 ${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework
@@ -17,6 +19,7 @@ ${PODS_ROOT}/SnapSDK/SCSDKBitmojiKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKCoreKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKCreativeKit.framework
 ${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework
+${PODS_ROOT}/SnapSDK/SCSDKStoryKit.framework
 ${BUILT_PRODUCTS_DIR}/Stripe/Stripe.framework
 ${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework
 ${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework

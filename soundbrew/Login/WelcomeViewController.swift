@@ -10,12 +10,17 @@ import Parse
 import UIKit
 import SnapKit
 import AppCenterAnalytics
+import OnboardKit
 
 class WelcomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        welcomeView()
+        signupView()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        showWelcomeView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -61,6 +66,18 @@ class WelcomeViewController: UIViewController {
         return label
     }()
     
+    lazy var learnMoreButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Learn More", for: .normal)
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
+        button.titleLabel?.numberOfLines = 0
+        button.backgroundColor = color.purpleBlack()
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 5
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(didPressLearnMoreButton), for: .touchUpInside)
+        return button
+    }()
     
     lazy var termsButton: UIButton = {
         let button = UIButton()
@@ -96,7 +113,32 @@ class WelcomeViewController: UIViewController {
         return button
     }
     
-    func welcomeView() {
+    func showWelcomeView() {
+        let titleFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 40)!
+        let descriptionFont = UIFont(name: "\(uiElement.mainFont)", size: 25)!
+        
+        let likePage = newOnboardPage("Support", imageName: "onboardLike", description: "The credited artists are paid everytime you 'like' a song.")
+        
+        let connectPage = newOnboardPage("Connect", imageName: "onboardConnect", description: "Keep up with your favorite artists' uploads and likes. Chat in the comments.")
+        
+        let discoverPage = newOnboardPage("Discover", imageName: "onboardDiscover", description: "Discover music & audio from different cities, moods, and activities.")
+        
+        let createPage = newOnboardPage("Create", imageName: "onboardCreate", description: "Upload and tag your music straight from the app. Credit other artists and collaborators, then choose their payment splits.")
+        
+        let appearance = OnboardViewController.AppearanceConfiguration(tintColor: .white, titleColor: .white, textColor: .white, backgroundColor: .black, imageContentMode: .scaleAspectFit, titleFont: titleFont, textFont: descriptionFont)
+        let onboardingViewController = OnboardViewController(pageItems: [likePage, connectPage, discoverPage, createPage],
+        appearanceConfiguration: appearance)
+        onboardingViewController.presentFrom(self, animated: true)
+    }
+    
+    func newOnboardPage(_ title: String, imageName: String, description: String) -> OnboardPage {
+        let page = OnboardPage(title: title,
+        imageName: imageName,
+        description: description)
+        return page
+    }
+    
+    func signupView() {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
@@ -106,6 +148,7 @@ class WelcomeViewController: UIViewController {
         
         self.view.addSubview(appImage)
         self.view.addSubview(appLabel)
+        self.view.addSubview(learnMoreButton)
         self.view.addSubview(termsButton)
         
         appLabel.snp.makeConstraints { (make) -> Void in
@@ -114,13 +157,20 @@ class WelcomeViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        learnMoreButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(35)
+            make.width.equalTo(100)
+            make.top.equalTo(appLabel.snp.bottom).offset(uiElement.topOffset)
+            make.centerX.equalTo(self.view)
+        }
+        
         appImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(150)
             make.centerX.equalTo(self.view)
             make.bottom.equalTo(appLabel.snp.top)
         }
         
-        let signupButton = signInWithButton("Sign up", titleColor: .black, backgroundColor: .white, imageName: nil, tag: 0)
+        let signupButton = signInWithButton("Sign Up", titleColor: .black, backgroundColor: .white, imageName: nil, tag: 0)
         self.view.addSubview(signupButton)
         signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -148,7 +198,7 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset * 2)
         }*/
         
-        let signInButton = signInWithButton("Sign in", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3)
+        let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3)
         self.view.addSubview(signInButton)
         signInButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -203,5 +253,9 @@ class WelcomeViewController: UIViewController {
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
         MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Terms Button", "description": "user pressed terms button"])
+    }
+    
+    @objc func didPressLearnMoreButton(_ sender: UIButton) {
+        showWelcomeView()
     }
 }

@@ -36,6 +36,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     var editDetailType: String!
     
+    var isOnboarding = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
@@ -45,25 +47,34 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         setUpViews()
         
         if let CurrentArtist = Customer.shared.artist {
+            print("got artist")
             self.artist = CurrentArtist
-            self.setUpTableView()
-        } else {
+        } /*else {
             self.uiElement.goBackToPreviousViewController(self)
-        }
+        }*/
+        
+        self.setUpTableView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let navigationController = segue.destination as! UINavigationController
-        if segue.identifier == "showTags" {
-            let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
-            viewController.tagDelegate = self
-            viewController.tagType = "city"
+        if let navigationController = segue.destination as? UINavigationController {
+            if segue.identifier == "showTags" {
+                let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
+                viewController.tagDelegate = self
+                viewController.tagType = "city"
+                
+            } else if segue.identifier == "showEditBio" {
+                let viewController = navigationController.topViewController as! EditBioViewController
+                viewController.bio = self.artist!.bio
+                viewController.artistDelegate = self
+                viewController.title = "Edit Bio"
+                
+            }
             
         } else {
-            let viewController = navigationController.topViewController as! EditBioViewController
-            viewController.bio = self.artist!.bio
-            viewController.artistDelegate = self
-            viewController.title = "Edit Bio"
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
         }
     }
     
@@ -79,7 +90,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
+        self.performSegue(withIdentifier: "showWhoToFollow", sender: self)
+        /*usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
         emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
         websiteText.text = self.uiElement.cleanUpText(websiteText.text!, shouldLowercaseText: true)
         
@@ -89,7 +101,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         if validateEmail() && validateUsername() && validateWebsite()  {
             updateUserInfo()
-        }
+        }*/
     }
     
     //MARK: TableView
@@ -288,7 +300,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cropViewController.aspectRatioPreset = .presetSquare
         cropViewController.resetAspectRatioEnabled = false
         cropViewController.delegate = self
-        present(cropViewController, animated: true, completion: nil)
+        present(cropViewController, animated: false, completion: nil)
     }
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
@@ -476,7 +488,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             customer.update()
                         }
                         
-                        self.uiElement.goBackToPreviousViewController(self)
+                        if self.isOnboarding {
+                            self.performSegue(withIdentifier: "showWhoToFollow", sender: self)
+                        } else {
+                            self.uiElement.goBackToPreviousViewController(self)
+                        }
                         
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self)

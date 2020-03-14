@@ -847,7 +847,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cropViewController.aspectRatioPreset = .presetSquare
         cropViewController.resetAspectRatioEnabled = false
         cropViewController.delegate = self
-        present(cropViewController, animated: true, completion: nil)
+        present(cropViewController, animated: false, completion: nil)
     }
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
@@ -860,7 +860,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundArtDidFinishProcessing = true
-                
                 if self.didPressUploadButton {
                     self.handleUploadButtonAction()
                 }
@@ -883,7 +882,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         dismiss(animated: true, completion: nil)
         self.soundArtDidFinishProcessing = true
     }
-    
     
     //
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {

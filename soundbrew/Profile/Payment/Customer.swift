@@ -25,7 +25,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         let url = self.baseURL!.appendingPathComponent("ephemeral_keys")
-        Alamofire.request(url, method: .post, parameters: [
+        AF.request(url, method: .post, parameters: [
             "api_version": apiVersion,
             "customerId": self.artist!.customerId!
             ], encoding: URLEncoding(destination: .queryString))
@@ -49,7 +49,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             "name": "\(self.artist!.username!)",
             "customerId": self.artist!.customerId!]
         
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 switch responseJSON.result {
@@ -71,7 +71,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             "email": "\(email)",
             "name": "\(name)" ]
         
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 switch responseJSON.result {

@@ -43,4 +43,5 @@ target 'soundbrew' do
   pod 'Stripe'
   pod 'UICircularProgressRing'
   #pod 'AppCenterAnalytics'
+  pod 'OnboardKit'
 end

@@ -8,7 +8,6 @@
 
 #import "STPPaymentOptionsViewController.h"
 
-#import "STPAPIClient.h"
 #import "STPAddCardViewController+Private.h"
 #import "STPCard.h"
 #import "STPColorUtils.h"
@@ -35,7 +34,6 @@
     @property (nonatomic) STPPaymentConfiguration *configuration;
     @property (nonatomic) STPAddress *shippingAddress;
     @property (nonatomic) id<STPBackendAPIAdapter> apiAdapter;
-    @property (nonatomic) STPAPIClient *apiClient;
     @property (nonatomic) STPPromise<STPPaymentOptionTuple *> *loadingPromise;
     @property (nonatomic, weak) STPPaymentActivityIndicatorView *activityIndicator;
     @property (nonatomic, weak) UIViewController *internalViewController;
@@ -47,6 +45,7 @@
 - (instancetype)initWithPaymentContext:(STPPaymentContext *)paymentContext {
     return [self initWithConfiguration:paymentContext.configuration
                             apiAdapter:paymentContext.apiAdapter
+                             apiClient:paymentContext.apiClient
                         loadingPromise:paymentContext.currentValuePromise
                                  theme:paymentContext.theme
                        shippingAddress:paymentContext.shippingAddress
@@ -67,6 +66,7 @@
     STPPromise<STPPaymentOptionTuple *> *promise = [self retrievePaymentMethodsWithConfiguration:configuration apiAdapter:apiAdapter];
     return [self initWithConfiguration:configuration
                             apiAdapter:apiAdapter
+                             apiClient:[STPAPIClient sharedClient]
                         loadingPromise:promise
                                  theme:theme
                        shippingAddress:nil
@@ -77,7 +77,8 @@
                                                                      apiAdapter:(id<STPBackendAPIAdapter>)apiAdapter {
     STPPromise<STPPaymentOptionTuple *> *promise = [STPPromise new];
     [apiAdapter listPaymentMethodsForCustomerWithCompletion:^(NSArray<STPPaymentMethod *> * _Nullable paymentMethods, NSError * _Nullable error) {
-        stpDispatchToMainThreadIfNecessary(^{
+        // We don't use stpDispatchToMainThreadIfNecessary here because we want this completion block to always be called asynchronously, so that users can set self.defaultPaymentMethod in time.
+        dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
                 [promise fail:error];
             } else {
@@ -117,6 +118,7 @@
             
             STPPaymentOptionsInternalViewController *payMethodsInternal = [[STPPaymentOptionsInternalViewController alloc] initWithConfiguration:strongSelf.configuration
                                                                                                                                  customerContext:customerContext
+                                                                                                                                       apiClient:strongSelf.apiClient
                                                                                                                                            theme:strongSelf.theme
                                                                                                                             prefilledInformation:strongSelf.prefilledInformation
                                                                                                                                  shippingAddress:strongSelf.shippingAddress
@@ -130,7 +132,8 @@
             }
             internal = payMethodsInternal;
         } else {
-            STPAddCardViewController *addCardViewController = [[STPAddCardViewController alloc] initWithConfiguration:strongSelf.configuration theme:self.theme];
+            STPAddCardViewController *addCardViewController = [[STPAddCardViewController alloc] initWithConfiguration:strongSelf.configuration theme:strongSelf.theme];
+            addCardViewController.apiClient = strongSelf.apiClient;
             addCardViewController.delegate = strongSelf;
             addCardViewController.prefilledInformation = strongSelf.prefilledInformation;
             addCardViewController.shippingAddress = strongSelf.shippingAddress;
@@ -277,6 +280,7 @@
     
 - (instancetype)initWithConfiguration:(STPPaymentConfiguration *)configuration
                            apiAdapter:(id<STPBackendAPIAdapter>)apiAdapter
+                            apiClient:(STPAPIClient *)apiClient
                        loadingPromise:(STPPromise<STPPaymentOptionTuple *> *)loadingPromise
                                 theme:(STPTheme *)theme
                       shippingAddress:(STPAddress *)shippingAddress
@@ -284,8 +288,8 @@
     self = [super initWithTheme:theme];
     if (self) {
         _configuration = configuration;
+        _apiClient = apiClient;
         _shippingAddress = shippingAddress;
-        _apiClient = [[STPAPIClient alloc] initWithPublishableKey:configuration.publishableKey];
         _apiAdapter = apiAdapter;
         _loadingPromise = loadingPromise;
         _delegate = delegate;

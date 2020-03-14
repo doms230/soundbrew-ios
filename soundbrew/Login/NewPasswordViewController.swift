@@ -73,6 +73,16 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         passwordText.becomeFirstResponder()
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let viewController = segue.destination as! EditProfileViewController
+        viewController.isOnboarding = true
+        
+        let localizedPassword = NSLocalizedString("password", comment: "")
+        let backItem = UIBarButtonItem()
+        backItem.title = "\(localizedPassword) | 3/3"
+        navigationItem.backBarButtonItem = backItem
+    }
+    
     @objc func finish(_ sender: UIButton){
         if validatePassword() {
             signup()
@@ -107,9 +117,20 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?.saveEventually()
                 
                 Customer.shared.getCustomer(user.objectId!)
-                
                 self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                //let artist = self.uiElement.newArtistObject(user)
+               // self.goToOnboarding(artist)
             }
         }
+    }
+    
+    func goToOnboarding(_ artist: Artist) {
+        let storyboard = UIStoryboard(name: "Onboard", bundle: nil)
+        let navigationController = storyboard.instantiateViewController(withIdentifier: "main") as! UINavigationController
+        let initialViewController = navigationController.topViewController as! EditProfileViewController
+        initialViewController.isOnboarding = true
+        initialViewController.artist = artist
+        let appdelegate = UIApplication.shared.delegate as! AppDelegate
+        appdelegate.window?.rootViewController = navigationController
     }
 }

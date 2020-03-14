@@ -38,7 +38,6 @@ class HomeCollectionViewCell: UICollectionViewCell {
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         label.textColor = .white
         label.textAlignment = .center
-        //label.numberOfLines = 0
         return label
     }()
     
@@ -83,7 +82,6 @@ class HomeCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(view).offset(uiElement.leftOffset)
             make.right.equalTo(view).offset(uiElement.rightOffset)
-           // make.center.equalTo(self)
         }
         
         self.view.addSubview(username)
@@ -91,7 +89,6 @@ class HomeCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(displayNameLabel.snp.bottom)
             make.left.equalTo(view).offset(uiElement.leftOffset)
             make.right.equalTo(view).offset(uiElement.rightOffset)
-           // make.bottom.equalTo(view).offset(uiElement.bottomOffset)
         }
         
         self.view.addSubview(storyType)
@@ -99,7 +96,6 @@ class HomeCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(username.snp.bottom)
             make.left.equalTo(view).offset(uiElement.leftOffset)
             make.right.equalTo(view).offset(uiElement.rightOffset)
-           // make.bottom.equalTo(view).offset(uiElement.bottomOffset)
         }
     }
     

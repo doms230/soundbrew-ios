@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         //password: asdf
         //let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
         let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
-        let config = STPPaymentConfiguration.shared() 
+        let config = STPPaymentConfiguration.shared()
         config.publishableKey = liveStripeKey
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
         config.companyName = "Soundbrew Artists"
@@ -66,7 +66,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         if let objectId = PFUser.current()?.objectId {
             Customer.shared.getCustomer(objectId)
-            FileManager.default.clearTmpDirectory()
+           /* let newUserController = UIStoryboard(name: "Onboard", bundle: nil).instantiateViewController(withIdentifier: "main")
+            window!.rootViewController = newUserController
+            FileManager.default.clearTmpDirectory()*/
+            
         } else {
             let newUserController = UIStoryboard(name: "NewUser", bundle: nil).instantiateViewController(withIdentifier: "welcome")
             window!.rootViewController = newUserController

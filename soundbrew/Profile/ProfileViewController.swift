@@ -39,6 +39,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
+        didReceiveSoundUpdate()
+        
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
@@ -68,8 +70,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-
+    func setupNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+    }
+    @objc func didReceiveSoundUpdate() {
+        if self.view.window != nil {
+            let player = Player.sharedInstance
+            if player.player != nil {
+                self.setUpMiniPlayer()
+            }
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -152,16 +162,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.loadCollection(self.profileArtist!.objectId)
         self.loadCredits(self.profileArtist!.objectId)
         self.loadSounds(nil, creditIds: nil, userId: self.profileArtist?.objectId)
-        self.tableView.refreshControl?.endRefreshing()
+        if self.tableView != nil {
+            self.tableView.refreshControl?.endRefreshing()
+        }
+      //  self.tableView.refreshControl?.endRefreshing()
     }
     
     //MARK: Tableview
-    let tableView = UITableView()
+    var tableView: UITableView!
     let soundReuse = "soundReuse"
     let profileReuse = "profileReuse"
     let profileSoundReuse = "profileSoundReuse"
     
-    func setUpTableView(_ miniPlayer: UIView?) {
+    func setUpTableView() {
+        tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
@@ -172,7 +186,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
         tableView.refreshControl = refreshControl
-        if let miniPlayer = miniPlayer {
+        if let miniPlayer = self.miniPlayerView {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.view)
@@ -222,8 +236,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
-        
-        setUpTableView(miniPlayerView)
+        setUpTableView()
     }
     
     @objc func miniPlayerWasSwiped() {
@@ -565,7 +578,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         self.artistReleases = sounds
                         self.didloadReleases = true
                     }
-                    self.tableView.reloadData()
+                    
+                    self.setUpTableView()
                 }
             }
         }
@@ -645,11 +659,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             break
             
         case 1:
-            updateFollowStatus(false)
+            if let currentUser = Customer.shared.artist {
+                let unFollow = Follow(fromArtist: currentUser, toArtist: self.profileArtist!)
+                unFollow.updateFollowStatus(false)
+                self.profileArtist!.isFollowedByCurrentUser = false
+                self.tableView.reloadData()
+            }
             break
             
         case 2:
-            updateFollowStatus(true)
+            if let currentUser = Customer.shared.artist {
+                let unFollow = Follow(fromArtist: currentUser, toArtist: self.profileArtist!)
+                unFollow.updateFollowStatus(true)
+                self.profileArtist!.isFollowedByCurrentUser = true
+                self.tableView.reloadData()
+            }
             break
             
         default:
@@ -668,7 +692,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             setUpMiniPlayer()
             
         } else {
-            setUpTableView(nil)
+            setUpTableView()
         }
         
         if isCurrentUserProfile && self.currentUser != nil {

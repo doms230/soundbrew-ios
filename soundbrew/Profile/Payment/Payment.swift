@@ -19,7 +19,7 @@ class Payment: NSObject {
     let baseURL = URL(string: "https://www.soundbrew.app/payments/")
     //let baseURL = URL(string: "http://192.168.1.68:3000/payments/")
     
-    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, completion: @escaping (Result<Any>?) -> Void) {
+    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, completion: @escaping (Result<Any, AFError>) -> Void) {
         let url = self.baseURL!.appendingPathComponent("charge")
         let customer = Customer.shared
         let parameters: Parameters = [
@@ -32,7 +32,7 @@ class Payment: NSObject {
             "receipt_email": email
         ]
         
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 completion(responseJSON.result)
@@ -50,7 +50,7 @@ class Payment: NSObject {
             "customer": "\(customer.artist!.customerId!)",
             "receipt_email": email
         ]
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
                 switch responseJSON.result {

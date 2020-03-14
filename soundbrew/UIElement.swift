@@ -285,7 +285,7 @@ class UIElement {
             name = displayName
         }
         let alertMessage = "\(name) \(message)"
-        Alamofire.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": alertMessage, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
+        AF.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": alertMessage, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
         }
     }
     

@@ -280,7 +280,9 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                         }
                         self.unListenedStories.append(story)
                         self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-                        self.setUpOrReloadTableView()
+                        if i == friendUserIds.count - 1 {
+                            self.setUpOrReloadTableView()
+                        }
                     }
                 }
             }
