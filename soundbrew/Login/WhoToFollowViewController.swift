@@ -20,17 +20,28 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
         super.viewDidLoad()
         self.title = "Who To Follow"
         loadPeopleToFollow()
+        setupDoneButton()
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        let backItem = UIBarButtonItem()
+        backItem.title = ""
+        navigationItem.backBarButtonItem = backItem
+        
+        let viewController = segue.destination as! AddFundsViewController
+        viewController.isOnboarding = true 
+        
     }
-    */
+    
+    func setupDoneButton() {
+        let localizedDone = NSLocalizedString("done", comment: "")
+        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+        self.navigationItem.rightBarButtonItem = doneButton
+    }
+    
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: "showAddFunds", sender: self)
+    }
     
     //mark: TableView
     var tableView = UITableView()
@@ -85,6 +96,19 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
                 cell.profileImage.image = UIImage(named: "profile_icon")
             }
             
+            cell.followButton.tag = indexPath.row
+            cell.followButton.addTarget(self, action: #selector(self.didPressFollowButton(_:)), for: .touchUpInside)
+            
+            if let isFollowedByCurrentUser = artist.isFollowedByCurrentUser, isFollowedByCurrentUser {
+                cell.followButton.setTitle("Following", for: .normal)
+                cell.followButton.backgroundColor = .lightGray
+                cell.followButton.setTitleColor(color.black(), for: .normal)
+            } else {
+                cell.followButton.setTitle("Follow", for: .normal)
+                cell.followButton.backgroundColor = color.blue()
+                cell.followButton.setTitleColor(.white, for: .normal)
+            }
+            
             return cell
         }
     }
@@ -104,6 +128,7 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
             if error == nil, let objects = objects {
                 for user in objects {
                     let userObject = self.uiElement.newArtistObject(user)
+                    userObject.isFollowedByCurrentUser = false
                     self.peopleToFollow.append(userObject)
                 }
                 self.setUpTableView()
@@ -111,7 +136,18 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    //following logic
-    
-
+    @objc func didPressFollowButton(_ sender: UIButton) {
+        let toArtist = peopleToFollow[sender.tag]
+        if let fromArtist = Customer.shared.artist {
+            let follow = Follow(fromArtist: fromArtist, toArtist: toArtist)
+            if let isFollowedByCurrentUser = toArtist.isFollowedByCurrentUser, isFollowedByCurrentUser {
+                follow.updateFollowStatus(false)
+                peopleToFollow[sender.tag].isFollowedByCurrentUser = false
+            } else {
+                follow.updateFollowStatus(true)
+                peopleToFollow[sender.tag].isFollowedByCurrentUser = true
+            }
+            self.tableView.reloadData()
+        }
+    }
 }

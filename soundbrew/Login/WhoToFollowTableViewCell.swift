@@ -107,7 +107,7 @@ class WhoToFollowTableViewCell: UITableViewCell {
             
             self.addSubview(followButton)
             followButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(75)
+                make.width.equalTo(85)
                 make.height.equalTo(30)
                 make.top.equalTo(displayNameLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)

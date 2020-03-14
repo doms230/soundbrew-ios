@@ -44,7 +44,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        setUpViews()
+        setupDoneButton()
         
         if let CurrentArtist = Customer.shared.artist {
             print("got artist")
@@ -78,7 +78,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func setUpViews() {
+    func setupDoneButton() {
         let localizedDone = NSLocalizedString("done", comment: "")
         let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton

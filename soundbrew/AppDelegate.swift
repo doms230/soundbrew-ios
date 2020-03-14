@@ -66,9 +66,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         if let objectId = PFUser.current()?.objectId {
             Customer.shared.getCustomer(objectId)
-           /* let newUserController = UIStoryboard(name: "Onboard", bundle: nil).instantiateViewController(withIdentifier: "main")
+            let newUserController = UIStoryboard(name: "Onboard", bundle: nil).instantiateViewController(withIdentifier: "main")
             window!.rootViewController = newUserController
-            FileManager.default.clearTmpDirectory()*/
+            FileManager.default.clearTmpDirectory()
             
         } else {
             let newUserController = UIStoryboard(name: "NewUser", bundle: nil).instantiateViewController(withIdentifier: "welcome")

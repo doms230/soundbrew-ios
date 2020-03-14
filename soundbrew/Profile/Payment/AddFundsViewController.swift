@@ -18,11 +18,12 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     let uiElement = UIElement()
     
     var processingFee: Int!
+    var isOnboarding = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupPaymentContext()
-        //updateTotalAndProcessingFee(999)
         self.title = "Add Funds"
     }
     
@@ -125,7 +126,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             
             MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Added", "description": "User Successfully added funds to their account."])
         case .userCancellation:
-            return // Do nothing
+            return
         default:
             return
         }
@@ -137,6 +138,14 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     //mark: UI
+    lazy var addFundsDescription: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.textColor = .lightGray
+        label.numberOfLines = 0
+        label.text = "Add funds to your wallet to directly pay artists for their music. Everytime you 'like' a song, the credited artists are paid an amount of your choosing."
+        return label
+    }()
     
     //Funds to add View
     lazy var fundsToAddView: UIView = {
@@ -258,12 +267,22 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     func setupView() {
+        self.view.addSubview(addFundsDescription)
+        addFundsDescription.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        let questionButton = UIBarButtonItem(image: UIImage(named: "questionMark"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddFundsMessage(_:)))
-        self.navigationItem.rightBarButtonItem = questionButton
+        if isOnboarding {
+            let localizedDone = NSLocalizedString("done", comment: "")
+            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+            self.navigationItem.rightBarButtonItem = doneButton
+        }
         
         //how much would you like to add view
         self.view.addSubview(fundsToAddView)
@@ -328,7 +347,25 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         stripeAddFundsMessage.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
             make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(uiElement.bottomOffset))
+            if let tabBarController = self.tabBarController {
+                make.bottom.equalTo(self.view).offset(-((tabBarController.tabBar.frame.height)) + CGFloat(uiElement.bottomOffset))
+            } else {
+                var bottomOffsetValue: Int!
+                switch UIDevice.modelName {
+                case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
+                    bottomOffsetValue = uiElement.bottomOffset * 5
+                    break
+                    
+                default:
+                    bottomOffsetValue = uiElement.bottomOffset * 2
+                    break
+                }
+                make.bottom.equalTo(self.view).offset(bottomOffsetValue)
+            }
         }
+    }
+    
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
     }
 }
