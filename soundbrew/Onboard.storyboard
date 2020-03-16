@@ -25,7 +25,7 @@
             </objects>
             <point key="canvasLocation" x="-5739" y="613"/>
         </scene>
-        <!--Complete Profile-->
+        <!--Edit Profile View Controller-->
         <scene sceneID="nF9-4v-4bl">
             <objects>
                 <viewController id="WYl-Zo-wsm" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -36,7 +36,7 @@
                         <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="xnV-sl-h76"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Complete Profile" id="k0i-xx-icv"/>
+                    <navigationItem key="navigationItem" id="k0i-xx-icv"/>
                     <connections>
                         <segue destination="wy1-DH-QZm" kind="presentation" identifier="showTags" id="dhk-KT-zxG"/>
                         <segue destination="Qt9-zy-ebq" kind="presentation" identifier="showEditBio" id="MYz-DO-5bI"/>
@@ -55,7 +55,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Oe0-cV-Ue9"/>
                     </view>
                     <navigationItem key="navigationItem" id="Naw-HG-57c"/>

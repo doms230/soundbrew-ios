@@ -172,9 +172,8 @@ class WelcomeViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset * 2)
         }
-
         
-        /*let appleButton = signInWithButton("Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2)
+        /*let appleButton = signInWithButton("Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
         self.view.addSubview(appleButton)
         appleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -203,6 +202,7 @@ class WelcomeViewController: UIViewController {
         switch sender.tag {
         case 0:
             isLoggingInWithTwitter = false
+            isLoggingInWithApple = false
             self.performSegue(withIdentifier: "showSignup", sender: self)
             MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign Up", "description": "user pressed sign up button"])
             break

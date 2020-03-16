@@ -36,16 +36,16 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var displayNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 18)
         label.textColor = .white
         label.textAlignment = .center
-        label.numberOfLines = 2
+        //label.numberOfLines = 2
         return label
     }()
     
     lazy var username: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
+        label.font = UIFont(name: uiElement.mainFont, size: 18)
         label.textColor = .lightGray
         label.textAlignment = .center
         return label
@@ -53,7 +53,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var storyType: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.font = UIFont(name: uiElement.mainFont, size: 16)
         label.textColor = .white
         label.textAlignment = .center
         return label
@@ -61,7 +61,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var storyCreatedAt: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.font = UIFont(name: uiElement.mainFont, size: 16)
         label.textColor = .lightGray
         label.textAlignment = .center
         return label
@@ -86,7 +86,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
         }
         
         self.view.addSubview(profileImage)
-        let profileImageHeightWidth = 75
+        let profileImageHeightWidth = 100
         profileImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
         profileImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(profileImageHeightWidth)

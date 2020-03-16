@@ -38,35 +38,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
-        didReceiveSoundUpdate()
-        
-        if let currentUser = PFUser.current() {
-            self.currentUser = currentUser
-        }
-                
-        if profileArtist != nil {
-            self.loadProfileData()
-            self.setUpNavigationButtons()
-            
-        } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
-            loadUserInfoFromCloud(userId, username: nil)
-            UserDefaults.standard.removeObject(forKey: "receivedUserId")
-            self.setUpNavigationButtons()
-            
-        } else if let username = self.uiElement.getUserDefault("receivedUsername") as? String {
-            loadUserInfoFromCloud(nil, username: username)
-            UserDefaults.standard.removeObject(forKey: "receivedUsername")
-            self.setUpNavigationButtons()
-            
-        }  else if let currentArtist = Customer.shared.artist {
-            isCurrentUserProfile = true
-            self.profileArtist = currentArtist
-            self.loadProfileData()
-            self.setUpNavigationButtons()
+        setupNotificationCenter()
+        profileInfo()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let player = Player.sharedInstance
+        if player.player != nil {
+            setUpMiniPlayer()
         } else {
-            let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
-            self.uiElement.welcomeAlert(localizedRegisterForUpdates, target: self)
+            setUpTableView()
         }
     }
     
@@ -75,10 +56,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     @objc func didReceiveSoundUpdate() {
         if self.view.window != nil {
-            let player = Player.sharedInstance
-            if player.player != nil {
-                self.setUpMiniPlayer()
-            }
+            self.setUpMiniPlayer()
         }
     }
     
@@ -165,7 +143,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if self.tableView != nil {
             self.tableView.refreshControl?.endRefreshing()
         }
-      //  self.tableView.refreshControl?.endRefreshing()
     }
     
     //MARK: Tableview
@@ -224,18 +201,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //mark: miniPlayer
     var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
-        let miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        self.view.addSubview(miniPlayerView)
+        miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        self.view.addSubview(miniPlayerView!)
         let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
         slide.direction = .up
-        miniPlayerView.addGestureRecognizer(slide)
-        miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-        miniPlayerView.snp.makeConstraints { (make) -> Void in
+        miniPlayerView!.addGestureRecognizer(slide)
+        miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+        miniPlayerView!.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
+        
         setUpTableView()
     }
     
@@ -586,6 +564,35 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: profileInfo
+    func profileInfo() {
+        if let currentUser = PFUser.current() {
+            self.currentUser = currentUser
+        }
+                
+        if profileArtist != nil {
+            self.loadProfileData()
+            self.setUpNavigationButtons()
+            
+        } else if let userId = self.uiElement.getUserDefault("receivedUserId") as? String {
+            loadUserInfoFromCloud(userId, username: nil)
+            UserDefaults.standard.removeObject(forKey: "receivedUserId")
+            self.setUpNavigationButtons()
+            
+        } else if let username = self.uiElement.getUserDefault("receivedUsername") as? String {
+            loadUserInfoFromCloud(nil, username: username)
+            UserDefaults.standard.removeObject(forKey: "receivedUsername")
+            self.setUpNavigationButtons()
+            
+        }  else if let currentArtist = Customer.shared.artist {
+            isCurrentUserProfile = true
+            self.profileArtist = currentArtist
+            self.loadProfileData()
+            self.setUpNavigationButtons()
+        } else {
+            let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
+            self.uiElement.welcomeAlert(localizedRegisterForUpdates, target: self)
+        }
+    }
     func profileInfoReuse() -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: profileReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none

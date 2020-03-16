@@ -43,6 +43,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
+        if isOnboarding {
+            self.title = "Complete Profile"
+        }
         
         setupDoneButton()
         

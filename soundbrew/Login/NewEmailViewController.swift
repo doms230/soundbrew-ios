@@ -13,7 +13,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     var isLoggingInWithTwitter = false
     var isLoggingInWithApple = false
     
-    
     override func viewDidLoad(){
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
@@ -174,6 +173,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     //login with logic
     func checkIfUserExists(_ loginInService: String, userID: String, authToken: String, authTokenSecret: String?, username: String?) {
         let query = PFQuery(className: "_User")
+         //query.whereKey("twitterID", equalTo: userID)
         if loginInService == "twitter" {
             query.whereKey("twitterID", equalTo: userID)
         } else {
@@ -183,8 +183,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
-                print("apple userId: \(userID)")
-                self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken, auth_token_secret: nil, username: username)
+               // print("twitter userId: \(userID)")
+                self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken, auth_token_secret: authTokenSecret, username: username)
+                
             } else {
                 self.stopAnimating()
                 self.setupNewEmailView()
@@ -212,7 +213,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             installation?.saveEventually()
             
             Customer.shared.getCustomer(parseUser!.objectId!)
-            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+            DispatchQueue.main.async {
+                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+            }
             return AnyObject.self as AnyObject
         })
     }

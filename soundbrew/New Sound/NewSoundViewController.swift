@@ -29,7 +29,9 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         let localizedNewUpload = NSLocalizedString("newUpload", comment: "")
         let uploadButton = UIBarButtonItem(title: localizedNewUpload, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         if PFUser.current() != nil {
             showSounds()
             
@@ -39,14 +41,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             } else if PFUser.current() != nil {
                 setUpTableView(nil)
             }
+            
         } else {
             let localizedRegisterToUpload = NSLocalizedString("registerToUpload", comment: "")
             self.uiElement.welcomeAlert(localizedRegisterToUpload, target: self)
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -14,7 +14,11 @@ import TwitterKit
 import Kingfisher
 import SwiftyJSON
 
-class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
+class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate {
+    func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
+        return true 
+    }
+    
     let uiElement = UIElement()
     let color = Color()
     
@@ -151,8 +155,8 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable {
         if loginService == "twitter" {
             authData = ["id": userId, "auth_token": auth_token!, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
         } else {
-           // print("apple userId: \(userId)")
-            authData = ["id": userId, "token": auth_token!]
+            print("apple userId: \(userId) | auth token: \(auth_token!) | login service: \(loginService)")
+            authData = ["token": auth_token!, "id": userId]
         }
         
         PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {

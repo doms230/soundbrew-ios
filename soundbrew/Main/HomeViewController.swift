@@ -35,7 +35,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         if player.player != nil {
             setUpMiniPlayer()
         } else {
-            setupCollectionView(nil)
+            setupCollectionView()
         }
     }
     
@@ -89,7 +89,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             if player.player != nil {
                 self.setUpMiniPlayer()
             } else {
-                setupCollectionView(nil)
+                setupCollectionView()
             }
         }
     }
@@ -104,7 +104,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     var selectedIndexPath: IndexPath?
     var cell: HomeCollectionViewCell!
     
-    func setupCollectionView(_ miniPlayer: MiniPlayerView?) {
+    func setupCollectionView() {
         collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
@@ -113,13 +113,13 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
         collectionView.refreshControl = refreshControl
-        if let miniPlayer = miniPlayer {
+        if let miniPlayerView = self.miniPlayerView {
             self.view.addSubview(self.collectionView)
             self.collectionView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
-                make.bottom.equalTo(miniPlayer.snp.top)
+                make.bottom.equalTo(miniPlayerView.snp.top)
             }
             
         } else {
@@ -133,11 +133,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return 2
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return stories.count + 1
+        if section == 0 {
+            return 1
+        }
+        return stories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -145,18 +148,18 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
+        if indexPath.section == 0 {
             self.selectedIndexPath = indexPath
             soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
             
-        } else if let selectedUserId = stories[indexPath.row - 1].artist.objectId {
+        } else if let selectedUserId = stories[indexPath.row].artist.objectId {
                 self.selectedIndexPath = indexPath
                 soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         }
         
         let cell = collectionView.cellForItem(at: indexPath) as! HomeCollectionViewCell
         if let selectedIndexPath = self.selectedIndexPath {
-            if selectedIndexPath.row == indexPath.row {
+            if selectedIndexPath.row == indexPath.row, selectedIndexPath.section == indexPath.section {
                 cell.view.image = UIImage(named: "background")
             } else {
                 cell.view.image = UIImage()
@@ -170,7 +173,11 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let collectionViewSize = collectionView.frame.size.width
-        return CGSize(width: collectionViewSize/2, height: collectionViewSize/2)
+        if indexPath.section == 0 {
+            return CGSize(width: collectionViewSize, height: (collectionViewSize - 30) / 2)
+        } else {
+            return CGSize(width: collectionViewSize/2, height: (collectionViewSize + 35) / 2)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -194,7 +201,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     func storyCell(_ indexPath: IndexPath) -> HomeCollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "reuse", for: indexPath) as! HomeCollectionViewCell
         
-        if indexPath.row == 0 {
+        if indexPath.section == 0 {
             cell.displayNameLabel.text = "Your Soundbrew"
             cell.username.text = "A playlist of recommended music."
             cell.profileImage.image = UIImage(named: "appy")
@@ -202,7 +209,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             cell.storyCreatedAt.isHidden = true
             
         } else {
-            let story = stories[indexPath.row - 1]
+            let story = stories[indexPath.row]
             let artist = story.artist!
             
             if let image = artist.image {
@@ -225,16 +232,18 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             }
             
             if let storyType = story.type {
+                cell.storyType.isHidden = false
                 cell.storyType.text = "New \(storyType.capitalized)"
             }
             
             cell.storyCreatedAt.text = self.uiElement.formatDateAndReturnString(story.lastUpdated!)
+            cell.storyCreatedAt.isHidden = false
                         
             self.cell = cell
         }
         
         if let selectedIndexPath = self.selectedIndexPath {
-            if selectedIndexPath.row == indexPath.row {
+            if selectedIndexPath.row == indexPath.row, selectedIndexPath.section == indexPath.section {
                 cell.view.image = UIImage(named: "background")
             } else {
                 cell.view.image = UIImage()
@@ -250,29 +259,35 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             let storyObjectIds = self.stories.map {$0.objectId}
-            for i in 0..<friendUserIds.count {
-                let friendUserId = friendUserIds[i]
-                let query = PFQuery(className: "Story")
-                query.whereKey("userId", equalTo: friendUserId)
-                query.addDescendingOrder("createdAt")
-                query.getFirstObjectInBackground {
-                      (object: PFObject?, error: Error?) -> Void in
-                    if let object = object, !storyObjectIds.contains(object.objectId) {
-                        let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                         let story = Story(friend, lastUpdated: object.createdAt, type: nil, objectId: object.objectId!)
-                         if let type = object["type"] as? String {
-                             story.type = type
-                         }
-                        self.stories.append(story)
-                    }
-                    
-                    //is last index
-                    if i == friendUserIds.count - 1 {
-                        self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-                        self.setUpOrReloadTableView()
+            if friendUserIds.count == 0 {
+                self.setUpOrReloadTableView()
+            } else {
+                for i in 0..<friendUserIds.count {
+                    let friendUserId = friendUserIds[i]
+                    let query = PFQuery(className: "Story")
+                    query.whereKey("userId", equalTo: friendUserId)
+                    query.addDescendingOrder("createdAt")
+                    query.getFirstObjectInBackground {
+                          (object: PFObject?, error: Error?) -> Void in
+                        if let object = object, !storyObjectIds.contains(object.objectId) {
+                            let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                             let story = Story(friend, lastUpdated: object.createdAt, type: nil, objectId: object.objectId!)
+                             if let type = object["type"] as? String {
+                                 story.type = type
+                             }
+                            self.stories.append(story)
+                        }
+                        
+                        //is last index
+                        if i == friendUserIds.count - 1 {
+                            self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+                            self.setUpOrReloadTableView()
+                        }
                     }
                 }
             }
+        } else {
+            self.setUpOrReloadTableView()
         }
     }
     
@@ -284,7 +299,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             self.collectionView.refreshControl?.endRefreshing()
             self.collectionView.reloadData()
         } else {
-            self.setupCollectionView(nil)
+            self.setupCollectionView()
         }
     }
     
@@ -304,7 +319,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
         
-        self.setupCollectionView(self.miniPlayerView)
+        self.setupCollectionView()
     }
     
     @objc func miniPlayerWasSwiped() {

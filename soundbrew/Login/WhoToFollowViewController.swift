@@ -19,6 +19,10 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Who To Follow"
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+        
         loadPeopleToFollow()
         setupDoneButton()
     }
@@ -27,10 +31,6 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
         let backItem = UIBarButtonItem()
         backItem.title = ""
         navigationItem.backBarButtonItem = backItem
-        
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
         
         let viewController = segue.destination as! AddFundsViewController
         viewController.isOnboarding = true 
