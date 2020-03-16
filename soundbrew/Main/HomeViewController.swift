@@ -15,7 +15,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     let uiElement = UIElement()
     let color = Color()
     var soundList: SoundList!
-    var storiesAreLoading = true
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -99,6 +99,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
     }
     
+    //mark: collectionview
     var collectionView: UICollectionView!
     var selectedIndexPath: IndexPath?
     var cell: HomeCollectionViewCell!
@@ -109,7 +110,9 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         self.collectionView.delegate = self
         self.collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "reuse")
         self.collectionView.alwaysBounceVertical = true
-        //self.view.addSubview(self.collectionView)
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
+        collectionView.refreshControl = refreshControl
         if let miniPlayer = miniPlayer {
             self.view.addSubview(self.collectionView)
             self.collectionView.snp.makeConstraints { (make) -> Void in
@@ -125,8 +128,16 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
     }
     
+    @objc func refresh(_ sender: UIRefreshControl) {
+       loadFriendStories()
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return unListenedStories.count
+        return stories.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -134,22 +145,25 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let selectedUserId = unListenedStories[indexPath.row].artist.objectId {
+        if indexPath.row == 0 {
             self.selectedIndexPath = indexPath
-            collectionView.reloadData()
-            soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-        }
-
-        /*if indexPath.section == 0 {
-            self.selectedIndexPath = indexPath
-            collectionView.reloadData()
             soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
             
-        } else if let selectedUserId = unListenedStories[indexPath.row].artist.objectId {
-            self.selectedIndexPath = indexPath
-            collectionView.reloadData()
-            soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-        }*/
+        } else if let selectedUserId = stories[indexPath.row - 1].artist.objectId {
+                self.selectedIndexPath = indexPath
+                soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        }
+        
+        let cell = collectionView.cellForItem(at: indexPath) as! HomeCollectionViewCell
+        if let selectedIndexPath = self.selectedIndexPath {
+            if selectedIndexPath.row == indexPath.row {
+                cell.view.image = UIImage(named: "background")
+            } else {
+                cell.view.image = UIImage()
+            }
+        }
+        cell.loadStorySpinner.isHidden = false
+        cell.loadStorySpinner.startAnimating()
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -177,94 +191,65 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         return 0
     }
  
-    
     func storyCell(_ indexPath: IndexPath) -> HomeCollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "reuse", for: indexPath) as! HomeCollectionViewCell
         
-        let story = unListenedStories[indexPath.row]
-        let artist = unListenedStories[indexPath.row].artist!
-        
-        if let image = artist.image {
-            cell.profileImage.kf.setImage(with: URL(string: image))
+        if indexPath.row == 0 {
+            cell.displayNameLabel.text = "Your Soundbrew"
+            cell.username.text = "A playlist of recommended music."
+            cell.profileImage.image = UIImage(named: "appy")
+            cell.storyType.isHidden = true
+            cell.storyCreatedAt.isHidden = true
+            
         } else {
-            cell.profileImage.image = UIImage(named: "profile_icon")
+            let story = stories[indexPath.row - 1]
+            let artist = story.artist!
+            
+            if let image = artist.image {
+                cell.profileImage.kf.setImage(with: URL(string: image))
+            } else {
+                cell.profileImage.image = UIImage(named: "profile_icon")
+            }
+                
+            if let name = artist.name {
+                cell.displayNameLabel.text = name
+            } else {
+                cell.displayNameLabel.text = "name"
+            }
+            
+            if let username = artist.username {
+                cell.username.text = "@\(username)"
+            } else {
+                cell.username.text = "@username"
+                artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell)
+            }
+            
+            if let storyType = story.type {
+                cell.storyType.text = "New \(storyType.capitalized)"
+            }
+            
+            cell.storyCreatedAt.text = self.uiElement.formatDateAndReturnString(story.lastUpdated!)
+                        
+            self.cell = cell
         }
         
         if let selectedIndexPath = self.selectedIndexPath {
             if selectedIndexPath.row == indexPath.row {
                 cell.view.image = UIImage(named: "background")
-                //cell.profileImage.layer.borderColor = color.blue().cgColor
-                //cell.profileImage.layer.borderWidth = 5
             } else {
                 cell.view.image = UIImage()
-                //cell.profileImage.layer.borderColor = UIColor.darkGray.cgColor
-                //cell.profileImage.layer.borderWidth = 1
             }
         }
-            
-        if let name = artist.name {
-            cell.displayNameLabel.text = name
-        } else {
-            cell.displayNameLabel.text = "name"
-        }
         
-        if let username = artist.username {
-            cell.username.text = "@\(username)"
-        } else {
-            cell.username.text = "@username"
-            artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell)
-        }
-        
-        if let storyType = story.type {
-            cell.storyType.text = "New \(storyType.capitalized)"
-        }
-            
-        self.cell = cell
         return cell
     }
     
-    func changeArtistStoryColor(_ cell: ProfileTableViewCell, color: UIColor) {
-        cell.username.textColor = color
-        cell.displayNameLabel.textColor = color
-        if color == .white {
-            cell.userCity.textColor = .darkGray
-            cell.city.textColor = .darkGray
-        } else {
-            cell.userCity.textColor = color
-            cell.city.textColor = color
-        }
-    }
-        
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        /*if indexPath.section == 0 {
-            self.selectedIndexPath = indexPath
-            tableView.reloadData()
-            soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-            
-        } else if let selectedUserId = unListenedStories[indexPath.row].artist.objectId {
-            self.selectedIndexPath = indexPath
-            tableView.reloadData()
-            soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-        }*/
-    }
-    
-    func removeUnlistenedStoryAndAddToListenedStories(_ row: Int, story: Story) {
-        self.unListenedStories.remove(at: row)
-        listenedStories.append(story)
-        self.listenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-      //  self.tableView.reloadData()
-    }
-    
-    //
-    var unListenedStories = [Story]()
-    var listenedStories = [Story]()
+    var stories = [Story]()
     var didGetInitialFriendsList = false
     func loadFriendStories() {
-        self.storiesAreLoading = true
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
-            self.unListenedStories.removeAll()
-            self.listenedStories.removeAll()
+            let storyObjectIds = self.stories.map {$0.objectId}
             for i in 0..<friendUserIds.count {
                 let friendUserId = friendUserIds[i]
                 let query = PFQuery(className: "Story")
@@ -272,47 +257,31 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 query.addDescendingOrder("createdAt")
                 query.getFirstObjectInBackground {
                       (object: PFObject?, error: Error?) -> Void in
-                    if let object = object {
+                    if let object = object, !storyObjectIds.contains(object.objectId) {
                         let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                        let story = Story(friend, lastUpdated: object.createdAt, type: nil)
-                        if let type = object["type"] as? String {
-                            story.type = type
-                        }
-                        self.unListenedStories.append(story)
-                        self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-                        if i == friendUserIds.count - 1 {
-                            self.setUpOrReloadTableView()
-                        }
+                         let story = Story(friend, lastUpdated: object.createdAt, type: nil, objectId: object.objectId!)
+                         if let type = object["type"] as? String {
+                             story.type = type
+                         }
+                        self.stories.append(story)
+                    }
+                    
+                    //is last index
+                    if i == friendUserIds.count - 1 {
+                        self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+                        self.setUpOrReloadTableView()
                     }
                 }
             }
         }
     }
     
-    func determineIfUserListened(_ postId: String, story: Story) {
-        let query = PFQuery(className: "Listen")
-        query.whereKey("userId", equalTo: PFUser.current()!.objectId!)
-        query.whereKey("postId", equalTo: postId)
-        query.getFirstObjectInBackground {
-              (object: PFObject?, error: Error?) -> Void in
-            if object != nil {
-                print(object!["postId"] as! String)
-                self.listenedStories.append(story)
-                self.listenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-            } else {
-                self.unListenedStories.append(story)
-                self.unListenedStories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-            }
-            
-            self.setUpOrReloadTableView()
-          }
-    }
-    
     func setUpOrReloadTableView() {
-        self.storiesAreLoading = false
-        if self.collectionView != nil {
-           // self.tableView.refreshControl?.endRefreshing()
-           // self.tableView.reloadData()
+        let player = Player.sharedInstance
+        if player.player != nil {
+            self.setUpMiniPlayer()
+        } else if self.collectionView != nil {
+            self.collectionView.refreshControl?.endRefreshing()
             self.collectionView.reloadData()
         } else {
             self.setupCollectionView(nil)
@@ -415,9 +384,11 @@ class Story {
     var artist: Artist!
     var lastUpdated: Date?
     var type: String?
-    init(_ artist: Artist, lastUpdated: Date?, type: String?) {
+    var objectId: String!
+    init(_ artist: Artist, lastUpdated: Date?, type: String?, objectId: String!) {
         self.artist = artist
         self.lastUpdated = lastUpdated
         self.type = type
+        self.objectId = objectId
     }
 }

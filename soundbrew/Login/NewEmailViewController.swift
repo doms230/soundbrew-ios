@@ -184,9 +184,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
                 print("apple userId: \(userID)")
-              //  print("auth token: \(authToken)")
-               // print("auth token secret: \(authTokenSecret!)")
-                //print("username: \(username)")
                 self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken, auth_token_secret: nil, username: username)
             } else {
                 self.stopAnimating()
@@ -202,7 +199,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         if loginService == "twitter" {
             authData = ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
         } else {
-            //authData = ["id": userId]
             authData = ["id": userId, "token": auth_token]
         }
          

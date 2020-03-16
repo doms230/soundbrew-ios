@@ -304,7 +304,7 @@ class UIElement {
         
         if let username = user["username"] as? String {
             if !username.contains("@") {
-                artist.username = "@\(username)"
+                artist.username = "\(username)"
             }
         }
         

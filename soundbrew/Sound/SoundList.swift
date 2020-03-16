@@ -491,12 +491,11 @@ class SoundList: NSObject, PlayerDelegate {
         let query = PFQuery(className: "Story")
         query.whereKey("userId", equalTo: userId)
         query.addDescendingOrder("createdAt")
-        query.limit = 25
+        query.limit = 5
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
                 for object in objects {
-                    print(object["postId"] as! String)
                     self.storyPostIds.append(object["postId"] as! String)
                 }
                 self.loadSounds(self.descendingOrder, postIds: self.storyPostIds, userId: nil, searchText: nil, followIds: nil)

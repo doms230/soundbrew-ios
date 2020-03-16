@@ -37,6 +37,7 @@ class SoundListTableViewCell: UITableViewCell {
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.numberOfLines = 0
         label.textColor = .white
+        label.textAlignment = .center 
         return label
     }()
     

@@ -108,7 +108,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           if mentions.count == 0 {
               let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
               cell.backgroundColor = color.black()
-              cell.headerTitle.text = "Your mentions will appear here!"
+              cell.headerTitle.text = "New likes, follows, and comment mentions will appear here!"
               return cell
           } else {
              return mentionsCell(indexPath)

@@ -47,11 +47,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         setupDoneButton()
         
         if let CurrentArtist = Customer.shared.artist {
-            print("got artist")
             self.artist = CurrentArtist
-        } /*else {
-            self.uiElement.goBackToPreviousViewController(self)
-        }*/
+        }
         
         self.setUpTableView()
     }
@@ -89,9 +86,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.dismiss(animated: true, completion: nil)
     }
     
+    var didPressDoneButton = false
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "showWhoToFollow", sender: self)
-        /*usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
+        self.startAnimating()
+        
+        usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
         emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
         websiteText.text = self.uiElement.cleanUpText(websiteText.text!, shouldLowercaseText: true)
         
@@ -99,9 +98,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             shouldUpdateEmail = true
         }
         
-        if validateEmail() && validateUsername() && validateWebsite()  {
-            updateUserInfo()
-        }*/
+        if validateEmail() && validateUsername() && validateWebsite() {
+            didPressDoneButton = true
+            if didFinishProcessingImage {
+                updateUserInfo()
+            }
+            
+        } else {
+            self.stopAnimating()
+        }
     }
     
     //MARK: TableView
@@ -198,6 +203,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        artist?.website = websiteText.text
         switch indexPath.section {
         case 0:
             showChangeProfilePhotoPicker()
@@ -274,54 +280,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     //mark: media
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        // Local variable inserted by Swift 4.2 migrator.
-        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
-        var selectedImage: UIImage?
-        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
-            selectedImage = image
-        }
-                
-        dismiss(animated: true, completion: {() in
-            if let image = selectedImage {
-                self.presentImageCropViewController(image)
-            }
-        })
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true, completion: nil)
-    }
-    
-    func presentImageCropViewController(_ image: UIImage) {
-        let cropViewController = CropViewController(croppingStyle: .default, image: image)
-        cropViewController.aspectRatioLockEnabled = true
-        cropViewController.aspectRatioPickerButtonHidden = true
-        cropViewController.aspectRatioPreset = .presetSquare
-        cropViewController.resetAspectRatioEnabled = false
-        cropViewController.delegate = self
-        present(cropViewController, animated: false, completion: nil)
-    }
-    
-    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
-        profileImage.image = image
-        let chosenProfileImage = image.jpegData(compressionQuality: 0.5)
-        newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
-        newProfileImageFile?.saveInBackground()
-        dismiss(animated: true, completion: nil)
-    }
-    
-    // Helper function inserted by Swift 4.2 migrator.
-    fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
-        return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
-    }
-    
-    // Helper function inserted by Swift 4.2 migrator.
-    fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
-        return input.rawValue
-    }
-    
+    var didFinishProcessingImage = true
     func showChangeProfilePhotoPicker() {
+        didFinishProcessingImage = false
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
@@ -344,10 +305,70 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel) { (_) -> Void in
+            self.didFinishProcessingImage = true
         }
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // Local variable inserted by Swift 4.2 migrator.
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        var selectedImage: UIImage?
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+            selectedImage = image
+        }
+                
+        dismiss(animated: true, completion: {() in
+            if let image = selectedImage {
+                self.presentImageCropViewController(image)
+            }
+        })
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        didFinishProcessingImage = true
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func presentImageCropViewController(_ image: UIImage) {
+        let cropViewController = CropViewController(croppingStyle: .default, image: image)
+        cropViewController.aspectRatioLockEnabled = true
+        cropViewController.aspectRatioPickerButtonHidden = true
+        cropViewController.aspectRatioPreset = .presetSquare
+        cropViewController.resetAspectRatioEnabled = false
+        cropViewController.delegate = self
+        present(cropViewController, animated: false, completion: nil)
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        profileImage.image = image
+        let chosenProfileImage = image.jpegData(compressionQuality: 0.5)
+        newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
+        newProfileImageFile?.saveInBackground {
+          (success: Bool, error: Error?) in
+          if (success) {
+            self.didFinishProcessingImage = true
+            if self.didPressDoneButton {
+                self.updateUserInfo()
+            }
+          } else if let error = error {
+            self.uiElement.showAlert("Issue with saving Image", message: error.localizedDescription, target: self)
+          }
+        }
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    // Helper function inserted by Swift 4.2 migrator.
+    fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+        return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+    }
+    
+    // Helper function inserted by Swift 4.2 migrator.
+    fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+        return input.rawValue
     }
     
     //MARK: city
@@ -415,7 +436,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: Data
     func updateUserInfo() {
-        self.startAnimating()
         let customer = Customer.shared
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
@@ -455,37 +475,38 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     (success: Bool, error: Error?) in
                     self.stopAnimating()
                     if (success) {
-                        if let artistDelegate = self.artistDelegate {
-                            customer.artist?.username = (user["username"] as! String)
-                            customer.artist?.email = (user["email"] as! String)
-                            
-                            if let followerCount = user["followerCount"] as? Int {
-                                customer.artist?.followerCount = followerCount
-                            }
-                            
-                            if let name =  user["artistName"] as? String {
-                                customer.artist?.name = name
-                            }
-                            
-                            if let city = user["city"] as? String {
-                                customer.artist?.city = city
-                            }
-                            
-                            if let website = user["website"] as? String {
-                                customer.artist?.website = website
-                            }
-                            
-                            if let bio = user["bio"] as? String {
-                                customer.artist?.bio = bio
-                            }
-                            
-                            if let profileImage = user["userImage"] as? PFFileObject {
-                                customer.artist?.image = profileImage.url
-                            }
+                        customer.artist?.username = (user["username"] as! String)
+                        customer.artist?.email = (user["email"] as! String)
                         
+                        if let followerCount = user["followerCount"] as? Int {
+                            customer.artist?.followerCount = followerCount
+                        }
+                        
+                        if let name =  user["artistName"] as? String {
+                            customer.artist?.name = name
+                        }
+                        
+                        if let city = user["city"] as? String {
+                            customer.artist?.city = city
+                        }
+                        
+                        if let website = user["website"] as? String {
+                            customer.artist?.website = website
+                        }
+                        
+                        if let bio = user["bio"] as? String {
+                            customer.artist?.bio = bio
+                        }
+                        
+                        if let profileImage = user["userImage"] as? PFFileObject {
+                            customer.artist?.image = profileImage.url
+                        }
+                        
+                        customer.update()
+                        
+                        //used to let give profileViewController updated profile
+                        if let artistDelegate = self.artistDelegate {
                             artistDelegate.receivedArtist(customer.artist)
-                            
-                            customer.update()
                         }
                         
                         if self.isOnboarding {

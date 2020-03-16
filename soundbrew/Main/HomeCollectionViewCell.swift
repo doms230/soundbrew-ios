@@ -16,8 +16,9 @@ class HomeCollectionViewCell: UICollectionViewCell {
     
     lazy var view: UIImageView = {
         let view = UIImageView()
-        view.backgroundColor = .darkGray
-        view.layer.cornerRadius = 5
+        view.backgroundColor = .clear
+        view.layer.borderWidth = 0.5
+        view.layer.cornerRadius = 10
         view.clipsToBounds = true
         return view
     }()
@@ -38,23 +39,39 @@ class HomeCollectionViewCell: UICollectionViewCell {
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         label.textColor = .white
         label.textAlignment = .center
+        label.numberOfLines = 2
         return label
     }()
     
     lazy var username: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .white
+        label.textColor = .lightGray
         label.textAlignment = .center
         return label
     }()
     
     lazy var storyType: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 16)
+        label.font = UIFont(name: uiElement.mainFont, size: 15)
         label.textColor = .white
         label.textAlignment = .center
         return label
+    }()
+    
+    lazy var storyCreatedAt: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: uiElement.mainFont, size: 15)
+        label.textColor = .lightGray
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var loadStorySpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
     }()
    
     override init(frame: CGRect) {
@@ -77,9 +94,15 @@ class HomeCollectionViewCell: UICollectionViewCell {
             make.centerX.equalTo(view)
         }
         
+        self.view.addSubview(loadStorySpinner)
+        loadStorySpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(profileImageHeightWidth)
+            make.centerY.centerX.equalTo(profileImage)
+        }
+        
         self.view.addSubview(displayNameLabel)
         displayNameLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(profileImage.snp.bottom)
             make.left.equalTo(view).offset(uiElement.leftOffset)
             make.right.equalTo(view).offset(uiElement.rightOffset)
         }
@@ -93,7 +116,14 @@ class HomeCollectionViewCell: UICollectionViewCell {
         
         self.view.addSubview(storyType)
         storyType.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(username.snp.bottom)
+            make.top.equalTo(username.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(view).offset(uiElement.leftOffset)
+            make.right.equalTo(view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(storyCreatedAt)
+        storyCreatedAt.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(storyType.snp.bottom)
             make.left.equalTo(view).offset(uiElement.leftOffset)
             make.right.equalTo(view).offset(uiElement.rightOffset)
         }

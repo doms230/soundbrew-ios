@@ -28,6 +28,10 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
         backItem.title = ""
         navigationItem.backBarButtonItem = backItem
         
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+        
         let viewController = segue.destination as! AddFundsViewController
         viewController.isOnboarding = true 
         

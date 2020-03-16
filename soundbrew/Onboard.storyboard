@@ -8,24 +8,44 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Finish Profile-->
+        <!--Choose Tags View Controller-->
+        <scene sceneID="KQn-UB-JNq">
+            <objects>
+                <viewController id="sfm-ZJ-sKD" customClass="ChooseTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BGx-ee-H1i">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <viewLayoutGuide key="safeArea" id="mSw-J7-2GN"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="9w1-5L-qL8"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="blc-wL-uBI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-5739" y="613"/>
+        </scene>
+        <!--Complete Profile-->
         <scene sceneID="nF9-4v-4bl">
             <objects>
                 <viewController id="WYl-Zo-wsm" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="158-yX-bSx">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="xnV-sl-h76"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Finish Profile" id="k0i-xx-icv"/>
+                    <navigationItem key="navigationItem" title="Complete Profile" id="k0i-xx-icv"/>
                     <connections>
-                        <segue destination="cNp-Vl-vMx" kind="show" identifier="showWhoToFollow" id="aGQ-jd-tqO"/>
+                        <segue destination="wy1-DH-QZm" kind="presentation" identifier="showTags" id="dhk-KT-zxG"/>
+                        <segue destination="Qt9-zy-ebq" kind="presentation" identifier="showEditBio" id="MYz-DO-5bI"/>
+                        <segue destination="cNp-Vl-vMx" kind="show" identifier="showWhoToFollow" id="fCm-7V-CJ2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hq7-y8-1Jx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-6481.1594202898559" y="2037.7232142857142"/>
+            <point key="canvasLocation" x="-6200" y="2038"/>
         </scene>
         <!--Who To Follow View Controller-->
         <scene sceneID="Xgf-sN-apo">
@@ -34,17 +54,18 @@
                     <view key="view" contentMode="scaleToFill" id="atn-G8-rdJ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="Oe0-cV-Ue9"/>
                     </view>
-                    <navigationItem key="navigationItem" id="dow-hF-BfB"/>
+                    <navigationItem key="navigationItem" id="Naw-HG-57c"/>
                     <connections>
                         <segue destination="oM3-77-RUU" kind="show" identifier="showAddFunds" id="5n3-By-yxx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aPa-iR-nX0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-5696" y="2038"/>
+            <point key="canvasLocation" x="-4788" y="2038"/>
         </scene>
         <!--Add Funds View Controller-->
         <scene sceneID="4qu-hd-Mlc">
@@ -53,14 +74,14 @@
                     <view key="view" contentMode="scaleToFill" id="COd-h8-U6W">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="8Dw-od-0WB"/>
                     </view>
-                    <navigationItem key="navigationItem" id="qrk-6d-6eb"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fIw-Wj-NyO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4829" y="2038"/>
+            <point key="canvasLocation" x="-3936" y="2038"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="DBa-Rx-i6E">
@@ -70,6 +91,17 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="gXL-CU-AHi">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="barTintColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                        <textAttributes key="largeTitleTextAttributes">
+                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -78,7 +110,114 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JxO-gG-dxT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-7391.3043478260879" y="2037.7232142857142"/>
+            <point key="canvasLocation" x="-7152" y="2038"/>
+        </scene>
+        <!--Edit Bio View Controller-->
+        <scene sceneID="Q8t-wu-BWB">
+            <objects>
+                <viewController id="0L8-Hl-rYc" customClass="EditBioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BJA-jS-hYZ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <viewLayoutGuide key="safeArea" id="Shb-Ff-4tE"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="1AI-Hb-cuX"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tMr-rw-QCG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-6600" y="613"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="8vJ-Tz-3p9">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="wy1-DH-QZm" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="pkq-tP-Evy">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="barTintColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                        <textAttributes key="largeTitleTextAttributes">
+                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="sfm-ZJ-sKD" kind="relationship" relationship="rootViewController" id="U7B-s6-CNw"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AMN-Je-mbb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-5738" y="1328"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ctk-gU-YI3">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Qt9-zy-ebq" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Kv9-fA-10K">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="barTintColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                        <textAttributes key="largeTitleTextAttributes">
+                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="0L8-Hl-rYc" kind="relationship" relationship="rootViewController" id="U8P-OH-Bc5"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jtZ-sq-gg5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-6600" y="1327"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="fko-VR-YbK">
+            <objects>
+                <navigationController storyboardIdentifier="whoToFollow" automaticallyAdjustsScrollViewInsets="NO" id="Zag-Sc-3SE" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="wfr-Jq-Urr">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="barTintColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                        <textAttributes key="largeTitleTextAttributes">
+                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <color key="textShadowColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="cNp-Vl-vMx" kind="relationship" relationship="rootViewController" id="jEX-dG-sK9"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ntz-Iz-IBJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-4787" y="1310"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="fCm-7V-CJ2"/>
+    </inferredMetricsTieBreakers>
 </document>

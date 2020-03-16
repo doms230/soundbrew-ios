@@ -66,19 +66,6 @@ class WelcomeViewController: UIViewController {
         return label
     }()
     
-    lazy var learnMoreButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Learn More", for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
-        button.titleLabel?.numberOfLines = 0
-        button.backgroundColor = color.purpleBlack()
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 5
-        button.clipsToBounds = true
-        button.addTarget(self, action: #selector(didPressLearnMoreButton), for: .touchUpInside)
-        return button
-    }()
-    
     lazy var termsButton: UIButton = {
         let button = UIButton()
         let localizedTerms = NSLocalizedString("terms", comment: "")
@@ -92,12 +79,16 @@ class WelcomeViewController: UIViewController {
         return button
     }()
     
-    func signInWithButton(_ title: String, titleColor: UIColor, backgroundColor: UIColor, imageName: String?, tag: Int) -> UIButton {
+    func signInWithButton(_ title: String, titleColor: UIColor, backgroundColor: UIColor, imageName: String?, tag: Int, shouldShowBorderColor: Bool) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.setTitleColor(titleColor, for: .normal)
         button.backgroundColor = backgroundColor
+        if shouldShowBorderColor {
+            button.layer.borderWidth = 1
+            button.layer.borderColor = UIColor.white.cgColor
+        }
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.tag = tag
@@ -117,7 +108,7 @@ class WelcomeViewController: UIViewController {
         let titleFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 40)!
         let descriptionFont = UIFont(name: "\(uiElement.mainFont)", size: 25)!
         
-        let likePage = newOnboardPage("Support", imageName: "onboardLike", description: "The credited artists are paid everytime you 'like' a song.")
+        let likePage = newOnboardPage("Support", imageName: "onboardLike", description: "Directly pay artists for their music everytime you 'like' a song.")
         
         let connectPage = newOnboardPage("Connect", imageName: "onboardConnect", description: "Keep up with your favorite artists' uploads and likes. Chat in the comments.")
         
@@ -126,8 +117,10 @@ class WelcomeViewController: UIViewController {
         let createPage = newOnboardPage("Create", imageName: "onboardCreate", description: "Upload and tag your music straight from the app. Credit other artists and collaborators, then choose their payment splits.")
         
         let appearance = OnboardViewController.AppearanceConfiguration(tintColor: .white, titleColor: .white, textColor: .white, backgroundColor: .black, imageContentMode: .scaleAspectFit, titleFont: titleFont, textFont: descriptionFont)
+        
         let onboardingViewController = OnboardViewController(pageItems: [likePage, connectPage, discoverPage, createPage],
         appearanceConfiguration: appearance)
+        
         onboardingViewController.presentFrom(self, animated: true)
     }
     
@@ -148,7 +141,6 @@ class WelcomeViewController: UIViewController {
         
         self.view.addSubview(appImage)
         self.view.addSubview(appLabel)
-        self.view.addSubview(learnMoreButton)
         self.view.addSubview(termsButton)
         
         appLabel.snp.makeConstraints { (make) -> Void in
@@ -157,20 +149,13 @@ class WelcomeViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        learnMoreButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(35)
-            make.width.equalTo(100)
-            make.top.equalTo(appLabel.snp.bottom).offset(uiElement.topOffset)
-            make.centerX.equalTo(self.view)
-        }
-        
         appImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(150)
             make.centerX.equalTo(self.view)
             make.bottom.equalTo(appLabel.snp.top)
         }
         
-        let signupButton = signInWithButton("Sign Up", titleColor: .black, backgroundColor: .white, imageName: nil, tag: 0)
+        let signupButton = signInWithButton("Sign Up", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 0, shouldShowBorderColor: true)
         self.view.addSubview(signupButton)
         signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -179,7 +164,7 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let twitterButton = signInWithButton("Twitter", titleColor: .white, backgroundColor: color.uicolorFromHex(0x1DA1F2), imageName: "twitter", tag: 1)
+        let twitterButton = signInWithButton("Twitter", titleColor: .white, backgroundColor: color.uicolorFromHex(0x1DA1F2), imageName: "twitter", tag: 1, shouldShowBorderColor: false)
         self.view.addSubview(twitterButton)
         twitterButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -198,7 +183,7 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset * 2)
         }*/
         
-        let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3)
+        let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: false)
         self.view.addSubview(signInButton)
         signInButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)

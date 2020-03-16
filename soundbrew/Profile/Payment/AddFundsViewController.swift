@@ -24,7 +24,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         super.viewDidLoad()
         setupView()
         setupPaymentContext()
-        self.title = "Add Funds"
     }
     
     //mark: payments
@@ -117,14 +116,13 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             }
             let localizedPaymentDeclined = NSLocalizedString("paymentDeclined", comment: "")
             self.uiElement.showAlert(localizedPaymentDeclined, message: "", target: self)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Declined", "description": "User's payment was Un-Successful. \(errorString)"])
             
         case .success:
             let customer = Customer.shared
             customer.updateBalance(paymentContext.paymentAmount)
-            self.uiElement.goBackToPreviousViewController(self)
             
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "Funds Added", "description": "User Successfully added funds to their account."])
+            self.leaveView()
+            
         case .userCancellation:
             return
         default:
@@ -143,7 +141,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.textColor = .lightGray
         label.numberOfLines = 0
-        label.text = "Add funds to your wallet to directly pay artists for their music. Everytime you 'like' a song, the credited artists are paid an amount of your choosing."
+        label.textAlignment = .center
+        label.text = "Add funds to your wallet to directly pay credited artists everytime you 'like' a song."
         return label
     }()
     
@@ -208,12 +207,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         }
     }
     
-    @objc func didPressAddFundsMessage(_ sender: UIBarButtonItem) {
-        let localizedStripeAddFundsMessage = NSLocalizedString("addFundsMessage", comment: "")
-        let localizedStripeAddFundsTitle = NSLocalizedString("whyAddFundsTitle", comment: "")
-        self.uiElement.showAlert(localizedStripeAddFundsTitle, message: localizedStripeAddFundsMessage, target: self)
-    }
-    
     lazy var cardButton: UIButton = {
         let button = UIButton()
         button.addTarget(self, action: #selector(self.didPressAddCardButton(_:)), for: .touchUpInside)
@@ -266,17 +259,27 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         self.paymentContext.requestPayment()
     }
     
+    func leaveView() {
+        if isOnboarding {
+            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+        } else {
+            self.uiElement.goBackToPreviousViewController(self)
+        }
+    }
+    
     func setupView() {
+        self.title = "Add Funds"
+        
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+        
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
-        
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
         
         if isOnboarding {
             let localizedDone = NSLocalizedString("done", comment: "")
@@ -366,6 +369,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+        leaveView()
     }
 }

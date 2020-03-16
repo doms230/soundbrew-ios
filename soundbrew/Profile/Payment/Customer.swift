@@ -164,7 +164,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     }
     
     func getFriends(_ userId: String) {
-        if let friendObjectIds = self.uiElement.getUserDefault("friends") as? [String] {
+        if let friendObjectIds = self.uiElement.getUserDefault("friends") as? [String], friendObjectIds.count != 0 {
             self.artist?.friendObjectIds = friendObjectIds
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
         } else {

@@ -627,21 +627,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
         }
         
-        let player = Player.sharedInstance
-        if player.player != nil {
-            self.setUpMiniPlayer()
-        } else if self.tableView == nil {
-            self.setUpTableView(nil)
-        } else {
-            self.tableView.reloadData()
-        }
+        handleTableViewLogic()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isSearchActive = true
-        self.tableView.reloadData()
+        handleTableViewLogic()
         searchBar.setShowsCancelButton(true, animated: true)
-                
         MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "Search", "description": "User did start Searching."])
     }
     
@@ -654,7 +646,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         searchBar.text = ""
         self.searchBar.resignFirstResponder()
         isSearchActive = false
-        self.tableView.reloadData()
+        handleTableViewLogic()
     }
     
     func searchUsers(_ text: String) {

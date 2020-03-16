@@ -128,7 +128,6 @@ class Follow {
     }
     
     func newMention(_ toUserId: String) {
-       // self.uiElement.sendAlert("followed you!", toUserId: self.profileArtist!.objectId)
         let newMention = PFObject(className: "Mention")
         newMention["type"] = "follow"
         newMention["fromUserId"] = self.fromArtist.objectId!
@@ -136,7 +135,7 @@ class Follow {
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                //self.uiElement.sendAlert("followed you!", toUserId: self.toArtist.objectId!)
+                self.uiElement.sendAlert("followed you!", toUserId: self.toArtist.objectId!)
             }
         }
     }

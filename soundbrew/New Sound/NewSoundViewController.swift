@@ -19,7 +19,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     let color = Color()
     var soundList: SoundList!
     var newSound: Sound!
-        
+    
     override func viewDidLoad() {        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -29,9 +29,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         let localizedNewUpload = NSLocalizedString("newUpload", comment: "")
         let uploadButton = UIBarButtonItem(title: localizedNewUpload, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
+        
         if PFUser.current() != nil {
             showSounds()
             
@@ -45,6 +43,10 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             let localizedRegisterToUpload = NSLocalizedString("registerToUpload", comment: "")
             self.uiElement.welcomeAlert(localizedRegisterToUpload, target: self)
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -128,12 +130,6 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
        showSounds()
     }
     
-    /*
-     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let localizedDrafts = NSLocalizedString("drafts", comment: "")
-        return localizedDrafts
-    }*/
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -155,6 +151,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             } else {
                 let localizedNoDraftsMessage = NSLocalizedString("noDraftsMessage", comment: "")
                 cell.headerTitle.text = localizedNoDraftsMessage
+                showNewUpload()
             }
 
             return cell
@@ -185,12 +182,15 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     //mark: new sound upload
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
+        showNewUpload()
+    }
+    
+    func showNewUpload() {
         let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
         let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
         documentPicker.delegate = self
         documentPicker.modalPresentationStyle = .fullScreen
         self.present(documentPicker, animated: true, completion: nil)
-        MSAnalytics.trackEvent("UploadSoundViewController", withProperties: ["Button" : "New Upload", "description": "user pressed new upload button"])
     }
         
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -203,7 +203,6 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        
     }
     
     //mark: miniPlayer
