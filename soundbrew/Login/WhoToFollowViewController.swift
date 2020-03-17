@@ -76,11 +76,12 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: titleReuse) as! WhoToFollowTableViewCell
+            cell.selectionStyle = .none
             return cell
             
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: peopleToFollowReuse) as! WhoToFollowTableViewCell
-            
+            cell.selectionStyle = .none
             let artist = peopleToFollow[indexPath.row]
             if let name = artist.name {
                 cell.displayNameLabel.text = name
@@ -127,6 +128,8 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
         query.limit = 50
         query.whereKeyExists("bio")
         query.whereKeyExists("artistName")
+        query.whereKey("artistVerified", equalTo: true)
+        query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil, let objects = objects {

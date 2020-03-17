@@ -523,10 +523,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.left.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
         }
-        
-        if self.tableView != nil {
-            setUpTableView(miniPlayerView)
-        }
+       setUpTableView(miniPlayerView)
     }
     
     @objc func miniPlayerWasSwiped() {
