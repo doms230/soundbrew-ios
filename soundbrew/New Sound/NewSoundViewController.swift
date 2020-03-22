@@ -151,7 +151,9 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             } else {
                 let localizedNoDraftsMessage = NSLocalizedString("noDraftsMessage", comment: "")
                 cell.headerTitle.text = localizedNoDraftsMessage
-                showNewUpload()
+                if !wasShownNewUpload {
+                    showNewUpload()
+                }
             }
 
             return cell
@@ -186,13 +188,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func showNewUpload() {
-        if !wasShownNewUpload {
-            let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
-            let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
-            documentPicker.delegate = self
-            documentPicker.modalPresentationStyle = .fullScreen
-            self.present(documentPicker, animated: true, completion: nil)
-        }
+        let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
+        let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
+        documentPicker.delegate = self
+        documentPicker.modalPresentationStyle = .fullScreen
+        self.present(documentPicker, animated: true, completion: nil)
     }
         
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
