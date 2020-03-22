@@ -95,6 +95,10 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
                 cell.bioLabel.text = bio
             }
             
+            if let city = artist.city {
+                cell.cityLabel.text = "📍\(city)"
+            }
+            
             if let image = artist.image {
                 cell.profileImage.kf.setImage(with: URL(string: image))
             } else {
@@ -124,11 +128,20 @@ class WhoToFollowViewController: UIViewController, UITableViewDelegate, UITableV
     
     var peopleToFollow = [Artist]()
     func loadPeopleToFollow() {
+        var currentUserCity: String?
+        if let customer = Customer.shared.artist {
+            currentUserCity = customer.city
+        }
+        
         let query = PFQuery(className: "_User")
         query.limit = 50
         query.whereKeyExists("bio")
         query.whereKeyExists("artistName")
-        query.whereKey("artistVerified", equalTo: true)
+        if let city = currentUserCity, city != "" {
+            query.whereKey("city", equalTo: city)
+        } else {
+            query.whereKey("artistVerified", equalTo: true)
+        }
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

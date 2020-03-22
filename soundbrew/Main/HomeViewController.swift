@@ -133,13 +133,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
+        if stories.count == 0 {
             return 1
         }
+        
         return stories.count
     }
     
@@ -148,13 +149,18 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+       /* if indexPath.section == 0 {
             self.selectedIndexPath = indexPath
             soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
             
         } else if let selectedUserId = stories[indexPath.row].artist.objectId {
-                self.selectedIndexPath = indexPath
-                soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+         self.selectedIndexPath = indexPath
+         soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        }*/
+        
+        if let selectedUserId = stories[indexPath.row].artist.objectId {
+             self.selectedIndexPath = indexPath
+             soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         }
         
         let cell = collectionView.cellForItem(at: indexPath) as! HomeCollectionViewCell
@@ -173,7 +179,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let collectionViewSize = collectionView.frame.size.width
-        if indexPath.section == 0 {
+        if stories.count == 0 {
             return CGSize(width: collectionViewSize, height: (collectionViewSize - 30) / 2)
         } else {
             return CGSize(width: collectionViewSize/2, height: (collectionViewSize + 35) / 2)
@@ -201,7 +207,51 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     func storyCell(_ indexPath: IndexPath) -> HomeCollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "reuse", for: indexPath) as! HomeCollectionViewCell
         
-        if indexPath.section == 0 {
+        if stories.count == 0 {
+            cell.profileImage.image = UIImage()
+            cell.profileImage.isHidden = true
+            cell.displayNameLabel.text = ""
+            cell.username.text = "Follow your friends and favorite artists to keep up with their latest uploads, likes, and credits!"
+            cell.username.numberOfLines = 0
+            cell.storyType.text = ""
+            cell.storyCreatedAt.text = ""
+        } else {
+            let story = stories[indexPath.row]
+            let artist = story.artist!
+            
+            cell.profileImage.isHidden = false 
+            if let image = artist.image {
+                cell.profileImage.kf.setImage(with: URL(string: image))
+            } else {
+                cell.profileImage.image = UIImage(named: "profile_icon")
+            }
+                
+            if let name = artist.name {
+                cell.displayNameLabel.text = name
+            } else {
+                cell.displayNameLabel.text = "name"
+            }
+            
+            if let username = artist.username {
+                cell.username.text = "@\(username)"
+            } else {
+                cell.username.text = "@username"
+                artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell)
+            }
+            cell.username.numberOfLines = 1
+            
+            if let storyType = story.type {
+                cell.storyType.isHidden = false
+                cell.storyType.text = "New \(storyType.capitalized)"
+            }
+            
+            cell.storyCreatedAt.text = self.uiElement.formatDateAndReturnString(story.lastUpdated!)
+            cell.storyCreatedAt.isHidden = false
+                        
+            self.cell = cell
+        }
+        
+        /*if indexPath.section == 0 {
             cell.displayNameLabel.text = "Your Soundbrew"
             cell.username.text = "A playlist of recommended music."
             cell.profileImage.image = UIImage(named: "appy")
@@ -240,7 +290,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             cell.storyCreatedAt.isHidden = false
                         
             self.cell = cell
-        }
+        }*/
         
         if let selectedIndexPath = self.selectedIndexPath {
             if selectedIndexPath.row == indexPath.row, selectedIndexPath.section == indexPath.section {

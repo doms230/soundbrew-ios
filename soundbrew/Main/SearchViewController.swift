@@ -268,7 +268,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didPressChartsButton(_ sender: UIButton) {
-        let tag = Tag(objectId: nil, name: "New", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+        let tag = Tag(objectId: nil, name: "Featured", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
         showSounds(tag, soundType: "chart")
     }
     

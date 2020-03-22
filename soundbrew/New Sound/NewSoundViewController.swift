@@ -19,6 +19,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     let color = Color()
     var soundList: SoundList!
     var newSound: Sound!
+    var wasShownNewUpload = false
     
     override func viewDidLoad() {        
         self.view.backgroundColor = color.black()
@@ -185,23 +186,27 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func showNewUpload() {
-        let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
-        let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
-        documentPicker.delegate = self
-        documentPicker.modalPresentationStyle = .fullScreen
-        self.present(documentPicker, animated: true, completion: nil)
+        if !wasShownNewUpload {
+            let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
+            let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
+            documentPicker.delegate = self
+            documentPicker.modalPresentationStyle = .fullScreen
+            self.present(documentPicker, animated: true, completion: nil)
+        }
     }
         
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileURL = urls.first else {
              return
         }
+        wasShownNewUpload = true 
         let artist = Customer.shared.artist
         newSound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        wasShownNewUpload = true
     }
     
     //mark: miniPlayer

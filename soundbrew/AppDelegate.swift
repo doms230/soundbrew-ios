@@ -81,7 +81,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                 let url = userActivity.webpageURL!
                 
                 let pathComponents = url.pathComponents
-                print(url.host)
                 print(url.lastPathComponent)
                 if url.host == "www.soundbrew.app" || url.host == "soundbrew.app" {
                     if pathComponents.contains("s") {
@@ -90,7 +89,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                     } else if pathComponents.contains("u") {
                         self.receivedUserId(url.lastPathComponent)
                     } else {
-                        print("got userId")
                         self.receivedUsername(url.lastPathComponent)
                     }
                 } else {
@@ -103,9 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     func handleDynamicLink(_ userActivity: NSUserActivity) -> Bool {
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
-            if let error = error {
-                
-            } else if let url = dynamiclink?.url {
+            if let url = dynamiclink?.url {
                 if let pathComponents = dynamiclink?.url?.pathComponents {
                     if pathComponents.contains("sound") {
                        self.receivedPostId(url.lastPathComponent)

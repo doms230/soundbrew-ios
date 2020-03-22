@@ -48,6 +48,7 @@ class WhoToFollowTableViewCell: UITableViewCell {
     var displayNameLabel: UILabel!
     var usernameLabel: UILabel!
     var bioLabel: UILabel!
+    var cityLabel: UILabel!
     
     func label(_ text: String?, font: UIFont, textColor: UIColor) -> UILabel {
         let label = UILabel()
@@ -121,10 +122,18 @@ class WhoToFollowTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            cityLabel = label(nil, font: UIFont(name: uiElement.mainFont, size: 15)!, textColor: .lightGray)
+            self.addSubview(cityLabel)
+            cityLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(bioLabel.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(usernameLabel)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
             self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
-                make.top.equalTo(bioLabel.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(cityLabel.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
