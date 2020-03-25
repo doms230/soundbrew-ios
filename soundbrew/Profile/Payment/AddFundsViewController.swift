@@ -28,7 +28,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     
     //mark: payments
     var paymentContext: STPPaymentContext!
-    
+    var fundsToWalletAmount = 999
     func setupPaymentContext() {
         let customer = Customer.shared
         let customerContext = STPCustomerContext(keyProvider: customer)
@@ -51,13 +51,14 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             self.addCardLabel.text = localizedEdit
         }
         self.purchaseButton.isEnabled = paymentContext.selectedPaymentOption != nil
-        self.purchaseButton.setTitle("Add Funds to Wallet", for: .normal)
+        let addFundsToWalletAmountString = self.uiElement.convertCentsToDollarsAndReturnString(fundsToWalletAmount, currency: "$")
+        self.purchaseButton.setTitle("Add \(addFundsToWalletAmountString) to Wallet", for: .normal)
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFailToLoadWithError error: Error) {
-        
+        self.uiElement.showAlert("Connectivity Issue", message: "\(error.localizedDescription)", target: self)
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
@@ -119,8 +120,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             
         case .success:
             let customer = Customer.shared
-            customer.updateBalance(paymentContext.paymentAmount)
-            
+            customer.updateBalance(self.fundsToWalletAmount)
             self.leaveView()
             
         case .userCancellation:
@@ -136,15 +136,65 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     //mark: UI
+    
+    //description
     lazy var addFundsDescription: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Add funds to your wallet to directly pay credited artists everytime you 'like' a song."
+        label.text = "Pay credited artists an amount of your choosing every time you 'like' a song."
         return label
     }()
+    
+    //referral
+    lazy var referralCodeLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
+        label.textColor = .lightGray
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        label.text = "Enter a friends's referral code to earn $1 when you add funds to your wallet. "
+        return label
+    }()
+    lazy var referralCodeText: UITextField = {
+        let textField = UITextField()
+        textField.font = UIFont(name: uiElement.mainFont, size: 17)
+        textField.backgroundColor = color.purpleBlack()
+        textField.borderStyle = .none
+        textField.clearButtonMode = .whileEditing
+        textField.keyboardType = .default
+        textField.tintColor = color.purpleBlack()
+        textField.textColor = .white
+        textField.layer.cornerRadius = 3
+        textField.clipsToBounds = true
+        textField.attributedPlaceholder = NSAttributedString(string: "   Referral Code",
+        attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        return textField
+    }()
+    
+    lazy var referralCodeButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Add", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = color.purpleBlack()
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
+        button.addTarget(self, action: #selector(didPressAddReferralCodeButton), for: .touchUpInside)
+        button.layer.cornerRadius = 3
+       // button.layer.borderWidth = 0.5
+        //button.layer.borderColor = UIColor.lightGray.cgColor
+        button.clipsToBounds = true
+        return button
+    }()
+    
+    @objc func didPressAddReferralCodeButton(_ sender: UIButton) {
+        //Do some type of loading to check refferral code
+        //if code checks out
+        self.fundsToWalletAmount = 1099
+        let addFundsToWalletAmountString = self.uiElement.convertCentsToDollarsAndReturnString(self.fundsToWalletAmount, currency: "$")
+        self.purchaseButton.setTitle("Add \(addFundsToWalletAmountString) to Wallet", for: .normal)
+    }
     
     //Funds to add View
     lazy var fundsToAddView: UIView = {
@@ -274,17 +324,17 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
+        if isOnboarding {
+            let localizedDone = NSLocalizedString("done", comment: "")
+            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+            self.navigationItem.rightBarButtonItem = doneButton
+        }
+        
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        if isOnboarding {
-            let localizedDone = NSLocalizedString("done", comment: "")
-            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-            self.navigationItem.rightBarButtonItem = doneButton
         }
         
         //how much would you like to add view
@@ -343,6 +393,31 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             make.top.equalTo(cardButton.snp.bottom).offset(self.uiElement.topOffset * 2)
             make.left.equalTo(fundsToAddView).offset(uiElement.leftOffset)
             make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(referralCodeButton)
+        referralCodeButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(33)
+            make.width.equalTo(100)
+          //  make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.fundsToAddView.snp.top).offset((uiElement.bottomOffset) * 2)
+        }
+        
+        //referral code text above add funds
+        self.view.addSubview(referralCodeText)
+        referralCodeText.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(33)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(referralCodeButton.snp.left).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.fundsToAddView.snp.top).offset((uiElement.bottomOffset) * 2)
+        }
+        
+        self.view.addSubview(referralCodeLabel)
+        referralCodeLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.referralCodeText.snp.top).offset(-(uiElement.elementOffset))
         }
         
         //stripe message at bottom

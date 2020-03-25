@@ -59,7 +59,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 } else {
                     let alertView = UIAlertController(
                         title: "1 like = $$$",
-                        message: "How much would you like to tip artists when you like a song? \n\n\n\n\n\n\n\n",
+                        message: "How much would you like to pay artists when you like a song? \n\n\n\n\n\n\n\n",
                         preferredStyle: .actionSheet)
                     
                     let pickerView = UIPickerView(frame:

@@ -1,35 +1,35 @@
 PODS:
   - ActiveLabel (1.1.0)
-  - Alamofire (5.0.2)
-  - AppCenter (3.0.0):
-    - AppCenter/Analytics (= 3.0.0)
-    - AppCenter/Crashes (= 3.0.0)
-  - AppCenter/Analytics (3.0.0):
+  - Alamofire (5.0.5)
+  - AppCenter (3.1.0):
+    - AppCenter/Analytics (= 3.1.0)
+    - AppCenter/Crashes (= 3.1.0)
+  - AppCenter/Analytics (3.1.0):
     - AppCenter/Core
-  - AppCenter/Core (3.0.0)
-  - AppCenter/Crashes (3.0.0):
+  - AppCenter/Core (3.1.0)
+  - AppCenter/Crashes (3.1.0):
     - AppCenter/Core
   - Bolts/Tasks (1.9.0)
   - CropViewController (2.5.2)
-  - Firebase/Core (6.19.0):
+  - Firebase/Core (6.21.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 6.3.1)
-  - Firebase/CoreOnly (6.19.0):
-    - FirebaseCore (= 6.6.4)
-  - Firebase/DynamicLinks (6.19.0):
+    - FirebaseAnalytics (= 6.4.0)
+  - Firebase/CoreOnly (6.21.0):
+    - FirebaseCore (= 6.6.5)
+  - Firebase/DynamicLinks (6.21.0):
     - Firebase/CoreOnly
-    - FirebaseDynamicLinks (~> 4.0.7)
-  - FirebaseAnalytics (6.3.1):
+    - FirebaseDynamicLinks (~> 4.0.8)
+  - FirebaseAnalytics (6.4.0):
     - FirebaseCore (~> 6.6)
     - FirebaseInstallations (~> 1.1)
-    - GoogleAppMeasurement (= 6.3.1)
+    - GoogleAppMeasurement (= 6.4.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
   - FirebaseAnalyticsInterop (1.5.0)
-  - FirebaseCore (6.6.4):
+  - FirebaseCore (6.6.5):
     - FirebaseCoreDiagnostics (~> 1.2)
     - FirebaseCoreDiagnosticsInterop (~> 1.2)
     - GoogleUtilities/Environment (~> 6.5)
@@ -41,40 +41,40 @@ PODS:
     - GoogleUtilities/Logger (~> 6.5)
     - nanopb (~> 0.3.901)
   - FirebaseCoreDiagnosticsInterop (1.2.0)
-  - FirebaseDynamicLinks (4.0.7):
+  - FirebaseDynamicLinks (4.0.8):
     - FirebaseAnalyticsInterop (~> 1.3)
     - FirebaseCore (~> 6.2)
-  - FirebaseInstallations (1.1.0):
+  - FirebaseInstallations (1.1.1):
     - FirebaseCore (~> 6.6)
     - GoogleUtilities/UserDefaults (~> 6.5)
     - PromisesObjC (~> 1.2)
-  - GoogleAppMeasurement (6.3.1):
+  - GoogleAppMeasurement (6.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
-  - GoogleDataTransport (5.0.0)
-  - GoogleDataTransportCCTSupport (2.0.0):
-    - GoogleDataTransport (~> 5.0)
+  - GoogleDataTransport (5.1.0)
+  - GoogleDataTransportCCTSupport (2.0.1):
+    - GoogleDataTransport (~> 5.1)
     - nanopb (~> 0.3.901)
-  - GoogleUtilities/AppDelegateSwizzler (6.5.1):
+  - GoogleUtilities/AppDelegateSwizzler (6.5.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.5.1)
-  - GoogleUtilities/Logger (6.5.1):
+  - GoogleUtilities/Environment (6.5.2)
+  - GoogleUtilities/Logger (6.5.2):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.5.1):
+  - GoogleUtilities/MethodSwizzler (6.5.2):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.5.1):
+  - GoogleUtilities/Network (6.5.2):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.5.1)"
-  - GoogleUtilities/Reachability (6.5.1):
+  - "GoogleUtilities/NSData+zlib (6.5.2)"
+  - GoogleUtilities/Reachability (6.5.2):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (6.5.1):
+  - GoogleUtilities/UserDefaults (6.5.2):
     - GoogleUtilities/Logger
   - GrowingTextView (0.7.2)
   - Kingfisher (5.13.2):
@@ -99,18 +99,18 @@ PODS:
   - ShareInstagram (1.6)
   - SidebarOverlay (4.2.2)
   - SnapKit (5.0.1)
-  - SnapSDK (1.4.2):
-    - SnapSDK/SCSDKBitmojiKit (= 1.4.2)
-    - SnapSDK/SCSDKCreativeKit (= 1.4.2)
-    - SnapSDK/SCSDKLoginKit (= 1.4.2)
-    - SnapSDK/SCSDKStoryKit (= 1.4.2)
-  - SnapSDK/SCSDKBitmojiKit (1.4.2):
+  - SnapSDK (1.4.3):
+    - SnapSDK/SCSDKBitmojiKit (= 1.4.3)
+    - SnapSDK/SCSDKCreativeKit (= 1.4.3)
+    - SnapSDK/SCSDKLoginKit (= 1.4.3)
+    - SnapSDK/SCSDKStoryKit (= 1.4.3)
+  - SnapSDK/SCSDKBitmojiKit (1.4.3):
     - PINCache (< 3.1, >= 2.3)
     - PINOperation (~> 1.1)
-  - SnapSDK/SCSDKCreativeKit (1.4.2)
-  - SnapSDK/SCSDKLoginKit (1.4.2)
-  - SnapSDK/SCSDKStoryKit (1.4.2)
-  - Stripe (19.0.0)
+  - SnapSDK/SCSDKCreativeKit (1.4.3)
+  - SnapSDK/SCSDKLoginKit (1.4.3)
+  - SnapSDK/SCSDKStoryKit (1.4.3)
+  - Stripe (19.0.1)
   - SwiftyJSON (5.0.0)
   - TwitterCore (3.2.0)
   - TwitterKit (3.4.2):
@@ -178,22 +178,22 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   ActiveLabel: 5e3f4de79a1952d4604b845a0610d4776e4b82b3
-  Alamofire: 3ba7a4db18b4f62c4a1c0e1cb39d7f3d52e10ada
-  AppCenter: 7a0bbe928d07467ac8b2d7f6f2a675872a6471d8
+  Alamofire: df2f8f826963b08b9a870791ad48e07a10090b2e
+  AppCenter: a1c30c47b7882a04a615ffa5ab26c007326436d8
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   CropViewController: 1aac40093c5739e60d992b04724a55d12a689a4c
-  Firebase: d55ddb0e0bb3207166cddc028647833d8a1b5b6f
-  FirebaseAnalytics: 572e467f3d977825266e8ccd52674aa3e6f47eac
+  Firebase: f378c80340dd41c0ad0914af740c021eb282a04b
+  FirebaseAnalytics: a1a0b3327ceb5cd5b4bacffdb293f6c909aa087d
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
-  FirebaseCore: ed0a24c758a57c2b88c5efa8e6a8195e868af589
+  FirebaseCore: 9f495d3afacb7b558711e6218ebb14b1c51b5802
   FirebaseCoreDiagnostics: e9b4cd8ba60dee0f2d13347332e4b7898cca5b61
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
-  FirebaseDynamicLinks: b3338d0c0423ee3d409f5ecc0fb774a9baa6537b
-  FirebaseInstallations: 575cd32f2aec0feeb0e44f5d0110a09e5e60b47b
-  GoogleAppMeasurement: c29d405ff76e18551b5d158eaba6753fda8c7542
-  GoogleDataTransport: a857c6a002d201b524dd4bc2ed7e7355ed07e785
-  GoogleDataTransportCCTSupport: 32f75fbe904c82772fcbb6b6bd4525bfb6f2a862
-  GoogleUtilities: 06eb53bb579efe7099152735900dd04bf09e7275
+  FirebaseDynamicLinks: 417dc6dbb6013233c77558290d73296f429656a6
+  FirebaseInstallations: acb3216eb9784d3b1d2d2d635ff74fa892cc0c44
+  GoogleAppMeasurement: 6e68a94d0eaeb1d73ef6b0ed4f7334e29d63ae29
+  GoogleDataTransport: b29a21d813e906014ca16c00897827e40e4a24ab
+  GoogleDataTransportCCTSupport: 6f15a89b0ca35d6fa523e1f752ef818588885988
+  GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
   GrowingTextView: 876bf42005b5e4a4fd740597db12caaf41f0fe6c
   Kingfisher: d342c8354c10c3d85a27d6d4c42c41285924b898
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
@@ -206,8 +206,8 @@ SPEC CHECKSUMS:
   ShareInstagram: 787136afff8d1fbe899b1c3e5450560694071dff
   SidebarOverlay: a5365455a2f9d54f70d0765764ca1a2806b1b11d
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
-  SnapSDK: 40335ae82ff55d578b8be38fa2b098b1e6471866
-  Stripe: 5afd38a520f7a1a16b609127165d517fa9f7de32
+  SnapSDK: 0fba5594ece441d706e5d66380fdc098c094d4b4
+  Stripe: 03313f9520a0786e2c00d9a7a2672c11e08821af
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb

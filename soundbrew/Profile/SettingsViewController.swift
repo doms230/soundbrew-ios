@@ -251,7 +251,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             } else {
                 cell.displayNameLabel.text = "$0.00"
             }
-            cell.username.text = "Balance"
+            cell.username.text = "Wallet"
             break
             
         case 3:
@@ -290,7 +290,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func changeTipAmountDefault() {
         let alertView = UIAlertController(
             title: "1 like = $$$",
-            message: "How much would you like to tip artists when you like a song? \n\n\n\n\n\n\n\n",
+            message: "How much would you like to pay artists when you like a song? \n\n\n\n\n\n\n\n",
             preferredStyle: .actionSheet)
         
         let pickerView = UIPickerView(frame:

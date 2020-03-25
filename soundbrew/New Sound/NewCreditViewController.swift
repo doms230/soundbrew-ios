@@ -163,7 +163,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.artistTypeButton.tag = indexPath.row
             }
 
-            cell.titleLabel.text = "Tip Split: \(credit.percentage!)%"
+            cell.titleLabel.text = "Pay Split: \(credit.percentage!)%"
             
             cell.percentageSlider.value = Float(credit.percentage!)
             cell.percentageSlider.isEnabled = shouldEnableSlider
