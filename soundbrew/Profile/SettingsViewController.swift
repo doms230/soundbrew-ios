@@ -16,14 +16,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     let color = Color()
     
     var artist: Artist?
+    var referralCode: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
-        artist = Customer.shared.artist
+        let customer = Customer.shared
+        artist = customer.artist
+        referralCode = customer.referralCode
         loadFollowerFollowingStats()
     }
     
@@ -47,6 +49,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
+            Customer.shared.referralCode = nil
+            Customer.shared.hasUsedReferralCode = false 
             if self.uiElement.getUserDefault("friends") != nil {
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
@@ -138,13 +142,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
             return 5
         }
+        
+        if section == 2 && self.referralCode == nil  {
+            return 0
+        }
+        
         return 1
     }
     
@@ -202,7 +211,35 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             default:
                 break
             }
+            
+        } else if indexPath.section == 2 {
+            if let referralCode = self.referralCode {
+                referFriendsAction(referralCode: referralCode)
+            }
         }
+    }
+    
+    func referFriendsAction(referralCode: String) {
+        let alertView = UIAlertController(
+            title: "Invite friends, get paid $0.50",
+            message: "Whenever a friend adds funds to their wallet using your code, $0.50 will be added to your wallet, and your friend will get an additional $1 added to their wallet.",
+            preferredStyle: .actionSheet)
+        
+        let sendMoneyActionButton = UIAlertAction(title: "Share Invite Code", style: .default) { (_) -> Void in
+            let url = "https://www.soundbrew.app/ios"
+            let text = "Invite Code: \(referralCode)"
+            let activityViewController = UIActivityViewController(activityItems: [text, url], applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = self.view
+            self.present(activityViewController, animated: true, completion: { () -> Void in
+            })
+        }
+        alertView.addAction(sendMoneyActionButton)
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+        alertView.addAction(cancelAction)
+        
+        present(alertView, animated: true, completion: nil)
     }
     
     func showFollowersOrFollowing(_ followerOrFollowingType: String) {
@@ -224,54 +261,62 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.tableView.separatorStyle = .none
         cell.profileImage.layer.borderColor = color.black().cgColor
         
-        switch indexPath.row {
-        case 0:
-            var followerCount = 0
-            if let count = self.artist?.followerCount {
-                followerCount = count
-            }
-            cell.displayNameLabel.text = "\(followerCount)"
-            let localizedFollowing = NSLocalizedString("followers", comment: "")
-            cell.username.text = localizedFollowing
-            break
-            
-        case 1:
-            var followingCount = 0
-            if let count = self.artist?.followingCount {
-                followingCount = count 
-            }
-            cell.displayNameLabel.text = "\(followingCount)"
-            let localizedFollowing = NSLocalizedString("following", comment: "")
-            cell.username.text = localizedFollowing
-            break
-            
-        case 2:
-            if let funds = self.artist?.balance {
-                cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
-            } else {
-                cell.displayNameLabel.text = "$0.00"
-            }
-            cell.username.text = "Wallet"
-            break
-            
-        case 3:
-            cell.username.text = "= 1 Like"
-            if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
-                let formattedtipAmount = self.uiElement.convertCentsToDollarsAndReturnString(userSavedTipAmount, currency: "$")
-                cell.displayNameLabel.text = "\(formattedtipAmount)"
+        if indexPath.section == 1 {
+            switch indexPath.row {
+            case 0:
+                var followerCount = 0
+                if let count = self.artist?.followerCount {
+                    followerCount = count
+                }
+                cell.displayNameLabel.text = "\(followerCount)"
+                let localizedFollowing = NSLocalizedString("followers", comment: "")
+                cell.username.text = localizedFollowing
+                break
                 
-            } else {
-                cell.displayNameLabel.text = "setup $$$"
+            case 1:
+                var followingCount = 0
+                if let count = self.artist?.followingCount {
+                    followingCount = count
+                }
+                cell.displayNameLabel.text = "\(followingCount)"
+                let localizedFollowing = NSLocalizedString("following", comment: "")
+                cell.username.text = localizedFollowing
+                break
+                
+            case 2:
+                if let funds = self.artist?.balance {
+                    cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
+                } else {
+                    cell.displayNameLabel.text = "$0.00"
+                }
+                cell.username.text = "Wallet"
+                break
+                
+            case 3:
+                cell.username.text = "= 1 Like"
+                if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
+                    let formattedtipAmount = self.uiElement.convertCentsToDollarsAndReturnString(userSavedTipAmount, currency: "$")
+                    cell.displayNameLabel.text = "\(formattedtipAmount)"
+                    
+                } else {
+                    cell.displayNameLabel.text = "setup $$$"
+                }
+                break
+                
+            case 4:
+                cell.displayNameLabel.text = "Cash out"
+                cell.username.text = "Empty your wallet"
+                break
+                
+            default:
+                break
             }
-            break
             
-        case 4:
-            cell.displayNameLabel.text = "Cash out"
-            cell.username.text = ""
-            break
-            
-        default:
-            break
+        } else if indexPath.section == 2 {
+            if let referralCode = self.referralCode {
+                cell.displayNameLabel.text = referralCode
+                cell.username.text = "Invite friends, get paid"
+            }
         }
         
         return cell
@@ -351,7 +396,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         let oneHundredDollarsInCents = 10000
         if currentUserBalance >= oneHundredDollarsInCents {
-            print("TODO: set this up!")
+                    let alertView = UIAlertController(
+                title: "Email payme@soundbrew.app",
+                message: "We're currently handling payouts manually. Email us so we can get you paid!",
+                preferredStyle: .actionSheet)
+            
+            let localizedCancel = NSLocalizedString("okay", comment: "")
+            let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+            alertView.addAction(cancelAction)
+            present(alertView, animated: true, completion: nil)
+            
         } else {
             let balanceInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserBalance, currency: "$")
             self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out available when your balance reaches $100", target: self)

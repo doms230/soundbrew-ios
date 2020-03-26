@@ -21,6 +21,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     var artist: Artist?
     let uiElement = UIElement()
     var hasUsedReferralCode = false
+    var referralCode: String?
     //let uiElement =
     //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
@@ -159,6 +160,12 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     self.hasUsedReferralCode = hasUsedReferralCode
                 } else {
                     self.hasUsedReferralCode = false
+                }
+                
+                if let referralCode = user["referralCode"] as? String {
+                    if !referralCode.isEmpty {
+                        self.referralCode = referralCode
+                    }
                 }
                 
                 self.artist = artist

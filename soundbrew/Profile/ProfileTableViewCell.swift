@@ -488,7 +488,7 @@ class ProfileTableViewCell: UITableViewCell {
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
             //displayNameLabel.textAlignment = .center
             displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.top.equalTo(self)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
