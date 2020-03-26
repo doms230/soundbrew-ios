@@ -19,6 +19,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     
     var processingFee: Int!
     var isOnboarding = false
+    var hasUsedReferralCode = false
+    var referrerUserId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +33,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     var fundsToWalletAmount = 999
     func setupPaymentContext() {
         let customer = Customer.shared
+        hasUsedReferralCode = customer.hasUsedReferralCode
         let customerContext = STPCustomerContext(keyProvider: customer)
         paymentContext = STPPaymentContext(customerContext: customerContext)
         paymentContext.paymentAmount = 999
@@ -121,6 +124,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         case .success:
             let customer = Customer.shared
             customer.updateBalance(self.fundsToWalletAmount)
+            if self.fundsToWalletAmount == 1099 {
+                customer.hasUsedReferralCode = true
+                updateUserInfo()
+            }
             self.leaveView()
             
         case .userCancellation:
@@ -144,7 +151,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Pay credited artists an amount of your choosing every time you 'like' a song."
+        label.text = "Pay credited artists an amount of your choosing when you 'like' a song."
         return label
     }()
     
@@ -155,7 +162,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.textAlignment = .left
-        label.text = "Enter a friends's referral code to earn $1 when you add funds to your wallet. "
+        label.text = "   Enter a referral code, and earn $1."
         return label
     }()
     lazy var referralCodeText: UITextField = {
@@ -188,12 +195,64 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         return button
     }()
     
+    lazy var referralCodeButtonSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
+    }()
+    
     @objc func didPressAddReferralCodeButton(_ sender: UIButton) {
-        //Do some type of loading to check refferral code
-        //if code checks out
-        self.fundsToWalletAmount = 1099
-        let addFundsToWalletAmountString = self.uiElement.convertCentsToDollarsAndReturnString(self.fundsToWalletAmount, currency: "$")
-        self.purchaseButton.setTitle("Add \(addFundsToWalletAmountString) to Wallet", for: .normal)
+        if hasUsedReferralCode {
+            sender.setTitle("x", for: .normal)
+            sender.isEnabled = false
+            referralCodeText.text = ""
+            referralCodeText.attributedPlaceholder = NSAttributedString(string: "   You've already been referred.",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+            referralCodeText.isEnabled = false
+            self.resignFirstResponder()
+            
+        } else if !self.referralCodeText.text!.isEmpty {
+            sender.setTitle("", for: .normal)
+            sender.isEnabled = false
+            self.referralCodeButtonSpinner.startAnimating()
+            self.referralCodeButtonSpinner.isHidden = false
+            let referralCodeCleanedUp = self.uiElement.cleanUpText(referralCodeText.text!, shouldLowercaseText: true)
+            let query = PFQuery(className: "_User")
+            query.whereKey("referralCode", equalTo: referralCodeCleanedUp)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                self.referralCodeButtonSpinner.stopAnimating()
+                self.referralCodeButtonSpinner.isHidden = true
+                if object != nil && error == nil {
+                    var gotCodePlaceholder: String!
+                    self.referrerUserId = object?.objectId
+                    if let username = object?["username"] as? String {
+                        gotCodePlaceholder = "   @\(username) referred you!"
+                    } else {
+                        gotCodePlaceholder = "   Got it!"
+                    }
+                    self.referralCodeText.attributedPlaceholder = NSAttributedString(string: gotCodePlaceholder,
+                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+                    self.referralCodeText.text = ""
+                    self.referralCodeText.isEnabled = false
+                    self.referralCodeText.resignFirstResponder()
+                    
+                    //
+                    sender.setTitle("✔︎", for: .normal)
+                    sender.setTitleColor(self.color.green(), for: .normal)
+                    //
+                    self.fundsToWalletAmount = 1099
+                    let addFundsToWalletAmountString = self.uiElement.convertCentsToDollarsAndReturnString(self.fundsToWalletAmount, currency: "$")
+                    self.purchaseButton.setTitle("Add \(addFundsToWalletAmountString) to Wallet", for: .normal)
+                    
+                } else {
+                    sender.setTitle("Add", for: .normal)
+                    sender.isEnabled = true
+                    self.uiElement.showTextFieldErrorMessage(self.referralCodeText, text: "   Invalid Referral Code")
+                }
+            }
+        }
     }
     
     //Funds to add View
@@ -305,8 +364,18 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }()
     
     @objc func didPressPurchaseButton(_ sender: UIButton) {
-        self.startAnimating()
-        self.paymentContext.requestPayment()
+        //self.startAnimating()
+        //self.paymentContext.requestPayment()
+        let customer = Customer.shared
+        customer.updateBalance(self.fundsToWalletAmount)
+        if self.fundsToWalletAmount == 1099 {
+            customer.hasUsedReferralCode = true
+            updateUserInfo()
+            if let userId = self.referrerUserId {
+                self.updateReferrerBalance(userId)
+            }
+        }
+        self.leaveView()
     }
     
     func leaveView() {
@@ -319,7 +388,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     
     func setupView() {
         self.title = "Add Funds"
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
@@ -404,6 +472,12 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             make.bottom.equalTo(self.fundsToAddView.snp.top).offset((uiElement.bottomOffset) * 2)
         }
         
+        self.view.addSubview(referralCodeButtonSpinner)
+        referralCodeButtonSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(30)
+            make.center.equalTo(referralCodeButton)
+        }
+        
         //referral code text above add funds
         self.view.addSubview(referralCodeText)
         referralCodeText.snp.makeConstraints { (make) -> Void in
@@ -445,5 +519,48 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
         leaveView()
+    }
+    
+    func updateUserInfo() {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print(error)
+                
+            } else if let user = user {
+                user["hasUsedReferralCode"] = true
+                user.saveEventually()
+            }
+        }
+    }
+    
+    //Referrer
+    func updateReferrerBalance(_ userId: String) {
+        let query = PFQuery(className: "Payment")
+        query.whereKey("userId", equalTo: userId)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if error != nil {
+                self.newArtistPaymentRow(userId)
+                
+            } else if let object = object {
+                var currentBalance = 0
+                let referrerReward = 50
+                if let tipsSinceLastpayout = object["tipsSinceLastPayout"] as? Int {
+                    currentBalance = tipsSinceLastpayout
+                }
+                object["tipsSinceLastPayout"] = currentBalance + referrerReward
+                object.saveEventually()
+            }
+        }
+    }
+    
+    func newArtistPaymentRow(_ userId: String) {
+        let newPaymentRow = PFObject(className: "Payment")
+        newPaymentRow["userId"] = userId
+        newPaymentRow["tipsSinceLastPayout"] = 50
+        newPaymentRow["tips"] = 50
+        newPaymentRow.saveEventually()
     }
 }

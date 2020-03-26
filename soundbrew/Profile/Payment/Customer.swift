@@ -20,6 +20,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     let baseURL = URL(string: "https://www.soundbrew.app/customers/")
     var artist: Artist?
     let uiElement = UIElement()
+    var hasUsedReferralCode = false
     //let uiElement =
     //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
@@ -152,6 +153,12 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
                 if let website = user["website"] as? String {
                     artist.website = website
+                }
+                
+                if let hasUsedReferralCode = user["hasUsedReferralCode"] as? Bool {
+                    self.hasUsedReferralCode = hasUsedReferralCode
+                } else {
+                    self.hasUsedReferralCode = false
                 }
                 
                 self.artist = artist
