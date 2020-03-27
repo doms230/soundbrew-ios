@@ -174,7 +174,9 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 } else {
                     self.commentTitle.text = "Comments"
                     self.isSearchingForUserToMention = false
-                    self.tableView.reloadData()
+                    if self.tableView != nil {
+                        self.tableView.reloadData()
+                    }
                 }
             }
         }
@@ -427,9 +429,9 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             for i in 0..<textViewArray.count {
                 if i == textViewArray.count - 1 {
                     if i == 0 {
-                        self.textView.text = "\(selectedUsername) "
+                        self.textView.text = "@\(selectedUsername) "
                     } else {
-                       self.textView.text = "\(newTextView!) \(selectedUsername) "
+                       self.textView.text = "\(newTextView!) @\(selectedUsername) "
                     }
                     self.commentTitle.text = "Comments"
                     self.isSearchingForUserToMention = false

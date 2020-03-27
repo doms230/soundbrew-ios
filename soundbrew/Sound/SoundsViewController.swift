@@ -139,10 +139,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if soundList.sounds.count == 0 {
-            return 1
+        if soundList != nil {
+            if soundList.sounds.count == 0 {
+                return 1
+            }
+            return soundList.sounds.count
         }
-        return soundList.sounds.count
+        
+        return 1 
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

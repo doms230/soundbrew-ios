@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -129,6 +129,7 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="profile_nav" selectedImage="profile_nav_filled" id="9Xb-ZK-TuQ">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <navigationItem key="navigationItem" id="Q3X-YD-Tkk"/>
                 </viewController>
@@ -157,7 +158,7 @@
             <objects>
                 <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -224,7 +225,7 @@
             <objects>
                 <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Eku-wh-htc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -306,7 +307,7 @@
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="n2K-Hs-RAB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="selectedImageTintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -498,6 +499,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4ef-dR-Glj" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="new_nav" selectedImage="new_nav_filled" id="CtQ-Jd-vze">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Y6S-lx-Onz">
@@ -528,11 +530,12 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="W2D-HU-YWf" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="Q3d-5h-V6a">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="Glb-gf-Vft"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -581,6 +584,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D9F-Kl-XwJ" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="heart_nav" selectedImage="heart_filled_nav" id="76f-hM-bxP">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x5d-dt-OWZ">
@@ -634,6 +638,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="KPb-XB-Y0v" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="home" selectedImage="home_filled" id="EB2-0k-x03">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
+                        <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="jul-e6-sOp">
@@ -658,6 +663,17 @@
             <point key="canvasLocation" x="-5236" y="-612"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="QFf-vL-w9n"/>
+        <segue reference="UgY-SI-XY8"/>
+        <segue reference="KtZ-Sp-Nxi"/>
+        <segue reference="ny7-0k-lik"/>
+        <segue reference="QJt-mb-aGp"/>
+        <segue reference="8ie-Jd-veP"/>
+        <segue reference="bfU-qG-pE9"/>
+        <segue reference="LnM-xP-wsl"/>
+        <segue reference="jCE-No-XFc"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="heart_filled_nav" width="25" height="25"/>
         <image name="heart_nav" width="25" height="25"/>
@@ -670,15 +686,4 @@
         <image name="search" width="23" height="23"/>
         <image name="search_filled" width="23" height="23"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="Pro-Wr-Tmr"/>
-        <segue reference="t1V-yP-gW0"/>
-        <segue reference="idu-sO-WCK"/>
-        <segue reference="ny7-0k-lik"/>
-        <segue reference="CdJ-ew-HPh"/>
-        <segue reference="5zy-Bo-ugT"/>
-        <segue reference="Ejz-iv-iC5"/>
-        <segue reference="217-ix-XIX"/>
-        <segue reference="QHg-gg-hIH"/>
-    </inferredMetricsTieBreakers>
 </document>

@@ -122,28 +122,30 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     }
       
       func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.cellForRow(at: indexPath)?.isSelected = false
-        let mention = self.mentions[indexPath.row]
-        switch mention.type {
-        case "like", "follow":
-            selectedArtist = mentions[indexPath.row].artist
-            self.performSegue(withIdentifier: "showProfile", sender: self)
-            break
-            
-        case "comment":
-            let commentModal = CommentViewController()
-            if let sound = mention.sound {
-                commentModal.playerDelegate = self
-                commentModal.sound = sound
-                if let commentId = mention.comment?.objectId {
-                   commentModal.selectedCommentFromMentions = commentId
+        if self.mentions.indices.contains(indexPath.row) {
+            tableView.cellForRow(at: indexPath)?.isSelected = false
+            let mention = self.mentions[indexPath.row]
+            switch mention.type {
+            case "like", "follow":
+                selectedArtist = mentions[indexPath.row].artist
+                self.performSegue(withIdentifier: "showProfile", sender: self)
+                break
+                
+            case "comment":
+                let commentModal = CommentViewController()
+                if let sound = mention.sound {
+                    commentModal.playerDelegate = self
+                    commentModal.sound = sound
+                    if let commentId = mention.comment?.objectId {
+                       commentModal.selectedCommentFromMentions = commentId
+                    }
                 }
+                self.present(commentModal, animated: true, completion: nil)
+                break
+                
+            default:
+                break
             }
-            self.present(commentModal, animated: true, completion: nil)
-            break
-            
-        default:
-            break
         }
       }
     

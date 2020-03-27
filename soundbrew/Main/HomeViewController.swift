@@ -149,30 +149,11 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       /* if indexPath.section == 0 {
-            self.selectedIndexPath = indexPath
-            soundList = SoundList(target: self, tableView: nil, soundType: "yourSoundbrew", userId: nil, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-            
-        } else if let selectedUserId = stories[indexPath.row].artist.objectId {
-         self.selectedIndexPath = indexPath
-         soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
-        }*/
-        
         if let selectedUserId = stories[indexPath.row].artist.objectId {
              self.selectedIndexPath = indexPath
+            self.collectionView.reloadData()
              soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: selectedUserId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         }
-        
-        let cell = collectionView.cellForItem(at: indexPath) as! HomeCollectionViewCell
-        if let selectedIndexPath = self.selectedIndexPath {
-            if selectedIndexPath.row == indexPath.row, selectedIndexPath.section == indexPath.section {
-                cell.view.image = UIImage(named: "background")
-            } else {
-                cell.view.image = UIImage()
-            }
-        }
-        cell.loadStorySpinner.isHidden = false
-        cell.loadStorySpinner.startAnimating()
     }
     
     func collectionView(_ collectionView: UICollectionView,

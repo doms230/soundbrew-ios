@@ -230,7 +230,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
         }
         
-        clearCurrentSoundTmpData()
+       // clearCurrentSoundTmpData()
         
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
             currentSound = sound
@@ -239,7 +239,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func clearCurrentSoundTmpData() {
+    /*func clearCurrentSoundTmpData() {
         if self.sounds.indices.contains(self.currentSoundIndex) {
             DispatchQueue.main.async {
                 if let temporaryFile =  self.sounds[self.currentSoundIndex].tmpFile {
@@ -252,7 +252,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 }
             }
         }
-    }
+    }*/
     
     func fetchAudioFromNextSound() {
         let nextIndex = self.currentSoundIndex + 1

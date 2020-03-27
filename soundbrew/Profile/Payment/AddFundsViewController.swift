@@ -385,6 +385,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     func setupView() {
         self.title = "Add Funds"
         self.view.backgroundColor = color.black()
+        
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
@@ -394,9 +395,19 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             self.navigationItem.rightBarButtonItem = doneButton
         }
         
+        var topOffset = uiElement.uiViewTopOffset(self) + 15
+        switch UIDevice.modelName {
+        case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
+            topOffset = uiElement.uiViewTopOffset(self) * 2
+            break
+            
+        default:
+            break
+        }
+        
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
+            make.top.equalTo(self.view).offset(topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
