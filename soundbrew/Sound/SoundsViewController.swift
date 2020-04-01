@@ -199,19 +199,21 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
         miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        self.view.addSubview(miniPlayerView!)
-        let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-        slide.direction = .up
-        miniPlayerView!.addGestureRecognizer(slide)
-        miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-        miniPlayerView!.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.right.equalTo(self.view)
-            make.left.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
+        if let miniPlayer = self.miniPlayerView {
+            self.view.addSubview(miniPlayer)
+            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+            slide.direction = .up
+            miniPlayerView!.addGestureRecognizer(slide)
+            miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+            miniPlayerView!.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(50)
+                make.right.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
+            }
+            
+            setUpTableView(miniPlayer)
         }
-        
-        setUpTableView(miniPlayerView!)
     }
     
     @objc func miniPlayerWasSwiped() {
