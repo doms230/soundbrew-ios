@@ -79,6 +79,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             break
             
         case "showStories":
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            
             let viewController = segue.destination as! HomeViewController
             viewController.stories = self.stories
             break

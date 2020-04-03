@@ -102,7 +102,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let soundReuse = "soundReuse"
     let searchProfileReuse = "searchProfileReuse"
     let filterSoundsReuse = "filterSoundsReuse"
-    let chartsReuse = "chartsReuse"
     let searchTagViewReuse = "searchTagViewReuse"
     let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
@@ -111,7 +110,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: chartsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
@@ -135,7 +133,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        if isSearchActive {
+            return 2
+        }
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -158,10 +159,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 
                 return 1
             }
-            
-        } else if section == 0 {
-          return 1
         }
+        
         return featureTagTypes.count
     }
     
@@ -215,14 +214,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     return noResultsCell()
                 }
             }
-            
-        } else if indexPath.section == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: chartsReuse) as! TagTableViewCell
-            cell.selectionStyle = .none
-            cell.backgroundColor = color.black()
-            cell.newChartsButton.addTarget(self, action: #selector(didPressChartsButton(_:)), for: .touchUpInside)
-            cell.newChartsButton.tag = 0
-            return cell
         }
         return featureTagCell(indexPath)
     }

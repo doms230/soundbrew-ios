@@ -23,11 +23,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         navigationController?.navigationBar.tintColor = .white
         self.navigationItem.title = "Updates"
         setupNotificationCenter()
-       // loadFriendStories()
-        /*if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
-            UserDefaults.standard.removeObject(forKey: "receivedSoundId")
-            loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
-        }*/
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -357,32 +352,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
-    
-   /* func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
-        let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: objectId) {
-            (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let object = object {
-                let sound = self.uiElement.newSoundObject(object)
-                if shouldShowShareSoundView {
-                    self.uiElement.showShareOptions(self, sound: sound)
-                }
-                self.resetPlayer(sounds: [sound])
-            }
-        }
-    }*/
-    
-   /* func resetPlayer(sounds: [Sound]) {
-        let player = Player.sharedInstance
-        player.player = nil
-        player.sounds = sounds
-        player.currentSound = sounds[0]
-        player.currentSoundIndex = 0
-        player.setUpNextSong(false, at: 0)
-    }*/
 }
 
 class Story {

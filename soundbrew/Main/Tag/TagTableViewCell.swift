@@ -40,25 +40,6 @@ class TagTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var newChartsButton: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        button.layer.cornerRadius = 5
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var topChartsButton: UIButton = {
-        let localizedTop = NSLocalizedString("top", comment: "")
-        let button = UIButton()
-        button.setTitle(localizedTop, for: .normal)
-        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        button.layer.cornerRadius = 5
-        button.clipsToBounds = true
-        return button
-    }()
-    
     lazy var followButton: UIButton = {
         let localizedFollowing = NSLocalizedString("following", comment: "")
         let button = UIButton()
@@ -122,17 +103,6 @@ class TagTableViewCell: UITableViewCell {
                 make.top.equalTo(tagTypeButton.snp.bottom)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
-                make.bottom.equalTo(self)
-            }
-            
-        } else {
-            self.addSubview(newChartsButton)
-            newChartsButton.setBackgroundImage(UIImage(named: "topChartsImage"), for: .normal)
-            newChartsButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(150)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
         }
