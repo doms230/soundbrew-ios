@@ -279,9 +279,26 @@
             <point key="canvasLocation" x="173.91304347826087" y="-1633.2589285714284"/>
         </scene>
         <!--Home View Controller-->
+        <scene sceneID="weP-xR-Gs7">
+            <objects>
+                <viewController id="UY6-qd-7BN" customClass="HomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Z6B-Xr-RfU">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="ZO7-WS-AIp"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="0hm-Y5-LTz"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="azg-Ag-KC6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-6257" y="101"/>
+        </scene>
+        <!--Sounds View Controller-->
         <scene sceneID="9vt-6Z-O7U">
             <objects>
-                <viewController id="9BA-Oz-dbQ" customClass="HomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="9BA-Oz-dbQ" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="rj6-xv-Ad6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -294,6 +311,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="E6Y-FZ-f1e"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="QHg-gg-hIH"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="idu-sO-WCK"/>
+                        <segue destination="UY6-qd-7BN" kind="show" identifier="showStories" id="cFk-Zf-L9J"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SbA-U4-vL8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -322,7 +340,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4gF-bH-jon" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-7201" y="-1323"/>
+            <point key="canvasLocation" x="-7194" y="-1254"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="XyK-yh-w2g">
@@ -666,19 +684,19 @@
     <inferredMetricsTieBreakers>
         <segue reference="QFf-vL-w9n"/>
         <segue reference="UgY-SI-XY8"/>
-        <segue reference="KtZ-Sp-Nxi"/>
+        <segue reference="idu-sO-WCK"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="QJt-mb-aGp"/>
-        <segue reference="8ie-Jd-veP"/>
+        <segue reference="E6Y-FZ-f1e"/>
         <segue reference="bfU-qG-pE9"/>
         <segue reference="LnM-xP-wsl"/>
-        <segue reference="jCE-No-XFc"/>
+        <segue reference="QHg-gg-hIH"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="heart_filled_nav" width="25" height="25"/>
         <image name="heart_nav" width="25" height="25"/>
-        <image name="home" width="28" height="28"/>
-        <image name="home_filled" width="28" height="28"/>
+        <image name="home" width="23" height="23"/>
+        <image name="home_filled" width="23" height="23"/>
         <image name="new_nav" width="25" height="25"/>
         <image name="new_nav_filled" width="25" height="25"/>
         <image name="profile_nav" width="28" height="28"/>

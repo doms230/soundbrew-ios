@@ -235,7 +235,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = self.tableView.dequeueReusableCell(withIdentifier: creditProfileReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
         let credit = self.soundCredits[indexPath.row]
-        credit.artist?.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, HomeCollectionCell: nil)
+        credit.artist?.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, HomeCollectionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
         if let title = credit.title {
             cell.creditTitle.text = title
         }
@@ -250,7 +250,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     func peopleCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
-        self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, HomeCollectionCell: nil)
+       // self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, HomeCollectionCell: nil)
+        self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, HomeCollectionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
         return cell
     }
     

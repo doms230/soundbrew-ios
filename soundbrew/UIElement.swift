@@ -389,7 +389,6 @@ class UIElement {
         let userId = object["userId"] as! String
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
         
-       // artist.loadUserInfoFromCloud(nil)
         sound.artist = artist
         return sound
     }

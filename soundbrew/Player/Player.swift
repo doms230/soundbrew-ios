@@ -36,7 +36,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     override init() {
         super.init()
         setupRemoteTransportControls()
-        ListenForAudioSessionRouteChange()
+       // ListenForAudioSessionRouteChange()
     }
     
     func prepareAndPlay(_ audioData: Data) {
@@ -93,7 +93,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
             if sound.artist?.image == nil {
-                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: nil)
+                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
             self.play()
@@ -105,13 +105,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func ListenForAudioSessionRouteChange() {
+   /* func ListenForAudioSessionRouteChange() {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self,
                                        selector: #selector(handleRouteChange),
                                        name: AVAudioSession.routeChangeNotification,
                                        object: nil)
-    }
+    }*/
     
     @objc func handleRouteChange(notification: Notification) {
         /*guard let userInfo = notification.userInfo,
@@ -120,7 +120,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 return
         }*/
         
-        let session = AVAudioSession.sharedInstance()
+        /*let session = AVAudioSession.sharedInstance()
         for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.builtInSpeaker {
             if let player = self.player {
                 if player.isPlaying {
@@ -128,7 +128,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 }
             }
             break
-        }
+        }*/
     }
     
     func sendSoundUpdateToUI() {
@@ -208,7 +208,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: i)
         
-        MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
+      //  MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -239,7 +239,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func clearCurrentSoundTmpData() {
+   /* func clearCurrentSoundTmpData() {
         if self.sounds.indices.contains(self.currentSoundIndex) {
             if let sound = self.currentSound {
                     DispatchQueue.main.async {
@@ -254,7 +254,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     }
                 }
             }
-    }
+    }*/
     
     func fetchAudioFromNextSound() {
         let nextIndex = self.currentSoundIndex + 1

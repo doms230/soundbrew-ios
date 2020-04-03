@@ -21,13 +21,13 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        self.navigationItem.title = "Soundbrew"
+        self.navigationItem.title = "Updates"
         setupNotificationCenter()
-        loadFriendStories()
-        if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
+       // loadFriendStories()
+        /*if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
-        }
+        }*/
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -217,7 +217,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 cell.username.text = "@\(username)"
             } else {
                 cell.username.text = "@username"
-                artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell)
+                artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
             }
             cell.username.numberOfLines = 1
             
@@ -231,47 +231,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                         
             self.cell = cell
         }
-        
-        /*if indexPath.section == 0 {
-            cell.displayNameLabel.text = "Your Soundbrew"
-            cell.username.text = "A playlist of recommended music."
-            cell.profileImage.image = UIImage(named: "appy")
-            cell.storyType.isHidden = true
-            cell.storyCreatedAt.isHidden = true
-            
-        } else {
-            let story = stories[indexPath.row]
-            let artist = story.artist!
-            
-            if let image = artist.image {
-                cell.profileImage.kf.setImage(with: URL(string: image))
-            } else {
-                cell.profileImage.image = UIImage(named: "profile_icon")
-            }
-                
-            if let name = artist.name {
-                cell.displayNameLabel.text = name
-            } else {
-                cell.displayNameLabel.text = "name"
-            }
-            
-            if let username = artist.username {
-                cell.username.text = "@\(username)"
-            } else {
-                cell.username.text = "@username"
-                artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: cell)
-            }
-            
-            if let storyType = story.type {
-                cell.storyType.isHidden = false
-                cell.storyType.text = "New \(storyType.capitalized)"
-            }
-            
-            cell.storyCreatedAt.text = self.uiElement.formatDateAndReturnString(story.lastUpdated!)
-            cell.storyCreatedAt.isHidden = false
-                        
-            self.cell = cell
-        }*/
         
         if let selectedIndexPath = self.selectedIndexPath {
             if selectedIndexPath.row == indexPath.row, selectedIndexPath.section == indexPath.section {
@@ -399,7 +358,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
     }
     
-    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
+   /* func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -414,16 +373,16 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 self.resetPlayer(sounds: [sound])
             }
         }
-    }
+    }*/
     
-    func resetPlayer(sounds: [Sound]) {
+   /* func resetPlayer(sounds: [Sound]) {
         let player = Player.sharedInstance
         player.player = nil
         player.sounds = sounds
         player.currentSound = sounds[0]
         player.currentSoundIndex = 0
         player.setUpNextSong(false, at: 0)
-    }
+    }*/
 }
 
 class Story {

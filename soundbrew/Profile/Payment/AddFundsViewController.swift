@@ -318,7 +318,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let stripeURL = URL(string: "https://stripe.com/payments")
         if UIApplication.shared.canOpenURL(stripeURL!) {
             UIApplication.shared.open(stripeURL!, options: [:], completionHandler: nil)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "stripe", "description": "User selected stripe website"])
         }
     }
     
