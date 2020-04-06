@@ -105,6 +105,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
 
         let buttonWidthHeight = 35
         sendButton = UIButton(frame: CGRect(x: Int(view.frame.width) + uiElement.rightOffset - buttonWidthHeight, y: uiElement.topOffset, width: buttonWidthHeight, height: buttonWidthHeight))
+        sendButton.layer.cornerRadius = CGFloat(buttonWidthHeight / 2)
+        sendButton.clipsToBounds = true 
         sendButton.addTarget(self, action: #selector(self.didPressSendButton(_:)), for: .touchUpInside)
         sendButton.setTitleColor(.white, for: .normal)
         sendButton.setImage(UIImage(named: "send"), for: .normal)

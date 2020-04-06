@@ -27,7 +27,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         setupNotificationCenter()
         showSounds()
         if soundType == "chart" {
-            //self.title = "Soundbrew"
             loadFriendStories()
         }
         
@@ -162,11 +161,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if soundType == "chart" {
-            if section == 2 {
+            if section == 0 && self.stories.count == 0 {
+                return 0
+            } else if section == 2 {
                return numberOfRowsInSectionSoundList()
             }
             return 1
-            
         } else {
             return numberOfRowsInSectionSoundList()
         }
@@ -375,7 +375,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 storyButton.tag = i
                 
             } else {
-                artistImageView.image = UIImage(named: "background")
+                artistImageView.image = UIImage(named: "arrow_right")
                 artistName.text = "Show More"
                 storyType.text = ""
                 storyButton.addTarget(self, action: #selector(self.didPressViewMoreStoriesButton), for: .touchUpInside)
