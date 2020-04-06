@@ -150,6 +150,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func refresh(_ sender: UIRefreshControl) {
        showSounds()
+        if soundType == "chart" {
+            loadFriendStories()
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -211,7 +214,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        didSelectRowAt(indexPath.row)
+        if soundType == "chart" && indexPath.section == 2 {
+            didSelectRowAt(indexPath.row)
+        } else {
+            didSelectRowAt(indexPath.row)
+        }
     }
     
     func didSelectRowAt(_ row: Int) {
@@ -455,36 +462,38 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             let storyObjectIds = self.stories.map {$0.objectId}
-            if friendUserIds.count == 0 {
-                self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .none)
-            } else {
-                for i in 0..<friendUserIds.count {
-                    let friendUserId = friendUserIds[i]
-                    let query = PFQuery(className: "Story")
-                    query.whereKey("userId", equalTo: friendUserId)
-                    query.addDescendingOrder("createdAt")
-                    query.getFirstObjectInBackground {
-                          (object: PFObject?, error: Error?) -> Void in
-                        if let object = object, !storyObjectIds.contains(object.objectId) {
-                            let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                             let story = Story(friend, lastUpdated: object.createdAt, type: nil, objectId: object.objectId!)
-                             if let type = object["type"] as? String {
-                                 story.type = type
-                             }
-                            self.stories.append(story)
-                        }
-                        
-                        //is last index
-                        if i == friendUserIds.count - 1 {
-                            self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
-                            self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .none)
-                        }
+            for i in 0..<friendUserIds.count {
+                let friendUserId = friendUserIds[i]
+                let query = PFQuery(className: "Story")
+                query.whereKey("userId", equalTo: friendUserId)
+                query.addDescendingOrder("createdAt")
+                query.getFirstObjectInBackground {
+                      (object: PFObject?, error: Error?) -> Void in
+                    if let object = object, !storyObjectIds.contains(object.objectId) {
+                        let friend = Artist(objectId: friendUserId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                         let story = Story(friend, lastUpdated: object.createdAt, type: nil, objectId: object.objectId!)
+                         if let type = object["type"] as? String {
+                             story.type = type
+                         }
+                        self.stories.append(story)
+                    }
+                    
+                    //is last index
+                    if i == friendUserIds.count - 1 {
+                        self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
+                        self.tableView.reloadData()
+                       // self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .top)
                     }
                 }
             }
-        } else {
-            self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .none)
-        }
+            /*if friendUserIds.count == 0 {
+               // self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .top)
+            } else {
+
+            }*/
+        } /*else {
+            //self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .top)
+        }*/
     }
     
     func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {

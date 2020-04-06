@@ -117,9 +117,9 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?.saveEventually()
                 
                 Customer.shared.getCustomer(user.objectId!)
-                //self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                let artist = self.uiElement.newArtistObject(user)
-                self.goToOnboarding(artist)
+                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                //let artist = self.uiElement.newArtistObject(user)
+                //self.goToOnboarding(artist)
             }
         }
     }

@@ -228,7 +228,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    func checkIfUserAddedSongToCollection(_ sound: Sound) {
+    func checkIfUserLikedSong(_ sound: Sound) {
         self.currentSoundCredits.removeAll()
         if PFUser.current() != nil {
             self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
@@ -242,8 +242,12 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {
                     self.didAddSongToCollection = true
-                    self.sound?.tipAmount = (object["amount"] as! Int)
-                    self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                    if let tipAmount = object["amount"] as? Int {
+                        self.sound?.tipAmount = tipAmount
+                        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                        self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                    }
+                    
                  } else {
                     //only want to load credits if user hasn't liked/tipped on song yet.
                     self.loadCredits(sound.objectId!)
@@ -324,7 +328,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if let sound = player.currentSound {
             self.sound = sound
 
-            checkIfUserAddedSongToCollection(sound)
+            checkIfUserLikedSong(sound)
             
             self.songTitle.text = sound.title
             
@@ -434,7 +438,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
-        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
     }
     
     func soundInfoButton(_ imageName: String, buttonType: String?) -> UIButton {
@@ -633,6 +636,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
+    
+    lazy var paymentAmountForLike: UILabel = {
+        let label = UILabel()
+        label.text = "..."
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 12)
+        label.textAlignment = .center
+        return label
+    }()
     
     lazy var shareButton: UIButton = {
         let button = UIButton()
@@ -854,46 +866,46 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             bottomOffsetValue = uiElement.bottomOffset * 2
             break
         }
-        let creditsButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
-        creditsButton.addTarget(self, action: #selector(self.didPressCreditsButton(_:)), for: .touchUpInside)
-        creditsButton.snp.makeConstraints { (make) -> Void in
+        let creditCountButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
+        creditCountButton.addTarget(self, action: #selector(self.didPressCreditsButton(_:)), for: .touchUpInside)
+        creditCountButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.bottom.equalTo(self.view).offset(bottomOffsetValue)
         }
         
-        let playsButton = soundInfoButton("play", buttonType: "plays")
-        playsButton.addTarget(self, action: #selector(self.didPressListensButton(_:)), for: .touchUpInside)
-        playsButton.snp.makeConstraints { (make) -> Void in
+        let playCountButton = soundInfoButton("play", buttonType: "plays")
+        playCountButton.addTarget(self, action: #selector(self.didPressListensButton(_:)), for: .touchUpInside)
+        playCountButton.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
-            make.bottom.equalTo(creditsButton)
+            make.bottom.equalTo(creditCountButton)
         }
 
-        let commentsButton = soundInfoButton("comment_filled", buttonType: "comments")
-        commentsButton.addTarget(self, action: #selector(self.didPressCommentButton(_:)), for: .touchUpInside)
-        commentsButton.snp.makeConstraints { (make) -> Void in
+        let commentCountButton = soundInfoButton("comment_filled", buttonType: "comments")
+        commentCountButton.addTarget(self, action: #selector(self.didPressCommentButton(_:)), for: .touchUpInside)
+        commentCountButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(self.view.frame.width * 0.25)
-            make.bottom.equalTo(creditsButton)
+            make.bottom.equalTo(creditCountButton)
         }
         
-        let tagsButton = soundInfoButton("hashtag_filled", buttonType: "tags")
-        tagsButton.addTarget(self, action: #selector(self.didPressTagsButton(_:)), for: .touchUpInside)
-        tagsButton.snp.makeConstraints { (make) -> Void in
+        let tagsCountButton = soundInfoButton("hashtag_filled", buttonType: "tags")
+        tagsCountButton.addTarget(self, action: #selector(self.didPressTagsButton(_:)), for: .touchUpInside)
+        tagsCountButton.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.view).offset(-(self.view.frame.width * 0.25))
-            make.bottom.equalTo(creditsButton)
+            make.bottom.equalTo(creditCountButton)
         }
         
-        let likesButton = soundInfoButton("heart_filled", buttonType: "likes")
-        likesButton.addTarget(self, action: #selector(self.didPressLikesButton(_:)), for: .touchUpInside)
-        likesButton.snp.makeConstraints { (make) -> Void in
+        let likesCountButton = soundInfoButton("heart_filled", buttonType: "likes")
+        likesCountButton.addTarget(self, action: #selector(self.didPressLikesButton(_:)), for: .touchUpInside)
+        likesCountButton.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(creditsButton)
+            make.bottom.equalTo(creditCountButton)
         }
         
         self.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(60)
             make.centerX.equalTo(self.view)
-            make.bottom.equalTo(likesButton.snp.top).offset(uiElement.bottomOffset * 5)
+            make.bottom.equalTo(likesCountButton.snp.top).offset(uiElement.bottomOffset * 5)
         }
         
         self.view.addSubview(loadSoundSpinner)
@@ -907,14 +919,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(45)
             make.centerY.equalTo(playBackButton)
-            make.centerX.equalTo(commentsButton)
+            make.centerX.equalTo(commentCountButton)
         }
         
         self.view.addSubview(skipButton)
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(45)
             make.centerY.equalTo(playBackButton)
-            make.centerX.equalTo(tagsButton)
+            make.centerX.equalTo(tagsCountButton)
         }
         
         self.view.addSubview(likeSoundButton)
@@ -922,6 +934,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.height.width.equalTo(30)
             make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        self.view.addSubview(paymentAmountForLike)
+        paymentAmountForLike.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(likeSoundButton.snp.bottom)
+            make.centerX.equalTo(likeSoundButton)
         }
         
         self.view.addSubview(shareButton)

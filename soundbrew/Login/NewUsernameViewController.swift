@@ -278,7 +278,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                             if (success) {
                                 Customer.shared.getCustomer(user.objectId!)
                                 self.stopAnimating()
-                                self.uiElement.newRootView("Onboard", withIdentifier: "whoToFollow")
+                                self.uiElement.newRootView("Main", withIdentifier: "main")
                             } else if let error = error {
                                 UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
                             }

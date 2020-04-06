@@ -16,7 +16,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     let color = Color()
     
     var artist: Artist?
-    var referralCode: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +24,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationController?.navigationBar.tintColor = .white
         let customer = Customer.shared
         artist = customer.artist
-        referralCode = customer.referralCode
         loadFollowerFollowingStats()
     }
     
@@ -49,8 +47,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.removeFromSuperview()
             PFUser.logOut()
             Customer.shared.artist = nil
-            Customer.shared.referralCode = nil
-            Customer.shared.hasUsedReferralCode = false 
             if self.uiElement.getUserDefault("friends") != nil {
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
@@ -142,16 +138,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
             return 5
-        }
-        
-        if section == 2 && self.referralCode == nil  {
-            return 0
         }
         
         return 1
@@ -211,35 +203,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             default:
                 break
             }
-            
-        } else if indexPath.section == 2 {
-            if let referralCode = self.referralCode {
-                referFriendsAction(referralCode: referralCode)
-            }
         }
-    }
-    
-    func referFriendsAction(referralCode: String) {
-        let alertView = UIAlertController(
-            title: "Invite friends, get paid $0.50",
-            message: "Whenever a friend adds funds to their wallet using your code, $0.50 will be added to your wallet, and your friend will get an additional $1 added to their wallet.",
-            preferredStyle: .actionSheet)
-        
-        let sendMoneyActionButton = UIAlertAction(title: "Share Invite Code", style: .default) { (_) -> Void in
-            let url = "https://www.soundbrew.app/ios"
-            let text = "Invite Code: \(referralCode)"
-            let activityViewController = UIActivityViewController(activityItems: [text, url], applicationActivities: nil)
-            activityViewController.popoverPresentationController?.sourceView = self.view
-            self.present(activityViewController, animated: true, completion: { () -> Void in
-            })
-        }
-        alertView.addAction(sendMoneyActionButton)
-        
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-        alertView.addAction(cancelAction)
-        
-        present(alertView, animated: true, completion: nil)
     }
     
     func showFollowersOrFollowing(_ followerOrFollowingType: String) {
@@ -310,12 +274,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
             default:
                 break
-            }
-            
-        } else if indexPath.section == 2 {
-            if let referralCode = self.referralCode {
-                cell.displayNameLabel.text = referralCode
-                cell.username.text = "Invite friends, get paid"
             }
         }
         
@@ -394,10 +352,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             currentUserBalance = balance
         }
         
-        let oneHundredDollarsInCents = 10000
+        let oneHundredDollarsInCents = 2000
         if currentUserBalance >= oneHundredDollarsInCents {
                     let alertView = UIAlertController(
-                title: "Email payme@soundbrew.app",
+                title: "Email payment@soundbrew.app",
                 message: "We're currently handling payouts manually. Email us so we can get you paid!",
                 preferredStyle: .actionSheet)
             
@@ -408,7 +366,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         } else {
             let balanceInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserBalance, currency: "$")
-            self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out available when your balance reaches $100", target: self)
+            self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out available when your balance reaches $20", target: self)
         }
     }
     
