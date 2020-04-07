@@ -35,18 +35,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var shouldUpdateEmail = false
     
     var editDetailType: String!
-    
-    var isOnboarding = false
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        if isOnboarding {
-            self.title = "Complete Profile"
-        }
-        setupDoneButton()
+        setupNavigationViews()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -61,7 +56,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 viewController.bio = self.artist!.bio
                 viewController.artistDelegate = self
                 viewController.title = "Edit Bio"
-                
             }
             
         } else {
@@ -71,19 +65,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func setupDoneButton() {
-        if isOnboarding {
-            self.view.addSubview(doneButton)
-            doneButton.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            }
-
-        } else {
-            let localizedDone = NSLocalizedString("done", comment: "")
-            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-            self.navigationItem.rightBarButtonItem = doneButton
-        }
+    func setupNavigationViews() {
+        let localizedDone = NSLocalizedString("done", comment: "")
+        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+        self.navigationItem.rightBarButtonItem = doneButton
         
         if let CurrentArtist = Customer.shared.artist {
             self.artist = CurrentArtist
@@ -92,21 +77,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.setUpTableView()
     }
     
-    lazy var doneButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Done", for: .normal)
-        button.titleLabel!.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        button.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
-        return button
-    }()
-    
     //MARK: Button Actions
     @objc func didPressCancelButton(_ sender: UIButton){
         self.dismiss(animated: true, completion: nil)
     }
     
     var didPressDoneButton = false
-    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+    @objc func didPressDoneButton(_ sender: Any) {
         self.startAnimating()
         
         usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
@@ -146,18 +123,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
+        tableView.frame = view.bounds
         self.view.addSubview(tableView)
-        if isOnboarding {
-            tableView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.doneButton.snp.bottom)
-                make.left.equalTo(self.view)
-                make.right.equalTo(self.view)
-                make.bottom.equalTo(self.view)
-            }
-            
-        } else {
-            tableView.frame = view.bounds
-        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -189,7 +156,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if let image = artist?.image {
                 cell.profileImage.kf.setImage(with: URL(string: image))
             }
-            
             break
             
         case 1:
@@ -348,8 +314,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
             selectedImage = image
         }
-                
-        dismiss(animated: true, completion: {() in
+        
+        picker.dismiss(animated: true, completion: {() in
             if let image = selectedImage {
                 self.presentImageCropViewController(image)
             }
@@ -358,7 +324,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         didFinishProcessingImage = true
-        dismiss(animated: true, completion: nil)
+        picker.dismiss(animated: true, completion: nil)
     }
     
     func presentImageCropViewController(_ image: UIImage) {
@@ -368,11 +334,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cropViewController.aspectRatioPreset = .presetSquare
         cropViewController.resetAspectRatioEnabled = false
         cropViewController.delegate = self
-        present(cropViewController, animated: false, completion: nil)
+        self.present(cropViewController, animated: false, completion: nil)
     }
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
         profileImage.image = image
+        self.dismiss(animated: false, completion: nil)
+        
         let chosenProfileImage = image.jpegData(compressionQuality: 0.5)
         newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
         newProfileImageFile?.saveInBackground {
@@ -386,10 +354,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             self.uiElement.showAlert("Issue with saving Image", message: error.localizedDescription, target: self)
           }
         }
-        
-        dismiss(animated: true, completion: nil)
     }
-    
+        
     // Helper function inserted by Swift 4.2 migrator.
     fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
         return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
@@ -412,7 +378,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.editBioTitle.text = localizedCity
         if let city = artist?.city {
             if city.isEmpty {
-                
                 cell.editBioText.text = localizedAddCity
                 
             } else {
@@ -538,11 +503,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             artistDelegate.receivedArtist(customer.artist)
                         }
                         
-                        if self.isOnboarding {
-                            self.uiElement.newRootView("Main", withIdentifier: "main")
-                        } else {
-                            self.uiElement.goBackToPreviousViewController(self)
-                        }
+                        self.uiElement.goBackToPreviousViewController(self)
                         
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self)

@@ -241,7 +241,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                     if let _ = user["email"] as? String {
                         Customer.shared.getCustomer(user.objectId!)
                         self.stopAnimating()
-                        self.uiElement.newRootView("Main", withIdentifier: "main")
+                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         
                     } else {
                         if let appleName = self.appleName {
@@ -277,7 +277,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                             if (success) {
                                 Customer.shared.getCustomer(user.objectId!)
                                 self.stopAnimating()
-                                self.uiElement.newRootView("Main", withIdentifier: "main")
+                                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                             } else if let error = error {
                                 UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
                             }

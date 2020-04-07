@@ -1,6 +1,6 @@
 PODS:
   - ActiveLabel (1.1.0)
-  - Alamofire (5.0.5)
+  - Alamofire (5.1.0)
   - AppCenter (3.1.0):
     - AppCenter/Analytics (= 3.1.0)
     - AppCenter/Crashes (= 3.1.0)
@@ -77,9 +77,9 @@ PODS:
   - GoogleUtilities/UserDefaults (6.5.2):
     - GoogleUtilities/Logger
   - GrowingTextView (0.7.2)
-  - Kingfisher (5.13.2):
-    - Kingfisher/Core (= 5.13.2)
-  - Kingfisher/Core (5.13.2)
+  - Kingfisher (5.13.3):
+    - Kingfisher/Core (= 5.13.3)
+  - Kingfisher/Core (5.13.3)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -178,7 +178,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   ActiveLabel: 5e3f4de79a1952d4604b845a0610d4776e4b82b3
-  Alamofire: df2f8f826963b08b9a870791ad48e07a10090b2e
+  Alamofire: 9d5c5f602928e512395b30950c5984eca840093c
   AppCenter: a1c30c47b7882a04a615ffa5ab26c007326436d8
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   CropViewController: 1aac40093c5739e60d992b04724a55d12a689a4c
@@ -195,7 +195,7 @@ SPEC CHECKSUMS:
   GoogleDataTransportCCTSupport: 6f15a89b0ca35d6fa523e1f752ef818588885988
   GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
   GrowingTextView: 876bf42005b5e4a4fd740597db12caaf41f0fe6c
-  Kingfisher: d342c8354c10c3d85a27d6d4c42c41285924b898
+  Kingfisher: d2b3d6a7200c93b34de9afcdf25c8dd9282ec277
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
   OnboardKit: 73a4e9c9a1ae88afee0514ac3f2bc4f82126b66e

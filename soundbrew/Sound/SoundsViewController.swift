@@ -20,6 +20,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let color = Color()
     var soundType = "chart"
     var userId: String?
+    var newUserArtistForEditing: Artist?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
+        }
+        
+        if newUserArtistForEditing != nil {
+            self.performSegue(withIdentifier: "showEditProfile", sender: self)
+          /*  let modal = EditProfileViewController()
+            modal.artist = artist
+            modal.isNewUser = true
+            self.present(modal, animated: true, completion: nil)*/
         }
     }
     
@@ -90,6 +99,15 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
             let backItem = UIBarButtonItem()
             backItem.title = self.selectedTagFromPlayerView.name
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        case "showEditProfile":
+            let viewController = segue.destination as! EditProfileViewController
+            viewController.artist = newUserArtistForEditing
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = "Complete Profile"
             navigationItem.backBarButtonItem = backItem
             break
             

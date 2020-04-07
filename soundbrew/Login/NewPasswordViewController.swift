@@ -73,16 +73,6 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         passwordText.becomeFirstResponder()
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let viewController = segue.destination as! EditProfileViewController
-        viewController.isOnboarding = true
-        
-        let localizedPassword = NSLocalizedString("password", comment: "")
-        let backItem = UIBarButtonItem()
-        backItem.title = "\(localizedPassword) | 3/3"
-        navigationItem.backBarButtonItem = backItem
-    }
-    
     @objc func finish(_ sender: UIButton){
         if validatePassword() {
             signup()
@@ -118,17 +108,15 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 
                 Customer.shared.getCustomer(user.objectId!)
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                if let editProfileViewController = storyboard.instantiateViewController(withIdentifier: "editProfile") as? EditProfileViewController {
-                    editProfileViewController.isOnboarding = true
-                    editProfileViewController.artist = self.uiElement.newArtistObject(user)
+                if let tabBarController = storyboard.instantiateViewController(withIdentifier: "tabBar") as? UITabBarController, let navigationController = tabBarController.viewControllers?[0] as? UINavigationController, let soundsViewController = navigationController.topViewController as? SoundsViewController {
+                    soundsViewController.newUserArtistForEditing = self.uiElement.newArtistObject(user)
                     let appdelegate = UIApplication.shared.delegate as! AppDelegate
-                    appdelegate.window?.rootViewController = editProfileViewController
+                    appdelegate.window?.rootViewController = tabBarController
                     
                 } else {
-                    self.uiElement.newRootView("Main", withIdentifier: "main")
+                    self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                 }
             }
         }
     }
-    
 }
