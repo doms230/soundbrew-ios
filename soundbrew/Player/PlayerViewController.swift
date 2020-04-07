@@ -49,7 +49,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     let tipAmountInCents = [5, 25, 50, 100]
     var selectedTipAmount = 5
     var customer = Customer.shared
-    var didAddSongToCollection = false
     
     func getTipAmountAndLikeSong(){
         if let sound = self.sound {
@@ -86,12 +85,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     func sendTip(_ sound: Sound, tipAmount: Int) {
         if customer.artist!.balance! >= tipAmount {
             self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-            self.didAddSongToCollection = true
-            self.sound?.tipAmount = tipAmount
-            
+            self.likeSoundButton.isEnabled = false
             SKStoreReviewController.requestReview()
-            
-            getCreditsAndSaveTip(sound, tipAmount: tipAmount)
+            self.sound?.tipAmount = tipAmount
+            updateTip(sound.objectId!, toUserId: sound.artist!.objectId, tipAmount: tipAmount)
             
         } else {
             let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
@@ -150,23 +147,85 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             (success: Bool, error: Error?) in
             if error != nil {
                 self.customer.updateBalance(tipAmount)
-                self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-                self.didAddSongToCollection = false
             }
         }
     }
     
-    func getCreditsAndSaveTip(_ sound: Sound, tipAmount: Int) {
-        customer.updateBalance(-tipAmount)
+    func newStory(_ postId: String) {
+        if let userId = PFUser.current()?.objectId {
+            let newStory = PFObject(className: "Story")
+            newStory["type"] = "like"
+            newStory["userId"] = userId
+            newStory["postId"] = postId
+            newStory.saveEventually()
+        }
+    }
+    
+    func updateTip(_ soundId: String, toUserId: String, tipAmount: Int) {
+        if let fromUserId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Tip")
+            query.whereKey("fromUserId", equalTo: fromUserId)
+            query.whereKey("toUserId", equalTo: toUserId)
+            query.whereKey("soundId", equalTo: soundId)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                 if error == nil, let object = object {
+                    object.incrementKey("amount", byAmount: NSNumber(value: tipAmount))
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
+                        self.likeSoundButton.isEnabled = true
+                        
+                        var newTipAmount = 0
+                        if let savedTipAmount = object["amount"] as? Int {
+                            newTipAmount = savedTipAmount
+                        }
+                        let newTipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(newTipAmount, currency: "$")
+                        self.paymentAmountForLike.text = newTipAmountString
+                        
+                        self.customer.updateBalance(-tipAmount)
+                                                
+                        if let sound = self.sound {
+                            self.incrementSoundTipAmount(sound, tipAmount: tipAmount, shouldIncrementTippers: false)
+                            self.getCreditsAndSplit(sound, tipAmount: tipAmount)
+                        }
+                    }
+                    
+                 } else {
+                    self.newTip(soundId, toUserId: toUserId, tipAmount: tipAmount, fromUserId: fromUserId)
+                }
+            }
+        }
+    }
+    
+    func newTip(_ soundId: String, toUserId: String, tipAmount: Int, fromUserId: String) {
+        let newTip = PFObject(className: "Tip")
+        newTip["fromUserId"] = fromUserId
+        newTip["toUserId"] = toUserId
+        newTip["amount"] = tipAmount
+        newTip["soundId"] = soundId
+        newTip.saveEventually {
+            (success: Bool, error: Error?) in
+            self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
+            self.likeSoundButton.isEnabled = true
+            let tipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+            self.paymentAmountForLike.text = tipAmountString
+            if success, let sound = self.sound {
+                self.customer.updateBalance(-tipAmount)
+                self.newMention(sound, toUserId: toUserId)
+                self.incrementSoundTipAmount(sound, tipAmount: tipAmount, shouldIncrementTippers: true)
+                self.newStory(sound.objectId!)
+                self.getCreditsAndSplit(sound, tipAmount: tipAmount)
+            }
+        }
+    }
+    
+    func getCreditsAndSplit(_ sound: Sound, tipAmount: Int) {
         if currentSoundCredits.isEmpty {
-            newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
-            self.newMention(sound, toUserId: sound.artist!.objectId)
             updateArtistPayment(sound.artist!.objectId, tipAmount: tipAmount)
+            
         } else {
             for credit in currentSoundCredits {
-                if credit.artist!.objectId == sound.artist!.objectId {
-                    newTip(sound.objectId!, userId: sound.artist!.objectId, tipAmount: tipAmount)
-                }
                 var tipSplit: Float = 0
                 if let percentage = credit.percentage {
                     if percentage > 0 {
@@ -177,26 +236,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 }
             }
         }
-        
-        incrementSoundTipAmount(sound, tipAmount: tipAmount)
-        newStory(sound.objectId!)
-    }
-    
-    func newStory(_ postId: String) {
-        let newStory = PFObject(className: "Story")
-        newStory["type"] = "like"
-        newStory["userId"] = PFUser.current()!.objectId!
-        newStory["postId"] = postId
-        newStory.saveEventually()
-    }
-    
-    func newTip(_ postId: String, userId: String, tipAmount: Int) {
-        let newTip = PFObject(className: "Tip")
-        newTip["fromUserId"] = PFUser.current()!.objectId!
-        newTip["toUserId"] = userId
-        newTip["amount"] = tipAmount
-        newTip["soundId"] = postId
-        newTip.saveEventually()
     }
     
     func newMention(_ sound: Sound, toUserId: String) {
@@ -213,7 +252,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    func incrementSoundTipAmount(_ sound: Sound, tipAmount: Int) {
+    func incrementSoundTipAmount(_ sound: Sound, tipAmount: Int, shouldIncrementTippers: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
@@ -222,7 +261,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 
             } else if let object = object {
                 object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
-                object.incrementKey("tippers")
+                if shouldIncrementTippers {
+                    object.incrementKey("tippers")
+                }
                 object.saveEventually()
             }
         }
@@ -230,32 +271,27 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     func checkIfUserLikedSong(_ sound: Sound) {
         self.currentSoundCredits.removeAll()
-        if PFUser.current() != nil {
+        if let userId = PFUser.current()?.objectId {
             self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
             self.likeSoundButton.isEnabled = false
-            self.didAddSongToCollection = false
             
             let query = PFQuery(className: "Tip")
-            query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId! )
+            query.whereKey("fromUserId", equalTo: userId)
             query.whereKey("soundId", equalTo: sound.objectId!)
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {
-                    self.didAddSongToCollection = true
                     if let tipAmount = object["amount"] as? Int {
                         self.sound?.tipAmount = tipAmount
-                        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
                         self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
                     }
                     
                  } else {
-                    //only want to load credits if user hasn't liked/tipped on song yet.
-                    self.loadCredits(sound.objectId!)
+                    self.paymentAmountForLike.text = "$0.00"
                 }
                 self.likeSoundButton.isEnabled = true
+                self.loadCredits(sound.objectId!)
             }
-        } else {
-            self.likeSoundButton.isEnabled = true
         }
     }
     
@@ -402,7 +438,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
             /*if soundPlayer.duration >= fiveMinutesInSeconds {
                 self.skipButton.setImage(UIImage(named: "skipForward"), for: .normal)
-                self.goBackButton.setImage((UIImage(named: "skipBack")), for: .normal)
+                self.gxoBackButton.setImage((UIImage(named: "skipBack")), for: .normal)
             } else {
                 self.skipButton.setImage(UIImage(named: "skip"), for: .normal)
                 self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
@@ -523,7 +559,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    @objc func didPressCommentButton(_ sender: UIButton) {
+    @objc func didPressCommentCountButton(_ sender: UIButton) {
         let commentModal = CommentViewController()
         if let sound = self.sound {
             commentModal.playerDelegate = self
@@ -532,15 +568,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.present(commentModal, animated: true, completion: nil)
     }
     
-    @objc func didPressLikesButton(_ sender: UIButton) {
+    @objc func didPressLikeCountButton(_ sender: UIButton) {
         setupAndPresentPeopleViewController("likes")
     }
     
-    @objc func didPressListensButton(_ sender: UIButton) {
+    @objc func didPressListenCountButton(_ sender: UIButton) {
         setupAndPresentPeopleViewController("listens")
     }
     
-    @objc func didPressCreditsButton(_ sender: UIButton) {
+    @objc func didPressCreditCountButton(_ sender: UIButton) {
         if let sound = self.sound {
             if let creditCount = sound.creditCount {
                 if creditCount > 1 {
@@ -555,7 +591,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
-    @objc func didPressTagsButton(_ sender: UIButton) {
+    @objc func didPressTagCountButton(_ sender: UIButton) {
         if let sound = sound {
             let tagsModal = ChooseTagsViewController()
             tagsModal.tagDelegate = self
@@ -613,21 +649,19 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     lazy var likeSoundButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "sendTip"), for: .normal)
-        button.addTarget(self, action: #selector(self.didPressSendMoneyButton(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
         button.isEnabled = false
         return button
     }()
-    @objc func didPressSendMoneyButton(_ sender: UIButton) {
+    @objc func didPressLikeButton(_ sender: UIButton) {
         if let currentUser = PFUser.current() {
             if currentUser.objectId! == sound?.artist?.objectId {
                 let cannottipyourself = NSLocalizedString("cannottipyourself", comment: "")
                 self.uiElement.showAlert("🙃", message: cannottipyourself, target: self)
-            } else if didAddSongToCollection {
-                let amountString = self.uiElement.convertCentsToDollarsAndReturnString(self.sound!.tipAmount!, currency: "$")
-                self.uiElement.showAlert("You liked this song for \(amountString)", message: "", target: self)
-            } else {
-                getTipAmountAndLikeSong()
+            } else if let sound = self.sound {
+                self.sendTip(sound, tipAmount: 10)
             }
+            
         } else {
             let localizedSignupRequired = NSLocalizedString("signupRequired", comment: "")
             let localizedTipArtistsToAddToCollection = NSLocalizedString("tipArtistsToAddToCollection", comment: "")
@@ -641,7 +675,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         let label = UILabel()
         label.text = "..."
         label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 12)
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 10)
         label.textAlignment = .center
         return label
     }()
@@ -867,35 +901,35 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             break
         }
         let creditCountButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
-        creditCountButton.addTarget(self, action: #selector(self.didPressCreditsButton(_:)), for: .touchUpInside)
+        creditCountButton.addTarget(self, action: #selector(self.didPressCreditCountButton(_:)), for: .touchUpInside)
         creditCountButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.bottom.equalTo(self.view).offset(bottomOffsetValue)
         }
         
         let playCountButton = soundInfoButton("play", buttonType: "plays")
-        playCountButton.addTarget(self, action: #selector(self.didPressListensButton(_:)), for: .touchUpInside)
+        playCountButton.addTarget(self, action: #selector(self.didPressListenCountButton(_:)), for: .touchUpInside)
         playCountButton.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
             make.bottom.equalTo(creditCountButton)
         }
 
         let commentCountButton = soundInfoButton("comment_filled", buttonType: "comments")
-        commentCountButton.addTarget(self, action: #selector(self.didPressCommentButton(_:)), for: .touchUpInside)
+        commentCountButton.addTarget(self, action: #selector(self.didPressCommentCountButton(_:)), for: .touchUpInside)
         commentCountButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(self.view.frame.width * 0.25)
             make.bottom.equalTo(creditCountButton)
         }
         
         let tagsCountButton = soundInfoButton("hashtag_filled", buttonType: "tags")
-        tagsCountButton.addTarget(self, action: #selector(self.didPressTagsButton(_:)), for: .touchUpInside)
+        tagsCountButton.addTarget(self, action: #selector(self.didPressTagCountButton(_:)), for: .touchUpInside)
         tagsCountButton.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.view).offset(-(self.view.frame.width * 0.25))
             make.bottom.equalTo(creditCountButton)
         }
         
         let likesCountButton = soundInfoButton("heart_filled", buttonType: "likes")
-        likesCountButton.addTarget(self, action: #selector(self.didPressLikesButton(_:)), for: .touchUpInside)
+        likesCountButton.addTarget(self, action: #selector(self.didPressLikeCountButton(_:)), for: .touchUpInside)
         likesCountButton.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(creditCountButton)
@@ -949,10 +983,17 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
                 
         //playback views
+        self.view.addSubview(playBackSlider)
+        playBackSlider.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(shareButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
         self.view.addSubview(playBackCurrentTime)
         playBackCurrentTime.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.bottom.equalTo(shareButton.snp.top).offset(uiElement.bottomOffset)
+            make.bottom.equalTo(playBackSlider.snp.top).offset(-(uiElement.elementOffset))
         }
         
         self.view.addSubview(playBackTotalTime)
@@ -961,18 +1002,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.bottom.equalTo(playBackCurrentTime)
         }
         
-        self.view.addSubview(playBackSlider)
-        playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(playBackCurrentTime)
-            make.right.equalTo(playBackTotalTime)
-            make.bottom.equalTo(playBackCurrentTime.snp.top)
-        }
-        
         self.view.addSubview(songTitle)
         songTitle.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.playBackSlider.snp.top).offset(uiElement.bottomOffset)
+            make.bottom.equalTo(self.playBackTotalTime.snp.top).offset(uiElement.bottomOffset)
         }
                 
         setSound()

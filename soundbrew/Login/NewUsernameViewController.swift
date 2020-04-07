@@ -241,8 +241,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                     if let _ = user["email"] as? String {
                         Customer.shared.getCustomer(user.objectId!)
                         self.stopAnimating()
-                        print("go user")
-                        self.uiElement.newRootView("Onboard", withIdentifier: "whoToFollow")
+                        self.uiElement.newRootView("Main", withIdentifier: "main")
                         
                     } else {
                         if let appleName = self.appleName {

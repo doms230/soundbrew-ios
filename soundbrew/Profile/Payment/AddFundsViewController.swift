@@ -141,7 +141,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Pay credited artists an amount of your choosing when you 'like' a song."
+        label.text = "Pay credited artists $0.10 every time you 'like' a song. You can 'like' the same song an unlimited amount of times."
         return label
     }()
     

@@ -11,7 +11,7 @@ import Parse
 import SidebarOverlay
 import AppCenterAnalytics
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
     let color = Color()
     
@@ -143,7 +143,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 5
+            return 4
         }
         
         return 1
@@ -193,10 +193,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 3:
-                self.changeTipAmountDefault()
-                break
-                
-            case 4:
                 cashout()
                 break
                 
@@ -257,17 +253,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 3:
-                cell.username.text = "= 1 Like"
-                if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
-                    let formattedtipAmount = self.uiElement.convertCentsToDollarsAndReturnString(userSavedTipAmount, currency: "$")
-                    cell.displayNameLabel.text = "\(formattedtipAmount)"
-                    
-                } else {
-                    cell.displayNameLabel.text = "setup $$$"
-                }
-                break
-                
-            case 4:
                 cell.displayNameLabel.text = "Cash out"
                 cell.username.text = "Empty your wallet"
                 break
@@ -287,64 +272,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
         }
     }
-    
-    let tipAmountInCents = [5, 25, 50, 100]
-    var selectedTipAmount = 5
-    func changeTipAmountDefault() {
-        let alertView = UIAlertController(
-            title: "1 like = $$$",
-            message: "How much would you like to pay artists when you like a song? \n\n\n\n\n\n\n\n",
-            preferredStyle: .actionSheet)
-        
-        let pickerView = UIPickerView(frame:
-            CGRect(x: 0, y: 45, width: UIScreen.main.bounds.width - 25, height: 160))
-        pickerView.dataSource = self
-        pickerView.delegate = self
-        determineSelectedRowForPickerView(pickerView)
-        alertView.view.addSubview(pickerView)
-        
-        let sendMoneyActionButton = UIAlertAction(title: "Save", style: .default) { (_) -> Void in
-            self.uiElement.setUserDefault(self.selectedTipAmount, key: "tipAmount")
-            self.tableView.reloadData()
-        }
-        alertView.addAction(sendMoneyActionButton)
-        
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-        alertView.addAction(cancelAction)
-        
-        present(alertView, animated: true, completion: nil)
-    }
-    
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return tipAmountInCents.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        let balanceInDollars = Double(tipAmountInCents[row]) / 100.00
-        let doubleStr = String(format: "%.2f", balanceInDollars)
-        return "$\(doubleStr)"
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedTipAmount = tipAmountInCents[row]
-    }
-    
-    func determineSelectedRowForPickerView(_ pickerView: UIPickerView) {
-        if let userSavedTipAmount = self.uiElement.getUserDefault("tipAmount") as? Int {
-            var row = 0
-            for i in 0..<tipAmountInCents.count {
-                if tipAmountInCents[i] == userSavedTipAmount {
-                    row = i
-                }
-            }
-            pickerView.selectRow(row, inComponent: 0, animated: false)
-        }
-    }
         
     func cashout() {
         var currentUserBalance = 0
@@ -357,7 +284,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     let alertView = UIAlertController(
                 title: "Email payment@soundbrew.app",
                 message: "We're currently handling payouts manually. Email us so we can get you paid!",
-                preferredStyle: .actionSheet)
+                preferredStyle: .alert)
             
             let localizedCancel = NSLocalizedString("okay", comment: "")
             let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
@@ -366,7 +293,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         } else {
             let balanceInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserBalance, currency: "$")
-            self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out available when your balance reaches $20", target: self)
+            self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out is available when your balance reaches $20", target: self)
         }
     }
     

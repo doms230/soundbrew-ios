@@ -26,9 +26,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.view.backgroundColor = color.black()
         setupNotificationCenter()
         showSounds()
-        if soundType == "chart" {
-            loadFriendStories()
-        }
         
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
@@ -110,6 +107,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        
+        if soundType == "chart" {
+            loadFriendStories()
+        }
     }
     
     //mark: tableview
@@ -149,10 +150,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
-       showSounds()
         if soundType == "chart" {
             loadFriendStories()
         }
+       showSounds()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -185,11 +186,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if soundType == "chart" {
             if indexPath.section == 0 {
-                if stories.count == 0 {
-                    return noStoryCell()
-                } else {
-                    return storyCell()
-                }
+                return storyCell()
             } else if indexPath.section == 1 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: featuredTitleReuse) as! SoundListTableViewCell
                 cell.backgroundColor = color.black()
@@ -284,13 +281,15 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showPlayerViewController() {
-        let player = Player.sharedInstance
+        miniPlayerView!.timer.invalidate()
+        let modal = PlayerViewController()
+        modal.playerDelegate = self
+        modal.tagDelegate = self
+        self.present(modal, animated: true, completion: nil)
+        /*let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerViewController()
-            modal.playerDelegate = self
-            modal.tagDelegate = self 
-            self.present(modal, animated: true, completion: nil)
-        }
+
+        }*/
     }
     
     //mark: selectedArtist
@@ -334,7 +333,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let artistImageViewDiameter = 65
         
         var xPositionForFeatureTags = UIElement().leftOffset
-        let scrollview = cell.tagsScrollview
+        cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview()})
+        
+        let scrollView = cell.tagsScrollview
         var iMax = 6
         if stories.count < 6 {
             //some people's stories may be less than 5
@@ -388,11 +389,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 storyButton.addTarget(self, action: #selector(self.didPressViewMoreStoriesButton), for: .touchUpInside)
             }
             
-            scrollview.addSubview(storyButton)
+            scrollView.addSubview(storyButton)
             storyButton.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
-                make.top.equalTo(scrollview)
-                make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
+                make.top.equalTo(scrollView)
+                make.left.equalTo(scrollView).offset(xPositionForFeatureTags)
             }
             
             storyButton.addSubview(artistImageView)
@@ -413,25 +414,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             storyType.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(artistImageViewDiameter)
                 make.top.equalTo(artistName.snp.bottom)
-               // make.centerX.equalTo(storyButton)
                 make.left.equalTo(storyButton).offset(uiElement.leftOffset)
                 make.right.equalTo(storyButton).offset(uiElement.rightOffset)
             }
             
             xPositionForFeatureTags = xPositionForFeatureTags + 100 + uiElement.leftOffset
-            scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: 100)
+            scrollView.contentSize = CGSize(width: xPositionForFeatureTags, height: 100)
         }
                 
-        return cell
-    }
-    
-    func noStoryCell() -> SoundListTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-        cell.backgroundColor = color.black()
-        if didGetInitialFriendsList {
-           // cell.headerTitle.text = "Keep up with new uploads, likes, and credits from your friends and favorite artists."
-            cell.headerTitle.text = ""
-        }
         return cell
     }
     
@@ -458,10 +448,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     func loadFriendStories() {
-        stories.removeAll()
+        //stories.removeAll()
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             let storyObjectIds = self.stories.map {$0.objectId}
+            var stories = [Story]()
             for i in 0..<friendUserIds.count {
                 let friendUserId = friendUserIds[i]
                 let query = PFQuery(className: "Story")
@@ -475,25 +466,18 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                          if let type = object["type"] as? String {
                              story.type = type
                          }
-                        self.stories.append(story)
+                        stories.append(story)
                     }
                     
                     //is last index
                     if i == friendUserIds.count - 1 {
+                        self.stories = stories
                         self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
                         self.tableView.reloadData()
-                       // self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .top)
                     }
                 }
             }
-            /*if friendUserIds.count == 0 {
-               // self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .top)
-            } else {
-
-            }*/
-        } /*else {
-            //self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .top)
-        }*/
+        }
     }
     
     func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {

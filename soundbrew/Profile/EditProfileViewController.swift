@@ -46,14 +46,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         if isOnboarding {
             self.title = "Complete Profile"
         }
-        
         setupDoneButton()
-        
-        if let CurrentArtist = Customer.shared.artist {
-            self.artist = CurrentArtist
-        }
-        
-        self.setUpTableView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -79,10 +72,33 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func setupDoneButton() {
-        let localizedDone = NSLocalizedString("done", comment: "")
-        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-        self.navigationItem.rightBarButtonItem = doneButton
+        if isOnboarding {
+            self.view.addSubview(doneButton)
+            doneButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
+                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            }
+
+        } else {
+            let localizedDone = NSLocalizedString("done", comment: "")
+            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
+            self.navigationItem.rightBarButtonItem = doneButton
+        }
+        
+        if let CurrentArtist = Customer.shared.artist {
+            self.artist = CurrentArtist
+        }
+        
+        self.setUpTableView()
     }
+    
+    lazy var doneButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Done", for: .normal)
+        button.titleLabel!.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        button.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
+        return button
+    }()
     
     //MARK: Button Actions
     @objc func didPressCancelButton(_ sender: UIButton){
@@ -130,8 +146,18 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
-        tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        if isOnboarding {
+            tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.doneButton.snp.bottom)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.view)
+            }
+            
+        } else {
+            tableView.frame = view.bounds
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -513,7 +539,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         }
                         
                         if self.isOnboarding {
-                            self.performSegue(withIdentifier: "showWhoToFollow", sender: self)
+                            self.uiElement.newRootView("Main", withIdentifier: "main")
                         } else {
                             self.uiElement.goBackToPreviousViewController(self)
                         }
