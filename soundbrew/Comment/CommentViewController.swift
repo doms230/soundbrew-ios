@@ -38,7 +38,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             self.dismiss(animated: true, completion: nil)
         }
     }
-    
+        
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
@@ -473,11 +473,22 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let soundPlayer = player.player {
-            if soundPlayer.isPlaying {
-                player.pause()
+        if let sound = self.sound {
+            if let currentSound = self.player.currentSound {
+                if currentSound.objectId == sound.objectId, let soundPlayer = self.player.player {
+                    if soundPlayer.isPlaying {
+                        player.pause()
+                    } else {
+                        player.play()
+                    }
+                }
+                
             } else {
-                player.play()
+                 player.player = nil
+                player.sounds = [sound]
+                player.currentSound = sound
+                player.currentSoundIndex = 0
+                player.setUpNextSong(false, at: 0)
             }
         }
     }

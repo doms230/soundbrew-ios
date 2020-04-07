@@ -10,17 +10,12 @@ import Parse
 import UIKit
 import SnapKit
 import AppCenterAnalytics
-import OnboardKit
 
 class WelcomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         signupView()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        showWelcomeView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -66,6 +61,16 @@ class WelcomeViewController: UIViewController {
         return label
     }()
     
+    lazy var appDescription: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
+        label.text = "Discover, Support, and Connect with Independent Artists"
+        label.textAlignment = .center
+        label.textColor = .white
+        label.numberOfLines = 0
+        return label
+    }()
+    
     lazy var termsButton: UIButton = {
         let button = UIButton()
         let localizedTerms = NSLocalizedString("terms", comment: "")
@@ -104,33 +109,6 @@ class WelcomeViewController: UIViewController {
         return button
     }
     
-    func showWelcomeView() {
-        let titleFont = UIFont(name: "\(uiElement.mainFont)-bold", size: 40)!
-        let descriptionFont = UIFont(name: "\(uiElement.mainFont)", size: 25)!
-        
-        let likePage = newOnboardPage("Support", imageName: "onboardLike", description: "Directly pay artists for their music everytime you 'like' a song.")
-        
-        let connectPage = newOnboardPage("Connect", imageName: "onboardConnect", description: "Keep up with your favorite artists' uploads and likes. Chat in the comments.")
-        
-        let discoverPage = newOnboardPage("Discover", imageName: "onboardDiscover", description: "Discover music & audio from different cities, moods, and activities.")
-        
-        let createPage = newOnboardPage("Create", imageName: "onboardCreate", description: "Upload and tag your music straight from the app. Credit other artists and collaborators, then choose their payment splits.")
-        
-        let appearance = OnboardViewController.AppearanceConfiguration(tintColor: .white, titleColor: .white, textColor: .white, backgroundColor: .black, imageContentMode: .scaleAspectFit, titleFont: titleFont, textFont: descriptionFont)
-        
-        let onboardingViewController = OnboardViewController(pageItems: [likePage, connectPage, discoverPage, createPage],
-        appearanceConfiguration: appearance)
-        
-        onboardingViewController.presentFrom(self, animated: true)
-    }
-    
-    func newOnboardPage(_ title: String, imageName: String, description: String) -> OnboardPage {
-        let page = OnboardPage(title: title,
-        imageName: imageName,
-        description: description)
-        return page
-    }
-    
     func signupView() {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
@@ -142,11 +120,17 @@ class WelcomeViewController: UIViewController {
         self.view.addSubview(appImage)
         self.view.addSubview(appLabel)
         self.view.addSubview(termsButton)
-        
-        appLabel.snp.makeConstraints { (make) -> Void in
+        self.view.addSubview(appDescription)
+        appDescription.snp.makeConstraints { (make) -> Void in
             make.centerY.equalTo(self.view).offset(uiElement.bottomOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        appLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(appDescription.snp.top).offset(uiElement.bottomOffset)
         }
         
         appImage.snp.makeConstraints { (make) -> Void in
@@ -238,9 +222,5 @@ class WelcomeViewController: UIViewController {
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
         MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Terms Button", "description": "user pressed terms button"])
-    }
-    
-    @objc func didPressLearnMoreButton(_ sender: UIButton) {
-        showWelcomeView()
     }
 }

@@ -19,7 +19,18 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           self.view.backgroundColor = color.black()
           navigationController?.navigationBar.barTintColor = color.black()
           navigationController?.navigationBar.tintColor = .white
+        
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
       }
+    
+    @objc func didReceiveSoundUpdate() {
+        if PFUser.current() != nil {
+            let player = Player.sharedInstance
+            if player.player != nil {
+                setUpMiniPlayer()
+            }
+        }
+    }
       
       override func viewDidAppear(_ animated: Bool) {
         if PFUser.current() != nil {
@@ -33,7 +44,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             
         self.loadMentions()
       }
-      
+          
       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
           switch segue.identifier {
               case "showProfile":

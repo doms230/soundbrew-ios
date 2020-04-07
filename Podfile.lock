@@ -88,7 +88,6 @@ PODS:
   - NVActivityIndicatorView (4.8.0):
     - NVActivityIndicatorView/Presenter (= 4.8.0)
   - NVActivityIndicatorView/Presenter (4.8.0)
-  - OnboardKit (1.5.0)
   - Parse (1.17.3):
     - Parse/Core (= 1.17.3)
   - Parse/Core (1.17.3):
@@ -127,7 +126,6 @@ DEPENDENCIES:
   - GrowingTextView
   - Kingfisher
   - NVActivityIndicatorView
-  - OnboardKit
   - Parse
   - ShareInstagram
   - SidebarOverlay
@@ -161,7 +159,6 @@ SPEC REPOS:
     - Kingfisher
     - nanopb
     - NVActivityIndicatorView
-    - OnboardKit
     - Parse
     - PINCache
     - PINOperation
@@ -198,7 +195,6 @@ SPEC CHECKSUMS:
   Kingfisher: d2b3d6a7200c93b34de9afcdf25c8dd9282ec277
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
-  OnboardKit: 73a4e9c9a1ae88afee0514ac3f2bc4f82126b66e
   Parse: c1ad2a04d2cab2b54b6fb7da05f741abf2cf57d1
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINOperation: 24b774353ca248fcf87d67b2d61eef42087c125a
@@ -213,6 +209,6 @@ SPEC CHECKSUMS:
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
   UICircularProgressRing: e6852e8f88e296cbbbe2720cccb55241acda6708
 
-PODFILE CHECKSUM: 94ef89759648fd38cd5dbefc5b50d47888fff19b
+PODFILE CHECKSUM: 0fff6681f0756fc9f9f0a74fce0a600469256928
 
 COCOAPODS: 1.9.1

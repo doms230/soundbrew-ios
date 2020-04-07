@@ -386,7 +386,6 @@ class SoundList: NSObject, PlayerDelegate {
         if let descendingOrder = descendingOrder {
             query.addDescendingOrder(descendingOrder)
         } else {
-            //query.whereKey("createdAt", greaterThanOrEqualTo: Date().previous(.friday))
             query.whereKey("isFeatured", equalTo: true)
             query.addDescendingOrder("createdAt")
             query.addDescendingOrder("tippers")

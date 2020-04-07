@@ -35,10 +35,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         if newUserArtistForEditing != nil {
             self.performSegue(withIdentifier: "showEditProfile", sender: self)
-          /*  let modal = EditProfileViewController()
-            modal.artist = artist
-            modal.isNewUser = true
-            self.present(modal, animated: true, completion: nil)*/
         }
     }
     
@@ -466,7 +462,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     func loadFriendStories() {
-        //stories.removeAll()
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             let storyObjectIds = self.stories.map {$0.objectId}
