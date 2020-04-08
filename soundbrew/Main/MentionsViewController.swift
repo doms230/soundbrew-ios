@@ -153,13 +153,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     
                     let player = Player.sharedInstance
                     if let currentSound = player.currentSound, currentSound.objectId! != mentionSound.objectId! {
-                        player.player = nil
-                        player.sounds = nil
-                        player.currentSound = nil
-                        player.currentSoundIndex = 0
-                        
-                        miniPlayerView?.removeFromSuperview()
-                        setUpTableView(nil)
+                        player.pause()
                     }
                 }
                 self.present(commentModal, animated: true, completion: nil)

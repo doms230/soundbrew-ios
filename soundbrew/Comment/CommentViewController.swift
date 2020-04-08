@@ -273,13 +273,15 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
      }()
     
     func setPlaybackSliderValue() {
-        if let player = self.player.player {
-            playBackSlider.maximumValue = Float(player.duration)
-            playBackSlider.value = Float(player.currentTime)
-            if player.isPlaying {
-                self.startTimer()
-            } else {
-                self.timer.invalidate()
+        if let player = self.player.player, let playerSound = self.player.currentSound, let commentSound = self.sound {
+            if playerSound.objectId == commentSound.objectId {
+                playBackSlider.maximumValue = Float(player.duration)
+                playBackSlider.value = Float(player.currentTime)
+                if player.isPlaying {
+                    self.startTimer()
+                } else {
+                    self.timer.invalidate()
+                }
             }
         }
     }
@@ -472,12 +474,13 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let soundPlayer = self.player.player {
+        if let currentSound = self.player.currentSound, let commentSound = self.sound, currentSound.objectId == commentSound.objectId, let soundPlayer = self.player.player {
             if soundPlayer.isPlaying {
-                player.pause()
+                self.player.pause()
             } else {
-                player.play()
+                self.player.play()
             }
+            
         } else {
             setupSoundPlayer()
         }
@@ -569,7 +572,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     var didPressAtTime: Float?
     @objc func didPressAtTimeButton(_ sender: UIButton) {
         if let comment = self.comments[sender.tag] {
-            if let player = self.player.player {
+            if let player = self.player.player, let playerSound = self.player.currentSound, let commentSound = self.sound, playerSound.objectId == commentSound.objectId {
                 jumpToTime(player, atTime: comment.atTime)
             } else {
                 didPressAtTime = comment.atTime
@@ -702,6 +705,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    var didLoadComments = false
     func loadComments(_ sound: Sound) {
         self.comments.removeAll()
         
@@ -741,9 +745,10 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                self.tableView.reloadData()
             }
             
-            if self.selectedCommentFromMentions != nil {
+            if self.selectedCommentFromMentions != nil && !self.didLoadComments {
                 let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                self.didLoadComments = true 
             }
         }
     }
