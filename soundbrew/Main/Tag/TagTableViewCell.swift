@@ -51,6 +51,14 @@ class TagTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var newChartsButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        button.layer.cornerRadius = 5
+        button.clipsToBounds = true
+        return button
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -103,6 +111,17 @@ class TagTableViewCell: UITableViewCell {
                 make.top.equalTo(tagTypeButton.snp.bottom)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
+                make.bottom.equalTo(self)
+            }
+            
+        } else {
+            self.addSubview(newChartsButton)
+            newChartsButton.setBackgroundImage(UIImage(named: "newImage"), for: .normal)
+            newChartsButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(150)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
         }

@@ -470,7 +470,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             let storyObjectIds = self.stories.map {$0.objectId}
-            var stories = [Story]()
             for i in 0..<friendUserIds.count {
                 let friendUserId = friendUserIds[i]
                 let query = PFQuery(className: "Story")
@@ -484,12 +483,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                          if let type = object["type"] as? String {
                              story.type = type
                          }
-                        stories.append(story)
+                        self.stories.append(story)
                     }
                     
                     //is last index
                     if i == friendUserIds.count - 1 {
-                        self.stories = stories
                         self.stories.sort(by: {$0.lastUpdated! > $1.lastUpdated!})
                         self.tableView.reloadData()
                     }

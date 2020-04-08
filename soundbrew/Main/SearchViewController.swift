@@ -104,17 +104,20 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let filterSoundsReuse = "filterSoundsReuse"
     let searchTagViewReuse = "searchTagViewReuse"
     let noSoundsReuse = "noSoundsReuse"
+    let newSoundsReuse = "newSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         tableView = UITableView()
         tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
+        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: newSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
+        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: newSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         if let miniPlayer = miniPlayer {
