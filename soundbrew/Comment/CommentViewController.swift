@@ -13,6 +13,8 @@ import AppCenterAnalytics
 import SnapKit
 import GrowingTextView
 import NVActivityIndicatorView
+import AVFoundation
+
 class CommentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate, NVActivityIndicatorViewable {
     
     var comments = [Comment?]()
@@ -51,6 +53,11 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 self.sound = sound
                 loadComments(sound)
             }
+        }
+        
+        if let player = self.player.player, let atTime = self.didPressAtTime {
+            self.didPressAtTime = nil
+            jumpToTime(player, atTime: atTime)
         }
     }
     
@@ -287,12 +294,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }()
     
     func setupPlayerView() {
-       /* if let currentSound = self.player.currentSound, currentSound.objectId != self.sound?.objectId {
-            setupCurrentSoundPlayer()
-        } else {
-            setupCurrentSoundPlayer()
-        }*/
-        
         playBackButton.addTarget(self, action: #selector(didPressPlayBackButton(_:)), for: .touchUpInside)
         if let player = self.player.player {
             if player.isPlaying {
@@ -350,14 +351,11 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
-    func setupCurrentSoundPlayer() {
+    func setupSoundPlayer() {
         if let sound = self.sound {
-            var sounds = [Sound]()
-            sounds.append(sound)
-            let player = Player.sharedInstance
             player.player = nil
-            player.sounds = sounds
-            player.currentSound = sounds[0]
+            player.sounds = [sound]
+            player.currentSound = sound
             player.currentSoundIndex = 0
             player.setUpNextSong(false, at: 0)
         }
@@ -467,29 +465,21 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             if let commentId = comments[indexPath.row]?.objectId {
                 self.comments.remove(at: indexPath.row)
                 self.tableView.reloadSections([0], with: .automatic)
+              //  self.tableView.reloadData()
                 removeComment(objectId: commentId)
             }
         }
     }
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let sound = self.sound {
-            if let currentSound = self.player.currentSound {
-                if currentSound.objectId == sound.objectId, let soundPlayer = self.player.player {
-                    if soundPlayer.isPlaying {
-                        player.pause()
-                    } else {
-                        player.play()
-                    }
-                }
-                
+        if let soundPlayer = self.player.player {
+            if soundPlayer.isPlaying {
+                player.pause()
             } else {
-                 player.player = nil
-                player.sounds = [sound]
-                player.currentSound = sound
-                player.currentSoundIndex = 0
-                player.setUpNextSong(false, at: 0)
+                player.play()
             }
+        } else {
+            setupSoundPlayer()
         }
     }
     
@@ -558,7 +548,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
            
             if let selectedCommentFromMentions = self.selectedCommentFromMentions {
                 if selectedCommentFromMentions == comment.objectId {
-                    cell.backgroundColor = .lightGray
+                    cell.backgroundColor = color.purpleBlack()
                 }
             }
         }
@@ -575,15 +565,23 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    //didPressAtTime for people who are coming in from mentions page
+    var didPressAtTime: Float?
     @objc func didPressAtTimeButton(_ sender: UIButton) {
-        if let player = self.player.player {
-            if let comment = self.comments[sender.tag] {
-                player.currentTime = TimeInterval(comment.atTime)
-                self.atTime = comment.atTime
-                if !player.isPlaying {
-                    self.player.play()
-                }
+        if let comment = self.comments[sender.tag] {
+            if let player = self.player.player {
+                jumpToTime(player, atTime: comment.atTime)
+            } else {
+                didPressAtTime = comment.atTime
+                setupSoundPlayer()
             }
+        }
+    }
+    func jumpToTime(_ player: AVAudioPlayer, atTime: Float) {
+        player.currentTime = TimeInterval(atTime)
+        self.atTime = atTime
+        if !player.isPlaying {
+            self.player.play()
         }
     }
     
@@ -692,7 +690,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func newMention(_ userId: String, commentId: String) {
         let newMention = PFObject(className: "Mention")
-        //newMention["postId"] = self.sound?.objectId
         newMention["type"] = "comment"
         newMention["commentId"] = commentId
         newMention["fromUserId"] = PFUser.current()!.objectId
@@ -709,7 +706,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         self.comments.removeAll()
         
         if let soundArtist = sound.artist {
-            print("got sound artist in loadComments")
             let comment = Comment(objectId: nil, artist: soundArtist, text: sound.title, atTime: 0, createdAt: sound.createdAt)
             self.comments.append(comment)
         }
@@ -782,7 +778,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             }
         }
     }
-    
 }
 
 class Comment {

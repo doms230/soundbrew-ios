@@ -144,11 +144,22 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 
             case "comment":
                 let commentModal = CommentViewController()
-                if let sound = mention.sound {
+                if let mentionSound = mention.sound {
                     commentModal.playerDelegate = self
-                    commentModal.sound = sound
+                    commentModal.sound = mentionSound
                     if let commentId = mention.comment?.objectId {
                        commentModal.selectedCommentFromMentions = commentId
+                    }
+                    
+                    let player = Player.sharedInstance
+                    if let currentSound = player.currentSound, currentSound.objectId! != mentionSound.objectId! {
+                        player.player = nil
+                        player.sounds = nil
+                        player.currentSound = nil
+                        player.currentSoundIndex = 0
+                        
+                        miniPlayerView?.removeFromSuperview()
+                        setUpTableView(nil)
                     }
                 }
                 self.present(commentModal, animated: true, completion: nil)

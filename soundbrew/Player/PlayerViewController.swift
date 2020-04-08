@@ -86,7 +86,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if customer.artist!.balance! >= tipAmount {
             self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             self.likeSoundButton.isEnabled = false
-            SKStoreReviewController.requestReview()
+            if PFUser.current()?.objectId != "AWKPPDI4CB" {
+                SKStoreReviewController.requestReview()
+            }
             self.sound?.tipAmount = tipAmount
             updateTip(sound.objectId!, toUserId: sound.artist!.objectId, tipAmount: tipAmount)
             
@@ -180,6 +182,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                         if let savedTipAmount = object["amount"] as? Int {
                             newTipAmount = savedTipAmount
                         }
+
                         let newTipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(newTipAmount, currency: "$")
                         self.paymentAmountForLike.text = newTipAmountString
                         
@@ -263,6 +266,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
                 if shouldIncrementTippers {
                     object.incrementKey("tippers")
+                    var newLikeCount = 1
+                    if let likes = self.sound?.tipCount {
+                        newLikeCount = likes + newLikeCount
+                    }
+                    self.likeCountLabel.text = "\(newLikeCount)"
                 }
                 object.saveEventually()
             }
@@ -287,7 +295,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                     }
                     
                  } else {
-                    self.paymentAmountForLike.text = "$0.00"
+                    self.paymentAmountForLike.text = ""
                 }
                 self.likeSoundButton.isEnabled = true
                 self.loadCredits(sound.objectId!)
@@ -673,7 +681,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     lazy var paymentAmountForLike: UILabel = {
         let label = UILabel()
-        label.text = "..."
+        label.text = ""
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 10)
         label.textAlignment = .center
