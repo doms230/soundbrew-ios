@@ -86,7 +86,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if customer.artist!.balance! >= tipAmount {
             self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             self.likeSoundButton.isEnabled = false
-            if PFUser.current()?.objectId != "AWKPPDI4CB" {
+            if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                 SKStoreReviewController.requestReview()
             }
             self.sound?.tipAmount = tipAmount

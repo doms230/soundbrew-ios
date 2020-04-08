@@ -136,10 +136,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if isSearchActive {
-            return 2
-        }
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -162,6 +159,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 
                 return 1
             }
+            
+        } else if !isSearchActive && section == 0 {
+            return 1
         }
         
         return featureTagTypes.count
@@ -217,6 +217,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     return noResultsCell()
                 }
             }
+        } else if !isSearchActive && indexPath.section == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: newSoundsReuse) as! TagTableViewCell
+            cell.selectionStyle = .none
+            cell.backgroundColor = color.black()
+            cell.newChartsButton.addTarget(self, action: #selector(didPressNewSoundsButton(_:)), for: .touchUpInside)
+            cell.newChartsButton.tag = 0
+            return cell
         }
         return featureTagCell(indexPath)
     }
@@ -261,9 +268,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         return cell
     }
     
-    @objc func didPressChartsButton(_ sender: UIButton) {
-        let tag = Tag(objectId: nil, name: "Featured", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
-        showSounds(tag, soundType: "chart")
+    @objc func didPressNewSoundsButton(_ sender: UIButton) {
+        let tag = Tag(objectId: nil, name: "New", count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+        showSounds(tag, soundType: "new")
     }
     
     //mark: tags

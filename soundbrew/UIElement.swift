@@ -33,7 +33,7 @@ class UIElement {
     let titleLabelFontSize: CGFloat = 25
     let color = Color()
     let mainFont = "HelveticaNeue"
-    
+    let d_innovatorObjectId = "AWKPPDI4CB"
     let localizedCollectors = NSLocalizedString("collectos", comment: "")
     let localizedMood = NSLocalizedString("mood", comment: "")
     let localizedActivity = NSLocalizedString("activity", comment: "")
@@ -331,7 +331,7 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil)
+        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil)
         
         if let createdAt = object.createdAt {
             sound.createdAt = createdAt
@@ -361,33 +361,37 @@ class UIElement {
             sound.artFile = art 
         }
         
-        if let tags = object["tags"] as? Array<String> {
+       /* if let tags = object["tags"] as? Array<String> {
             sound.tags = tags
-        }
+        }*/
         
-        if let plays = object["plays"] as? Int {
+       /*if let plays = object["plays"] as? Int {
             sound.playCount = plays
-        }
+        }*/
         
-        if let tips = object["tips"] as? Int {
+       /* if let tips = object["tips"] as? Int {
             sound.tipAmount = tips
-        }
+        }*/
         
-        if let tippers = object["tippers"] as? Int {
+        /*if let tippers = object["tippers"] as? Int {
             sound.tipCount = tippers
-        }
+        }*/
         
-        if let commentCount = object["comments"] as? Int {
+       /* if let commentCount = object["comments"] as? Int {
             sound.commentCount = commentCount
-        }
+        }*/
         
-        if let creditCount = object["credits"] as? Int {
+       /*if let creditCount = object["credits"] as? Int {
             sound.creditCount = creditCount
-        }
-        
-        if let isDraft = object["isDraft"] as? Bool {
-            sound.isDraft = isDraft
-        }
+        }*/
+        sound.tags = object["tags"] as? Array<String>
+        sound.playCount = object["plays"] as? Int
+        sound.tipAmount = object["tips"] as? Int
+        sound.tipCount = object["tippers"] as? Int
+        sound.commentCount = object["comments"] as? Int
+        sound.creditCount = object["credits"] as? Int
+        sound.isDraft = object["isDraft"] as? Bool
+        sound.isFeatured = object["isFeatured"] as? Bool
         
         let userId = object["userId"] as! String
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)

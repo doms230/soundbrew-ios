@@ -152,7 +152,6 @@ class SoundList: NSObject, PlayerDelegate {
                         
             if let currentUser = PFUser.current() {
                 if sound.artist!.objectId == currentUser.objectId {
-                    //let localizedPlays = NSLocalizedString("plays", comment: "")
                     let localizedTips = NSLocalizedString("tips", comment: "")
                     let localizedIn = NSLocalizedString("in", comment: "")
 
@@ -178,26 +177,64 @@ class SoundList: NSObject, PlayerDelegate {
                     target.present(menuAlert, animated: true, completion: nil)
                     
                 } else {
-                    showOtherMenuAlert(sound)
+                    showOtherMenuAlert(sound, row: sender.tag)
                 }
                 
             } else {
-                showOtherMenuAlert(sound)
+                showOtherMenuAlert(sound, row: sender.tag)
             }
         }
     }
     
-    func showOtherMenuAlert(_ sound: Sound) {
-        let localizedReportSound = NSLocalizedString("reportSound", comment: "")
-        let menuAlert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-            menuAlert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
-                self.showReportSoundAlert(sound)
-            }))
-                
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+    func showOtherMenuAlert(_ sound: Sound, row: Int) {
+        var alert: UIAlertController!
         
-        target.present(menuAlert, animated: true, completion: nil)
+        if let currenUserObjectId = PFUser.current()?.objectId, currenUserObjectId == self.uiElement.d_innovatorObjectId {
+            var shouldAddToFeaturedList = true
+            var featuredTitle = "Feature this song?"
+            if let isSoundFeatured = sound.isFeatured, isSoundFeatured {
+                featuredTitle = "Un-Feature this song?"
+                shouldAddToFeaturedList = false
+            }
+            
+            alert = UIAlertController(title: "", message: nil , preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: featuredTitle, style: .default, handler: { action in
+                self.showAddRemoveSongFromFeaturedPage(sound, shouldAddToFeaturedList: shouldAddToFeaturedList, row: row)
+            }))
+            
+        } else {
+            let localizedReportSound = NSLocalizedString("reportSound", comment: "")
+            alert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
+                    self.showReportSoundAlert(sound)
+            }))
+        }
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        alert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+
+        target.present(alert, animated: true, completion: nil)
+    }
+    
+    func showAddRemoveSongFromFeaturedPage(_ sound: Sound, shouldAddToFeaturedList: Bool, row: Int) {
+        if let objectId = sound.objectId {
+            let query = PFQuery(className: "Post")
+            query.getObjectInBackground(withId: objectId) {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    object["isFeatured"] = shouldAddToFeaturedList
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        if (success) {
+                            self.sounds[row].isFeatured = shouldAddToFeaturedList
+                            if let artistId = sound.artist?.objectId {
+                                //self.uiElement.sendAlert("\(sound.title!) has been featured!", toUserId: artistId, shouldIncludeName: false)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func showReportSoundAlert(_ sound: Sound) {
@@ -316,6 +353,10 @@ class SoundList: NSObject, PlayerDelegate {
             if let userId = self.profileUserId {
                 self.loadStories(userId)
             }
+            break
+            
+        case "new":
+            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil)
             break
             
         default:

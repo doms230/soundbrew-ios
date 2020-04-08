@@ -281,7 +281,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                         self.loadArtist(mention)
                     }
                 }
-                if objects.count > 0 && PFUser.current()?.objectId != "AWKPPDI4CB" {
+                if objects.count > 0 && PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                     SKStoreReviewController.requestReview()
                 }
             } else {
