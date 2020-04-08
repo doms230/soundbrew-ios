@@ -135,7 +135,7 @@ class Follow {
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                self.uiElement.sendAlert("followed you!", toUserId: self.toArtist.objectId!)
+                self.uiElement.sendAlert("followed you!", toUserId: self.toArtist.objectId!, shouldIncludeName: true)
             }
         }
     }

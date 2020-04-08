@@ -161,6 +161,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+        
+        let player = Player.sharedInstance
+        player.tableView = tableView
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
@@ -239,6 +242,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         player.didSelectSoundAt(row)
         if miniPlayerView == nil {
             self.setUpMiniPlayer()
+        } else {
+           // self.tableView.reloadData()
         }
     }
     
@@ -295,7 +300,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showPlayerViewController() {
-        miniPlayerView!.timer.invalidate()
+        //miniPlayerView!.timer.invalidate()
         let modal = PlayerViewController()
         modal.playerDelegate = self
         modal.tagDelegate = self

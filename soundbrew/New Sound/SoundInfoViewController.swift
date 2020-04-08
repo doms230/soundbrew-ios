@@ -289,7 +289,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else {
                 newCredit(credit, postId: postId)
                 newStory(credit, postId: postId, type: "credit")
-                self.uiElement.sendAlert("credited you on their new release '\(sound.title ?? "")'", toUserId: credit.artist!.objectId)
+                self.uiElement.sendAlert("credited you on their new release '\(sound.title ?? "")'", toUserId: credit.artist!.objectId, shouldIncludeName: true)
             }
         }
     }

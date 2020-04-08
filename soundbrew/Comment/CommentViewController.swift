@@ -700,7 +700,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                self.uiElement.sendAlert("mentioned you in a comment", toUserId: userId)
+                self.uiElement.sendAlert("mentioned you in a comment", toUserId: userId, shouldIncludeName: true)
             }
         }
     }

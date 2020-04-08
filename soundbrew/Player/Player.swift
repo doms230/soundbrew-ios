@@ -155,7 +155,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.play()
                 sendSoundUpdateToUI()
                 startTimer()
-                
+                if let tableView = self.tableView {
+                    tableView.reloadData()
+                }
             }
         }
     }
@@ -220,7 +222,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?) {
         //stop soundplayer audio from playing over each other
         if player != nil {
-            player?.pause()
             player = nil
         } else if let sound = self.currentSound {
             if sound.audioData == nil {
@@ -229,32 +230,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sound.audio?.cancel()
             }
         }
-        
-        //clearCurrentSoundTmpData()
-        
+                
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
             currentSound = sound
             self.sendSoundUpdateToUI()
             prepareToPlaySound(sound)
         }
     }
-    
-   /* func clearCurrentSoundTmpData() {
-        if self.sounds.indices.contains(self.currentSoundIndex) {
-            if let sound = self.currentSound {
-                    DispatchQueue.main.async {
-                        if let temporaryFile = sound.tmpFile {
-                            do {
-                                try temporaryFile.deleteDirectory()
-                                
-                            } catch let error {
-                                print("error deleting temp file: \(error)")
-                            }
-                        }
-                    }
-                }
-            }
-    }*/
     
     func fetchAudioFromNextSound() {
         let nextIndex = self.currentSoundIndex + 1
@@ -396,7 +378,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     let incrementedPlays = plays + 1.0
                     switch incrementedPlays {
                     case 10, 50, 100, 1000, 10000, 100000, 1000000:
-                    UIElement().sendAlert("Congrats, \(sound.title!) just hit \(Int(incrementedPlays)) plays!", toUserId: sound.artist!.objectId)
+                        UIElement().sendAlert("Congrats, \(sound.title!) just hit \(Int(incrementedPlays)) plays!", toUserId: sound.artist!.objectId, shouldIncludeName: false)
                         break
                         
                         default:
@@ -549,8 +531,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 MPMediaItemArtwork(boundsSize: image.size) { size in
                     return image
             }
-        } else {
-            //loudSoundAndArtistInfo(sound)
         }
         
         if let player = player {

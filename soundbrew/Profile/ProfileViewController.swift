@@ -30,7 +30,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var profileSounds = [Sound]()
     var selectedIndex = 0
     var currentUser: PFUser?
-    var player: Player?
+    let player = Player.sharedInstance
     var followerOrFollowing: String!
     
     override func viewDidLoad() {
@@ -178,6 +178,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
         }
+        
+        let player = Player.sharedInstance
+        player.tableView = tableView
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
@@ -478,12 +481,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func didSelectSound(_ sounds: Array<Sound>, row: Int) {
-        if let player = self.player {
-            self.player?.sounds = sounds
-            player.didSelectSoundAt(row)
-            if self.miniPlayerView == nil && self.tabBarController != nil {
-                self.setUpMiniPlayer()
-            }
+        self.player.sounds = sounds
+        player.didSelectSoundAt(row)
+        if self.miniPlayerView == nil && self.tabBarController != nil {
+            self.setUpMiniPlayer()
         }
     }
     
@@ -695,10 +696,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setUpNavigationButtons() {
-        player = Player.sharedInstance
-        player?.target = self
-        player?.tableView = tableView
-        if self.player?.player != nil && self.tabBarController != nil {
+        //player.target = self
+        if self.player.player != nil && self.tabBarController != nil {
             setUpMiniPlayer()
             
         } else {

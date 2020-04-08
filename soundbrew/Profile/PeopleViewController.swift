@@ -470,6 +470,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                         
                         if let name = user["artistName"] as? String {
                             artist.name = name
+                        } else {
+                            artist.name = ""
                         }
                         
                         if let username = user["username"] as? String {

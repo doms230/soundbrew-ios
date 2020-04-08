@@ -250,7 +250,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
-                self.uiElement.sendAlert("liked \(sound.title!)!", toUserId: toUserId)
+                self.uiElement.sendAlert("liked \(sound.title!)!", toUserId: toUserId, shouldIncludeName: true)
             }
         }
     }

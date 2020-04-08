@@ -276,14 +276,17 @@ class UIElement {
         target.present(alertController, animated: true, completion: nil)
     }
     
-    func sendAlert(_ message: String, toUserId: String) {
+    func sendAlert(_ message: String, toUserId: String, shouldIncludeName: Bool) {
         let artist = Customer.shared.artist
         var name = ""
-        if let username = artist?.username {
-            name = username
-        } else if let displayName = artist?.name {
-            name = displayName
+        if shouldIncludeName {
+            if let username = artist?.username {
+                name = username
+            } else if let displayName = artist?.name {
+                name = displayName
+            }
         }
+
         let alertMessage = "\(name) \(message)"
         AF.request("https://soundbrew.herokuapp.com/notifications/pXLmtBKxGzgzdnDU", method: .get, parameters: ["message": alertMessage, "userId": toUserId], encoding: URLEncoding.default).validate().response{response in
         }
