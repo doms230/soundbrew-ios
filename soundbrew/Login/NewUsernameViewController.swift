@@ -80,16 +80,18 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
             usernameText.text = username
         }
         usernameText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+          //  make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(nextButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         nextButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(usernameText.snp.bottom).offset(10)
+          //  make.top.equalTo(usernameText.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.centerY.equalTo(self.view)
         }
         
         usernameText.becomeFirstResponder()

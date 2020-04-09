@@ -50,6 +50,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if self.uiElement.getUserDefault("friends") != nil {
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
+            
+            let player = Player.sharedInstance
+            player.player = nil
+            player.sounds = nil
+            player.currentSound = nil
+            player.currentSoundIndex = 0
+            
             self.uiElement.newRootView("NewUser", withIdentifier: "welcome")
         }))
         self.present(menuAlert, animated: true, completion: nil)

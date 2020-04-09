@@ -229,6 +229,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 animated: true
             )
         }
+        
+        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressSendButton"])
     }
 
     //player view
@@ -239,6 +241,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
+        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressExitButton"])
     }
     
     lazy var dismissImage: UIImageView = {
@@ -484,6 +487,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             setupSoundPlayer()
         }
+        
+        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressPlayBackButton"])
     }
     
     var timer = Timer()
@@ -579,6 +584,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 setupSoundPlayer()
             }
         }
+        
+        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressAtTimeButton"])
     }
     func jumpToTime(_ player: AVAudioPlayer, atTime: Float) {
         player.currentTime = TimeInterval(atTime)
@@ -592,6 +599,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         if let artist = self.comments[sender.tag]?.artist {
             handleDismissal(artist)
         }
+        
+        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressProfileButton"])
     }
     
     @objc func didPressReplyButton(_ sender: UIButton) {
@@ -603,6 +612,8 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             textView.text = "@\(username) "
             textView.becomeFirstResponder()
         }
+        
+        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressReplyButton"])
     }
     
     //mark: Data

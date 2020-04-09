@@ -217,20 +217,22 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       //mark: miniPlayer
       var miniPlayerView: MiniPlayerView?
       func setUpMiniPlayer() {
-          miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-          self.view.addSubview(miniPlayerView!)
-          let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-          slide.direction = .up
-          miniPlayerView!.addGestureRecognizer(slide)
-          miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-          miniPlayerView!.snp.makeConstraints { (make) -> Void in
-              make.height.equalTo(50)
-              make.right.equalTo(self.view)
-              make.left.equalTo(self.view)
-              make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
-          }
-          
-          setUpTableView(miniPlayerView!)
+        DispatchQueue.main.async {
+            self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+            self.view.addSubview(self.miniPlayerView!)
+            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+            slide.direction = .up
+            self.miniPlayerView!.addGestureRecognizer(slide)
+            self.miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+            self.miniPlayerView!.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(50)
+                make.right.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
+            }
+            
+            self.setUpTableView(self.miniPlayerView!)
+        }
       }
       
       @objc func miniPlayerWasSwiped() {

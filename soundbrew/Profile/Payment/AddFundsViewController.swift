@@ -189,12 +189,14 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let twoNineNineAction = UIAlertAction(title: "$2.99", style: .default) { (_) -> Void in
             self.paymentContext.paymentAmount = 299
             self.paymentContextDidChange(self.paymentContext)
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$2.99"])
          }
          alertController.addAction(twoNineNineAction)
         
         let nineNineNineAction = UIAlertAction(title: "$9.99", style: .default) { (_) -> Void in
             self.paymentContext.paymentAmount = 999
             self.paymentContextDidChange(self.paymentContext)
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$9.99"])
          }
          alertController.addAction(nineNineNineAction)
          let localizedCancel = NSLocalizedString("cancel", comment: "")
@@ -244,6 +246,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }()
     @objc func didPressAddCardButton(_ sender: UIButton) {
         self.paymentContext.presentPaymentOptionsViewController()
+        MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressAddCardButton"])
     }
     
     lazy var cardImage: UIImageView = {
@@ -287,6 +290,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     @objc func didPressPurchaseButton(_ sender: UIButton) {
         self.startAnimating()
         self.paymentContext.requestPayment()
+        
+        MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressPurchaseButton"])
     }
     
     func setupView() {

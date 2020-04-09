@@ -155,9 +155,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.play()
                 sendSoundUpdateToUI()
                 startTimer()
-                if let tableView = self.tableView {
+                /*if let tableView = self.tableView {
                     tableView.reloadData()
-                }
+                }*/
             }
         }
     }
@@ -210,7 +210,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: i)
         
-      //  MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
+        MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

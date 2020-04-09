@@ -113,13 +113,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showSounds() {
-        if soundType == "follow" {
+        /*if soundType == "follow" {
             if let userId = PFUser.current()?.objectId {
                 self.userId = userId
             } else {
                 self.userId = ""
             }
-        }
+        }*/
+        
         soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         
         if soundType == "chart" {
@@ -243,7 +244,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if miniPlayerView == nil {
             self.setUpMiniPlayer()
         } else {
-           // self.tableView.reloadData()
+            self.tableView.reloadData()
         }
     }
     
@@ -273,21 +274,22 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: miniPlayer
     var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
-        miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-        if let miniPlayer = self.miniPlayerView {
-            self.view.addSubview(miniPlayer)
-            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-            slide.direction = .up
-            miniPlayerView!.addGestureRecognizer(slide)
-            miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            miniPlayerView!.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(50)
-                make.right.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
+        DispatchQueue.main.async {
+            self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+            if let miniPlayer = self.miniPlayerView {
+                self.view.addSubview(miniPlayer)
+                let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+                slide.direction = .up
+                self.miniPlayerView!.addGestureRecognizer(slide)
+                self.miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+                self.miniPlayerView!.snp.makeConstraints { (make) -> Void in
+                    make.height.equalTo(50)
+                    make.right.equalTo(self.view)
+                    make.left.equalTo(self.view)
+                    make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
+                }
+                self.setUpTableView(miniPlayer)
             }
-            
-            setUpTableView(miniPlayer)
         }
     }
     
@@ -300,15 +302,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showPlayerViewController() {
-        //miniPlayerView!.timer.invalidate()
         let modal = PlayerViewController()
         modal.playerDelegate = self
         modal.tagDelegate = self
         self.present(modal, animated: true, completion: nil)
-        /*let player = Player.sharedInstance
-        if player.player != nil {
-
-        }*/
     }
     
     //mark: selectedArtist
@@ -459,7 +456,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         sender.setBackgroundImage(UIImage(named: "background"), for: .normal)
         
         let story = stories[sender.tag]
-        soundList = SoundList(target: self, tableView: nil, soundType: "story", userId: story.artist.objectId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        _ = SoundList(target: self, tableView: nil, soundType: "story", userId: story.artist.objectId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
     }
     
     @objc func didPressViewMoreStoriesButton(_ sender: UIButton) {
@@ -470,6 +467,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if let friendUserIds = self.uiElement.getUserDefault("friends") as? [String] {
             didGetInitialFriendsList = true
             let storyObjectIds = self.stories.map {$0.objectId}
+            self.stories.removeAll()
             for i in 0..<friendUserIds.count {
                 let friendUserId = friendUserIds[i]
                 let query = PFQuery(className: "Story")

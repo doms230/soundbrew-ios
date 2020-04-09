@@ -228,7 +228,7 @@ class SoundList: NSObject, PlayerDelegate {
                         if (success) {
                             self.sounds[row].isFeatured = shouldAddToFeaturedList
                             if let artistId = sound.artist?.objectId {
-                                //self.uiElement.sendAlert("\(sound.title!) has been featured!", toUserId: artistId, shouldIncludeName: false)
+                                self.uiElement.sendAlert("\(sound.title!) has been featured!", toUserId: artistId, shouldIncludeName: false)
                             }
                         }
                     }
@@ -306,9 +306,6 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = true
         
         switch soundType {
-        case "yourSoundbrew":
-            loadYourSoundbrew()
-            break
         case "chart":
             loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil)
             break
@@ -463,13 +460,10 @@ class SoundList: NSObject, PlayerDelegate {
                                         
                 } else {
                     self.thereIsMoreDataToLoad = false
-                    print("no colection 1")
                 }
                 
             } else {
-                self.thereIsMoreDataToLoad = false
-                
-                print("Error: \(error!)")
+                self.thereIsMoreDataToLoad = false                
             }
             
             if self.soundType == "story" {
@@ -671,27 +665,6 @@ class SoundList: NSObject, PlayerDelegate {
             } else {
                 self.thereIsMoreDataToLoad = false
                 print("Error: \(error!)")
-            }
-        }
-    }
-    
-    func loadYourSoundbrew() {
-        let query = PFQuery(className: "Post")
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("tips")
-        query.limit = 100
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = UIElement().newSoundObject(object)
-                        self.sounds.append(sound)
-                    }
-                    self.sounds.shuffle()
-                    self.player.sounds = self.sounds
-                    self.player.didSelectSoundAt(0)
-                }
             }
         }
     }

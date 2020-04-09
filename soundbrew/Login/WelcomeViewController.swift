@@ -195,7 +195,7 @@ class WelcomeViewController: UIViewController {
             isLoggingInWithApple = false
             isLoggingInWithTwitter = true
             self.performSegue(withIdentifier: "showSignup", sender: self)
-            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Twitter Button", "description": "user pressed twitter button"])
+            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Twitter Button"])
             break
             
         case 2:
@@ -211,7 +211,7 @@ class WelcomeViewController: UIViewController {
             
         case 3:
             self.performSegue(withIdentifier: "showSignin", sender: self)
-            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign In Button", "description": "User pressed Sign in button"])
+            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign In Button"])
             break
             
         default:
@@ -221,6 +221,6 @@ class WelcomeViewController: UIViewController {
     
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
-        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Terms Button", "description": "user pressed terms button"])
+        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Terms Button"])
     }
 }

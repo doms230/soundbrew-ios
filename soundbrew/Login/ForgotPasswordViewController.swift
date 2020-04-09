@@ -8,6 +8,7 @@
 
 import UIKit
 import Parse
+import AppCenterAnalytics
 
 class ForgotPasswordViewController: UIViewController {
 
@@ -36,7 +37,7 @@ class ForgotPasswordViewController: UIViewController {
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         let localizedResetPassword = NSLocalizedString("resetPassword", comment: "")
-        let doneButton = UIBarButtonItem(title: localizedResetPassword, style: .plain, target: self, action: #selector(doneAction(_:)))
+        let doneButton = UIBarButtonItem(title: localizedResetPassword, style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
         
         self.view.addSubview(emailInput)
@@ -49,7 +50,7 @@ class ForgotPasswordViewController: UIViewController {
         emailInput.becomeFirstResponder()
     }
     
-    @objc func doneAction(_ sender: UIBarButtonItem) {
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
         let emailText = emailInput.text?.trimmingCharacters(in: .whitespaces).lowercased()
         let blockQuery = PFQuery(className: "_User")
         blockQuery.whereKey("email", equalTo: emailText ?? "")
@@ -75,5 +76,7 @@ class ForgotPasswordViewController: UIViewController {
                 UIElement().showAlert(localizedStringOops, message: "\(localizedStringMessage) \(emailText!)", target: self)
             }
         }
+        
+        MSAnalytics.trackEvent("Forgot Password View Controller", withProperties: ["Button" : "didPressDoneButton"])
     }
 }

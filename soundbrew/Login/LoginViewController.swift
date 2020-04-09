@@ -10,6 +10,7 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import UserNotifications
+import AppCenterAnalytics
 
 class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     var color = Color()
@@ -185,10 +186,12 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     @objc func didPressForgotPassword(_ sender: UIBarButtonItem) {
         self.performSegue(withIdentifier: "showForgotPassword", sender: self)
+        MSAnalytics.trackEvent("Login View Controller", withProperties: ["Button" : "didPressForgotPassword"])
     }
     
     @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
+        MSAnalytics.trackEvent("Login View Controller", withProperties: ["Button" : "didPressCancelButton"])
     }
     
     @objc func didPressExit(_ sender: UIBarButtonItem) {

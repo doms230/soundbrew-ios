@@ -109,6 +109,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             let sendMoneyActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
                 let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
                 self.handleDismissal(artist)
+                
+                MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
             }
             alertView.addAction(sendMoneyActionButton)
             
