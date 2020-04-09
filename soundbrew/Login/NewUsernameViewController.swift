@@ -62,6 +62,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         return button
     }()
 
@@ -74,7 +75,14 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
         
         self.view.addSubview(usernameText)
         self.view.addSubview(nextButton)
-        nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
+        
+        nextButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(uiElement.buttonHeight)
+          //  make.top.equalTo(usernameText.snp.bottom).offset(10)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.centerY.equalTo(self.view)
+        }
         
         if let username = twitterUsername {
             usernameText.text = username
@@ -84,14 +92,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(nextButton.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        nextButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(uiElement.buttonHeight)
-          //  make.top.equalTo(usernameText.snp.bottom).offset(10)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.centerY.equalTo(self.view)
         }
         
         usernameText.becomeFirstResponder()

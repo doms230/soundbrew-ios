@@ -67,6 +67,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.addTarget(self, action: #selector(loginAction(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -89,25 +90,27 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         self.view.addSubview(passwordText)
         self.view.addSubview(signButton)
         
-        usernameText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+        signButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+           // make.top.equalTo(passwordText.snp.bottom).offset(10)
+            make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         passwordText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(usernameText.snp.bottom).offset(10)
+           // make.top.equalTo(usernameText.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        signButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(passwordText.snp.bottom).offset(10)
+        usernameText.snp.makeConstraints { (make) -> Void in
+           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(passwordText.snp.top).offset(-(uiElement.elementOffset))
         }
-        signButton.addTarget(self, action: #selector(loginAction(_:)), for: .touchUpInside)
         
         usernameText.becomeFirstResponder()
     }

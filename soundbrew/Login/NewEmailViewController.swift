@@ -50,16 +50,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         navigationItem.backBarButtonItem = backItem
     }
     
-    lazy var titleLabel: UILabel = {
-        let localizedPayPalPayoutMessage = NSLocalizedString("payPalPayoutMessage", comment: "")
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-        label.text = localizedPayPalPayoutMessage
-        label.textColor = .white
-        label.numberOfLines = 0
-        return label
-    }()
-    
     lazy var emailText: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Email"
@@ -85,6 +75,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -103,28 +94,22 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             self.title = "Email | 1/3"
         }
         
-        self.view.addSubview(titleLabel)
         self.view.addSubview(emailText)
         self.view.addSubview(nextButton)
-        nextButton.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
-        
-        emailText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
         
         nextButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(emailText.snp.bottom).offset(uiElement.topOffset)
+         //   make.top.equalTo(emailText.snp.bottom).offset(uiElement.topOffset)
+            make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(nextButton.snp.bottom).offset(uiElement.topOffset)
+        emailText.snp.makeConstraints { (make) -> Void in
+           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(nextButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         emailText.becomeFirstResponder()

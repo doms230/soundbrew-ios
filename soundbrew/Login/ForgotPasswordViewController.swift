@@ -30,27 +30,45 @@ class ForgotPasswordViewController: UIViewController {
         return textField
     }()
     
+    lazy var forgotPasswordButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.titleLabel?.textAlignment = .right
+        button.setTitle("Reset Password", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 3
+        button.clipsToBounds = true
+        button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.addTarget(self, action: #selector(didPressResetPassword(_:)), for: .touchUpInside)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        let localizedResetPassword = NSLocalizedString("resetPassword", comment: "")
-        let doneButton = UIBarButtonItem(title: localizedResetPassword, style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
-        self.navigationItem.rightBarButtonItem = doneButton
         
         self.view.addSubview(emailInput)
+        self.view.addSubview(forgotPasswordButton)
         
-        emailInput.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+        forgotPasswordButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        emailInput.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(forgotPasswordButton.snp.top).offset(uiElement.bottomOffset)
         }
         emailInput.becomeFirstResponder()
     }
     
-    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
+    @objc func didPressResetPassword(_ sender: UIButton) {
         let emailText = emailInput.text?.trimmingCharacters(in: .whitespaces).lowercased()
         let blockQuery = PFQuery(className: "_User")
         blockQuery.whereKey("email", equalTo: emailText ?? "")

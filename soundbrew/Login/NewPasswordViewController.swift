@@ -43,6 +43,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         button.layer.cornerRadius = 3
         button.clipsToBounds = true
         button.setBackgroundImage(UIImage(named: "background"), for: .normal)
+        button.addTarget(self, action: #selector(finish(_:)), for: .touchUpInside)
         return button
     }()
 
@@ -55,19 +56,18 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         
         self.view.addSubview(passwordText)
         self.view.addSubview(finishButton)
-        finishButton.addTarget(self, action: #selector(finish(_:)), for: .touchUpInside)
         
-        passwordText.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+        finishButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(uiElement.buttonHeight)
+            make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        finishButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(uiElement.buttonHeight)
-            make.top.equalTo(passwordText.snp.bottom).offset(10)
+        passwordText.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(finishButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         passwordText.becomeFirstResponder()
@@ -89,6 +89,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func signup() {
+        self.resignFirstResponder()
         self.startAnimating()
         let user = PFUser()
         user.username = usernameString

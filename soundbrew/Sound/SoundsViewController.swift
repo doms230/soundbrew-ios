@@ -336,7 +336,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     //mark: Story
-    var selectedStory: UIButton?
+    var selectedStory: Story?
+    var selectedStoryButton: UIButton?
     var stories = [Story]()
     var didGetInitialFriendsList = false
     func storyCell() -> SoundListTableViewCell {
@@ -395,6 +396,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     storyType.text = "New Update"
                 }
                 
+                if let selectedStory = self.selectedStory, story.objectId == selectedStory.objectId {
+                    storyButton.setBackgroundImage(UIImage(named: "background"), for: .normal)
+                } else {
+                    storyButton.setBackgroundImage(UIImage(), for: .normal)
+                }
+                
                 storyButton.addTarget(self, action: #selector(self.didPressStoryButton), for: .touchUpInside)
                 storyButton.tag = i
                 
@@ -450,12 +457,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didPressStoryButton(_ sender: UIButton) {
-        selectedStory?.setBackgroundImage(UIImage(), for: .normal)
-        
-        selectedStory = sender
         sender.setBackgroundImage(UIImage(named: "background"), for: .normal)
-        
         let story = stories[sender.tag]
+        selectedStory = story
         _ = SoundList(target: self, tableView: nil, soundType: "story", userId: story.artist.objectId, tags: nil, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
     }
     
