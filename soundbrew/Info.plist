@@ -23,16 +23,6 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>firebase dynamic link</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.soundbrew.soundbrew-artists</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>twitterkit-shY1N1YKquAcxJF9YtdFzm6N3</string>
@@ -91,5 +81,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <key>NSAllowsArbitraryLoadsForMedia</key>
+        <true/>
+        <key>NSAllowsArbitraryLoadsInWebContent</key>
+        <true/>
+    </dict>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-9150756002517285~6608111231</string>
 </dict>
 </plist>

@@ -12,7 +12,6 @@ import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
 import TwitterKit
-import FirebaseDynamicLinks
 import AppCenterAnalytics
 import UICircularProgressRing
 import CropViewController

@@ -36,6 +36,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
         
         FirebaseApp.configure()
+        // Initialize the Google Mobile Ads SDK.
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
+
         
         //usrname: testaccount
         //password: asdf
@@ -94,59 +97,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                         self.receivedUsername(url.lastPathComponent)
                     }
                 } else {
-                return handleDynamicLink(userActivity)
+                //return handleDynamicLink(userActivity)
             }
         }
         
         return false
     }
     
-    func handleDynamicLink(_ userActivity: NSUserActivity) -> Bool {
-        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
-            if let url = dynamiclink?.url {
-                if let pathComponents = dynamiclink?.url?.pathComponents {
-                    if pathComponents.contains("sound") {
-                       self.receivedPostId(url.lastPathComponent)
-
-                    } else if pathComponents.contains("profile") {
-                        self.receivedUserId(url.lastPathComponent)
-                    }
-                }
-            }
-        }
-        
-        return handled
-    }
-    
-    //called if user is opening for the first time
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-        if url.absoluteString.starts(with: "soundbrew") {
-            return application(app, open: url,
-                               sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-                               annotation: "")
-            
-        } else {
-            return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
-        }
-    }
-    
-    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
-            if let pathComponents = dynamicLink.url?.pathComponents {
-                if pathComponents.contains("sound") {
-                    self.receivedPostId(url.lastPathComponent)
-                    
-                } else if pathComponents.contains("profile") {
-                    self.receivedUserId(url.lastPathComponent)
-                }
-            }
-            
-            return true
-            
-        } else {
-            print("first open: couldn't open dynamic link")
-        }
-        return false
+        return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

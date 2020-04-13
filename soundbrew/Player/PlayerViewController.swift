@@ -16,8 +16,9 @@ import SnapKit
 import Photos
 import NVActivityIndicatorView
 import AppCenterAnalytics
+import GoogleMobileAds
 
-class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource, PlayerDelegate, TagDelegate {
+class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource, PlayerDelegate, TagDelegate, GADRewardedAdDelegate {
     
     let color = Color()
     let uiElement = UIElement()
@@ -37,6 +38,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     override func viewDidAppear(_ animated: Bool) {
         self.setSound()
         customer = Customer.shared
+        if let balance = customer.artist?.balance {
+            if balance == 0 {
+                self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+            }
+        } else {
+            self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+        }
     }
     
     func setupNotificationCenter(){
@@ -82,39 +90,62 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
     }
     
+    func tipAction(_ sound: Sound, tipAmount: Int) {
+        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+        self.likeSoundButton.isEnabled = false
+        if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
+            SKStoreReviewController.requestReview()
+        }
+        self.sound?.tipAmount = tipAmount
+        updateTip(sound.objectId!, toUserId: sound.artist!.objectId, tipAmount: tipAmount)
+    }
+    
     func sendTip(_ sound: Sound, tipAmount: Int) {
-        if customer.artist!.balance! >= tipAmount {
-            self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-            self.likeSoundButton.isEnabled = false
-            if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
-                SKStoreReviewController.requestReview()
-            }
-            self.sound?.tipAmount = tipAmount
-            updateTip(sound.objectId!, toUserId: sound.artist!.objectId, tipAmount: tipAmount)
+        //if customer.artist!.balance! >= tipAmount {
+        if 0 >= tipAmount {
+            tipAction(sound, tipAmount: tipAmount)
             
         } else {
-            let balance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
-            let tipAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-            let localizedTipAmount = NSLocalizedString("tipAmount", comment: "")
-            let localizedCurrentBalance = NSLocalizedString("currentBalance", comment: "")
-            let localizedTipAmountExceedsBalance = NSLocalizedString("tipAmountExceedsBalance", comment: "")
+            let soundbrewBalance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
+            let paymentAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+
             let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
-            let localizedLater = NSLocalizedString("later", comment: "")
+            
+            var artistName = "the artist"
+            if let name = self.sound?.artist?.name {
+                artistName = name
+            } else if let username = self.sound?.artist?.username {
+                artistName = username
+            }
+            
+            var soundTitle = "this song"
+            if let title = self.sound?.title {
+                soundTitle = title
+            }
 
             let alertView = UIAlertController(
-                title: "\(localizedTipAmount) \(tipAmount) \n \(localizedCurrentBalance) \(balance)",
-                message: localizedTipAmountExceedsBalance,
-                preferredStyle: .alert)
+                title: "Payment amount of \(paymentAmount) exceeds your Soundbrew balance of \(soundbrewBalance).",
+                message: "Liking this song will pay \(artistName) and add \(soundTitle) to your collection of 'likes'.",
+                preferredStyle: .actionSheet)
             
-            let sendMoneyActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
+            let addFundsActionButton = UIAlertAction(title: localizedAddFunds, style: .default) { (_) -> Void in
                 let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
                 self.handleDismissal(artist)
                 
                 MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
             }
-            alertView.addAction(sendMoneyActionButton)
+            alertView.addAction(addFundsActionButton)
             
-            let cancelAction = UIAlertAction(title: localizedLater, style: .cancel, handler: nil)
+            let watchAddActionButton = UIAlertAction(title: "Watch Video, Earn Funds", style: .default) { (_) -> Void in
+                if let rewardedAd = self.rewardedAd {
+                    if rewardedAd.isReady == true {
+                       rewardedAd.present(fromRootViewController: self, delegate: self)
+                    }
+                }
+            }
+            alertView.addAction(watchAddActionButton)
+            
+            let cancelAction = UIAlertAction(title: "Don't pay artist", style: .cancel, handler: nil)
             alertView.addAction(cancelAction)
             
             present(alertView, animated: true, completion: nil)
@@ -1020,5 +1051,56 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
                 
         setSound()
+    }
+    
+    //mark: ads
+    let testAdUnitId = "ca-app-pub-3940256099942544/1712485313"
+    var rewardedAd: GADRewardedAd?
+    func createAndLoadRewardedAd(_ adUnitId: String) -> GADRewardedAd? {
+      rewardedAd = GADRewardedAd(adUnitID: adUnitId)
+      rewardedAd?.load(GADRequest()) { error in
+        if let error = error {
+          print("Loading failed: \(error)")
+        } else {
+          print("Loading Succeeded")
+        }
+      }
+        
+      return rewardedAd
+    }
+
+    /// Tells the delegate that the user earned a reward.
+    func rewardedAd(_ rewardedAd: GADRewardedAd, userDidEarn reward: GADAdReward) {
+        print("Reward received with currency: \(reward.type), amount \(reward.amount).")
+        let rewardAmount = Int(truncating: reward.amount)
+        let currentUser = Customer.shared
+        var newBalance = 0
+        if let currentBalance = currentUser.artist?.balance {
+            newBalance = currentBalance + rewardAmount
+            currentUser.artist?.balance = newBalance
+        } else {
+            currentUser.artist?.balance = rewardAmount
+        }
+        
+        if let sound = self.sound {
+            print("tip action")
+            self.tipAction(sound, tipAmount: rewardAmount)
+        } else {
+            print("no tip action")
+        }
+    }
+    
+    /// Tells the delegate that the rewarded ad was presented.
+    func rewardedAdDidPresent(_ rewardedAd: GADRewardedAd) {
+      print("Rewarded ad presented.")
+    }
+    /// Tells the delegate that the rewarded ad was dismissed.
+    func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
+        //self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+    }
+        
+    /// Tells the delegate that the rewarded ad failed to present.
+    func rewardedAd(_ rewardedAd: GADRewardedAd, didFailToPresentWithError error: Error) {
+      print("Rewarded ad failed to present.")
     }
 }

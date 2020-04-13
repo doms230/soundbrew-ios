@@ -171,7 +171,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2230" y="-492"/>
+            <point key="canvasLocation" x="3367" y="-35"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -239,7 +239,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3952" y="1661"/>
+            <point key="canvasLocation" x="-3755" y="1679"/>
         </scene>
         <!--Edit Bio View Controller-->
         <scene sceneID="UXW-zh-5xg">
@@ -279,26 +279,9 @@
             <point key="canvasLocation" x="173.91304347826087" y="-1633.2589285714284"/>
         </scene>
         <!--Home View Controller-->
-        <scene sceneID="weP-xR-Gs7">
-            <objects>
-                <viewController id="UY6-qd-7BN" customClass="HomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Z6B-Xr-RfU">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="ZO7-WS-AIp"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="0hm-Y5-LTz"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="azg-Ag-KC6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-6257" y="101"/>
-        </scene>
-        <!--Sounds View Controller-->
         <scene sceneID="9vt-6Z-O7U">
             <objects>
-                <viewController id="9BA-Oz-dbQ" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="9BA-Oz-dbQ" customClass="HomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="rj6-xv-Ad6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -311,13 +294,11 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="E6Y-FZ-f1e"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="QHg-gg-hIH"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="idu-sO-WCK"/>
-                        <segue destination="UY6-qd-7BN" kind="show" identifier="showStories" id="cFk-Zf-L9J"/>
-                        <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="iXH-bW-UT5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SbA-U4-vL8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-5236" y="121"/>
+            <point key="canvasLocation" x="-5236" y="191"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Oz9-Vl-g3k">
@@ -407,11 +388,13 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="drQ-xG-RFq"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="OeQ-P7-uu8"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="rYx-PH-Ejd"/>
+                        <segue destination="9BA-Oz-dbQ" kind="show" identifier="showStories" id="rdr-4q-z2k"/>
+                        <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="7m5-v1-CRD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SpS-j2-l8Y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1244" y="386"/>
+            <point key="canvasLocation" x="-7855" y="191"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="LMc-NU-utU">
@@ -674,7 +657,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="9BA-Oz-dbQ" kind="relationship" relationship="rootViewController" id="EZ0-oH-wUW"/>
+                        <segue destination="z2Z-3H-bjC" kind="relationship" relationship="rootViewController" id="zPa-h3-Fiu"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kne-Ds-s2M" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -685,13 +668,14 @@
     <inferredMetricsTieBreakers>
         <segue reference="Pro-Wr-Tmr"/>
         <segue reference="t1V-yP-gW0"/>
-        <segue reference="idu-sO-WCK"/>
+        <segue reference="zPa-h3-Fiu"/>
+        <segue reference="rYx-PH-Ejd"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="iXH-bW-UT5"/>
-        <segue reference="E6Y-FZ-f1e"/>
+        <segue reference="7m5-v1-CRD"/>
+        <segue reference="drQ-xG-RFq"/>
         <segue reference="Ejz-iv-iC5"/>
         <segue reference="LnM-xP-wsl"/>
-        <segue reference="QHg-gg-hIH"/>
+        <segue reference="OeQ-P7-uu8"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="heart_filled_nav" width="25" height="25"/>

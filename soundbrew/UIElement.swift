@@ -9,7 +9,6 @@
 import UIKit
 import Foundation
 import Parse
-import FirebaseDynamicLinks
 import SCSDKCreativeKit
 import ShareInstagram
 import Alamofire
