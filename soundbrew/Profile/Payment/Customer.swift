@@ -128,50 +128,18 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     self.create(user.objectId!, email: email, name: username)
                 }
                 
-                if let name = user["artistName"] as? String {
-                    artist.name = name
+                artist.name = user["artistName"] as? String
+                artist.city = user["city"] as? String
+                artist.image = (user["userImage"] as? PFFileObject)?.url
+                artist.bio = user["bio"] as? String
+                artist.isVerified = user["artistVerification"] as? Bool
+                artist.website = user["website"] as? String
+                if let balance = user["balance"] as? Int {
+                    artist.balance = balance
                 }
-                
-                if let username = user["username"] as? String {
-                    artist.username = username
-                }
-                
-                if let city = user["city"] as? String {
-                    artist.city = city
-                }
-                
-                if let userImageFile = user["userImage"] as? PFFileObject {
-                    artist.image = userImageFile.url!
-                }
-                
-                if let bio = user["bio"] as? String {
-                    artist.bio = bio
-                }
-                
-                if let artistVerification = user["artistVerification"] as? Bool {
-                    artist.isVerified = artistVerification
-                }
-                
-                if let website = user["website"] as? String {
-                    artist.website = website
-                }
-                
-                if let hasUsedReferralCode = user["hasUsedReferralCode"] as? Bool {
-                    self.hasUsedReferralCode = hasUsedReferralCode
-                } else {
-                    self.hasUsedReferralCode = false
-                }
-                
-                if let referralCode = user["referralCode"] as? String {
-                    if !referralCode.isEmpty {
-                        self.referralCode = referralCode
-                    }
-                }
-                
                 self.artist = artist
                 if let userId = user.objectId {
                     self.getFriends(userId)
-                    self.getBalance(userId)
                 }
             }
         }
@@ -204,7 +172,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         }
     }
     
-    func getBalance(_ userId: String) {
+    /*func getBalance(_ userId: String) {
         let query = PFQuery(className: "Payment")
         query.whereKey("userId", equalTo: userId)
         query.getFirstObjectInBackground {
@@ -215,25 +183,21 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 self.newArtistPaymentRow(userId, tipAmount: 0)
             }
         }
-    }
+    }*/
     
     func updateBalance(_ addSubFunds: Int) {
         let newBalance = addSubFunds + self.artist!.balance!
         self.artist?.balance = newBalance
         
         if let artistObjectId = self.artist?.objectId {
-            let query = PFQuery(className: "Payment")
-            query.whereKey("userId", equalTo: artistObjectId)
-            query.getFirstObjectInBackground {
+            let query = PFQuery(className: "_User")
+                query.getObjectInBackground(withId: artistObjectId) {
                 (object: PFObject?, error: Error?) -> Void in
-                if error != nil {
-                    self.newArtistPaymentRow(artistObjectId, tipAmount: newBalance)
-                    
-                } else if let object = object {
-                    object["tipsSinceLastPayout"] = newBalance
-                    object.saveEventually()
+                    if let object = object {
+                        object["balance"] = newBalance
+                        object.saveEventually()
+                    }
                 }
-            }
         }
     }
     

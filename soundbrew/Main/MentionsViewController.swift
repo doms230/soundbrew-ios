@@ -116,10 +116,15 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       }
       
       func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-          if mentions.count == 0 {
-              let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-              cell.backgroundColor = color.black()
-              cell.headerTitle.text = "New likes, follows, and comment mentions will appear here!"
+        if mentions.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            if self.isLoadingMentions {
+                cell.headerTitle.text = ""
+            } else {
+                cell.headerTitle.text = "New likes, follows, and comment mentions will appear here!"
+            }
+              
               return cell
           } else {
              return mentionsCell(indexPath)
@@ -257,6 +262,9 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     var doneLoadingMentions = false
     var isLoadingMentions = false
     func loadMentions() {
+        if let refreshControl = self.tableView.refreshControl {
+            refreshControl.beginRefreshing()
+        }
         isLoadingMentions = true
         let query = PFQuery(className: "Mention")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
@@ -268,32 +276,41 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             self.isLoadingMentions = false
             self.tableView.refreshControl?.endRefreshing()
             if error == nil, let objects = objects {
-                for object in objects {
+                for i in 0..<objects.count {
+                    let object = objects[i]
+                    var isLastI = true
+                    if objects.indices.contains(i + 1) {
+                        isLastI = false
+                    }
                     let fromuserId = object["fromUserId"] as! String
                     let mention = Mention(object.createdAt!, artist: nil, comment: nil, sound: nil, type: nil, fromUserId: fromuserId, objectId: object.objectId!)
                     if let commentId = object["commentId"] as? String {
                         mention.type = "comment"
-                        self.loadComment(commentId, mention: mention)
+                        self.loadComment(commentId, mention: mention, isLastI: isLastI)
                     } else if let postId = object["postId"] as? String {
                         mention.type = "like"
-                        self.loadPost(postId, mention: mention)
+                        self.loadPost(postId, mention: mention, isLastI: isLastI)
                         
                     } else {
                         mention.type = "follow"
-                        self.loadArtist(mention)
+                        self.loadArtist(mention, isLastI: isLastI)
                     }
                 }
+                
                 if objects.count > 0 && PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                     SKStoreReviewController.requestReview()
                 }
             } else {
                 self.doneLoadingMentions = true
                 self.tableView.reloadData()
+                if let refreshControl = self.tableView.refreshControl {
+                    refreshControl.beginRefreshing()
+                }
             }
         }
     }
     
-    func loadComment(_ commentId: String, mention: Mention) {
+    func loadComment(_ commentId: String, mention: Mention, isLastI: Bool) {
         let query = PFQuery(className: "Comment")
         query.getObjectInBackground(withId: commentId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -304,24 +321,24 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
                 mention.comment = comment
                 let postId = object["postId"] as! String
-                self.loadPost(postId, mention: mention)
+                self.loadPost(postId, mention: mention, isLastI: isLastI)
             }
         }
     }
     
-    func loadPost(_ soundId: String, mention: Mention) {
+    func loadPost(_ soundId: String, mention: Mention, isLastI: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: soundId) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
                 let sound = self.uiElement.newSoundObject(object)
                 mention.sound = sound
-                self.loadArtist(mention)
+                self.loadArtist(mention, isLastI: isLastI)
             }
         }
     }
     
-    func loadArtist(_ mention: Mention) {
+    func loadArtist(_ mention: Mention, isLastI: Bool) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: mention.fromUserId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -331,7 +348,9 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.mentions.append(mention)
                let sortedMentions =  self.mentions.sorted(by: {$0.createdAt > $1.createdAt})
                 self.mentions = sortedMentions
-                self.tableView.reloadData()
+                if isLastI {
+                    self.tableView.reloadData()
+                }
             }
         }
     }

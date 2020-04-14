@@ -113,14 +113,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showSounds() {
-        /*if soundType == "follow" {
-            if let userId = PFUser.current()?.objectId {
-                self.userId = userId
-            } else {
-                self.userId = ""
-            }
-        }*/
-        
         soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
         
         if soundType == "chart" {
@@ -229,8 +221,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if soundType == "chart" && indexPath.section == 2 {
-            didSelectRowAt(indexPath.row)
+        if soundType == "chart" {
+            if indexPath.section == 2 {
+                didSelectRowAt(indexPath.row)
+            }
+            
         } else {
             didSelectRowAt(indexPath.row)
         }
@@ -238,6 +233,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func didSelectRowAt(_ row: Int) {
         //TESTING: PLAYER
+        self.selectedStory = nil 
         let player = soundList.player
         player.sounds = soundList.sounds
         player.didSelectSoundAt(row)

@@ -101,8 +101,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func sendTip(_ sound: Sound, tipAmount: Int) {
-        //if customer.artist!.balance! >= tipAmount {
-        if 0 >= tipAmount {
+        if customer.artist!.balance! >= tipAmount {
             tipAction(sound, tipAmount: tipAmount)
             
         } else {
@@ -140,6 +139,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                 if let rewardedAd = self.rewardedAd {
                     if rewardedAd.isReady == true {
                        rewardedAd.present(fromRootViewController: self, delegate: self)
+                        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "watchAddActionButton", "Description": "Opted to watch video ad"])
                     }
                 }
             }

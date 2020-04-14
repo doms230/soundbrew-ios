@@ -260,8 +260,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 3:
-                cell.displayNameLabel.text = "Cash out"
-                cell.username.text = "Empty your wallet"
+                if let earnings = self.artist?.earnings {
+                    cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
+                }
+                cell.username.text = "Earnings"
                 break
                 
             default:
@@ -281,13 +283,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
         
     func cashout() {
-        var currentUserBalance = 0
-        if let balance = Customer.shared.artist?.balance {
-            currentUserBalance = balance
+        var currentUserEarnings = 0
+        if let earnings = self.artist?.earnings {
+            currentUserEarnings = earnings
         }
         
         let oneHundredDollarsInCents = 2000
-        if currentUserBalance >= oneHundredDollarsInCents {
+        if currentUserEarnings >= oneHundredDollarsInCents {
                     let alertView = UIAlertController(
                 title: "Email payment@soundbrew.app",
                 message: "We're currently handling payouts manually. Email us so we can get you paid!",
@@ -299,8 +301,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             present(alertView, animated: true, completion: nil)
             
         } else {
-            let balanceInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserBalance, currency: "$")
-            self.uiElement.showAlert("Current Balance: \(balanceInDollars)", message: "Cash out is available when your balance reaches $20", target: self)
+            let earningsInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserEarnings, currency: "$")
+            self.uiElement.showAlert("Earnings: \(earningsInDollars)", message: "Cash out is available when your earnings reach $20. There is a 15% Soundbrew fee to cash out.", target: self)
         }
     }
     

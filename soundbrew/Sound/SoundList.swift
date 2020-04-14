@@ -150,35 +150,30 @@ class SoundList: NSObject, PlayerDelegate {
             }
             let tipsInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(tips, currency: "$")
                         
-            if let currentUser = PFUser.current() {
-                if sound.artist!.objectId == currentUser.objectId {
-                    let localizedTips = NSLocalizedString("tips", comment: "")
-                    let localizedIn = NSLocalizedString("in", comment: "")
+            if let currentUser = PFUser.current(), sound.artist!.objectId == currentUser.objectId {
+                let localizedTips = NSLocalizedString("tips", comment: "")
+                let localizedIn = NSLocalizedString("in", comment: "")
 
-                    let menuAlert = UIAlertController(title: "\(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
-                        
-                    if let isDraft = sound.isDraft, isDraft {
-                        let localizedEditSound = NSLocalizedString("editSound", comment: "")
-                        menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
-                            self.selectedSound = sound
-                            self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
-                        }))
-                    }
-
-                    let localizedDeleteSound = NSLocalizedString("deleteSound", comment: "")
-                    menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
-                        self.deleteSong(sound.objectId!, row: row)
-                        }))
+                let menuAlert = UIAlertController(title: "\(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
                     
-                        
-                    let localizedCancel = NSLocalizedString("cancel", comment: "")
-                    menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
-                        
-                    target.present(menuAlert, animated: true, completion: nil)
-                    
-                } else {
-                    showOtherMenuAlert(sound, row: sender.tag)
+                if let isDraft = sound.isDraft, isDraft {
+                    let localizedEditSound = NSLocalizedString("editSound", comment: "")
+                    menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
+                        self.selectedSound = sound
+                        self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
+                    }))
                 }
+
+                let localizedDeleteSound = NSLocalizedString("deleteSound", comment: "")
+                menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
+                    self.deleteSong(sound.objectId!, row: row)
+                    }))
+                
+                    
+                let localizedCancel = NSLocalizedString("cancel", comment: "")
+                menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+                    
+                target.present(menuAlert, animated: true, completion: nil)
                 
             } else {
                 showOtherMenuAlert(sound, row: sender.tag)
@@ -307,15 +302,19 @@ class SoundList: NSObject, PlayerDelegate {
         
         switch soundType {
         case "chart":
-            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil)
+            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil)
             break
             
         case "discover":
-            loadWorldCreatedAtSounds()
+            var tag: String?
+            if let selectedTag = self.selectedTagForFiltering {
+                tag = selectedTag.name
+            }
+            loadSounds("tippers", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: tag)
             break
             
         case "uploads":
-            loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil)
+            loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil, tag: nil)
             break
             
         case "collection":
@@ -331,18 +330,18 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "search":
-            loadSounds("plays", postIds: nil, userId: nil, searchText: searchText, followIds: nil)
+            loadSounds("plays", postIds: nil, userId: nil, searchText: searchText, followIds: nil, tag: nil)
             break
             
         case "follow":
             if let followUserIds = self.uiElement.getUserDefault("friends") as? [String] {
-                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds)
+                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds, tag: nil)
             }
             break
             
         case "drafts":
             if let userId = self.profileUserId {
-                self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil)
+                self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil, tag: nil)
             }
             break
             
@@ -353,7 +352,7 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "new":
-            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil)
+            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil)
             break
             
         default:
@@ -403,7 +402,7 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?) {
+    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?) {
         
         isUpdatingData = true 
         
@@ -419,6 +418,10 @@ class SoundList: NSObject, PlayerDelegate {
         
         if let userId = userId {
             query.whereKey("userId", equalTo: userId)
+        }
+        
+        if let tag = tag {
+          query.whereKey("tags", contains: tag)
         }
         
         if let descendingOrder = descendingOrder {
@@ -492,7 +495,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if self.soundType == "collection" {
-                    self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil)
+                    self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil)
                 }
                 
             } else {
@@ -517,7 +520,7 @@ class SoundList: NSObject, PlayerDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil)
+                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil)
             }
         }
     }
@@ -534,7 +537,7 @@ class SoundList: NSObject, PlayerDelegate {
                 for object in objects {
                     self.storyPostIds.append(object["postId"] as! String)
                 }
-                self.loadSounds(self.descendingOrder, postIds: self.storyPostIds, userId: nil, searchText: nil, followIds: nil)
+                self.loadSounds(self.descendingOrder, postIds: self.storyPostIds, userId: nil, searchText: nil, followIds: nil, tag: nil)
             }
         }
     }
@@ -568,104 +571,5 @@ class SoundList: NSObject, PlayerDelegate {
         }))        
         
         target.present(menuAlert, animated: true, completion: nil)
-    }
-    
-    //
-    var worldCreatedAtSounds = [Sound]()
-    var worldTopSounds = [Sound]()
-    var mixedWorldSounds = [Sound]()
-    
-    func mixSounds(_ createdAtSounds: Array<Sound>, topSounds: Array<Sound>) -> Array<Sound> {
-        var mixSounds: Array<Sound> = []
-        let totalSoundsCount = createdAtSounds.count + topSounds.count
-        for i in 0..<totalSoundsCount {
-            if i % 2 == 0 {
-                if topSounds.indices.contains(i / 2) {
-                    mixSounds.append(topSounds[i / 2])
-                }
-                
-            } else {
-                if createdAtSounds.indices.contains(i / 2) {
-                    mixSounds.append(createdAtSounds[i / 2])
-                }
-            }
-        }
-        
-        return mixSounds
-    }
-    
-    func loadWorldCreatedAtSounds() {
-        self.worldCreatedAtSounds.removeAll()
-        self.worldTopSounds.removeAll()
-        self.mixedWorldSounds.removeAll()
-        
-        let query = PFQuery(className: "Post")
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("createdAt")
-        query.limit = 10
-        if let tag = self.selectedTagForFiltering {
-            query.whereKey("tags", contains: tag.name)
-        }
-        if sounds.count != 0 {
-         query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
-         }
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.uiElement.newSoundObject(object)
-                        self.worldCreatedAtSounds.append(sound)
-                    }
-                    self.loadWorldTopSounds()
-                }
-            }
-        }
-    }
-    
-    func loadWorldTopSounds() {
-        let query = PFQuery(className: "Post")
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.addDescendingOrder("tips")
-        query.whereKey("objectId", notContainedIn: worldCreatedAtSounds.map {$0.objectId!})
-        query.limit = 10
-        if sounds.count != 0 {
-         query.whereKey("objectId", notContainedIn: sounds.map {$0.objectId!})
-         }
-        if let tag = self.selectedTagForFiltering {
-            query.whereKey("tags", contains: tag.name)
-        }
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let sound = self.uiElement.newSoundObject(object)
-                        self.worldTopSounds.append(sound)
-                    }
-                    self.mixedWorldSounds = self.mixSounds(self.worldCreatedAtSounds, topSounds: self.worldTopSounds)
-                    
-                    var newSounds: Array<Sound>!
-                    newSounds = self.mixedWorldSounds
-                    
-                    for newSound in newSounds {
-                        self.sounds.append(newSound)
-                    }
-
-                    if objects.count == 0 {
-                        self.thereIsMoreDataToLoad = false 
-                    }
-                    
-                    self.updateTableView()
-                    
-                } else {
-                    self.thereIsMoreDataToLoad = false
-                }
-                
-            } else {
-                self.thereIsMoreDataToLoad = false
-                print("Error: \(error!)")
-            }
-        }
     }
 }
