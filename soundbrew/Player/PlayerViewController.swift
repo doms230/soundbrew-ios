@@ -40,10 +40,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         customer = Customer.shared
         if let balance = customer.artist?.balance {
             if balance == 0 {
-                self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+                self.rewardedAd = createAndLoadRewardedAd(liveAdUnitId)
             }
         } else {
-            self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+            self.rewardedAd = createAndLoadRewardedAd(liveAdUnitId)
         }
     }
     
@@ -1055,6 +1055,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     //mark: ads
     let testAdUnitId = "ca-app-pub-3940256099942544/1712485313"
+    let liveAdUnitId = "ca-app-pub-9150756002517285/9458994684"
     var rewardedAd: GADRewardedAd?
     func createAndLoadRewardedAd(_ adUnitId: String) -> GADRewardedAd? {
       rewardedAd = GADRewardedAd(adUnitID: adUnitId)
@@ -1096,7 +1097,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     /// Tells the delegate that the rewarded ad was dismissed.
     func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
-        //self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
     }
         
     /// Tells the delegate that the rewarded ad failed to present.
