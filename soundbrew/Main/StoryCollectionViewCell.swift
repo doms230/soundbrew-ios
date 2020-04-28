@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class HomeCollectionViewCell: UICollectionViewCell {
+class StoryCollectionViewCell: UICollectionViewCell {
     
     let uiElement = UIElement()
     let color = Color()

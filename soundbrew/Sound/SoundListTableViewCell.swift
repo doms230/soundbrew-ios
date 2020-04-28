@@ -305,21 +305,21 @@ class SoundListTableViewCell: UITableViewCell {
         case "tagsReuse":
             self.addSubview(tagsScrollview)
             tagsScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(100)
+                make.height.equalTo(70)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
-                //make.bottom.equalTo(self)
+                make.bottom.equalTo(self)
             }
             
-            self.addSubview(dividerLine)
+           /* self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(tagsScrollview.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self)
                 make.right.equalTo(self)
                 make.bottom.equalTo(self)
-            }
+            }*/
         break
             
         case "featuredTitleReuse":
@@ -328,7 +328,7 @@ class SoundListTableViewCell: UITableViewCell {
             headerTitle.font = UIFont(name: "\(UIElement().mainFont)-Bold", size: 30)
             headerTitle.textAlignment = .left
             headerTitle.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
+                make.height.equalTo(40)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)

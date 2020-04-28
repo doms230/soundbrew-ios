@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import Kingfisher
 
-class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PlayerDelegate, TagDelegate {
+/*class StoryViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PlayerDelegate, TagDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -97,7 +97,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     //mark: collectionview
     var collectionView: UICollectionView!
     var selectedIndexPath: IndexPath?
-    var cell: HomeCollectionViewCell!
+    var cell: StoryColl!
     
     func setupCollectionView() {
         collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
@@ -354,7 +354,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
-}
+}*/
 
 class Story {
     var artist: Artist!

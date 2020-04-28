@@ -1,116 +1,116 @@
 {
   "images" : [
     {
-      "size" : "20x20",
+      "filename" : "soundbrew_logo(1).png",
       "idiom" : "iphone",
-      "filename" : "logo(1).png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "20x20"
     },
     {
-      "size" : "20x20",
+      "filename" : "soundbrew_logo(1)-1.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-1.png",
-      "scale" : "3x"
+      "scale" : "3x",
+      "size" : "20x20"
     },
     {
-      "size" : "29x29",
+      "filename" : "soundbrew_logo(1)-2.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-2.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "29x29"
     },
     {
-      "size" : "29x29",
+      "filename" : "soundbrew_logo(1)-3.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-3.png",
-      "scale" : "3x"
+      "scale" : "3x",
+      "size" : "29x29"
     },
     {
-      "size" : "40x40",
+      "filename" : "soundbrew_logo(1)-4.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-4.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "40x40"
     },
     {
-      "size" : "40x40",
+      "filename" : "soundbrew_logo(1)-5.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-5.png",
-      "scale" : "3x"
+      "scale" : "3x",
+      "size" : "40x40"
     },
     {
-      "size" : "60x60",
+      "filename" : "soundbrew_logo(1)-6.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-6.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "60x60"
     },
     {
-      "size" : "60x60",
+      "filename" : "soundbrew_logo(1)-7.png",
       "idiom" : "iphone",
-      "filename" : "logo(1)-7.png",
-      "scale" : "3x"
+      "scale" : "3x",
+      "size" : "60x60"
     },
     {
-      "size" : "20x20",
+      "filename" : "soundbrew_logo(1)-8.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-8.png",
-      "scale" : "1x"
+      "scale" : "1x",
+      "size" : "20x20"
     },
     {
-      "size" : "20x20",
+      "filename" : "soundbrew_logo(1)-9.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-9.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "20x20"
     },
     {
-      "size" : "29x29",
+      "filename" : "soundbrew_logo(1)-10.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-10.png",
-      "scale" : "1x"
+      "scale" : "1x",
+      "size" : "29x29"
     },
     {
-      "size" : "29x29",
+      "filename" : "soundbrew_logo(1)-11.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-11.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "29x29"
     },
     {
-      "size" : "40x40",
+      "filename" : "soundbrew_logo(1)-12.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-12.png",
-      "scale" : "1x"
+      "scale" : "1x",
+      "size" : "40x40"
     },
     {
-      "size" : "40x40",
+      "filename" : "soundbrew_logo(1)-13.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-13.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "40x40"
     },
     {
-      "size" : "76x76",
+      "filename" : "soundbrew_logo(1)-14.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-14.png",
-      "scale" : "1x"
+      "scale" : "1x",
+      "size" : "76x76"
     },
     {
-      "size" : "76x76",
+      "filename" : "soundbrew_logo(1)-15.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-15.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "76x76"
     },
     {
-      "size" : "83.5x83.5",
+      "filename" : "soundbrew_logo(1)-16.png",
       "idiom" : "ipad",
-      "filename" : "logo(1)-16.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "size" : "83.5x83.5"
     },
     {
-      "size" : "1024x1024",
+      "filename" : "soundbrew_logo(1)-17.png",
       "idiom" : "ios-marketing",
-      "filename" : "logo(1)-17.png",
-      "scale" : "1x"
+      "scale" : "1x",
+      "size" : "1024x1024"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

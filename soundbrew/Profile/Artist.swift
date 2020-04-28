@@ -48,7 +48,7 @@ class Artist {
         self.friendObjectIds = friendObjectIds
     }
     
-    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, HomeCollectionCell: HomeCollectionViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
+    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, HomeCollectionCell: StoryCollectionViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in

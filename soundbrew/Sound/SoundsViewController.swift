@@ -84,8 +84,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
             
-            let viewController = segue.destination as! HomeViewController
-            viewController.stories = self.stories
+           // let viewController = segue.destination as! StoryViewController
+            //viewController.stories = self.stories
             break
             
         case "showSounds":
@@ -168,18 +168,21 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func numberOfSections(in tableView: UITableView) -> Int {
         if soundType == "chart" {
-            return 3
+            return 2
         }
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if soundType == "chart" {
-            if section == 0 && self.stories.count == 0 {
-                return 0
-            } else if section == 2 {
-               return numberOfRowsInSectionSoundList()
+            if section == 1 {
+                return numberOfRowsInSectionSoundList()
             }
+           /* if section == 0 && self.stories.count == 0 {
+                return 0
+            } else if section == 1 {
+               return numberOfRowsInSectionSoundList()
+            }*/
             return 1
         } else {
             return numberOfRowsInSectionSoundList()
@@ -196,15 +199,18 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if soundType == "chart" {
             if indexPath.section == 0 {
-                return storyCell()
-            } else if indexPath.section == 1 {
+                return featuredCell()
+            } else {
+                return cellForRowAtSoundList(indexPath, tableView: tableView)
+            }
+            /*else if indexPath.section == 1 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: featuredTitleReuse) as! SoundListTableViewCell
                 cell.backgroundColor = color.black()
                 return cell
                 
             } else {
                 return cellForRowAtSoundList(indexPath, tableView: tableView)
-            }
+            }*/
             
         } else {
             return cellForRowAtSoundList(indexPath, tableView: tableView)
@@ -329,6 +335,40 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 break
             }
         }
+    }
+    
+    //mark: Featured Title
+    func featuredCell() -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: storyReuse) as! SoundListTableViewCell
+        cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
+        cell.tagsScrollview.backgroundColor = color.black()
+                
+        var xPositionForFeatureTags = UIElement().leftOffset
+        cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview()})
+        
+        let scrollView = cell.tagsScrollview
+        let buttonWidth = 150
+        let titles = ["For You", "Following", "New York"]
+        for i in 0..<titles.count {
+            let storyButton = UIButton()
+            storyButton.layer.cornerRadius = 3
+            storyButton.clipsToBounds = true
+            storyButton.setTitle(titles[i], for: .normal)
+            storyButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+            scrollView.addSubview(storyButton)
+            storyButton.snp.makeConstraints { (make) -> Void in
+               // make.height.equalTo(buttonHeight)
+                make.width.equalTo(buttonWidth)
+                make.top.equalTo(scrollView)
+                make.bottom.equalTo(scrollView)
+                make.left.equalTo(scrollView).offset(xPositionForFeatureTags)
+            }
+            xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
+            scrollView.contentSize = CGSize(width: xPositionForFeatureTags, height: 70)
+        }
+                
+        return cell
     }
     
     //mark: Story
