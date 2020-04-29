@@ -40,10 +40,10 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         customer = Customer.shared
         if let balance = customer.artist?.balance {
             if balance == 0 {
-                self.rewardedAd = createAndLoadRewardedAd(liveAdUnitId)
+                self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
             }
         } else {
-            self.rewardedAd = createAndLoadRewardedAd(liveAdUnitId)
+            self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
         }
     }
     
@@ -104,8 +104,13 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         if customer.artist!.balance! >= tipAmount {
             tipAction(sound, tipAmount: tipAmount)
             
-        } else {
-            let soundbrewBalance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
+        } else if let rewardedAd = self.rewardedAd {
+                if rewardedAd.isReady == true {
+                   rewardedAd.present(fromRootViewController: self, delegate: self)
+                    MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "watchAddActionButton", "Description": "Opted to watch video ad"])
+                }
+            }
+           /* let soundbrewBalance = uiElement.convertCentsToDollarsAndReturnString(customer.artist!.balance ?? 0, currency: "$")
             let paymentAmount = uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
 
             let localizedAddFunds = NSLocalizedString("addFunds", comment: "")
@@ -149,7 +154,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             alertView.addAction(cancelAction)
             
             present(alertView, animated: true, completion: nil)
-        }
+        }*/
     }
         
     func updateArtistPayment(_ userId: String, tipAmount: Int) {
@@ -1072,7 +1077,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
 
     /// Tells the delegate that the user earned a reward.
     func rewardedAd(_ rewardedAd: GADRewardedAd, userDidEarn reward: GADAdReward) {
-        print("Reward received with currency: \(reward.type), amount \(reward.amount).")
         let rewardAmount = Int(truncating: reward.amount)
         let currentUser = Customer.shared
         var newBalance = 0
@@ -1084,10 +1088,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         }
         
         if let sound = self.sound {
-            print("tip action")
             self.tipAction(sound, tipAmount: rewardAmount)
-        } else {
-            print("no tip action")
         }
     }
     
@@ -1097,10 +1098,32 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     /// Tells the delegate that the rewarded ad was dismissed.
     func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
+        // self.askToAdFundsToTheirAccount()
+        print("ad was dismissed")
     }
         
     /// Tells the delegate that the rewarded ad failed to present.
     func rewardedAd(_ rewardedAd: GADRewardedAd, didFailToPresentWithError error: Error) {
       print("Rewarded ad failed to present.")
+    }
+        
+    func askToAdFundsToTheirAccount() {
+         let alertView = UIAlertController(
+             title: "Tired of Ads?",
+             message: "Directly pay artists and skip the ads by adding funds to your account!",
+             preferredStyle: .actionSheet)
+         
+         let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
+             let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+             self.handleDismissal(artist)
+             
+             MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
+         }
+         alertView.addAction(addFundsActionButton)
+         
+         let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
+         alertView.addAction(cancelAction)
+         
+         present(alertView, animated: true, completion: nil)
     }
 }
