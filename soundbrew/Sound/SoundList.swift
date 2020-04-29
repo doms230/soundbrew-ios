@@ -97,7 +97,7 @@ class SoundList: NSObject, PlayerDelegate {
                     cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                 }
             } else if let artist = sound.artist {
-                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, HomeCollectionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
             cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
@@ -299,10 +299,25 @@ class SoundList: NSObject, PlayerDelegate {
     
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.isUpdatingData = true
-        
         switch soundType {
+        case "forYou":
+            if let currentUserId = PFUser.current()?.objectId {
+                loadLastLike(currentUserId)
+            }
+            break
+            
+        case "yourCity":
+            if let currentArtist = Customer.shared.artist {
+                if let city = currentArtist.city {
+                    loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: city, forYouTags: nil)
+                } else {
+                    self.updateTableView()
+                }
+            }
+            break
+            
         case "chart":
-            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil)
+            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             break
             
         case "discover":
@@ -310,11 +325,11 @@ class SoundList: NSObject, PlayerDelegate {
             if let selectedTag = self.selectedTagForFiltering {
                 tag = selectedTag.name
             }
-            loadSounds("tippers", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: tag)
+            loadSounds("tippers", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: tag, forYouTags: nil)
             break
             
         case "uploads":
-            loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil, tag: nil)
+            loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             break
             
         case "collection":
@@ -330,29 +345,23 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "search":
-            loadSounds("plays", postIds: nil, userId: nil, searchText: searchText, followIds: nil, tag: nil)
+            loadSounds("plays", postIds: nil, userId: nil, searchText: searchText, followIds: nil, tag: nil, forYouTags: nil)
             break
             
         case "follow":
             if let followUserIds = self.uiElement.getUserDefault("friends") as? [String] {
-                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds, tag: nil)
+                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds, tag: nil, forYouTags: nil)
             }
             break
             
         case "drafts":
             if let userId = self.profileUserId {
-                self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil, tag: nil)
-            }
-            break
-            
-        case "story":
-            if let userId = self.profileUserId {
-                self.loadStories(userId)
+                self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             }
             break
             
         case "new":
-            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil)
+            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             break
             
         default:
@@ -372,7 +381,7 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedTagForFiltering: Tag!
 
     //mark: data
-    func loadSound(_ objectId: String) {
+    func loadSound(_ objectId: String, isForYouPage: Bool) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -380,10 +389,32 @@ class SoundList: NSObject, PlayerDelegate {
                 print(error)
                 
             } else if let object = object {
-                let sound = self.uiElement.newSoundObject(object)
-                self.sounds.append(sound)
-                self.isUpdatingData = false
-                self.tableView?.reloadData()
+                if isForYouPage {
+                    print("is for you pag")
+                    let tags = object["tags"] as! [String]?
+                    print("tags: \(String(describing: tags))")
+                    self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: tags)
+                } else {
+                    let sound = self.uiElement.newSoundObject(object)
+                    self.sounds.append(sound)
+                    self.isUpdatingData = false
+                    self.tableView?.reloadData()
+                }
+            }
+        }
+    }
+    
+    func loadLastLike(_ userId: String) {
+        let query = PFQuery(className: "Tip")
+        query.whereKey("fromUserId", equalTo: userId)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                print("got last Like")
+                let soundId = object["soundId"] as! String
+                self.loadSound(soundId, isForYouPage: true)
+             } else {
+                self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             }
         }
     }
@@ -402,7 +433,7 @@ class SoundList: NSObject, PlayerDelegate {
         }
     }
     
-    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?) {
+    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?, forYouTags: [String]?) {
         
         isUpdatingData = true 
         
@@ -422,6 +453,8 @@ class SoundList: NSObject, PlayerDelegate {
         
         if let tag = tag {
           query.whereKey("tags", contains: tag)
+        } else if let tags = forYouTags {
+            query.whereKey("tags", containedIn: tags)
         }
         
         if let descendingOrder = descendingOrder {
@@ -429,7 +462,7 @@ class SoundList: NSObject, PlayerDelegate {
         } else {
             query.whereKey("isFeatured", equalTo: true)
             query.addDescendingOrder("createdAt")
-            query.addDescendingOrder("tippers")
+           // query.whereKeyExists("tippers")
         }
         
         if let searchText = searchText {
@@ -469,12 +502,7 @@ class SoundList: NSObject, PlayerDelegate {
                 self.thereIsMoreDataToLoad = false                
             }
             
-            if self.soundType == "story" {
-                self.player.sounds = self.sounds
-                self.player.didSelectSoundAt(0)
-            } else {
-                self.updateTableView()
-            }
+            self.updateTableView()
         }
     }
     
@@ -495,7 +523,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if self.soundType == "collection" {
-                    self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil)
+                    self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
                 }
                 
             } else {
@@ -520,24 +548,7 @@ class SoundList: NSObject, PlayerDelegate {
                     }
                 }
                 
-                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil)
-            }
-        }
-    }
-        
-    var storyPostIds = [String]()
-    func loadStories(_ userId: String) {
-        let query = PFQuery(className: "Story")
-        query.whereKey("userId", equalTo: userId)
-        query.addDescendingOrder("createdAt")
-        query.limit = 5
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                for object in objects {
-                    self.storyPostIds.append(object["postId"] as! String)
-                }
-                self.loadSounds(self.descendingOrder, postIds: self.storyPostIds, userId: nil, searchText: nil, followIds: nil, tag: nil)
+                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             }
         }
     }

@@ -48,7 +48,7 @@ class Artist {
         self.friendObjectIds = friendObjectIds
     }
     
-    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, HomeCollectionCell: StoryCollectionViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
+    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -126,23 +126,6 @@ class Artist {
                     if let username = self.username {
                         cell.username.setTitle(username, for: .normal)
                     }
-                    
-                } else if let homeCollectionCell = HomeCollectionCell {
-                     if let name = self.name {
-                        homeCollectionCell.displayNameLabel.text = name
-                     }
-                     
-                     if let username = self.username {
-                        homeCollectionCell.username.text = "@\(username)"
-                     }
-                    /* if let city = self.city {
-                         cell.city.text = city
-                     }*/
-                     if let image = self.image {
-                        homeCollectionCell.profileImage.kf.setImage(with: URL(string: image))
-                     } else {
-                        homeCollectionCell.profileImage.image = UIImage(named: "profile_icon")
-                     }
                     
                 } else if let label = artistUsernameLabel, let image = artistImageButton {
                     if let username = self.username {

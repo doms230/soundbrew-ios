@@ -93,7 +93,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
             if sound.artist?.image == nil {
-                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, HomeCollectionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
             self.play()

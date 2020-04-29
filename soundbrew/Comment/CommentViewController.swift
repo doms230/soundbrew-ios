@@ -526,7 +526,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
             } else {
                 cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
-                artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, HomeCollectionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
             cell.username.tag = indexPath.row
