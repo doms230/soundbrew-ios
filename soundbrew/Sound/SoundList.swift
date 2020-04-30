@@ -59,12 +59,15 @@ class SoundList: NSObject, PlayerDelegate {
     func selectedArtist(_ artist: Artist?) {
         if let selectedArtist = artist {
             self.selectedArtist = selectedArtist
-            self.segueToProfile()
+            target.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
     
-    func segueToProfile() {
-        target.performSegue(withIdentifier: "showProfile", sender: self)
+    @objc func didPressArtistButton(_ sender: UIButton) {
+        let row = sender.tag
+        if sounds.indices.contains(sender.tag) {
+            self.selectedArtist(sounds[row].artist)
+        }
     }
     
     //mark: sounds
@@ -125,13 +128,6 @@ class SoundList: NSObject, PlayerDelegate {
         }
         
         return cell
-    }
-    
-    @objc func didPressArtistButton(_ sender: UIButton) {
-        let row = sender.tag
-        if sounds.indices.contains(sender.tag) {
-            self.selectedArtist(sounds[row].artist)
-        }
     }
     
     func prepareToShowTippers(_ segue: UIStoryboardSegue) {
@@ -303,16 +299,6 @@ class SoundList: NSObject, PlayerDelegate {
         case "forYou":
             if let currentUserId = PFUser.current()?.objectId {
                 loadLastLike(currentUserId)
-            }
-            break
-            
-        case "yourCity":
-            if let currentArtist = Customer.shared.artist {
-                if let city = currentArtist.city {
-                    loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: city, forYouTags: nil)
-                } else {
-                    self.updateTableView()
-                }
             }
             break
             

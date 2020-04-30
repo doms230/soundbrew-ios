@@ -28,11 +28,20 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var userId: String?
     var newUserArtistForEditing: Artist?
     
+    lazy var tagsScrollview: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         setupNotificationCenter()
-        showSounds()
+        if doesMatchHomeSoundType() {
+            createTopView()
+        } else {
+            showSounds()
+        }
         
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
@@ -83,15 +92,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             navigationItem.backBarButtonItem = backItem
             break
             
-        case "showStories":
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            
-           // let viewController = segue.destination as! StoryViewController
-            //viewController.stories = self.stories
-            break
-            
         case "showSounds":
             let viewController = segue.destination as! SoundsViewController
             viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
@@ -120,6 +120,55 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
     }
     
+    //mark: feature titles
+    var forYouButton: UIButton!
+    var followingButton: UIButton!
+    func createTopView() {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50))
+        var leftOffset = 0
+        forYouButton = setUpButton("For You", i: 0, leftOffset: leftOffset, view: view)
+        leftOffset = leftOffset + 150 + uiElement.leftOffset
+        followingButton = setUpButton("Following", i: 1, leftOffset: leftOffset, view: view)
+        let leftBarButton = UIBarButtonItem(customView: view)
+        self.navigationItem.leftBarButtonItem = leftBarButton
+        showSounds()
+    }
+    
+    func setUpButton(_ title: String, i: Int, leftOffset: Int, view: UIView) -> UIButton {
+        let button = UIButton()
+        button.setTitle(title, for: .normal)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        button.addTarget(self, action: #selector(self.didPressFeaturedButton(_:)), for: .touchUpInside)
+        button.tag = i
+        if i == 1 {
+            button.setTitleColor(.darkGray, for: .normal)
+        }
+        view.addSubview(button)
+        button.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.width.equalTo(150)
+            make.top.equalTo(view).offset(uiElement.bottomOffset * 3)
+            make.left.equalTo(view).offset(leftOffset)
+        }
+        return button
+    }
+    
+    @objc func didPressFeaturedButton(_ sender: UIButton) {
+        sender.setTitleColor(.white, for: .normal)
+        if sender.tag == 0 {
+            followingButton.setTitleColor(.darkGray, for: .normal)
+            soundType = "forYou"
+        } else {
+            forYouButton.setTitleColor(.darkGray, for: .normal)
+            soundType = "follow"
+        }
+
+        soundList.sounds.removeAll()
+        self.tableView.refreshControl?.beginRefreshing()
+        self.tableView.reloadData()
+        showSounds()
+    }
+        
     //mark: tableview
     var tableView = UITableView()
     let soundReuse = "soundReuse"
@@ -128,6 +177,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let storyReuse = "tagsReuse"
     let featuredTitleReuse = "featuredTitleReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
+        self.tableView.removeFromSuperview()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
@@ -149,10 +199,47 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(miniPlayer.snp.top)
             }
+           /* if doesMatchHomeSoundType() {
+                self.view.addSubview(tableView)
+                self.tableView.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self.forYouButton.snp.bottom)
+                    make.left.equalTo(self.view)
+                    make.right.equalTo(self.view)
+                    make.bottom.equalTo(miniPlayer.snp.top)
+                }
+                
+            } else {
+                self.view.addSubview(tableView)
+                self.tableView.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self.view)
+                    make.left.equalTo(self.view)
+                    make.right.equalTo(self.view)
+                    make.bottom.equalTo(miniPlayer.snp.top)
+                }
+            }*/
+
             
         } else {
-            self.tableView.frame = view.bounds
             self.view.addSubview(tableView)
+            self.tableView.frame = self.view.bounds
+            /*if doesMatchHomeSoundType() {
+                self.view.addSubview(tableView)
+                self.tableView.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self.forYouButton.snp.bottom)
+                    make.left.equalTo(self.view)
+                    make.right.equalTo(self.view)
+                    make.bottom.equalTo(self.view)
+                }
+                
+            } else {
+                self.view.addSubview(tableView)
+                self.tableView.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self.view)
+                    make.left.equalTo(self.view)
+                    make.right.equalTo(self.view)
+                    make.bottom.equalTo(self.view)
+                }
+            }*/
         }
         
         let player = Player.sharedInstance
@@ -164,26 +251,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if doesMatchHomeSoundType() {
-            return 2
-        }
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if doesMatchHomeSoundType() {
-            if section == 1 {
-                return numberOfRowsInSectionSoundList()
-            }
-           /* if section == 0 && self.stories.count == 0 {
-                return 0
-            } else if section == 1 {
-               return numberOfRowsInSectionSoundList()
-            }*/
-            return 1
-        } else {
-            return numberOfRowsInSectionSoundList()
-        }
+        return numberOfRowsInSectionSoundList()
     }
     
     func numberOfRowsInSectionSoundList() -> Int {
@@ -194,24 +266,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if doesMatchHomeSoundType() {
-            if indexPath.section == 0 {
-                return featuredCell()
-            } else {
-                return cellForRowAtSoundList(indexPath, tableView: tableView)
-            }
-            /*else if indexPath.section == 1 {
-                let cell = self.tableView.dequeueReusableCell(withIdentifier: featuredTitleReuse) as! SoundListTableViewCell
-                cell.backgroundColor = color.black()
-                return cell
-                
-            } else {
-                return cellForRowAtSoundList(indexPath, tableView: tableView)
-            }*/
-            
-        } else {
-            return cellForRowAtSoundList(indexPath, tableView: tableView)
-        }
+        return cellForRowAtSoundList(indexPath, tableView: tableView)
     }
     
     func cellForRowAtSoundList(_ indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
@@ -225,7 +280,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if doesMatchHomeSoundType() {
-            if indexPath.section == 2 {
+            if indexPath.section == 1 {
                 didSelectRowAt(indexPath.row)
             }
             
@@ -256,8 +311,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
         cell.backgroundColor = color.black()
         if soundList.isUpdatingData {
-            let localizedLoading = NSLocalizedString("loading", comment: "")
-            cell.headerTitle.text = localizedLoading
+            cell.headerTitle.text = ""
         } else  if soundType == "follow" {
             //let localizedLatestReleases = NSLocalizedString("latestReleases", comment: "")
             cell.headerTitle.text = "Follow people to keep up with their latest uploads!"
@@ -275,6 +329,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
         DispatchQueue.main.async {
+            self.miniPlayerView?.removeFromSuperview()
             self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
             if let miniPlayer = self.miniPlayerView {
                 self.view.addSubview(miniPlayer)
@@ -334,74 +389,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
     }
-    
-    //mark: Featured Title
-    var selectedTitle = 0
-    func featuredCell() -> SoundListTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: storyReuse) as! SoundListTableViewCell
-        cell.selectionStyle = .none
-        cell.backgroundColor = color.black()
-        cell.tagsScrollview.backgroundColor = color.black()
-                
-        var xPositionForFeatureTags = UIElement().leftOffset
-        cell.tagsScrollview.subviews.forEach({ $0.removeFromSuperview()})
-        
-        let scrollView = cell.tagsScrollview
-        let buttonWidth = 150
-        let titles = ["For You", "Following", "Your City"]
-        for i in 0..<titles.count {
-            let featureButton = UIButton()
-            featureButton.layer.cornerRadius = 3
-            featureButton.clipsToBounds = true
-            featureButton.setTitle(titles[i], for: .normal)
-            featureButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-            featureButton.addTarget(self, action: #selector(self.didPressFeaturedButton(_:)), for: .touchUpInside)
-            featureButton.tag = i
-            if selectedTitle == i {
-                featureButton.setTitleColor(.white, for: .normal)
-            } else {
-                featureButton.setTitleColor(.darkGray, for: .normal)
-            }
-            scrollView.addSubview(featureButton)
-            featureButton.snp.makeConstraints { (make) -> Void in
-               // make.height.equalTo(buttonHeight)
-                make.width.equalTo(buttonWidth)
-                make.top.equalTo(scrollView)
-                make.bottom.equalTo(scrollView)
-                make.left.equalTo(scrollView).offset(xPositionForFeatureTags)
-            }
-            xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
-            scrollView.contentSize = CGSize(width: xPositionForFeatureTags, height: 70)
-        }
-                
-        return cell
-    }
-    
-    @objc func didPressFeaturedButton(_ sender: UIButton) {
-        selectedTitle = sender.tag
-        switch sender.tag {
-        case 0:
-            soundType = "forYou"
-            break
-            
-        case 1:
-            soundType = "follow"
-            break
-            
-        case 2:
-            soundType = "yourCity"
-            break
-            
-        default:
-            break
-        }
-        soundList.sounds.removeAll()
-        self.tableView.refreshControl?.beginRefreshing()
-        self.tableView.reloadData()
-        showSounds()
-    }
-    
-    //
     
     func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
         let query = PFQuery(className: "Post")

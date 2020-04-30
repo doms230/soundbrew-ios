@@ -18,16 +18,18 @@ import NVActivityIndicatorView
 import AppCenterAnalytics
 import GoogleMobileAds
 
-class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource, PlayerDelegate, TagDelegate, GADRewardedAdDelegate {
+class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource, PlayerDelegate, TagDelegate, GADRewardedAdDelegate, GADBannerViewDelegate {
     
     let color = Color()
     let uiElement = UIElement()
     
-    let player = Player.sharedInstance
+    var player = Player.sharedInstance
     var sound: Sound?
     
     var playerDelegate: PlayerDelegate?
     var tagDelegate: TagDelegate?
+    
+    var skipCount = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,14 +38,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
         
     override func viewDidAppear(_ animated: Bool) {
-        self.setSound()
-        customer = Customer.shared
+         customer = Customer.shared
         if let balance = customer.artist?.balance {
             if balance == 0 {
-                self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+                self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
+                setUpBannerView()
             }
         } else {
-            self.rewardedAd = createAndLoadRewardedAd(testAdUnitId)
+            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
+            setUpBannerView()
         }
     }
     
@@ -451,17 +454,41 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     func resetPlayView() {
-        self.playBackButton.isEnabled = false
+        self.playBackButton.isHidden = true
+        
         self.loadSoundSpinner.isHidden = false
-        self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        
         timer.invalidate()
         self.playBackSlider.value = 0
+        self.playBackSlider.isEnabled = false
+        
         self.playBackCurrentTime.text = "0s"
         self.playBackTotalTime.text = "0s"
         
-        let localizedLoading = NSLocalizedString("loading", comment: "")
+        self.soundArtistImage.image = UIImage()
+        self.soundArtistImage.backgroundColor = .darkGray
 
-        self.songTitle.text = localizedLoading
+        self.creditCountButton.isEnabled = false
+        self.creditCountLabel.text = "0"
+        
+        self.commentCountButton.isEnabled = false
+        self.commentCountLabel.text = "0"
+        
+        self.playCountButton.isEnabled = false
+        self.playCountLabel.text = "0"
+        
+        self.hashtagCountButton.isEnabled = false
+        self.hashtagCountLabel.text = "0"
+        
+        self.likesCountButton.isEnabled = false
+        self.likeCountLabel.text = "0"
+
+        self.likeSoundButton.isEnabled = false
+        self.paymentAmountForLike.text = ""
+        
+        self.shareButton.isEnabled = false
+        
+        self.songTitle.text = ""
         
         self.songArt.image = UIImage(named: "sound")
         
@@ -472,8 +499,22 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     func updatePlayBackControls() {
         if let soundPlayer = player.player {
+            self.creditCountButton.isEnabled = true
+            self.commentCountButton.isEnabled = true
+            self.playCountButton.isEnabled = true
+            self.hashtagCountButton.isEnabled = true
+            self.likesCountButton.isEnabled = true
+            self.likeSoundButton.isEnabled = true
+
             self.loadSoundSpinner.isHidden = true
+            self.playBackButton.isHidden = false
             self.playBackButton.isEnabled = true
+            
+            self.shareButton.isEnabled = true
+            self.playBackSlider.isEnabled = true
+            
+            self.songArt.isHidden = false
+            
             if soundPlayer.isPlaying  {
                 self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
                 
@@ -482,16 +523,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             }
             self.skipButton.setImage(UIImage(named: "skip"), for: .normal)
             self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
-            /*if soundPlayer.duration >= fiveMinutesInSeconds {
-                self.skipButton.setImage(UIImage(named: "skipForward"), for: .normal)
-                self.gxoBackButton.setImage((UIImage(named: "skipBack")), for: .normal)
-            } else {
-                self.skipButton.setImage(UIImage(named: "skip"), for: .normal)
-                self.goBackButton.setImage((UIImage(named: "goBack")), for: .normal)
-            }*/
         } else {
             self.loadSoundSpinner.isHidden = false
-            self.playBackButton.isEnabled = false
+            self.playBackButton.isHidden = true
         }
     }
     
@@ -844,15 +878,25 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }()
     @objc func didPressSkipButton(_ sender: UIButton) {
         self.resetPlayView()
-        player.next()
-        /*if let soundPlayer = player.player {
-            if soundPlayer.duration >= fiveMinutesInSeconds {
-                player.skipForward()
-            } else {
-                self.shouldEnablePlaybackControls(false)
-                player.next()
+        
+        if let balance = customer.artist?.balance {
+            if balance > 10 {
+                skipCount = 0
             }
-        }*/
+        }
+        
+        if skipCount == 1 {
+            skipCount = 0
+            player.player = nil
+            addBannerViewtoPlayerView(bannerView)
+            self.songArt.isHidden = true
+            
+        } else {
+            skipCount += 1
+            bannerView.removeFromSuperview()
+            bannerRemoveAdsButton.removeFromSuperview()
+            player.next()
+        }
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
     }
@@ -864,13 +908,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         return button
     }()
     @objc func didPressGoBackButton(_ sender: UIButton) {
-        /*if let soundPlayer = player.player {
-            if soundPlayer.duration >= fiveMinutesInSeconds {
-                player.skipBackward()
-            } else {
-                player.previous()
-            }
-        }*/
         player.previous()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Go Back", "Description": "User Pressed Go Back."])
     }
@@ -895,12 +932,22 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.loadSoundbrewSpinnerTitle.removeFromSuperview()
     }
     
-    var commentCountLabel: UILabel!
-    var playCountLabel: UILabel!
-    var likeCountLabel: UILabel!
+    var creditCountButton: UIButton!
     var creditCountLabel: UILabel!
-    var soundArtistImage: UIImageView!
+    
+    var playCountButton: UIButton!
+    var playCountLabel: UILabel!
+    
+    var commentCountButton: UIButton!
+    var commentCountLabel: UILabel!
+    
+    var hashtagCountButton: UIButton!
     var hashtagCountLabel: UILabel!
+    
+    var likesCountButton: UIButton!
+    var likeCountLabel: UILabel!
+    
+    var soundArtistImage: UIImageView!
     
     func showPlayerView() {
         self.view.backgroundColor = color.black()
@@ -946,35 +993,35 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             bottomOffsetValue = uiElement.bottomOffset * 2
             break
         }
-        let creditCountButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
+        creditCountButton = soundInfoButton("profile_icon_filled", buttonType: "credits")
         creditCountButton.addTarget(self, action: #selector(self.didPressCreditCountButton(_:)), for: .touchUpInside)
         creditCountButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.bottom.equalTo(self.view).offset(bottomOffsetValue)
         }
         
-        let playCountButton = soundInfoButton("play", buttonType: "plays")
+        playCountButton = soundInfoButton("play", buttonType: "plays")
         playCountButton.addTarget(self, action: #selector(self.didPressListenCountButton(_:)), for: .touchUpInside)
         playCountButton.snp.makeConstraints { (make) -> Void in
             make.centerX.equalTo(self.view)
             make.bottom.equalTo(creditCountButton)
         }
 
-        let commentCountButton = soundInfoButton("comment_filled", buttonType: "comments")
+        commentCountButton = soundInfoButton("comment_filled", buttonType: "comments")
         commentCountButton.addTarget(self, action: #selector(self.didPressCommentCountButton(_:)), for: .touchUpInside)
         commentCountButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(self.view.frame.width * 0.25)
             make.bottom.equalTo(creditCountButton)
         }
         
-        let tagsCountButton = soundInfoButton("hashtag_filled", buttonType: "tags")
-        tagsCountButton.addTarget(self, action: #selector(self.didPressTagCountButton(_:)), for: .touchUpInside)
-        tagsCountButton.snp.makeConstraints { (make) -> Void in
+        hashtagCountButton = soundInfoButton("hashtag_filled", buttonType: "tags")
+        hashtagCountButton.addTarget(self, action: #selector(self.didPressTagCountButton(_:)), for: .touchUpInside)
+        hashtagCountButton.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.view).offset(-(self.view.frame.width * 0.25))
             make.bottom.equalTo(creditCountButton)
         }
         
-        let likesCountButton = soundInfoButton("heart_filled", buttonType: "likes")
+        likesCountButton = soundInfoButton("heart_filled", buttonType: "likes")
         likesCountButton.addTarget(self, action: #selector(self.didPressLikeCountButton(_:)), for: .touchUpInside)
         likesCountButton.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -1006,7 +1053,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(45)
             make.centerY.equalTo(playBackButton)
-            make.centerX.equalTo(tagsCountButton)
+            make.centerX.equalTo(hashtagCountButton)
         }
         
         self.view.addSubview(likeSoundButton)
@@ -1059,8 +1106,94 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //mark: ads
-    let testAdUnitId = "ca-app-pub-3940256099942544/1712485313"
-    let liveAdUnitId = "ca-app-pub-9150756002517285/9458994684"
+    //mark: Banner Ads
+    let liveBannerAdUnitId = "ca-app-pub-9150756002517285~6608111231"
+    let testBannerAdUnitId = "ca-app-pub-9150756002517285/6558051480"
+    var bannerView = GADBannerView()
+    var bannerRemoveAdsButton = UIButton()
+    
+    func setUpBannerView() {
+        bannerView = GADBannerView(adSize: kGADAdSizeLeaderboard)
+        bannerView.adUnitID = testBannerAdUnitId
+        bannerView.rootViewController = self
+        bannerView.delegate = self
+        bannerView.load(GADRequest())
+    }
+    
+    /// Tells the delegate an ad request loaded an ad.
+    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+      print("adViewDidReceiveAd")
+        //addBannerViewtoPlayerView(bannerView)
+    }
+
+    /// Tells the delegate an ad request failed.
+    func adView(_ bannerView: GADBannerView,
+        didFailToReceiveAdWithError error: GADRequestError) {
+      print("adView:didFailToReceiveAdWithError: \(error.localizedDescription)")
+    }
+
+    /// Tells the delegate that a full-screen view will be presented in response
+    /// to the user clicking on an ad.
+    func adViewWillPresentScreen(_ bannerView: GADBannerView) {
+      print("adViewWillPresentScreen")
+    }
+
+    /// Tells the delegate that the full-screen view will be dismissed.
+    func adViewWillDismissScreen(_ bannerView: GADBannerView) {
+      print("adViewWillDismissScreen")
+    }
+
+    /// Tells the delegate that the full-screen view has been dismissed.
+    func adViewDidDismissScreen(_ bannerView: GADBannerView) {
+      print("adViewDidDismissScreen")
+    }
+
+    /// Tells the delegate that a user click will open another app (such as
+    /// the App Store), backgrounding the current app.
+    func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
+      print("adViewWillLeaveApplication")
+        bannerView.removeFromSuperview()
+        bannerRemoveAdsButton.removeFromSuperview()
+        player.next()
+    }
+    
+    func addBannerViewtoPlayerView(_ bannerView: GADBannerView) {
+        let songArtHeightWidth = (self.view.frame.height / 2) - 100
+        self.view.addSubview(bannerView)
+        bannerView.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(songArtHeightWidth)
+            make.top.equalTo(exitButton.snp.bottom).offset(uiElement.topOffset * 3)
+            make.centerX.equalTo(self.view)
+        }
+        
+        bannerRemoveAdsButton = UIButton()
+        bannerRemoveAdsButton.setTitle("Remove Ads", for: .normal)
+        bannerRemoveAdsButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        bannerRemoveAdsButton.layer.cornerRadius = 5
+        bannerRemoveAdsButton.clipsToBounds = true
+        bannerRemoveAdsButton.backgroundColor = color.blue()
+        bannerRemoveAdsButton.setTitleColor(.white, for: .normal)
+        bannerRemoveAdsButton.addTarget(self, action: #selector(self.didPressRemoveAdsbutton), for: .touchUpInside)
+        self.view.addSubview(bannerRemoveAdsButton)
+        bannerRemoveAdsButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.width.equalTo(150)
+            make.top.equalTo(bannerView.snp.bottom).offset(uiElement.topOffset * 2)
+            make.centerX.equalTo(self.view)
+        }
+    }
+    
+    @objc func didPressRemoveAdsbutton() {
+        let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+        self.handleDismissal(artist)
+        self.player.next()
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
+    }
+    
+    //mark: rewarded Ads
+    var seenAdCount = 0
+    let testRewardedAdUnitId = "ca-app-pub-3940256099942544/1712485313"
+    let liveRewardedAdUnitId = "ca-app-pub-9150756002517285/9458994684"
     var rewardedAd: GADRewardedAd?
     func createAndLoadRewardedAd(_ adUnitId: String) -> GADRewardedAd? {
       rewardedAd = GADRewardedAd(adUnitID: adUnitId)
@@ -1116,7 +1249,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
          let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
              let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
              self.handleDismissal(artist)
-             
+            
              MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
          }
          alertView.addAction(addFundsActionButton)
@@ -1124,6 +1257,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
          let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
          alertView.addAction(cancelAction)
          
-         present(alertView, animated: true, completion: nil)
+        self.present(alertView, animated: true, completion: nil)
     }
 }
