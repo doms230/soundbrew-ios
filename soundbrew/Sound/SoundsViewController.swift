@@ -18,7 +18,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var soundList: SoundList!
     let uiElement = UIElement()
     let color = Color()
-    var soundType = "forYou"
+    var soundType = "follow"
     func doesMatchHomeSoundType() -> Bool {
         if soundType == "forYou" || soundType ==  "follow" || soundType ==  "yourCity" {
             return true
@@ -125,10 +125,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var followingButton: UIButton!
     func createTopView() {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50))
-        var leftOffset = 0
-        forYouButton = setUpButton("For You", i: 0, leftOffset: leftOffset, view: view)
-        leftOffset = leftOffset + 150 + uiElement.leftOffset
-        followingButton = setUpButton("Following", i: 1, leftOffset: leftOffset, view: view)
+        forYouButton = setUpButton("Following", i: 0, leftOffset: 0, view: view)
         let leftBarButton = UIBarButtonItem(customView: view)
         self.navigationItem.leftBarButtonItem = leftBarButton
         showSounds()
