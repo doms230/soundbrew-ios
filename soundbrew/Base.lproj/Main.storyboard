@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="1du-u4-rT6" customClass="AddFundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="e8b-dp-1c2">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -23,9 +23,9 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pyG-2h-fp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1152" y="1797"/>
+            <point key="canvasLocation" x="-1438" y="1864"/>
         </scene>
-        <!--Drafts-->
+        <!--New Sound View Controller-->
         <scene sceneID="54r-NH-38P">
             <objects>
                 <viewController id="NMN-7Y-7rd" customClass="NewSoundViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -36,7 +36,7 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="MNz-pC-Gnl"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Drafts" id="M5X-po-2VR"/>
+                    <navigationItem key="navigationItem" id="M5X-po-2VR"/>
                     <connections>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="LnM-xP-wsl"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="jCE-No-XFc"/>
@@ -158,7 +158,7 @@
             <objects>
                 <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -171,14 +171,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4276.811594202899" y="-35.491071428571423"/>
+            <point key="canvasLocation" x="3261" y="59"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
             <objects>
                 <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gtO-iq-VKq">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -196,14 +196,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2903" y="940"/>
+            <point key="canvasLocation" x="-2903" y="943"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="CKO-y2-IBC">
             <objects>
                 <viewController id="CXo-oV-yRo" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HCd-Pg-5WJ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -218,14 +218,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rfo-g5-J6s" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1113.0434782608697" y="728.57142857142856"/>
+            <point key="canvasLocation" x="-2068" y="943"/>
         </scene>
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
             <objects>
                 <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Eku-wh-htc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -349,14 +349,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="757.97101449275374" y="120.53571428571428"/>
+            <point key="canvasLocation" x="943" y="59"/>
         </scene>
         <!--Sounds View Controller-->
         <scene sceneID="uic-Xu-A5d">
             <objects>
                 <viewController id="z2Z-3H-bjC" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="inD-v4-DU1">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -431,10 +431,10 @@
             </objects>
             <point key="canvasLocation" x="-4613" y="-1998"/>
         </scene>
-        <!--Search View Controller-->
+        <!--Sounds View Controller-->
         <scene sceneID="22d-aA-pa8">
             <objects>
-                <viewController id="poT-rp-tYb" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="poT-rp-tYb" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CuL-Nf-2iV">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -449,18 +449,40 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="qF7-cv-MYn"/>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="217-ix-XIX"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Swv-5W-jhe"/>
+                        <segue destination="Vkq-eO-lz7" kind="show" identifier="showSearch" id="vpX-lS-d7A"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F4u-qB-maU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3813" y="-1998"/>
         </scene>
+        <!--Search View Controller-->
+        <scene sceneID="3wX-QT-ffH">
+            <objects>
+                <viewController id="Vkq-eO-lz7" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="7iz-NQ-oQf">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="hq8-wA-XCP"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="TH6-l1-k2J"/>
+                    <connections>
+                        <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="pAG-ho-da9"/>
+                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="kc7-DO-K18"/>
+                        <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="QFU-4R-7zu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lXc-VM-ztg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2781" y="-2489"/>
+        </scene>
         <!--Earnings View Controller-->
         <scene sceneID="wwU-qi-IOl">
             <objects>
                 <viewController id="zJZ-n2-4Wd" customClass="EarningsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3Pe-9L-Qec">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -535,7 +557,7 @@
             </objects>
             <point key="canvasLocation" x="-747.82608695652175" y="-1632.5892857142856"/>
         </scene>
-        <!--Your Updates-->
+        <!--Mentions View Controller-->
         <scene sceneID="qwK-R6-Jl7">
             <objects>
                 <viewController id="mpg-Ld-wKM" customClass="MentionsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
@@ -546,7 +568,7 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Wk0-J5-4FK"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Your Updates" id="c4F-aX-L3Q"/>
+                    <navigationItem key="navigationItem" id="c4F-aX-L3Q"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Lov-Rl-RRq"/>
@@ -619,8 +641,9 @@
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="bAT-ZF-yxn"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="9JE-oB-28R">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -646,15 +669,15 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="KO1-9I-QDL"/>
-        <segue reference="Pro-Wr-Tmr"/>
-        <segue reference="t1V-yP-gW0"/>
-        <segue reference="rYx-PH-Ejd"/>
+        <segue reference="QFf-vL-w9n"/>
+        <segue reference="UgY-SI-XY8"/>
+        <segue reference="KtZ-Sp-Nxi"/>
         <segue reference="ny7-0k-lik"/>
-        <segue reference="QJt-mb-aGp"/>
-        <segue reference="Hp0-yc-gkV"/>
+        <segue reference="CdJ-ew-HPh"/>
+        <segue reference="8ie-Jd-veP"/>
         <segue reference="Ejz-iv-iC5"/>
-        <segue reference="217-ix-XIX"/>
-        <segue reference="OeQ-P7-uu8"/>
+        <segue reference="LnM-xP-wsl"/>
+        <segue reference="jCE-No-XFc"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="heart_filled_nav" width="25" height="25"/>

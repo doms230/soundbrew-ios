@@ -31,12 +31,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var secondsPlayedTimer = Timer()
     var didRecordStream = false
     var didRecordPlay = false
-   // var soundsPlayed = 2
     
     override init() {
         super.init()
         setupRemoteTransportControls()
-       // ListenForAudioSessionRouteChange()
     }
     
     func prepareAndPlay(_ audioData: Data) {
@@ -98,49 +96,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
             
             self.play()
             self.fetchAudioFromNextSound()
-            //self.sendSoundUpdateToUI()
             
         } else {
             setUpNextSong(false, at: nil)
         }
     }
     
-   /* func ListenForAudioSessionRouteChange() {
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self,
-                                       selector: #selector(handleRouteChange),
-                                       name: AVAudioSession.routeChangeNotification,
-                                       object: nil)
-    }*/
-    
-    @objc func handleRouteChange(notification: Notification) {
-        /*guard let userInfo = notification.userInfo,
-            let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt
-            //let reason = AVAudioSession.RouteChangeReason(rawValue:reasonValue) else {
-                return
-        }*/
-        
-        /*let session = AVAudioSession.sharedInstance()
-        for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.builtInSpeaker {
-            if let player = self.player {
-                if player.isPlaying {
-                    self.pause()
-                }
-            }
-            break
-        }*/
-    }
-    
     func sendSoundUpdateToUI() {
         self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
-        /*if let player = self.player {
-            if player.duration >= (5 * 60) {
-                setUpSkipForwardBackwardCommands()
-            } else {
-                setUpNextGoBackCommands()
-            }
-        }*/
-        //setUpNextGoBackCommands()
         if let tableView = self.tableView {
             tableView.reloadData()
         }
@@ -155,9 +118,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 player.play()
                 sendSoundUpdateToUI()
                 startTimer()
-                /*if let tableView = self.tableView {
-                    tableView.reloadData()
-                }*/
             }
         }
     }
@@ -277,7 +237,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func incrementPlaylistPositionAndReturnSound() -> Sound {
         self.currentSoundIndex = self.currentSoundIndex + 1
-        //self.currentSoundIndex == sounds.count ||
         if !self.sounds.indices.contains(self.currentSoundIndex) {
             //no sounds left, go back to zero.
             self.currentSoundIndex = 0
@@ -456,66 +415,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    /*func setUpNextGoBackCommands() {
-        let commandCenter = MPRemoteCommandCenter.shared()
-        
-       // commandCenter.skipBackwardCommand.isEnabled = false
-        //commandCenter.skipForwardCommand.isEnabled = false
-        
-        commandCenter.nextTrackCommand.addTarget { [weak self] event in
-            if let nextSelf = self {
-                nextSelf.next()
-                return .success
-            }
-
-            return .commandFailed
-        }
-        
-        commandCenter.previousTrackCommand.addTarget { [weak self] event in
-            if let previousSelf = self {
-                previousSelf.previous()
-                return .success
-            }
-
-            return .commandFailed
-        }
-    }*/
-    
-    /*func setUpSkipForwardBackwardCommands() {
-        let commandCenter = MPRemoteCommandCenter.shared()
-        
-        commandCenter.nextTrackCommand.isEnabled = false
-        commandCenter.previousTrackCommand.isEnabled = false
-        
-        commandCenter.skipForwardCommand.preferredIntervals = [15]
-        commandCenter.skipForwardCommand.addTarget { [weak self] event in
-            if let nextSelf = self {
-                nextSelf.skipForward()
-                return .success
-            }
-
-            return .commandFailed
-        }
-        
-        commandCenter.skipBackwardCommand.preferredIntervals = [15]
-        commandCenter.skipBackwardCommand.addTarget { [weak self] event in
-            if let playSelf = self {
-                playSelf.skipBackward()
-                return .success
-            }
-            
-            return .commandFailed
-        }
-    }*/
-    
     func shouldEnableCommandCenter(_ shouldEnable: Bool ) {
         let commandCenter = MPRemoteCommandCenter.shared()
         commandCenter.playCommand.isEnabled = shouldEnable
         commandCenter.pauseCommand.isEnabled = shouldEnable
         commandCenter.nextTrackCommand.isEnabled = shouldEnable
         commandCenter.previousTrackCommand.isEnabled = shouldEnable
-        //commandCenter.skipForwardCommand.isEnabled = shouldEnable
-        //commandCenter.skipBackwardCommand.isEnabled = shouldEnable
     }
     
     func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer?, sound: Sound) {

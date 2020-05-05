@@ -13,14 +13,14 @@ import Kingfisher
 import SnapKit
 import AppCenterCrashes
 
-class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate {
+class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate, UISearchBarDelegate {
     
     var soundList: SoundList!
     let uiElement = UIElement()
     let color = Color()
     var soundType = "follow"
     func doesMatchHomeSoundType() -> Bool {
-        if soundType == "forYou" || soundType ==  "follow" || soundType ==  "yourCity" {
+        if soundType == "follow" || soundType ==  "forYou" {
             return true
         }
         return false
@@ -28,24 +28,28 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var userId: String?
     var newUserArtistForEditing: Artist?
     
-    lazy var tagsScrollview: UIScrollView = {
-        let scrollView = UIScrollView()
-        return scrollView
-    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         setupNotificationCenter()
+        
         if doesMatchHomeSoundType() {
+            if let selectedIndex = self.tabBarController?.selectedIndex {
+                if selectedIndex == 1 {
+                    self.soundType = "forYou"
+                }
+            }
             createTopView()
         } else {
-            showSounds()
+            showSoundList()
         }
         
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
+        } else if let soundId = self.uiElement.getUserDefault("newSoundId") as? String {
+            UserDefaults.standard.removeObject(forKey: "newSoundId")
+            loadDynamicLinkSound(soundId, shouldShowShareSoundView: true)
         }
         
         if newUserArtistForEditing != nil {
@@ -69,7 +73,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didReceiveFriendsLoaded() {
-        //TODO
+        showSoundList()
     }
     
     @objc func didReceiveSoundUpdate(){
@@ -111,59 +115,40 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             navigationItem.backBarButtonItem = backItem
             break
             
+        case "showSearch":
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            break
+            
         default:
             break 
         }
     }
     
-    func showSounds() {
+    func showSoundList() {
         soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
     }
     
-    //mark: feature titles
-    var forYouButton: UIButton!
-    var followingButton: UIButton!
+    //mark: Page Title
     func createTopView() {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50))
-        forYouButton = setUpButton("Following", i: 0, leftOffset: 0, view: view)
-        let leftBarButton = UIBarButtonItem(customView: view)
-        self.navigationItem.leftBarButtonItem = leftBarButton
-        showSounds()
+        var soundTypeTitle = "Following"
+        if soundType == "forYou" {
+            soundTypeTitle = "For You"
+            let searchUIButton = UIBarButtonItem(image: UIImage(named: "search_filled"), style: .plain, target: self, action: #selector(self.didPressSearchButton(_:)))
+            self.navigationItem.rightBarButtonItem = searchUIButton
+        }
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
+        label.text = soundTypeTitle
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
+        showSoundList()
     }
     
-    func setUpButton(_ title: String, i: Int, leftOffset: Int, view: UIView) -> UIButton {
-        let button = UIButton()
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        button.addTarget(self, action: #selector(self.didPressFeaturedButton(_:)), for: .touchUpInside)
-        button.tag = i
-        if i == 1 {
-            button.setTitleColor(.darkGray, for: .normal)
-        }
-        view.addSubview(button)
-        button.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.width.equalTo(150)
-            make.top.equalTo(view).offset(uiElement.bottomOffset * 3)
-            make.left.equalTo(view).offset(leftOffset)
-        }
-        return button
-    }
-    
-    @objc func didPressFeaturedButton(_ sender: UIButton) {
-        sender.setTitleColor(.white, for: .normal)
-        if sender.tag == 0 {
-            followingButton.setTitleColor(.darkGray, for: .normal)
-            soundType = "forYou"
-        } else {
-            forYouButton.setTitleColor(.darkGray, for: .normal)
-            soundType = "follow"
-        }
-
-        soundList.sounds.removeAll()
-        self.tableView.refreshControl?.beginRefreshing()
-        self.tableView.reloadData()
-        showSounds()
+    @objc func didPressSearchButton(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: "showSearch", sender: self)
     }
         
     //mark: tableview
@@ -196,47 +181,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(miniPlayer.snp.top)
             }
-           /* if doesMatchHomeSoundType() {
-                self.view.addSubview(tableView)
-                self.tableView.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(self.forYouButton.snp.bottom)
-                    make.left.equalTo(self.view)
-                    make.right.equalTo(self.view)
-                    make.bottom.equalTo(miniPlayer.snp.top)
-                }
-                
-            } else {
-                self.view.addSubview(tableView)
-                self.tableView.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(self.view)
-                    make.left.equalTo(self.view)
-                    make.right.equalTo(self.view)
-                    make.bottom.equalTo(miniPlayer.snp.top)
-                }
-            }*/
-
             
         } else {
             self.view.addSubview(tableView)
             self.tableView.frame = self.view.bounds
-            /*if doesMatchHomeSoundType() {
-                self.view.addSubview(tableView)
-                self.tableView.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(self.forYouButton.snp.bottom)
-                    make.left.equalTo(self.view)
-                    make.right.equalTo(self.view)
-                    make.bottom.equalTo(self.view)
-                }
-                
-            } else {
-                self.view.addSubview(tableView)
-                self.tableView.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(self.view)
-                    make.left.equalTo(self.view)
-                    make.right.equalTo(self.view)
-                    make.bottom.equalTo(self.view)
-                }
-            }*/
         }
         
         let player = Player.sharedInstance
@@ -244,7 +192,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
-       showSounds()
+       showSoundList()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -310,7 +258,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if soundList.isUpdatingData {
             cell.headerTitle.text = ""
         } else  if soundType == "follow" {
-            //let localizedLatestReleases = NSLocalizedString("latestReleases", comment: "")
             cell.headerTitle.text = "Follow people to keep up with their latest uploads!"
         } else if soundType == "yourCity" {
             cell.headerTitle.text = "Keep up with uploads in your city by adding your city to your profile!"

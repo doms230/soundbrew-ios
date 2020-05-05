@@ -28,8 +28,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     lazy var usernameText: UITextField = {
     
         let label = UITextField()
-        let localizedString = NSLocalizedString("usernameOrEmail", comment: "")
-        //label.placeholder = localizedString
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.backgroundColor = .white
         label.borderStyle = .roundedRect
@@ -37,7 +35,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         label.keyboardType = .emailAddress
         label.tintColor = color.black()
         label.textColor = color.black()
-        label.attributedPlaceholder = NSAttributedString(string: localizedString,
+        label.attributedPlaceholder = NSAttributedString(string: "Username",
         attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         return label
     }()

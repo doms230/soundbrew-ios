@@ -27,9 +27,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         navigationController?.navigationBar.tintColor = .white
         view.backgroundColor = color.black()
         
-        let localizedNewUpload = NSLocalizedString("newUpload", comment: "")
-        let uploadButton = UIBarButtonItem(title: localizedNewUpload, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
+        let uploadButton = UIBarButtonItem(image: UIImage(named: "new_nav"), style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
+        label.text = "Drafts"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
     }
     
     override func viewDidAppear(_ animated: Bool) {

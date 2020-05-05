@@ -25,7 +25,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barTintColor = color.black()
         setUpNavigationBar()
-        loadTags(tagType, searchText: nil, tags: sound?.tags)
+        if let tagType = self.tagType, tagType != "more" {
+            loadTags(tagType, searchText: nil, tags: sound?.tags)
+        } else {
+            self.setupChooseTagsView()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -95,6 +99,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
             self.navigationItem.leftBarButtonItem = searchBarItem
+            
+            self.searchBar.becomeFirstResponder()
             
         } else {
             searchBar.setShowsCancelButton(true, animated: true)
@@ -266,7 +272,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.selectedTag = selectedTag
             self.performSegue(withIdentifier: "showSounds", sender: self)
         } else {
-            appendTag(selectedTag)
+            if chosenTags.count == 5 {
+                self.uiElement.showAlert("Max Reached", message: "You've reached the max allowed tags.", target: self)
+            } else {
+               appendTag(selectedTag)
+            }
         }
     }
     
@@ -311,10 +321,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             for i in 0..<chosenTags.count {
                 addChosenTagButton(self.chosenTags[i].name, tag: i)
             }
-            
-        } /*else {
-           addChooseTagsLabel()
-        }*/
+        }
         
         self.view.addSubview(self.chosenTagsScrollview)
         chosenTagsScrollview.snp.makeConstraints { (make) -> Void in

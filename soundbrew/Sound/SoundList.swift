@@ -116,9 +116,14 @@ class SoundList: NSObject, PlayerDelegate {
             }
             
             cell.soundTitle.text = sound.title
-            
-            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
-            cell.soundDate.text = formattedDate
+                        
+            if let hashtags = sound.tags, hashtags.indices.contains(0) {
+                cell.soundDate.text = "#\(hashtags[0])"
+            }
+           
+            //cell.soundDate.text = hashtags
+           // let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
+           // cell.soundDate.text = formattedDate
             
             if let likes = sound.tipCount {
                 cell.likesCountLabel.text = "\(likes)"

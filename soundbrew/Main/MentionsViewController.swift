@@ -21,6 +21,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           navigationController?.navigationBar.tintColor = .white
         
             NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
+        label.text = "Mentions"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
       }
     
     @objc func didReceiveSoundUpdate() {
@@ -41,8 +47,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 setUpTableView(nil)
             }
         }
-            
-        self.loadMentions()
       }
           
       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -98,6 +102,8 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
               self.tableView.frame = view.bounds
               self.view.addSubview(tableView)
           }
+        
+        self.loadMentions()
       }
       
       @objc func refresh(_ sender: UIRefreshControl) {
@@ -122,7 +128,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             if self.isLoadingMentions {
                 cell.headerTitle.text = ""
             } else {
-                cell.headerTitle.text = "New likes, follows, and comment mentions will appear here!"
+                cell.headerTitle.text = "People who like your music, follow you, or mention you in a comment will appear here!"
             }
               
               return cell
@@ -275,31 +281,27 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             (objects: [PFObject]?, error: Error?) -> Void in
             self.isLoadingMentions = false
             self.tableView.refreshControl?.endRefreshing()
-            if error == nil, let objects = objects {
-                for i in 0..<objects.count {
-                    let object = objects[i]
-                    var isLastI = true
-                    if objects.indices.contains(i + 1) {
-                        isLastI = false
-                    }
+            if let objects = objects {
+                for object in objects {
                     let fromuserId = object["fromUserId"] as! String
                     let mention = Mention(object.createdAt!, artist: nil, comment: nil, sound: nil, type: nil, fromUserId: fromuserId, objectId: object.objectId!)
                     if let commentId = object["commentId"] as? String {
                         mention.type = "comment"
-                        self.loadComment(commentId, mention: mention, isLastI: isLastI)
+                        self.loadComment(commentId, mention: mention)
                     } else if let postId = object["postId"] as? String {
                         mention.type = "like"
-                        self.loadPost(postId, mention: mention, isLastI: isLastI)
+                        self.loadPost(postId, mention: mention)
                         
                     } else {
                         mention.type = "follow"
-                        self.loadArtist(mention, isLastI: isLastI)
+                        self.loadArtist(mention)
                     }
                 }
                 
                 if objects.count > 0 && PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                     SKStoreReviewController.requestReview()
                 }
+                
             } else {
                 self.doneLoadingMentions = true
                 self.tableView.reloadData()
@@ -310,7 +312,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func loadComment(_ commentId: String, mention: Mention, isLastI: Bool) {
+    func loadComment(_ commentId: String, mention: Mention) {
         let query = PFQuery(className: "Comment")
         query.getObjectInBackground(withId: commentId) {
             (object: PFObject?, error: Error?) -> Void in
@@ -321,24 +323,24 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
                 mention.comment = comment
                 let postId = object["postId"] as! String
-                self.loadPost(postId, mention: mention, isLastI: isLastI)
+                self.loadPost(postId, mention: mention)
             }
         }
     }
     
-    func loadPost(_ soundId: String, mention: Mention, isLastI: Bool) {
+    func loadPost(_ soundId: String, mention: Mention) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: soundId) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
                 let sound = self.uiElement.newSoundObject(object)
                 mention.sound = sound
-                self.loadArtist(mention, isLastI: isLastI)
+                self.loadArtist(mention)
             }
         }
     }
     
-    func loadArtist(_ mention: Mention, isLastI: Bool) {
+    func loadArtist(_ mention: Mention) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: mention.fromUserId) {
             (user: PFObject?, error: Error?) -> Void in
@@ -348,9 +350,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.mentions.append(mention)
                let sortedMentions =  self.mentions.sorted(by: {$0.createdAt > $1.createdAt})
                 self.mentions = sortedMentions
-                if isLastI {
-                    self.tableView.reloadData()
-                }
+                self.tableView.reloadData()
             }
         }
     }
