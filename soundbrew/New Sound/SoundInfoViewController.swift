@@ -283,11 +283,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let postId = sound.objectId!
         for i in 0..<credits.count {
             let credit = credits[i]
-            if i == 0 {
-                newStory(credit, postId: postId, type: "upload")
-            } else {
+            if i != 0 {
                 newCredit(credit, postId: postId)
-                newStory(credit, postId: postId, type: "credit")
                 self.uiElement.sendAlert("credited you on their new release '\(sound.title ?? "")'", toUserId: credit.artist!.objectId, shouldIncludeName: true)
             }
         }
@@ -304,14 +301,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newCredit["userId"] = credit.artist!.objectId!
         newCredit["postId"] = postId
         newCredit.saveEventually()
-    }
-    
-    func newStory(_ credit: Credit, postId: String, type: String) {
-        let newStory = PFObject(className: "Story")
-        newStory["type"] = type
-        newStory["userId"] = credit.artist!.objectId!
-        newStory["postId"] = postId
-        newStory.saveEventually()
     }
     
     //mark: social

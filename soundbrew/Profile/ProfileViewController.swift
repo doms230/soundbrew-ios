@@ -128,14 +128,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func loadProfileData() {
         if let profileArtist = self.profileArtist {
-            if currentUser != nil && currentUser?.objectId != profileArtist.objectId {
-                checkFollowStatus()
-            }
-            
-            if let username = profileArtist.username {
-                if !username.contains("@") {
-                    self.navigationItem.title = username
+            if let currentUser = PFUser.current(), currentUser.objectId != profileArtist.objectId {
+                if let username = profileArtist.username {
+                    if !username.contains("@") {
+                        self.navigationItem.title = username
+                    }
                 }
+                checkFollowStatus()
             }
             
             self.loadCollection(profileArtist.objectId)
@@ -710,9 +709,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
             
+            if let username = PFUser.current()?.username {
+                if !username.contains("@") {
+                    self.uiElement.addTitleView(username, target: self)
+                } else {
+                    self.uiElement.addTitleView("Your Profile", target: self)
+                }
+            }
+            
         } else {
             let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
             self.navigationItem.rightBarButtonItem = shareButton
+            
+            if let username = self.profileArtist?.username {
+                if !username.contains("@") {
+                    self.navigationItem.title = username
+                }
+            }
         }
     }
     

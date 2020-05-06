@@ -22,11 +22,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         
             NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
-        label.text = "Mentions"
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
+            self.uiElement.addTitleView("Activity", target: self)
       }
     
     @objc func didReceiveSoundUpdate() {

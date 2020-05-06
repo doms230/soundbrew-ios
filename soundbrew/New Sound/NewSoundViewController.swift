@@ -30,11 +30,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         let uploadButton = UIBarButtonItem(image: UIImage(named: "new_nav"), style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         self.navigationItem.rightBarButtonItem = uploadButton
         
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
-        label.text = "Drafts"
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
+        self.uiElement.addTitleView("Drafts", target: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {

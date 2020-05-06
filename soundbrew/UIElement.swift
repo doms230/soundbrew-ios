@@ -404,6 +404,14 @@ class UIElement {
         let dollarsProperlyFormattedAsString = String(format: "%.2f", centsToDollars)
         return "\(currency)\(dollarsProperlyFormattedAsString)"
     }
+    
+    func addTitleView(_ title: String, target: UIViewController) {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
+        label.text = title
+        label.textColor = .white
+        label.font = UIFont(name: "\(self.mainFont)-bold", size: 30)
+        target.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
+    }
 }
 
 public extension UIDevice {

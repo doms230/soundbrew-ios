@@ -118,6 +118,9 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         case .success:
             let customer = Customer.shared
             customer.updateBalance(paymentContext.paymentAmount)
+            if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
+                SKStoreReviewController.requestReview()
+            }
             self.uiElement.goBackToPreviousViewController(self)
             
         case .userCancellation:

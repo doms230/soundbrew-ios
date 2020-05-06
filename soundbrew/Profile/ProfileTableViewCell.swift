@@ -16,16 +16,6 @@ class ProfileTableViewCell: UITableViewCell {
     
     var isSearchActive = false
     
-    lazy var homebackgroundView: UIImageView = {
-        let image = UIImageView()
-        image.backgroundColor = .black
-        image.layer.cornerRadius = 5
-      //  image.layer.borderColor = color.purpleBlack().cgColor
-       // image.layer.borderWidth = 0.5
-        image.clipsToBounds = true
-        return image
-    }()
-    
     lazy var shareButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "share"), for: .normal)
@@ -297,20 +287,12 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "homeReuse":
-           // self.addSubview(homebackgroundView)
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
             self.addSubview(city)
             self.addSubview(username)
             self.addSubview(userCity)
             self.addSubview(seperatorLine)
-           /* homebackgroundView.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }*/
             
             let imageHeightWidth = 50
             profileImage.layer.cornerRadius = CGFloat(imageHeightWidth/2)

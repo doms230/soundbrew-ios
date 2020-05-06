@@ -139,11 +139,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.navigationItem.rightBarButtonItem = searchUIButton
         }
         
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 50))
-        label.text = soundTypeTitle
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
+        self.uiElement.addTitleView(soundTypeTitle, target: self)
         showSoundList()
     }
     
@@ -224,14 +220,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if doesMatchHomeSoundType() {
-            if indexPath.section == 1 {
-                didSelectRowAt(indexPath.row)
-            }
-            
-        } else {
-            didSelectRowAt(indexPath.row)
-        }
+        didSelectRowAt(indexPath.row)
     }
     
     func didSelectRowAt(_ row: Int) {

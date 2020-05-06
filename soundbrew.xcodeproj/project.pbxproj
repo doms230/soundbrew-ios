@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		64786ED9C28C590EC933F869 /* Pods_soundbrewUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2433FADC23B69BEDCB5C9C /* Pods_soundbrewUITests.framework */; };
 		8B08558D2442419F14F2FAF6 /* Pods_soundbrewTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FF59E0CE532FE36411ACE /* Pods_soundbrewTests.framework */; };
+		E40070732463375E005BBB92 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40070722463375E005BBB92 /* Like.swift */; };
 		E40829EA236209C800D88B33 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E40829EC236209C800D88B33 /* Localizable.strings */; };
 		E425D7C723C2836A0031DB0B /* Credit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C623C2836A0031DB0B /* Credit.swift */; };
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
@@ -143,6 +144,7 @@
 		E4006F5E2367A0EA0020CDD8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E4006F5F2367A0EB0020CDD8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		E4006F602367A0EC0020CDD8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E40070722463375E005BBB92 /* Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Like.swift; sourceTree = "<group>"; };
 		E40829E5236204E900D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E40829E6236204EA00D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		E40829EB236209C800D88B33 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -441,6 +443,7 @@
 		F2FB14CD22CC106100ED157E /* Payment */ = {
 			isa = PBXGroup;
 			children = (
+				E40070722463375E005BBB92 /* Like.swift */,
 				F2FB14D322CD1A1900ED157E /* Customer.swift */,
 				F2BE03EC22CAD610009A5760 /* Payment.swift */,
 				F2FB14D122CC328D00ED157E /* AddFundsViewController.swift */,
@@ -791,6 +794,7 @@
 				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
+				E40070732463375E005BBB92 /* Like.swift in Sources */,
 				F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */,
 				E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
