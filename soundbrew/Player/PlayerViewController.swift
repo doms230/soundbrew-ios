@@ -14,11 +14,10 @@ import Parse
 import Kingfisher
 import SnapKit
 import Photos
-import NVActivityIndicatorView
 import AppCenterAnalytics
 import GoogleMobileAds
 
-class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPickerViewDelegate, UIPickerViewDataSource, PlayerDelegate, TagDelegate, GADRewardedAdDelegate, GADBannerViewDelegate {
+class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBannerViewDelegate {
     
     let color = Color()
     let uiElement = UIElement()
@@ -30,23 +29,22 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     var tagDelegate: TagDelegate?
     
     var skipCount = 0
+    var like: Like!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Soundbrew"
-        setupPlayerView()
-    }
+        setupNotificationCenter()
+        setSound()
+   }
         
     override func viewDidAppear(_ animated: Bool) {
-         customer = Customer.shared
-        self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
+        customer = Customer.shared
         if let balance = customer.artist?.balance {
             if balance == 0 {
-                self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
                 setUpBannerView()
             }
         } else {
-            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
             setUpBannerView()
         }
     }
@@ -58,176 +56,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //mark: money
-    let tipAmountInCents = [5, 25, 50, 100]
-    var selectedTipAmount = 5
     var customer = Customer.shared
-    
-  /* func sendTip(_ sound: Sound, tipAmount: Int) {
-        if customer.artist!.balance! >= tipAmount {
-            tipAction(sound, tipAmount: tipAmount)
-            
-        } else if let rewardedAd = self.rewardedAd {
-            if rewardedAd.isReady == true {
-                rewardedAd.present(fromRootViewController: self, delegate: self)
-                MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "watchAddActionButton", "Description": "Opted to watch video ad"])
-            }
-        }
-    }*/
-    
-    func tipAction(_ sound: Sound, tipAmount: Int) {
-        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-        self.likeSoundButton.isEnabled = false
-        self.sound?.tipAmount = tipAmount
-        updateTip(sound.objectId!, toUserId: sound.artist!.objectId, tipAmount: tipAmount)
-    }
-        
-    func updateArtistPayment(_ userId: String, tipAmount: Int) {
-        let query = PFQuery(className: "Payment")
-        query.whereKey("userId", equalTo: userId)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if error != nil {
-                self.newArtistPaymentRow(userId, tipAmount: tipAmount)
-                
-            } else if let object = object {
-                object.incrementKey("tipsSinceLastPayout", byAmount: NSNumber(value: tipAmount))
-                object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
-                object.saveEventually {
-                    (success: Bool, error: Error?) in
-                    if error != nil {
-                        self.customer.updateBalance(tipAmount)
-                    }
-                }
-            }
-        }
-    }
-    
-    func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
-        let newPaymentRow = PFObject(className: "Payment")
-        newPaymentRow["userId"] = artistObjectId
-        newPaymentRow["tipsSinceLastPayout"] = tipAmount
-        newPaymentRow["tips"] = tipAmount
-        newPaymentRow.saveEventually {
-            (success: Bool, error: Error?) in
-            if error != nil {
-                self.customer.updateBalance(tipAmount)
-            }
-        }
-    }
-    
-    func updateTip(_ soundId: String, toUserId: String, tipAmount: Int) {
-        if let fromUserId = PFUser.current()?.objectId {
-            let query = PFQuery(className: "Tip")
-            query.whereKey("fromUserId", equalTo: fromUserId)
-            query.whereKey("toUserId", equalTo: toUserId)
-            query.whereKey("soundId", equalTo: soundId)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                 if error == nil, let object = object {
-                    object.incrementKey("amount", byAmount: NSNumber(value: tipAmount))
-                    object.saveEventually {
-                        (success: Bool, error: Error?) in
-                        self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-                        self.likeSoundButton.isEnabled = true
-                        
-                        var newTipAmount = 0
-                        if let savedTipAmount = object["amount"] as? Int {
-                            newTipAmount = savedTipAmount
-                        }
-
-                        let newTipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(newTipAmount, currency: "$")
-                        self.paymentAmountForLike.text = newTipAmountString
-                        
-                        self.customer.updateBalance(-tipAmount)
-                                                
-                        if let sound = self.sound {
-                            self.incrementSoundTipAmount(sound, tipAmount: tipAmount, shouldIncrementTippers: false)
-                            self.getCreditsAndSplit(sound, tipAmount: tipAmount)
-                        }
-                    }
-                    
-                 } else {
-                    self.newTip(soundId, toUserId: toUserId, tipAmount: tipAmount, fromUserId: fromUserId)
-                }
-            }
-        }
-    }
-    
-    func newTip(_ soundId: String, toUserId: String, tipAmount: Int, fromUserId: String) {
-        let newTip = PFObject(className: "Tip")
-        newTip["fromUserId"] = fromUserId
-        newTip["toUserId"] = toUserId
-        newTip["amount"] = tipAmount
-        newTip["soundId"] = soundId
-        newTip.saveEventually {
-            (success: Bool, error: Error?) in
-            self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            self.likeSoundButton.isEnabled = true
-            let tipAmountString = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-            self.paymentAmountForLike.text = tipAmountString
-            if success, let sound = self.sound {
-                self.customer.updateBalance(-tipAmount)
-                self.newMention(sound, toUserId: toUserId)
-                self.incrementSoundTipAmount(sound, tipAmount: tipAmount, shouldIncrementTippers: true)
-               // self.newStory(sound.objectId!)
-                self.getCreditsAndSplit(sound, tipAmount: tipAmount)
-            }
-        }
-    }
-    
-    func getCreditsAndSplit(_ sound: Sound, tipAmount: Int) {
-        if currentSoundCredits.isEmpty {
-            updateArtistPayment(sound.artist!.objectId, tipAmount: tipAmount)
-            
-        } else {
-            for credit in currentSoundCredits {
-                var tipSplit: Float = 0
-                if let percentage = credit.percentage {
-                    if percentage > 0 {
-                        tipSplit = Float(percentage * tipAmount)
-                        let tipSplitInCents = tipSplit / 100
-                        updateArtistPayment(credit.artist!.objectId, tipAmount: Int(tipSplitInCents))
-                    }
-                }
-            }
-        }
-    }
-    
-    func newMention(_ sound: Sound, toUserId: String) {
-        let newMention = PFObject(className: "Mention")
-        newMention["type"] = "like"
-        newMention["fromUserId"] = PFUser.current()!.objectId!
-        newMention["toUserId"] = toUserId
-        newMention["postId"] = sound.objectId!
-        newMention.saveEventually {
-            (success: Bool, error: Error?) in
-            if success && error == nil {
-                self.uiElement.sendAlert("liked \(sound.title!)!", toUserId: toUserId, shouldIncludeName: true)
-            }
-        }
-    }
-    
-    func incrementSoundTipAmount(_ sound: Sound, tipAmount: Int, shouldIncrementTippers: Bool) {
-        let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: sound.objectId!) {
-            (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let object = object {
-                object.incrementKey("tips", byAmount: NSNumber(value: tipAmount))
-                if shouldIncrementTippers {
-                    object.incrementKey("tippers")
-                    var newLikeCount = 1
-                    if let likes = self.sound?.tipCount {
-                        newLikeCount = likes + newLikeCount
-                    }
-                    self.likeCountLabel.text = "\(newLikeCount)"
-                }
-                object.saveEventually()
-            }
-        }
-    }
     
     func checkIfUserLikedSong(_ sound: Sound) {
         self.currentSoundCredits.removeAll()
@@ -277,39 +106,11 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
                     self.currentSoundCredits.append(credit)
                 }
             }
+            self.like.soundCredits = self.currentSoundCredits
         }
-    }
-        
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return tipAmountInCents.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        let balanceInDollars = Double(tipAmountInCents[row]) / 100.00
-        let doubleStr = String(format: "%.2f", balanceInDollars)
-        return "$\(doubleStr)"
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedTipAmount = tipAmountInCents[row]
     }
     
     //mark: sound
-    func setupPlayerView() {
-        setupNotificationCenter()
-        if let sound = self.player.currentSound {
-            self.sound = sound
-            showPlayerView()
-            player.target = self
-            
-        } else {
-            showLoadingSoundbrewSpinner()
-        }
-    }
     @objc func didReceiveSoundUpdate(){
         setSound()
     }
@@ -322,6 +123,8 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     
     func setSound() {
         if let sound = player.currentSound {
+            self.like = Like(sound: sound, paymentAmount: 10, soundCredits: self.currentSoundCredits, target: self)
+            player.target = self
             self.sound = sound
 
             checkIfUserLikedSong(sound)
@@ -402,10 +205,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.songTitle.text = ""
         
         self.songArt.image = UIImage(named: "sound")
-        
-        if playBackButton.superview == nil {
-            showPlayerView()
-        }
     }
     
     func updatePlayBackControls() {
@@ -441,9 +240,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     //mark: View
-    let fiveMinutesInSeconds: Double = 5 * 60
-    let artistImageSize = 30
-    
     func handleDismissal(_ artist: Artist?) {
         if let playerDelegate = self.playerDelegate {
             self.dismiss(animated: true, completion: {() in
@@ -645,10 +441,9 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         return button
     }()
     @objc func didPressLikeButton(_ sender: UIButton) {
-        if let sound = self.sound, PFUser.current() != nil {
-            self.sendTip(sound, tipAmount: 10)
-        }
-        
+        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+        self.likeSoundButton.isEnabled = false
+        self.like.sendPayment()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
     
@@ -810,26 +605,6 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     @objc func didPressGoBackButton(_ sender: UIButton) {
         player.previous()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Go Back", "Description": "User Pressed Go Back."])
-    }
-    
-    func showLoadingSoundbrewSpinner(){
-        self.view.addSubview(loadingSoundbrewSpinner)
-        loadingSoundbrewSpinner.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(self.view.frame.width * (2))
-            make.centerY.centerX.equalTo(self.view)
-        }
-        
-        self.view.addSubview(loadSoundbrewSpinnerTitle)
-        loadSoundbrewSpinnerTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(loadingSoundbrewSpinner.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-    }
-    
-    func removeShowLoadingSoundbrewSpinner() {
-        self.loadingSoundbrewSpinner.removeFromSuperview()
-        self.loadSoundbrewSpinnerTitle.removeFromSuperview()
     }
     
     var creditCountButton: UIButton!
@@ -1002,7 +777,7 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
             make.bottom.equalTo(self.playBackTotalTime.snp.top).offset(uiElement.bottomOffset)
         }
                 
-        setSound()
+        //setSound()
     }
     
     //mark: ads
@@ -1021,39 +796,15 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
     }
     
     /// Tells the delegate an ad request loaded an ad.
-    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-      print("adViewDidReceiveAd")
-        //addBannerViewtoPlayerView(bannerView)
-    }
-
-    /// Tells the delegate an ad request failed.
-    func adView(_ bannerView: GADBannerView,
-        didFailToReceiveAdWithError error: GADRequestError) {
-      print("adView:didFailToReceiveAdWithError: \(error.localizedDescription)")
-    }
-
-    /// Tells the delegate that a full-screen view will be presented in response
-    /// to the user clicking on an ad.
-    func adViewWillPresentScreen(_ bannerView: GADBannerView) {
-      print("adViewWillPresentScreen")
-    }
-
-    /// Tells the delegate that the full-screen view will be dismissed.
-    func adViewWillDismissScreen(_ bannerView: GADBannerView) {
-      print("adViewWillDismissScreen")
-    }
-
-    /// Tells the delegate that the full-screen view has been dismissed.
-    func adViewDidDismissScreen(_ bannerView: GADBannerView) {
-      print("adViewDidDismissScreen")
-    }
 
     /// Tells the delegate that a user click will open another app (such as
     /// the App Store), backgrounding the current app.
     func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
-      print("adViewWillLeaveApplication")
         bannerView.removeFromSuperview()
         bannerRemoveAdsButton.removeFromSuperview()
+        self.skipTimerLabel.removeFromSuperview()
+        self.labelAmount = 4
+        self.skipButton.isHidden = false
         player.next()
     }
     
@@ -1089,14 +840,14 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         skipTimerLabel = UILabel()
         skipTimerLabel.text = ""
         skipTimerLabel.textColor = .white
-        skipTimerLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 30)
-        skipTimerLabel.layer.cornerRadius = 45 / 2
+        skipTimerLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
+        skipTimerLabel.layer.cornerRadius = 30 / 2
         skipTimerLabel.layer.borderWidth = 1
         skipTimerLabel.layer.borderColor = UIColor.white.cgColor
         skipTimerLabel.textAlignment = .center
         self.view.addSubview(skipTimerLabel)
         skipTimerLabel.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(self.skipButton)
+            make.height.width.equalTo(30)
             make.centerX.centerY.equalTo(self.skipButton)
         }
         let timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSkipTimer(_:)), userInfo: nil, repeats: true)
@@ -1120,79 +871,5 @@ class PlayerViewController: UIViewController, NVActivityIndicatorViewable, UIPic
         self.handleDismissal(artist)
         self.player.next()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
-    }
-    
-    //mark: rewarded Ads
-    var seenAdCount = 0
-    let testRewardedAdUnitId = "ca-app-pub-3940256099942544/1712485313"
-    let liveRewardedAdUnitId = "ca-app-pub-9150756002517285/9458994684"
-    var rewardedAd: GADRewardedAd?
-    func createAndLoadRewardedAd(_ adUnitId: String) -> GADRewardedAd? {
-      rewardedAd = GADRewardedAd(adUnitID: adUnitId)
-      rewardedAd?.load(GADRequest()) { error in
-        if let error = error {
-          print("Loading failed: \(error)")
-        } else {
-          print("Loading Succeeded")
-        }
-      }
-        
-      return rewardedAd
-    }
-
-    /// Tells the delegate that the user earned a reward.
-    func rewardedAd(_ rewardedAd: GADRewardedAd, userDidEarn reward: GADAdReward) {
-        let rewardAmount = Int(truncating: reward.amount)
-        let currentUser = Customer.shared
-        var newBalance = 0
-        if let currentBalance = currentUser.artist?.balance {
-            newBalance = currentBalance + rewardAmount
-            currentUser.artist?.balance = newBalance
-        } else {
-            currentUser.artist?.balance = rewardAmount
-        }
-        
-        if let sound = self.sound {
-            self.tipAction(sound, tipAmount: rewardAmount)
-        }
-        
-        self.dismiss(animated: true, completion: {() in
-            self.askToAdFundsToTheirAccount()
-        })
-    }
-    
-    /// Tells the delegate that the rewarded ad was presented.
-    func rewardedAdDidPresent(_ rewardedAd: GADRewardedAd) {
-      print("Rewarded ad presented.")
-    }
-    /// Tells the delegate that the rewarded ad was dismissed.
-    func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
-        //self.askToAdFundsToTheirAccount()
-        print("ad was dismissed")
-    }
-        
-    /// Tells the delegate that the rewarded ad failed to present.
-    func rewardedAd(_ rewardedAd: GADRewardedAd, didFailToPresentWithError error: Error) {
-      print("Rewarded ad failed to present.")
-    }
-        
-    func askToAdFundsToTheirAccount() {
-         let alertView = UIAlertController(
-             title: "Tired of Ads?",
-             message: "Add funds to your account to skip the ads!",
-             preferredStyle: .actionSheet)
-         
-         let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
-             let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-             self.handleDismissal(artist)
-            
-             MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
-         }
-         alertView.addAction(addFundsActionButton)
-         
-         let cancelAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
-         alertView.addAction(cancelAction)
-         
-        self.present(alertView, animated: true, completion: nil)
     }
 }
