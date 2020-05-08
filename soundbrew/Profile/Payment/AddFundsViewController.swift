@@ -16,7 +16,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     
     let color = Color()
     let uiElement = UIElement()
-        
+    var shouldShowExitButton = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -118,10 +119,15 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         case .success:
             let customer = Customer.shared
             customer.updateBalance(paymentContext.paymentAmount)
-            if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
+           // if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                 SKStoreReviewController.requestReview()
+            //}
+            
+            if shouldShowExitButton {
+                self.dismiss(animated: true, completion: nil)
+            } else {
+               self.uiElement.goBackToPreviousViewController(self)
             }
-            self.uiElement.goBackToPreviousViewController(self)
             
         case .userCancellation:
             return
@@ -136,6 +142,24 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }
     
     //mark: UI
+    lazy var exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "dismiss"), for: .normal)
+        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        return button
+    }()
+    @objc func didPressExitButton(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    lazy var addFundsTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Add Funds"
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
+        label.textAlignment = .center
+        return label
+    }()
     
     //description
     lazy var addFundsDescription: UILabel = {
@@ -218,7 +242,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         return label
     }()
     
-    lazy var dismissImage: UIImageView = {
+    lazy var changeTotalAmountImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "dismiss")
         return imageView
@@ -304,19 +328,41 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        var topOffset = uiElement.uiViewTopOffset(self) + 15
-        switch UIDevice.modelName {
-        case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
-            topOffset = uiElement.uiViewTopOffset(self) * 2
-            break
+        var topOffset: CGFloat!
+        
+        if shouldShowExitButton {
+            self.view.addSubview(exitButton)
+            exitButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(25)
+                make.top.equalTo(self.view).offset(uiElement.topOffset)
+                make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            }
             
-        default:
-            break
+            self.view.addSubview(addFundsTitle)
+            addFundsTitle.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(exitButton)
+                make.centerX.equalTo(self.view)
+            }
+            
+        } else {
+            topOffset = uiElement.uiViewTopOffset(self) + 15
+            switch UIDevice.modelName {
+            case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
+                topOffset = uiElement.uiViewTopOffset(self) * 2
+                break
+                
+            default:
+                break
+            }
         }
         
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(topOffset)
+            if shouldShowExitButton {
+                make.top.equalTo(addFundsTitle.snp.bottom).offset(uiElement.topOffset)
+            } else {
+              make.top.equalTo(self.view).offset(topOffset)
+            }
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -344,8 +390,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             make.right.equalTo(fundsToAddView).offset(uiElement.rightOffset)
         }
         
-        self.totalButton.addSubview(dismissImage)
-        dismissImage.snp.makeConstraints { (make) -> Void in
+        self.totalButton.addSubview(changeTotalAmountImage)
+        changeTotalAmountImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(20)
             make.centerY.equalTo(totalTitle)
             make.right.equalTo(totalButton)
@@ -353,8 +399,8 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         
         self.totalButton.addSubview(total)
         total.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(dismissImage)
-            make.right.equalTo(dismissImage.snp.left).offset(-(uiElement.elementOffset))
+            make.centerY.equalTo(changeTotalAmountImage)
+            make.right.equalTo(changeTotalAmountImage.snp.left).offset(-(uiElement.elementOffset))
         }
         
         self.fundsToAddView.addSubview(totalAmountDividerLine)

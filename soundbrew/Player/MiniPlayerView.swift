@@ -19,6 +19,7 @@ class MiniPlayerView: UIButton {
     
     var player: Player?
     var sound: Sound?
+    var like: Like?
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
@@ -40,6 +41,8 @@ class MiniPlayerView: UIButton {
         let image = UIImageView()
         image.backgroundColor = .clear 
         image.image = UIImage(named: "sound")
+        image.layer.cornerRadius = 3
+        image.clipsToBounds = true
         return image
     }()
     
@@ -54,6 +57,7 @@ class MiniPlayerView: UIButton {
     lazy var playBackButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "play"), for: .normal)
+        button.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
@@ -81,6 +85,36 @@ class MiniPlayerView: UIButton {
             playBackButton.isHidden = true
         }
     }
+    
+    lazy var likeButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
+        button.isEnabled = false
+        return button
+    }()
+    
+    lazy var likeImageView: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "sendTip")
+        return image
+    }()
+    @objc func didPressLikeButton(_ sender: UIButton) {
+        self.likeImageView.image = UIImage(named: "sendTipColored")
+        self.likeButton.isEnabled = false
+        if let like = self.like {
+            like.sendPayment()
+        }
+        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
+    }
+    
+    lazy var paymentAmountForLike: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.textColor = .white
+        label.font = UIFont(name: "\(uiElement.mainFont)", size: 10)
+        label.textAlignment = .center
+        return label
+    }()
     
     lazy var playBackSlider: UISlider = {
         let slider = UISlider()
@@ -124,35 +158,52 @@ class MiniPlayerView: UIButton {
                 make.right.equalTo(self)
             }
             
-            self.addSubview(playBackButton)
-            playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
-            playBackButton.snp.makeConstraints { (make) -> Void in
+            self.addSubview(likeButton)
+            likeButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self)
+            }
+            
+            self.likeButton.addSubview(likeImageView)
+            likeImageView.snp.makeConstraints { (make) -> Void in
                 make.width.height.equalTo(30)
                 make.centerY.equalTo(self)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            self.likeButton.addSubview(paymentAmountForLike)
+            paymentAmountForLike.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(likeImageView.snp.bottom)
+                make.centerX.equalTo(likeImageView)
+            }
+            
+            self.addSubview(playBackButton)
+            playBackButton.snp.makeConstraints { (make) -> Void in
+                make.width.height.equalTo(30)
+                make.centerY.equalTo(self)
+                make.right.equalTo(likeButton.snp.left).offset(uiElement.rightOffset * 2)
             }
             
             self.addSubview(activitySpinner)
             activitySpinner.snp.makeConstraints { (make) -> Void in
                 make.width.height.equalTo(30)
-                make.centerY.equalTo(self)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.center.equalTo(playBackButton)
             }
             activitySpinner.isHidden = true
             
             self.addSubview(songArt)
             songArt.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(40)
-                make.top.equalTo(playBackSlider).offset(uiElement.elementOffset)
+                make.height.width.equalTo(50)
+                make.centerY.equalTo(self)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
             }
             
             self.addSubview(artistName)
             artistName.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(200)
                 make.centerY.equalTo(self.songArt).offset(uiElement.topOffset)
                 make.left.equalTo(songArt.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
             }
             
             self.addSubview(songTitle)
@@ -181,10 +232,11 @@ class MiniPlayerView: UIButton {
     
     func setSound() {
         if let player = self.player {
-            if let currentSound = player.currentSound {
-            self.sound = currentSound
-            setCurrentSoundView(self.sound!)
-            self.playBackButton.isEnabled = true
+            if let sound = player.currentSound {
+                self.like = Like(sound: sound, target: player.target, likeSoundButton: self.likeButton, paymentAmountForLike: self.paymentAmountForLike)
+                self.sound = sound
+                setCurrentSoundView(self.sound!)
+                self.playBackButton.isEnabled = true
             }
             
             if let duration = self.player?.player?.duration {
@@ -210,7 +262,7 @@ class MiniPlayerView: UIButton {
     @objc func didReceivePreparingSoundNotification() {
         self.activitySpinner.isHidden = false
         playBackButton.isHidden = true
-        //self.isEnabled = false
+        self.likeButton.isEnabled = false 
     }
     
     func setCurrentSoundView(_ sound: Sound) {
@@ -220,7 +272,6 @@ class MiniPlayerView: UIButton {
         
         if let artistName = sound.artist?.name {
             self.artistName.text = artistName
-            
         } else {
             self.artistName.text = ""
             loadUserInfoFromCloud(sound.artist!.objectId)

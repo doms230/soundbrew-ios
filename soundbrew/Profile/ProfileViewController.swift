@@ -214,7 +214,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 miniPlayerView.addGestureRecognizer(slide)
                 miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
                 miniPlayerView.snp.makeConstraints { (make) -> Void in
-                    make.height.equalTo(50)
+                    make.height.equalTo(75)
                     make.right.equalTo(self.view)
                     make.left.equalTo(self.view)
                     make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))

@@ -58,58 +58,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     //mark: money
     var customer = Customer.shared
     
-    func checkIfUserLikedSong(_ sound: Sound) {
-        self.currentSoundCredits.removeAll()
-        if let userId = PFUser.current()?.objectId {
-            self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            self.likeSoundButton.isEnabled = false
-            
-            let query = PFQuery(className: "Tip")
-            query.whereKey("fromUserId", equalTo: userId)
-            query.whereKey("soundId", equalTo: sound.objectId!)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                 if let object = object {
-                    if let tipAmount = object["amount"] as? Int {
-                        self.sound?.tipAmount = tipAmount
-                        self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-                    }
-                    
-                 } else {
-                    self.paymentAmountForLike.text = ""
-                }
-                self.likeSoundButton.isEnabled = true
-                self.loadCredits(sound.objectId!)
-            }
-        }
-    }
-    
-    var currentSoundCredits = [Credit]()
-    func loadCredits(_ postId: String) {
-        let query = PFQuery(className: "Credit")
-        query.whereKey("postId", equalTo: postId)
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                for object in objects {
-                    let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                    
-                    let credit = Credit(objectId: object.objectId, artist: artist, title: nil, percentage: 0)
-                    if let title = object["title"] as? String {
-                        credit.title = title
-                    }
-                    if let percentage = object["percentage"] as? Int {
-                        credit.percentage = percentage
-                    }
-                    
-                    self.currentSoundCredits.append(credit)
-                }
-            }
-            self.like.soundCredits = self.currentSoundCredits
-        }
-    }
-    
     //mark: sound
     @objc func didReceiveSoundUpdate(){
         setSound()
@@ -123,11 +71,11 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     
     func setSound() {
         if let sound = player.currentSound {
-            self.like = Like(sound: sound, paymentAmount: 10, soundCredits: self.currentSoundCredits, target: self)
             player.target = self
+            
+            self.like = Like(sound: sound, target: self, likeSoundButton: self.likeSoundButton, paymentAmountForLike: self.paymentAmountForLike)
+            
             self.sound = sound
-
-            checkIfUserLikedSong(sound)
             
             self.songTitle.text = sound.title
             
@@ -775,9 +723,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.playBackTotalTime.snp.top).offset(uiElement.bottomOffset)
-        }
-                
-        //setSound()
+        }                
     }
     
     //mark: ads

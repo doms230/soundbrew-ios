@@ -15,79 +15,93 @@ class Like: NSObject, GADRewardedAdDelegate {
     let uiElement = UIElement()
     let target: UIViewController!
     var sound: Sound!
-    var paymentAmount: Int!
-    var soundCredits: [Credit]
+    var paymentAmount = 10
+    var soundCredits = [Credit]()
     var didPressLikeButtonBeforeRewardedAdLoaded = false
+    var creditsLoaded = false
+    var didPressLikeButtonBeforeCreditsLoaded = false
+    var likeSoundButton: UIButton!
+    var paymentAmountForLike: UILabel!
     
-    init(sound: Sound, paymentAmount: Int, soundCredits: [Credit], target: UIViewController) {
+    init(sound: Sound, target: UIViewController, likeSoundButton: UIButton, paymentAmountForLike: UILabel) {
+            
         self.sound = sound
-        self.paymentAmount = paymentAmount
-        self.soundCredits = soundCredits
         self.target = target
+        self.likeSoundButton = likeSoundButton
+        self.paymentAmountForLike = paymentAmountForLike
         
         super.init()
         
-        if let balance = customer.artist?.balance {
-            if balance == 0 {
-                self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
-            }
+        checkIfUserLikedSong(sound)
+        loadCredits()
+        
+        if let balance = customer.artist?.balance, balance < paymentAmount {
+            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
         } else {
             self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
         }
     }
 
     func sendPayment() {
-        didPressLikeButtonBeforeRewardedAdLoaded = true
         if customer.artist!.balance! >= self.paymentAmount {
             updatePayment()
              
          } else if let rewardedAd = self.rewardedAd {
              if rewardedAd.isReady == true {
                  rewardedAd.present(fromRootViewController: target, delegate: self)
-             }
+             } else {
+                didPressLikeButtonBeforeRewardedAdLoaded = true
+            }
          }
      }
     
     func updatePayment() {
-        if let fromUserId = PFUser.current()?.objectId {
-            let query = PFQuery(className: "Tip")
-            query.whereKey("fromUserId", equalTo: fromUserId)
-            query.whereKey("toUserId", equalTo: sound.artist!.objectId!)
-            query.whereKey("soundId", equalTo: sound.objectId!)
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                 if error == nil, let object = object {
-                    object.incrementKey("amount", byAmount: NSNumber(value: self.paymentAmount))
-                    object.saveEventually {
-                        (success: Bool, error: Error?) in
-                        //TODO: completion handler returns true for UI to update
-                        if success {
-                            self.customer.updateBalance(-self.paymentAmount)
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
-                            self.incrementSoundPaymentAmount(false)
-                            self.getCreditsAndSplit()
-                        }
-                  }
-                    
-                 } else {
-                    let newTip = PFObject(className: "Tip")
-                    newTip["fromUserId"] = self.customer.artist?.objectId
-                    newTip["toUserId"] = self.sound.artist?.objectId
-                    newTip["amount"] = self.paymentAmount
-                    newTip["soundId"] = self.sound.objectId
-                    newTip.saveEventually {
-                        (success: Bool, error: Error?) in
-                          if success {
-                            self.customer.updateBalance(-self.paymentAmount)
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
-                            self.newMention(self.sound, toUserId: (self.sound.artist?.objectId)!)
-                            self.incrementSoundPaymentAmount(true)
-                            self.getCreditsAndSplit()
-                          }
+        if self.creditsLoaded {
+            if let fromUserId = PFUser.current()?.objectId {
+                let query = PFQuery(className: "Tip")
+                query.whereKey("fromUserId", equalTo: fromUserId)
+                query.whereKey("toUserId", equalTo: sound.artist!.objectId!)
+                query.whereKey("soundId", equalTo: sound.objectId!)
+                query.getFirstObjectInBackground {
+                    (object: PFObject?, error: Error?) -> Void in
+                     if error == nil, let object = object {
+                        object.incrementKey("amount", byAmount: NSNumber(value: self.paymentAmount))
+                        object.saveEventually {
+                            (success: Bool, error: Error?) in
+                            if success {
+                                self.customer.updateBalance(-self.paymentAmount)
+                                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+                                self.incrementSoundPaymentAmount(false)
+                                self.getCreditsAndSplit()
+                            }
                       }
+                        
+                     } else {
+                        self.newPaymentRow()
+                    }
                 }
             }
+        } else {
+            didPressLikeButtonBeforeCreditsLoaded = true
         }
+    }
+    
+    func newPaymentRow() {
+        let newPayment = PFObject(className: "Tip")
+        newPayment["fromUserId"] = self.customer.artist?.objectId
+        newPayment["toUserId"] = self.sound.artist?.objectId
+        newPayment["amount"] = self.paymentAmount
+        newPayment["soundId"] = self.sound.objectId
+        newPayment.saveEventually {
+            (success: Bool, error: Error?) in
+              if success {
+                self.customer.updateBalance(-self.paymentAmount)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+                self.newMention(self.sound, toUserId: (self.sound.artist?.objectId)!)
+                self.incrementSoundPaymentAmount(true)
+                self.getCreditsAndSplit()
+              }
+          }
     }
     
     func incrementSoundPaymentAmount(_ shouldUpdateTippers: Bool) {
@@ -216,15 +230,13 @@ class Like: NSObject, GADRewardedAdDelegate {
     func askToAdFundsToTheirAccount() {
          let alertView = UIAlertController(
              title: "Tired of Ads?",
-             message: "Remove ads by adding funds to your Soundbrew wallet!",
+             message: "Add funds to your Soundbrew wallet to remove ads!",
              preferredStyle: .actionSheet)
          
          let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
-             /*let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-             self.handleDismissal(artist)*/
             let modal = AddFundsViewController()
+            modal.shouldShowExitButton = true 
             self.target.present(modal, animated: true, completion: nil)
-            
          }
          alertView.addAction(addFundsActionButton)
          
@@ -234,4 +246,53 @@ class Like: NSObject, GADRewardedAdDelegate {
         target.present(alertView, animated: true, completion: nil)
     }
     
+    func loadCredits() {
+        let query = PFQuery(className: "Credit")
+        query.whereKey("postId", equalTo: sound.objectId!)
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            self.creditsLoaded = true
+            if let objects = objects {
+                for object in objects {
+                    let userId = object["userId"] as? String
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                    
+                    let credit = Credit(objectId: object.objectId, artist: artist, title: nil, percentage: 0)
+                    if let title = object["title"] as? String {
+                        credit.title = title
+                    }
+                    if let percentage = object["percentage"] as? Int {
+                        credit.percentage = percentage
+                    }
+                    
+                    self.soundCredits.append(credit)
+                }
+            }
+            if self.didPressLikeButtonBeforeCreditsLoaded {
+                self.didPressLikeButtonBeforeCreditsLoaded = false
+                self.updatePayment()
+            }
+        }
+    }
+    
+    func checkIfUserLikedSong(_ sound: Sound) {
+        if let userId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Tip")
+            query.whereKey("fromUserId", equalTo: userId)
+            query.whereKey("soundId", equalTo: sound.objectId!)
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                 if let object = object {
+                    if let tipAmount = object["amount"] as? Int {
+                        self.sound?.tipAmount = tipAmount
+                        self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                    }
+                    
+                 } else {
+                    self.paymentAmountForLike.text = ""
+                }
+                self.likeSoundButton.isEnabled = true
+            }
+        }
+    }
 }

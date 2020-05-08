@@ -232,7 +232,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             self.miniPlayerView!.addGestureRecognizer(slide)
             self.miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
             self.miniPlayerView!.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(50)
+                make.height.equalTo(75)
                 make.right.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
