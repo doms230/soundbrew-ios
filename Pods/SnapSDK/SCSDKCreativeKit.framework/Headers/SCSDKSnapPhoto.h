@@ -6,10 +6,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SCSDKCreativeKitModelValidating.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCSDKSnapPhoto : NSObject
+@interface SCSDKSnapPhoto : NSObject<SCSDKCreativeKitModelValidating>
 
 /**
  * @property image

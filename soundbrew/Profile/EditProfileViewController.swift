@@ -34,7 +34,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var emailText: UITextField!
     var shouldUpdateEmail = false
     
-    var editDetailType: String!
+    var isOnboarding = false
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -503,7 +503,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             artistDelegate.receivedArtist(customer.artist)
                         }
                         
-                        self.uiElement.goBackToPreviousViewController(self)
+                        if self.isOnboarding {
+                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                        } else {
+                            self.uiElement.goBackToPreviousViewController(self)
+                        }
                         
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self)

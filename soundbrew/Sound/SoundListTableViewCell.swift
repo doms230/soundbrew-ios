@@ -13,31 +13,12 @@ class SoundListTableViewCell: UITableViewCell {
     let uiElement = UIElement()
     let color = Color()
     
-    //mark: header
-    lazy var headerImage: UIImageView = {
-        let image = UIImageView()
-        return image
-    }()
-    
-    lazy var playButton: UIButton = {
-        let localizedPlay = NSLocalizedString("play", comment: "")
-        let button = UIButton()
-        button.setTitle(localizedPlay, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 30)
-        button.setTitleColor(color.black(), for: .normal)
-        button.backgroundColor = .white
-        button.layer.cornerRadius = 5
-        button.clipsToBounds = true
-        return button
-    }()
-    
     //mark: no sounds
     lazy var headerTitle: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
         label.numberOfLines = 0
         label.textColor = .white
-        label.textAlignment = .center 
         return label
     }()
     
@@ -164,26 +145,22 @@ class SoundListTableViewCell: UITableViewCell {
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            self.addSubview(artistButton)
+            artistButton.setBackgroundImage(UIImage(named: "background"), for: .normal)
+            artistButton.setTitleColor(.white, for: .normal)
+            artistButton.layer.cornerRadius = 3
+            artistButton.clipsToBounds = true
+            artistButton.isHidden = true 
+            artistButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(self.uiElement.buttonHeight)
+                make.top.equalTo(headerTitle.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
-            break
             
-        case "soundHeaderReuse":
-            self.addSubview(headerImage)
-            self.addSubview(playButton)
-            headerImage.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(150)
-                make.top.equalTo(self)
-                make.left.equalTo(self)
-                make.right.equalTo(self)
-                make.bottom.equalTo(self)
-            }
-            
-            playButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(50)
-                make.width.equalTo(100)
-                make.centerY.centerX.equalTo(headerImage)
-            }
             break
             
         case "soundReuse":
@@ -245,14 +222,12 @@ class SoundListTableViewCell: UITableViewCell {
             
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
-                //make.top.equalTo(soundDate.snp.bottom)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(soundArtImage)
             }
             
             soundDate.snp.makeConstraints { (make) -> Void in
-               // make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(soundTitle)
                 make.bottom.equalTo(dividerLine.snp.top)
@@ -274,65 +249,6 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(soundDate.snp.top).offset(uiElement.bottomOffset)
-            }
-            break
-            
-        case "shareReuse":
-            self.addSubview(menuButton)
-            self.addSubview(soundArtImage)
-            self.addSubview(soundTitle)
-            
-            soundArtImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(self)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            menuButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(15)
-                make.top.equalTo(soundArtImage)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArtImage).offset(uiElement.elementOffset)
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(menuButton.snp.left).offset(-(uiElement.elementOffset))
-            }
-            
-            break
-            
-        case "tagsReuse":
-            self.addSubview(tagsScrollview)
-            tagsScrollview.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(70)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self)
-                make.right.equalTo(self)
-                make.bottom.equalTo(self)
-            }
-            
-           /* self.addSubview(dividerLine)
-            dividerLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(tagsScrollview.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self)
-                make.right.equalTo(self)
-                make.bottom.equalTo(self)
-            }*/
-        break
-            
-        case "featuredTitleReuse":
-            self.addSubview(headerTitle)
-            headerTitle.text = "Featured"
-            headerTitle.font = UIFont(name: "\(UIElement().mainFont)-Bold", size: 30)
-            headerTitle.textAlignment = .left
-            headerTitle.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(40)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             break
             
@@ -361,17 +277,6 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(searchArtistsButton)
             }
     
-            break
-            
-        case "noFilterTagsReuse":
-            self.addSubview(headerTitle)
-            headerTitle.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(40)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
-                make.left.equalTo(self)
-                make.right.equalTo(self)
-                make.bottom.equalTo(self).offset(-(uiElement.elementOffset))
-            }
             break
             
         default:

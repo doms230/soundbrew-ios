@@ -536,7 +536,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="Glb-gf-Vft"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="TFI-Y2-jI1">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -668,9 +668,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="KO1-9I-QDL"/>
-        <segue reference="QFf-vL-w9n"/>
-        <segue reference="UgY-SI-XY8"/>
+        <segue reference="DRe-nT-YVJ"/>
+        <segue reference="Pro-Wr-Tmr"/>
+        <segue reference="t1V-yP-gW0"/>
         <segue reference="KtZ-Sp-Nxi"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="CdJ-ew-HPh"/>

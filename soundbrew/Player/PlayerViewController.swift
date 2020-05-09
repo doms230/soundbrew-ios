@@ -104,11 +104,12 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                     creditCount = count
                 }
                 setCountLabel(self.creditCountLabel, count: creditCount)
-                if let artistImage = sound.artist?.image {
-                    self.soundArtistImage.kf.setImage(with: URL(string: artistImage))
-                } else {
-                    self.soundArtistImage.image = UIImage(named: "profile_icon")
-                }
+            }
+            
+            if let artistImage = sound.artist?.image {
+                self.soundArtistImage.kf.setImage(with: URL(string: artistImage))
+            } else {
+                self.soundArtistImage.image = UIImage(named: "profile_icon")
             }
             
             updatePlayBackControls()
@@ -205,6 +206,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let button = UIButton()
         button.setImage(UIImage(named: "dismiss"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
+        button.isOpaque = true
         return button
     }()
     @objc func didPressExitButton(_ sender: UIButton) {
@@ -331,7 +333,8 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             let tagsModal = ChooseTagsViewController()
             tagsModal.tagDelegate = self
             tagsModal.sound = sound
-            tagsModal.isViewTagsFromSound = true 
+            tagsModal.isViewTagsFromSound = true
+            tagsModal.tagType = ""
             self.present(tagsModal, animated: true, completion: nil)
         }
     }
@@ -360,6 +363,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
         label.textAlignment = .center
+        label.isOpaque = true
         return label
     }()
     
@@ -367,6 +371,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
         image.backgroundColor = color.black()
+        image.isOpaque = true
         return image
     }()
     
@@ -378,6 +383,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 25)
         label.textAlignment = .center
         label.numberOfLines = 3
+        label.isOpaque = true
         return label
     }()
     
@@ -386,6 +392,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
         button.isEnabled = false
+        button.isOpaque = true
         return button
     }()
     @objc func didPressLikeButton(_ sender: UIButton) {
@@ -401,6 +408,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 10)
         label.textAlignment = .center
+        label.isOpaque = true
         return label
     }()
     
@@ -408,6 +416,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let button = UIButton()
         button.setImage(UIImage(named: "share"), for: .normal)
         button.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
+        button.isOpaque = true
         return button
     }()
     @objc func didPressShareButton(_ sender: UIButton) {
@@ -423,6 +432,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         slider.tintColor = .darkGray
         slider.value = 0
         slider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
+        slider.isOpaque = true
         return slider
     }()
     
@@ -452,6 +462,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         label.text = "0 s"
         label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
+        label.isOpaque = true
         return label
     }()
     
@@ -460,6 +471,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         label.text = "0 s"
         label.textColor = .white
         label.font = UIFont(name: uiElement.mainFont, size: 10)
+        label.isOpaque = true
         return label
     }()
     
@@ -468,6 +480,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         button.setImage(UIImage(named: "pause"), for: .normal)
         button.isEnabled = false
         button.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
+        button.isOpaque = true
         return button
     }()
     
@@ -475,6 +488,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let spinner = UIActivityIndicatorView()
         spinner.color = .white
         spinner.startAnimating()
+        spinner.isOpaque = true
         return spinner
     }()
     
@@ -485,6 +499,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
         label.textAlignment = .center
+        label.isOpaque = true
         return label
     }()
     
@@ -493,6 +508,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         spinner.color = .white
         spinner.startAnimating()
         spinner.isHidden = true
+        spinner.isOpaque = true
         return spinner
     }()
         
@@ -517,6 +533,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let button = UIButton()
         button.setImage(UIImage(named: "skip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
+        button.isOpaque = true
         return button
     }()
     @objc func didPressSkipButton(_ sender: UIButton) {
@@ -548,6 +565,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let button = UIButton()
         button.setImage(UIImage(named: "goBack"), for: .normal)
         button.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
+        button.isOpaque = true
         return button
     }()
     @objc func didPressGoBackButton(_ sender: UIButton) {

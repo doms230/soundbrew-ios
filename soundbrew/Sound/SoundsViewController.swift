@@ -5,7 +5,6 @@
 //  Created by Dominic  Smith on 1/28/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //  MARK: Data, tableview, player, tags, button actions, tableview, tags
-//TODO: Automatic loading of more sounds as the user scrolls
 
 import UIKit
 import Parse
@@ -26,7 +25,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         return false
     }
     var userId: String?
-    var newUserArtistForEditing: Artist?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,10 +49,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             UserDefaults.standard.removeObject(forKey: "newSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: true)
         }
-        
-        if newUserArtistForEditing != nil {
-            self.performSegue(withIdentifier: "showEditProfile", sender: self)
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -64,6 +58,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else {
             setUpTableView(nil)
         }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        soundList.sounds.removeAll()
     }
     
     func setupNotificationCenter() {
@@ -106,15 +104,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             navigationItem.backBarButtonItem = backItem
             break
             
-        case "showEditProfile":
-            let viewController = segue.destination as! EditProfileViewController
-            viewController.artist = newUserArtistForEditing
-            
-            let backItem = UIBarButtonItem()
-            backItem.title = "Complete Profile"
-            navigationItem.backBarButtonItem = backItem
-            break
-            
         case "showSearch":
             let backItem = UIBarButtonItem()
             backItem.title = ""
@@ -151,18 +140,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var tableView = UITableView()
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
-    let soundHeaderReuse = "soundHeaderReuse"
-    let storyReuse = "tagsReuse"
-    let featuredTitleReuse = "featuredTitleReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
         self.tableView.removeFromSuperview()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundHeaderReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: storyReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: featuredTitleReuse)
         tableView.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         let refreshControl = UIRefreshControl()
@@ -220,14 +203,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        didSelectRowAt(indexPath.row)
-    }
-    
-    func didSelectRowAt(_ row: Int) {
-        //TESTING: PLAYER
         let player = soundList.player
         player.sounds = soundList.sounds
-        player.didSelectSoundAt(row)
+        player.didSelectSoundAt(indexPath.row)
         if miniPlayerView == nil {
             self.setUpMiniPlayer()
         } else {
@@ -246,16 +224,25 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.backgroundColor = color.black()
         if soundList.isUpdatingData {
             cell.headerTitle.text = ""
+            cell.artistButton.isHidden = true
         } else  if soundType == "follow" {
-            cell.headerTitle.text = "Follow people to keep up with their latest uploads!"
-        } else if soundType == "yourCity" {
-            cell.headerTitle.text = "Keep up with uploads in your city by adding your city to your profile!"
+            cell.headerTitle.text = "Follow your favorite artists to keep up with their latest uploads!"
+            cell.artistButton.setTitle("Discover Sounds", for: .normal)
+            cell.artistButton.addTarget(self, action: #selector(self.didPressDiscoverButton(_:)), for: .touchUpInside)
+            cell.artistButton.isHidden = false 
         } else if selectedTagForFiltering != nil {
             let localizedNoResultsFor = NSLocalizedString("noResultsFor", comment: "")
             cell.headerTitle.text = "\(localizedNoResultsFor) \(selectedTagForFiltering.name!)"
+            cell.artistButton.isHidden = true
         }
         
         return cell
+    }
+    
+    @objc func didPressDiscoverButton(_ sender: UIButton) {
+        if let tabBar = self.tabBarController {
+            tabBar.selectedIndex = 1
+        }
     }
     
     //mark: miniPlayer

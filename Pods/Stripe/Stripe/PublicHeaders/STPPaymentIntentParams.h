@@ -16,7 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 STPMandateDataParams,
 STPSourceParams,
 STPPaymentMethodParams,
-STPPaymentResult;
+STPPaymentResult,
+STPPaymentIntentShippingDetailsParams;
 
 /**
  An object representing parameters used to confirm a PaymentIntent object.
@@ -126,7 +127,7 @@ STPPaymentResult;
 
 /**
  Details about the Mandate to create.
- @note If this value is null and the `self.paymentMethod.type == STPPaymentMethodTypeSEPADebit && self.mandate == nil`, the SDK will set this to an internal value indicating that the mandate data should be inferred from the current context.
+ @note If this value is null and the (self.paymentMethod.type == STPPaymentMethodTypeSEPADebit | | self.paymentMethodParams.type == STPPaymentMethodTypeAUBECSDebit || self.paymentMethodParams.type == STPPaymentMethodTypeBacsDebit) && self.mandate == nil`, the SDK will set this to an internal value indicating that the mandate data should be inferred from the current context.
  */
 @property (nonatomic, nullable) STPMandateDataParams *mandateData;
 
@@ -140,6 +141,11 @@ STPPaymentResult;
  @see STPPaymentMethodOptions
  */
 @property (nonatomic, nullable) STPConfirmPaymentMethodOptions *paymentMethodOptions;
+
+/**
+ Shipping information.
+ */
+@property (nonatomic, nullable) STPPaymentIntentShippingDetailsParams *shipping;
 
 /**
  The URL to redirect your customer back to after they authenticate or cancel

@@ -360,29 +360,6 @@ class UIElement {
             sound.artFile = art 
         }
         
-       /* if let tags = object["tags"] as? Array<String> {
-            sound.tags = tags
-        }*/
-        
-       /*if let plays = object["plays"] as? Int {
-            sound.playCount = plays
-        }*/
-        
-       /* if let tips = object["tips"] as? Int {
-            sound.tipAmount = tips
-        }*/
-        
-        /*if let tippers = object["tippers"] as? Int {
-            sound.tipCount = tippers
-        }*/
-        
-       /* if let commentCount = object["comments"] as? Int {
-            sound.commentCount = commentCount
-        }*/
-        
-       /*if let creditCount = object["credits"] as? Int {
-            sound.creditCount = creditCount
-        }*/
         sound.tags = object["tags"] as? Array<String>
         sound.playCount = object["plays"] as? Int
         sound.tipAmount = object["tips"] as? Int

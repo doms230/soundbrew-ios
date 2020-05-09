@@ -26,7 +26,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         navigationController?.navigationBar.barTintColor = color.black()
         setUpNavigationBar()
         if let tagType = self.tagType, tagType != "more" {
-            loadTags(tagType, searchText: nil, tags: sound?.tags)
+            if isViewTagsFromSound {
+                loadTags(nil, searchText: nil, tags: sound?.tags)
+            } else {
+               loadTags(tagType, searchText: nil, tags: sound?.tags)
+            }
+            
         } else {
             self.setupChooseTagsView()
         }

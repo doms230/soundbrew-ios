@@ -23,6 +23,7 @@ class CommentTableViewCell: UITableViewCell {
         button.setImage(UIImage(named: "profile_icon"), for: .normal)
         button.backgroundColor = .white
         button.contentMode = .scaleAspectFill
+        button.isOpaque = true
         return button
     }()
     
@@ -30,6 +31,7 @@ class CommentTableViewCell: UITableViewCell {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
         button.setTitleColor(.white, for: .normal)
+        button.isOpaque = true
         return button
     }()
     
@@ -40,6 +42,7 @@ class CommentTableViewCell: UITableViewCell {
         label.textColor = .white
         label.mentionColor = color.blue()
         label.numberOfLines = 0
+        label.isOpaque = true
         return label
     }()
     
@@ -47,6 +50,7 @@ class CommentTableViewCell: UITableViewCell {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
         button.setTitleColor(color.blue(), for: .normal)
+        button.isOpaque = true
         return button
     }()
     
@@ -55,6 +59,7 @@ class CommentTableViewCell: UITableViewCell {
         button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
         button.setTitleColor(.darkGray, for: .normal)
         button.setTitle("Reply", for: .normal)
+        button.isOpaque = true
         return button
     }()
     
@@ -63,6 +68,7 @@ class CommentTableViewCell: UITableViewCell {
         label.font = UIFont(name: uiElement.mainFont, size: 15)
         label.numberOfLines = 0
         label.textColor = .darkGray
+        label.isOpaque = true
         return label
     }()
     
@@ -70,6 +76,7 @@ class CommentTableViewCell: UITableViewCell {
         let line = UIView()
         line.layer.borderWidth = 0.5
         line.layer.borderColor = UIColor.darkGray.cgColor
+        line.isOpaque = true 
         return line
     }()
 

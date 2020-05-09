@@ -52,17 +52,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @property width
- * @brief Fixed width of sticker. If fixed size is not provided, sticker will scale with a default max
+ * @brief Fixed width of sticker (in points). If fixed size is not provided, sticker will scale with a default max
  *        size of 200.
  */
-@property (nonatomic, assign) CGFloat width DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) CGFloat width;
 
 /**
  * @property height
- * @brief Fixed height of sticker. If fixed size is not provided, sticker will scale with a default max
+ * @brief Fixed height of sticker (in points). If fixed size is not provided, sticker will scale with a default max
  *        size of 200.
  */
-@property (nonatomic, assign) CGFloat height DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) CGFloat height;
 
 /**
  * Initializes an SCSDKSnapSticker instance.

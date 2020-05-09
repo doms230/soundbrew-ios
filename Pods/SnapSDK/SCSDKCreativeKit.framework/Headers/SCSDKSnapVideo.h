@@ -6,10 +6,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SCSDKCreativeKitModelValidating.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCSDKSnapVideo : NSObject
+@interface SCSDKSnapVideo : NSObject<SCSDKCreativeKitModelValidating>
 
 /**
  * @property videoUrl

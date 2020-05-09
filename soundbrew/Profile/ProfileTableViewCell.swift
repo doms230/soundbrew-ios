@@ -286,62 +286,6 @@ class ProfileTableViewCell: UITableViewCell {
             }
             break
             
-        case "homeReuse":
-            self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(city)
-            self.addSubview(username)
-            self.addSubview(userCity)
-            self.addSubview(seperatorLine)
-            
-            let imageHeightWidth = 50
-            profileImage.layer.cornerRadius = CGFloat(imageHeightWidth/2)
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(imageHeightWidth)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            displayNameLabel.textColor = .white
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(profileImage).offset(uiElement.bottomOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            username.textColor = .darkGray
-            username.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            //date
-            userCity.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-            userCity.textColor = .darkGray
-            userCity.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(username)
-            }
-            
-            //latest update type
-            city.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-            city.textColor = .darkGray
-            city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(userCity)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            seperatorLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(city.snp.bottom)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            
-            break
-            
         case "searchProfileReuse":
             self.addSubview(profileImage)
             self.addSubview(displayNameLabel)
@@ -567,32 +511,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.height.equalTo(0.5)
                 make.top.equalTo(editProfileInput.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(editProfileInput)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            
-            break
-        //TODO: see if this is still being used ... might need to delete
-        case "editProfileCityReuse":
-            self.addSubview(editProfileTitle)
-            self.addSubview(userCity)
-            self.addSubview(seperatorLine)
-            editProfileTitle.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(100)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            userCity.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(editProfileTitle)
-                make.left.equalTo(editProfileTitle.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            seperatorLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(userCity.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(userCity)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }

@@ -25,7 +25,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var profileArtist: Artist?
     
     var soundList: SoundList!
-    var isCurrentUserProfile = false
+   // var isCurrentUserProfile = false
     var soundType = "uploads"
     var profileSounds = [Sound]()
     var selectedIndex = 0
@@ -589,9 +589,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.setUpNavigationButtons()
             
         }  else if let currentArtist = Customer.shared.artist {
-            isCurrentUserProfile = true
+            //isCurrentUserProfile = true
             self.profileArtist = currentArtist
-            self.loadProfileData()
+            self.loadCollection(currentArtist.objectId)
+            self.loadCredits(currentArtist.objectId)
+            self.loadSounds(nil, creditIds: nil, userId: currentArtist.objectId)
+            if self.tableView != nil {
+                self.tableView.refreshControl?.endRefreshing()
+            }
+            //self.loadProfileData()
             self.setUpNavigationButtons()
         } else {
             let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
@@ -705,7 +711,30 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             setUpTableView()
         }
         
-        if isCurrentUserProfile && self.currentUser != nil {
+        if let currentArtist = self.profileArtist, currentArtist.objectId == Customer.shared.artist?.objectId {
+            let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
+            self.navigationItem.rightBarButtonItem = menuButton
+            
+            if let username = currentArtist.username {
+                if !username.contains("@") {
+                    self.uiElement.addTitleView(username, target: self)
+                } else {
+                    self.uiElement.addTitleView("Your Profile", target: self)
+                }
+            }
+            
+        } else {
+            let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
+            self.navigationItem.rightBarButtonItem = shareButton
+            
+            if let username = self.profileArtist?.username {
+                if !username.contains("@") {
+                    self.navigationItem.title = username
+                }
+            }
+        }
+        
+        /*if isCurrentUserProfile && self.currentUser != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
             
@@ -726,7 +755,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.navigationItem.title = username
                 }
             }
-        }
+        }*/
     }
     
     @objc func didPressWebsiteButton(_ sender: UIButton) {

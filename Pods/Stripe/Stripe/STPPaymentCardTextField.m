@@ -19,6 +19,7 @@
 #import "STPPostalCodeValidator.h"
 #import "Stripe.h"
 #import "STPLocalizationUtils.h"
+#import "STPAnalyticsClient.h"
 
 @interface STPPaymentCardTextField()<STPFormTextFieldDelegate>
 
@@ -103,6 +104,10 @@ CGFloat const STPPaymentCardTextFieldDefaultInsets = 13;
 CGFloat const STPPaymentCardTextFieldMinimumPadding = 10;
 
 #pragma mark initializers
+
++ (void)initialize {
+    [[STPAnalyticsClient sharedClient] addClassToProductUsageIfNecessary:[self class]];
+}
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -741,7 +746,7 @@ CGFloat const STPPaymentCardTextFieldMinimumPadding = 10;
     }
 
     STPCardBrand currentBrand = [STPCardValidator brandForNumber:cardNumber];
-    NSArray<NSNumber *> *sortedCardNumberFormat = [[STPCardValidator cardNumberFormatForBrand:currentBrand] sortedArrayUsingSelector:@selector(unsignedIntegerValue)];
+    NSArray<NSNumber *> *sortedCardNumberFormat = [[STPCardValidator cardNumberFormatForCardNumber:cardNumber] sortedArrayUsingSelector:@selector(unsignedIntegerValue)];
     NSUInteger fragmentLength = [STPCardValidator fragmentLengthForCardBrand:currentBrand];
     NSUInteger maxLength = MAX([[sortedCardNumberFormat lastObject] unsignedIntegerValue], fragmentLength);
 

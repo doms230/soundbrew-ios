@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The current version of this library.
  */
-static NSString *const STPSDKVersion = @"19.0.1";
+static NSString *const STPSDKVersion = @"19.2.0";
 
 @class STPBankAccount, STPBankAccountParams, STPCard, STPCardParams, STPConnectAccountParams;
 @class STPPaymentConfiguration, STPPaymentIntentParams, STPSourceParams, STPToken, STPPaymentMethodParams;
@@ -42,6 +42,24 @@ static NSString *const STPSDKVersion = @"19.0.1";
  The current default publishable key.
  */
 + (nullable NSString *)defaultPublishableKey;
+
+/**
+ A Boolean value that determines whether additional device data is sent to Stripe for fraud prevention.
+ 
+ Returns YES if the Stripe SDK is collecting additional device data for fraud prevention.
+ For more details on the information we collect, visit https://stripe.com/docs/disputes/prevention/advanced-fraud-detection
+ The default value is YES.
+ */
++ (BOOL)advancedFraudSignalsEnabled;
+
+/**
+ Set whether additional device data is sent to Stripe for fraud prevention.
+ 
+ @param   enabled If YES, additional device signals will be sent to Stripe.
+ For more details on the information we collect, visit https://stripe.com/docs/disputes/prevention/advanced-fraud-detection
+ Disabling this setting will reduce Stripe's ability to protect your business from fraudulent payments.
+ */
++ (void)setAdvancedFraudSignalsEnabled:(BOOL)enabled;
 
 @end
 

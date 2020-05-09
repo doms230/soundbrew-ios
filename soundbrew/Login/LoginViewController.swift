@@ -26,7 +26,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     var signupHidden = true
     
     lazy var usernameText: UITextField = {
-    
         let label = UITextField()
         label.font = UIFont(name: uiElement.mainFont, size: 17)
         label.backgroundColor = .white

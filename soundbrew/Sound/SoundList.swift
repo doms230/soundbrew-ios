@@ -120,10 +120,6 @@ class SoundList: NSObject, PlayerDelegate {
             if let hashtags = sound.tags, hashtags.indices.contains(0) {
                 cell.soundDate.text = "#\(hashtags[0])"
             }
-           
-            //cell.soundDate.text = hashtags
-           // let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
-           // cell.soundDate.text = formattedDate
             
             if let likes = sound.tipCount {
                 cell.likesCountLabel.text = "\(likes)"
@@ -185,52 +181,16 @@ class SoundList: NSObject, PlayerDelegate {
     func showOtherMenuAlert(_ sound: Sound, row: Int) {
         var alert: UIAlertController!
         
-        if let currenUserObjectId = PFUser.current()?.objectId, currenUserObjectId == self.uiElement.d_innovatorObjectId {
-            var shouldAddToFeaturedList = true
-            var featuredTitle = "Feature this song?"
-            if let isSoundFeatured = sound.isFeatured, isSoundFeatured {
-                featuredTitle = "Un-Feature this song?"
-                shouldAddToFeaturedList = false
-            }
-            
-            alert = UIAlertController(title: "", message: nil , preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: featuredTitle, style: .default, handler: { action in
-                self.showAddRemoveSongFromFeaturedPage(sound, shouldAddToFeaturedList: shouldAddToFeaturedList, row: row)
-            }))
-            
-        } else {
-            let localizedReportSound = NSLocalizedString("reportSound", comment: "")
-            alert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
-                    self.showReportSoundAlert(sound)
-            }))
-        }
+        let localizedReportSound = NSLocalizedString("reportSound", comment: "")
+        alert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
+                self.showReportSoundAlert(sound)
+        }))
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         alert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
 
         target.present(alert, animated: true, completion: nil)
-    }
-    
-    func showAddRemoveSongFromFeaturedPage(_ sound: Sound, shouldAddToFeaturedList: Bool, row: Int) {
-        if let objectId = sound.objectId {
-            let query = PFQuery(className: "Post")
-            query.getObjectInBackground(withId: objectId) {
-                (object: PFObject?, error: Error?) -> Void in
-                if let object = object {
-                    object["isFeatured"] = shouldAddToFeaturedList
-                    object.saveEventually {
-                        (success: Bool, error: Error?) in
-                        if (success) {
-                            self.sounds[row].isFeatured = shouldAddToFeaturedList
-                            if let artistId = sound.artist?.objectId {
-                                self.uiElement.sendAlert("\(sound.title!) has been featured!", toUserId: artistId, shouldIncludeName: false)
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
     
     func showReportSoundAlert(_ sound: Sound) {

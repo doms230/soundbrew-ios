@@ -123,8 +123,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             cell.backgroundColor = color.black()
             if self.isLoadingMentions {
                 cell.headerTitle.text = ""
+                cell.artistButton.isHidden = true
             } else {
                 cell.headerTitle.text = "People who like your music, follow you, or mention you in a comment will appear here!"
+                cell.artistButton.setTitle("Upload Sounds", for: .normal)
+                cell.artistButton.addTarget(self, action: #selector(self.didPressDiscoverButton(_:)), for: .touchUpInside)
+                cell.artistButton.isHidden = false
             }
               
               return cell
@@ -133,10 +137,16 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           }
       }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == self.mentions.count - 10 && !self.isLoadingMentions && self.doneLoadingMentions {
-            self.loadMentions()
+    @objc func didPressDiscoverButton(_ sender: UIButton) {
+        if let tabBar = self.tabBarController {
+            tabBar.selectedIndex = 2
         }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+       /* if indexPath.row == self.mentions.count - 10 && !self.isLoadingMentions {
+            self.loadMentions()
+        }*/
     }
       
       func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -261,8 +271,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       }
     
     var mentions = [Mention]()
-    var doneLoadingMentions = false
-    var isLoadingMentions = false
+    var isLoadingMentions = true
     func loadMentions() {
         if let refreshControl = self.tableView.refreshControl {
             refreshControl.beginRefreshing()
@@ -275,12 +284,11 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         query.addDescendingOrder("createdAt")
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            self.isLoadingMentions = false
-            self.tableView.refreshControl?.endRefreshing()
             if let objects = objects {
                 for object in objects {
-                    let fromuserId = object["fromUserId"] as! String
-                    let mention = Mention(object.createdAt!, artist: nil, comment: nil, sound: nil, type: nil, fromUserId: fromuserId, objectId: object.objectId!)
+                    let fromUserId = object["fromUserId"] as! String
+                    let mention = Mention(object.createdAt!, artist: nil, comment: nil, sound: nil, type: nil, fromUserId: fromUserId, objectId: object.objectId!)
+                    
                     if let commentId = object["commentId"] as? String {
                         mention.type = "comment"
                         self.loadComment(commentId, mention: mention)
@@ -296,14 +304,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 if objects.count > 0 && PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                     SKStoreReviewController.requestReview()
+                } else {
+                    self.finishedLoading()
                 }
                 
             } else {
-                self.doneLoadingMentions = true
-                self.tableView.reloadData()
-                if let refreshControl = self.tableView.refreshControl {
-                    refreshControl.beginRefreshing()
-                }
+                self.finishedLoading()
             }
         }
     }
@@ -346,9 +352,15 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.mentions.append(mention)
                let sortedMentions =  self.mentions.sorted(by: {$0.createdAt > $1.createdAt})
                 self.mentions = sortedMentions
-                self.tableView.reloadData()
             }
+            self.finishedLoading()
         }
+    }
+    
+    func finishedLoading() {
+        self.isLoadingMentions = false
+        self.tableView.refreshControl?.endRefreshing()
+        self.tableView.reloadData()
     }
       
       //mark: selectedArtist

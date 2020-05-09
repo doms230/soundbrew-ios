@@ -157,14 +157,14 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset * 2)
         }
         
-        /*let appleButton = signInWithButton("Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
+        let appleButton = signInWithButton("Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
         self.view.addSubview(appleButton)
         appleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset * 2)
-        }*/
+        }
         
         let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: false)
         self.view.addSubview(signInButton)
@@ -172,7 +172,7 @@ class WelcomeViewController: UIViewController {
             make.height.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset)
+            make.bottom.equalTo(appleButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         termsButton.snp.makeConstraints { (make) -> Void in
