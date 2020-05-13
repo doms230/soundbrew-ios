@@ -885,14 +885,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else {
                 createSound(sound, isDraft: false)
             }
-            
-            /*if sound.objectId != nil {
-                updateSound(sound, isDraft: false)
-            } else if soundParseFileDidFinishProcessing {
-                createSound(sound, isDraft: false)
-            } else {
-                didPressUploadButton = true
-            }*/
         }
     }
 
@@ -926,9 +918,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
             } else if let error = error {
-                self.stopAnimating()
-                let localizedCouldNotPost = NSLocalizedString("couldNotPost", comment: "")
-                self.uiElement.showAlert(localizedCouldNotPost, message: error.localizedDescription, target: self)
+                DispatchQueue.main.async {
+                    self.stopAnimating()
+                    let localizedCouldNotPost = NSLocalizedString("couldNotPost", comment: "")
+                    self.uiElement.showAlert(localizedCouldNotPost, message: error.localizedDescription, target: self)
+                }
             }
         }
     }
@@ -967,9 +961,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         }
                         
                     } else if let error = error {
-                        self.stopAnimating()
-                        let localizedCouldNotUpdate = NSLocalizedString("couldNotUpdate", comment: "")
-                        self.uiElement.showAlert(localizedCouldNotUpdate, message: error.localizedDescription, target: self)
+                        DispatchQueue.main.async {
+                            self.stopAnimating()
+                            let localizedCouldNotUpdate = NSLocalizedString("couldNotUpdate", comment: "")
+                            self.uiElement.showAlert(localizedCouldNotUpdate, message: error.localizedDescription, target: self)
+                        }
                     }
                 }
             }
@@ -977,14 +973,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func handleSocials(_ object: PFObject) {
-        if self.shouldPostLinkToTwitter {
-            var title = ""
-            if let objectTitle = object["title"] as? String {
-                title = objectTitle
-            }
-            let objectId = object.objectId!
-            if let url = self.uiElement.getSoundbrewURL(objectId, path: "s") {
-                self.postTweet(url, title: title)
+        DispatchQueue.main.async {
+            if self.shouldPostLinkToTwitter {
+                var title = ""
+                if let objectTitle = object["title"] as? String {
+                    title = objectTitle
+                }
+                let objectId = object.objectId!
+                if let url = self.uiElement.getSoundbrewURL(objectId, path: "s") {
+                    self.postTweet(url, title: title)
+                }
             }
         }
     }
@@ -1018,14 +1016,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func finishUp(_ shouldPlaySoundAndShowShareOptions: Bool, object: PFObject) {
-        self.stopAnimating()
-        
-        if shouldPlaySoundAndShowShareOptions {
-            let soundId = object.objectId!
-            self.uiElement.setUserDefault(soundId, key: "newSoundId")
-            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-        } else {
-            self.uiElement.goBackToPreviousViewController(self)
+        DispatchQueue.main.async {
+            self.stopAnimating()
+            if shouldPlaySoundAndShowShareOptions {
+                let soundId = object.objectId!
+                self.uiElement.setUserDefault(soundId, key: "newSoundId")
+                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+            } else {
+                self.uiElement.goBackToPreviousViewController(self)
+            }
         }
     }
 }

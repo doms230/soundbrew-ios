@@ -358,9 +358,11 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func finishedLoading() {
-        self.isLoadingMentions = false
-        self.tableView.refreshControl?.endRefreshing()
-        self.tableView.reloadData()
+        DispatchQueue.main.async {
+            self.isLoadingMentions = false
+            self.tableView.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
+        }
     }
       
       //mark: selectedArtist

@@ -448,13 +448,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
             }
         }
-       /* if searchType == 0 {
-            
-        } else if searchType == 1 {
-            searchUsers(searchBar.text!)
-        } else {
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
-        }*/
         
         handleTableViewLogic()
     }
@@ -501,7 +494,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }
                 
                 self.isLoadingResults = false
-                self.tableView.reloadData()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
                 
             } else {
                 print("Error: \(error!)")

@@ -532,15 +532,18 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                     self.checkIfTagSearchTextExists()
                 }
                 
-                if self.tableView == nil {
-                    if self.isViewTagsFromSound {
-                        self.setupTopView()
+                
+                DispatchQueue.main.async {
+                    if self.tableView == nil {
+                        if self.isViewTagsFromSound {
+                            self.setupTopView()
+                        } else {
+                            self.setupChooseTagsView()
+                        }
+                        
                     } else {
-                        self.setupChooseTagsView()
+                        self.tableView.reloadData()
                     }
-                    
-                } else {
-                    self.tableView.reloadData()
                 }
                 
             } else {

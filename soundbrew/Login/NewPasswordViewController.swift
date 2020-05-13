@@ -108,15 +108,17 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
                 installation?.saveEventually()
                 
                 Customer.shared.getCustomer(user.objectId!)
-                let storyboard = UIStoryboard(name: "NewUser", bundle: nil)
-                if let navi = storyboard.instantiateViewController(withIdentifier: "editProfile") as? UINavigationController, let editProfile = navi.topViewController as? EditProfileViewController {
-                    editProfile.artist = self.uiElement.newArtistObject(user)
-                    editProfile.title = "Complete Profile"
-                    editProfile.isOnboarding = true
-                    let appdelegate = UIApplication.shared.delegate as! AppDelegate
-                    appdelegate.window?.rootViewController = navi
-                } else {
-                    self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                DispatchQueue.main.async {
+                    let storyboard = UIStoryboard(name: "NewUser", bundle: nil)
+                    if let navi = storyboard.instantiateViewController(withIdentifier: "editProfile") as? UINavigationController, let editProfile = navi.topViewController as? EditProfileViewController {
+                        editProfile.artist = self.uiElement.newArtistObject(user)
+                        editProfile.title = "Complete Profile"
+                        editProfile.isOnboarding = true
+                        let appdelegate = UIApplication.shared.delegate as! AppDelegate
+                        appdelegate.window?.rootViewController = navi
+                    } else {
+                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                    }
                 }
             }
         }

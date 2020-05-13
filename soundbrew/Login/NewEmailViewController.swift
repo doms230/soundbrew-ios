@@ -89,31 +89,29 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             let cancelButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
             self.navigationItem.leftBarButtonItem = cancelButton
             
-            if authToken != nil {
+            if self.authToken != nil {
                 self.title = "Email | 1/2"
             } else {
                 self.title = "Email | 1/3"
             }
             
-            self.view.addSubview(emailText)
-            self.view.addSubview(nextButton)
+            self.view.addSubview(self.emailText)
+            self.view.addSubview(self.nextButton)
             
-            nextButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(uiElement.buttonHeight)
-             //   make.top.equalTo(emailText.snp.bottom).offset(uiElement.topOffset)
+            self.nextButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(self.uiElement.buttonHeight)
                 make.centerY.equalTo(self.view)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+                make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+                make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
             }
             
-            emailText.snp.makeConstraints { (make) -> Void in
-               // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-                make.right.equalTo(self.view).offset(uiElement.rightOffset)
-                make.bottom.equalTo(nextButton.snp.top).offset(uiElement.bottomOffset)
+            self.emailText.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+                make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+                make.bottom.equalTo(self.nextButton.snp.top).offset(self.uiElement.bottomOffset)
             }
             
-            emailText.becomeFirstResponder()
+            self.emailText.becomeFirstResponder()
         }
     }
     

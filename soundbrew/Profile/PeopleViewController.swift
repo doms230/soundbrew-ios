@@ -505,7 +505,10 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                         self.filteredArtists.append(artist)
                     }
                 }
-                self.tableView.reloadSections([1], with: .automatic)
+                
+                DispatchQueue.main.async {
+                    self.tableView.reloadSections([1], with: .automatic)
+                }
                 
             } else {
                 print("Error: \(error!)")

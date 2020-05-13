@@ -98,8 +98,6 @@ class SoundInfoTableViewCell: UITableViewCell {
         button.setTitleColor(.white, for: .normal)
         button.setTitle(localizedArtist, for: .normal)
         button.setTitleColor(color.blue(), for: .normal)
-        //button.layer.borderWidth = 0.5
-        //button.layer.borderColor = color.darkGray().cgColor
         button.clipsToBounds = true
         return button
     }()

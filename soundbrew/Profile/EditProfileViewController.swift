@@ -503,10 +503,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             artistDelegate.receivedArtist(customer.artist)
                         }
                         
-                        if self.isOnboarding {
-                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                        } else {
-                            self.uiElement.goBackToPreviousViewController(self)
+                        DispatchQueue.main.async {
+                            if self.isOnboarding {
+                                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                            } else {
+                                self.uiElement.goBackToPreviousViewController(self)
+                            }
                         }
                         
                     } else if let error = error {

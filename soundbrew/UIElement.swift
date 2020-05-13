@@ -56,10 +56,12 @@ class UIElement {
     }
     
     func newRootView(_ storyBoard: String, withIdentifier: String) {
-        let storyboard = UIStoryboard(name: storyBoard, bundle: nil)
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: withIdentifier)
-        let appdelegate = UIApplication.shared.delegate as! AppDelegate
-        appdelegate.window?.rootViewController = initialViewController
+        DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: storyBoard, bundle: nil)
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: withIdentifier)
+            let appdelegate = UIApplication.shared.delegate as! AppDelegate
+            appdelegate.window?.rootViewController = initialViewController
+        }
     }
     
     func showAlert(_ title: String, message: String, target: UIViewController) {
@@ -249,34 +251,36 @@ class UIElement {
     }
     
     func showShareOptions(_ target: UIViewController, sound: Sound) {
-        let localizedShareThisSound = NSLocalizedString("shareThisSound", comment: "")
-        let localizedTo = NSLocalizedString("to", comment: "")
-        let alertController = UIAlertController (title: localizedShareThisSound , message: "\(localizedTo):", preferredStyle: .actionSheet)
-        
-        let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
-            self.shareToSnapchat(sound)
-            MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Snapchat", "Description": "User Pressed Share to Snapchat."])
+        DispatchQueue.main.async {
+            let localizedShareThisSound = NSLocalizedString("shareThisSound", comment: "")
+            let localizedTo = NSLocalizedString("to", comment: "")
+            let alertController = UIAlertController (title: localizedShareThisSound , message: "\(localizedTo):", preferredStyle: .actionSheet)
+            
+            let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
+                self.shareToSnapchat(sound)
+                MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Snapchat", "Description": "User Pressed Share to Snapchat."])
+            }
+            alertController.addAction(snapchatAction)
+            
+            let instagramAction = UIAlertAction(title: "Instagram Stories", style: .default) { (_) -> Void in
+                self.shareToInstagram(sound)
+                MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Instagram Stories", "Description": "User Pressed Share to Instagram."])
+            }
+            alertController.addAction(instagramAction)
+            
+            let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
+            let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in
+                self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
+                MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
+            }
+            alertController.addAction(moreAction)
+            
+            let localizedCancel = NSLocalizedString("cancel", comment: "")
+            let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            target.present(alertController, animated: true, completion: nil)
         }
-        alertController.addAction(snapchatAction)
-        
-        let instagramAction = UIAlertAction(title: "Instagram Stories", style: .default) { (_) -> Void in
-            self.shareToInstagram(sound)
-            MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Instagram Stories", "Description": "User Pressed Share to Instagram."])
-        }
-        alertController.addAction(instagramAction)
-        
-        let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
-        let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in
-            self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
-            MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
-        }
-        alertController.addAction(moreAction)
-        
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        target.present(alertController, animated: true, completion: nil)
     }
     
     func sendAlert(_ message: String, toUserId: String, shouldIncludeName: Bool) {

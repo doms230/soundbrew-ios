@@ -24,19 +24,6 @@ class Like: NSObject, GADRewardedAdDelegate {
     var likeSoundButton: UIButton!
     var paymentAmountForLike: UILabel!
     
-   /* init(sound: Sound, target: UIViewController, likeSoundButton: UIButton, paymentAmountForLike: UILabel) {
-            
-        self.sound = sound
-        self.target = target
-        self.likeSoundButton = likeSoundButton
-        self.paymentAmountForLike = paymentAmountForLike
-        
-        super.init()
-        
-        checkIfUserLikedSong(sound)
-        loadCredits()
-    }*/
-    
     func sendPayment() {
         if customer.artist!.balance! >= self.paymentAmount {
             updatePayment()
@@ -231,22 +218,24 @@ class Like: NSObject, GADRewardedAdDelegate {
     }
     
     func askToAdFundsToTheirAccount() {
-         let alertView = UIAlertController(
-             title: "Tired of Ads?",
-             message: "Add funds to your Soundbrew wallet to remove ads!",
-             preferredStyle: .actionSheet)
-         
-         let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
-            let modal = AddFundsViewController()
-            modal.shouldShowExitButton = true 
-            self.target.present(modal, animated: true, completion: nil)
-         }
-         alertView.addAction(addFundsActionButton)
-         
-         let cancelAction = UIAlertAction(title: "Later", style: .default, handler: nil)
-         alertView.addAction(cancelAction)
-         
-        target.present(alertView, animated: true, completion: nil)
+         DispatchQueue.main.async {
+             let alertView = UIAlertController(
+                 title: "Tired of Ads?",
+                 message: "Add funds to your Soundbrew wallet to remove ads!",
+                 preferredStyle: .actionSheet)
+             
+             let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
+                let modal = AddFundsViewController()
+                modal.shouldShowExitButton = true
+                self.target.present(modal, animated: true, completion: nil)
+             }
+             alertView.addAction(addFundsActionButton)
+             
+             let cancelAction = UIAlertAction(title: "Later", style: .default, handler: nil)
+             alertView.addAction(cancelAction)
+             
+            self.target.present(alertView, animated: true, completion: nil)
+        }
     }
     
     func loadCredits(_ sound: Sound) {
@@ -288,13 +277,19 @@ class Like: NSObject, GADRewardedAdDelegate {
                  if let object = object {
                     if let tipAmount = object["amount"] as? Int {
                         self.sound?.tipAmount = tipAmount
-                        self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                        DispatchQueue.main.async {
+                            self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                        }
                     }
                     
                  } else {
-                    self.paymentAmountForLike.text = ""
+                    DispatchQueue.main.async {
+                        self.paymentAmountForLike.text = ""
+                    }
                 }
-                self.likeSoundButton.isEnabled = true
+                DispatchQueue.main.async {
+                    self.likeSoundButton.isEnabled = true
+                }
             }
         }
     }

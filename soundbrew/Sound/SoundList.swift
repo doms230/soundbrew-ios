@@ -116,11 +116,7 @@ class SoundList: NSObject, PlayerDelegate {
             }
             
             cell.soundTitle.text = sound.title
-                        
-           /* if let hashtags = sound.tags, hashtags.indices.contains(0) {
-                cell.soundDate.text = hashtags
-            }*/
-            
+
             var hashtagString = ""
             if let hashtags = sound.tags {
                 for hashtag in hashtags {
@@ -233,25 +229,27 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func showReportAlert(_ currentUserId: String, soundId: String, title: String) {
-        let localizedReport = NSLocalizedString("report", comment: "")
-        let localizedReportMessage = NSLocalizedString("reportMessage", comment: "")
-        let localizedNevermind = NSLocalizedString("nevermind", comment: "")
-        let localizedThankyou = NSLocalizedString("thankyou", comment: "")
-        let localizedReceivedReport = NSLocalizedString("receivedReport", comment: "")
-        let menuAlert = UIAlertController(title: "\(localizedReport) \(title)?", message:  localizedReportMessage, preferredStyle: .alert)
-        menuAlert.addAction(UIAlertAction(title: localizedNevermind, style: .cancel, handler: nil))
-        menuAlert.addAction(UIAlertAction(title: localizedReport, style: .default, handler: { action in
-            let newReport = PFObject(className: "Report")
-            newReport["userId"] = currentUserId
-            newReport["soundId"] = soundId
-            newReport.saveEventually {
-                (success: Bool, error: Error?) in
-                if (success) {
-                    self.uiElement.showAlert(localizedThankyou, message: localizedReceivedReport, target: self.target)
+        DispatchQueue.main.async {
+            let localizedReport = NSLocalizedString("report", comment: "")
+            let localizedReportMessage = NSLocalizedString("reportMessage", comment: "")
+            let localizedNevermind = NSLocalizedString("nevermind", comment: "")
+            let localizedThankyou = NSLocalizedString("thankyou", comment: "")
+            let localizedReceivedReport = NSLocalizedString("receivedReport", comment: "")
+            let menuAlert = UIAlertController(title: "\(localizedReport) \(title)?", message:  localizedReportMessage, preferredStyle: .alert)
+            menuAlert.addAction(UIAlertAction(title: localizedNevermind, style: .cancel, handler: nil))
+            menuAlert.addAction(UIAlertAction(title: localizedReport, style: .default, handler: { action in
+                let newReport = PFObject(className: "Report")
+                newReport["userId"] = currentUserId
+                newReport["soundId"] = soundId
+                newReport.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if (success) {
+                        self.uiElement.showAlert(localizedThankyou, message: localizedReceivedReport, target: self.target)
+                    }
                 }
-            }
-        }))
-        target.present(menuAlert, animated: true, completion: nil)
+            }))
+            self.target.present(menuAlert, animated: true, completion: nil)
+        }
     }
     
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
@@ -354,15 +352,15 @@ class SoundList: NSObject, PlayerDelegate {
                 
             } else if let object = object {
                 if isForYouPage {
-                    print("is for you pag")
                     let tags = object["tags"] as! [String]?
-                    print("tags: \(String(describing: tags))")
                     self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: tags)
                 } else {
                     let sound = self.uiElement.newSoundObject(object)
                     self.sounds.append(sound)
                     self.isUpdatingData = false
-                    self.tableView?.reloadData()
+                    DispatchQueue.main.async {
+                        self.tableView?.reloadData()
+                    }
                 }
             }
         }
@@ -374,7 +372,6 @@ class SoundList: NSObject, PlayerDelegate {
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
              if let object = object {
-                print("got last Like")
                 let soundId = object["soundId"] as! String
                 self.loadSound(soundId, isForYouPage: true)
              } else {
@@ -388,11 +385,13 @@ class SoundList: NSObject, PlayerDelegate {
     var thereIsMoreDataToLoad = true
     
     func updateTableView() {
-        self.isUpdatingData = false
-        if let tableView = self.tableView {
-            tableView.reloadData()
-            if let refreshControl = tableView.refreshControl {
-                refreshControl.endRefreshing()
+        DispatchQueue.main.async {
+            self.isUpdatingData = false
+            if let tableView = self.tableView {
+                tableView.reloadData()
+                if let refreshControl = tableView.refreshControl {
+                    refreshControl.endRefreshing()
+                }
             }
         }
     }
@@ -426,7 +425,6 @@ class SoundList: NSObject, PlayerDelegate {
         } else {
             query.whereKey("isFeatured", equalTo: true)
             query.addDescendingOrder("createdAt")
-           // query.whereKeyExists("tippers")
         }
         
         if let searchText = searchText {
@@ -511,7 +509,6 @@ class SoundList: NSObject, PlayerDelegate {
                         self.creditSoundIds.append(object["postId"] as! String)
                     }
                 }
-                
                 self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             }
         }
@@ -540,7 +537,9 @@ class SoundList: NSObject, PlayerDelegate {
                     post["isDraft"] = false 
                     post.saveEventually()
                     self.sounds.remove(at: row)
-                    self.tableView?.reloadData()
+                    DispatchQueue.main.async {
+                        self.tableView?.reloadData()
+                    }
                 }
             }
         }))        

@@ -100,25 +100,27 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func setupBottomButtons() {
-        self.view.addSubview(provideFeedbackButton)
-        self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(uiElement.bottomOffset))
-        }
-        
-        self.view.addSubview(connectWithUsButton)
-        self.connectWithUsButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(provideFeedbackButton)
-            make.right.equalTo(provideFeedbackButton)
-            make.bottom.equalTo(provideFeedbackButton.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        self.view.addSubview(signOut)
-        self.signOut.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(provideFeedbackButton)
-            make.right.equalTo(provideFeedbackButton)
-            make.bottom.equalTo(connectWithUsButton.snp.top).offset(uiElement.bottomOffset)
+        DispatchQueue.main.async {
+            self.view.addSubview(self.provideFeedbackButton)
+            self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+                make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(self.uiElement.bottomOffset))
+            }
+            
+            self.view.addSubview(self.connectWithUsButton)
+            self.connectWithUsButton.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(self.provideFeedbackButton)
+                make.right.equalTo(self.provideFeedbackButton)
+                make.bottom.equalTo(self.provideFeedbackButton.snp.top).offset(self.uiElement.bottomOffset)
+            }
+            
+            self.view.addSubview(self.signOut)
+            self.signOut.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(self.provideFeedbackButton)
+                make.right.equalTo(self.provideFeedbackButton)
+                make.bottom.equalTo(self.connectWithUsButton.snp.top).offset(self.uiElement.bottomOffset)
+            }
         }
         
         setUpTableView()
@@ -129,18 +131,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     let settingsReuse = "settingsReuse"
     let settingsTitleReuse = "settingsTitleReuse"
     func setUpTableView() {
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: settingsReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: settingsTitleReuse)
-        self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = color.black()
-        self.view.addSubview(tableView)
-        self.tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(signOut.snp.top)
+        DispatchQueue.main.async {
+            self.tableView.delegate = self
+            self.tableView.dataSource = self
+            self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.settingsReuse)
+            self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.settingsTitleReuse)
+            self.tableView.separatorStyle = .none
+            self.tableView.backgroundColor = self.color.black()
+            self.view.addSubview(self.tableView)
+            self.tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.uiElement.uiViewTopOffset(self))
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.signOut.snp.top)
+            }
+            
         }
     }
     

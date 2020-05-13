@@ -424,29 +424,31 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer?, sound: Sound) {
-        var nowPlayingInfo = [String : Any]()
-        
-        // Define Now Playing Info
-        nowPlayingInfo[MPMediaItemPropertyTitle] = sound.title
-        
-        nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artist?.name
-        
-        if let image = sound.artImage {
-            nowPlayingInfo[MPMediaItemPropertyArtwork] =
-                MPMediaItemArtwork(boundsSize: image.size) { size in
-                    return image
+        DispatchQueue.main.async {
+            var nowPlayingInfo = [String : Any]()
+            
+            // Define Now Playing Info
+            nowPlayingInfo[MPMediaItemPropertyTitle] = sound.title
+            
+            nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artist?.name
+            
+            if let image = sound.artImage {
+                nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                    MPMediaItemArtwork(boundsSize: image.size) { size in
+                        return image
+                }
             }
+            
+            if let player = player {
+                let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
+                nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
+                nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
+                nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+            }
+            
+            // Set the metadata
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
-        
-        if let player = player {
-            let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
-            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
-            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
-            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
-        }
-        
-        // Set the metadata
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
     func loadArtfileImageData(_ sound: Sound) {
