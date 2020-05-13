@@ -11,120 +11,77 @@ import SnapKit
 import ActiveLabel
 
 class CommentTableViewCell: UITableViewCell {
-    let color = Color()
-    let uiElement = UIElement()
     
-    let profileImageHeightWidth = 35
-
-    lazy var userImage: UIButton = {
-        let button = UIButton()
-        button.layer.borderWidth = 1
-        button.clipsToBounds = true
-        button.setImage(UIImage(named: "profile_icon"), for: .normal)
-        button.backgroundColor = .white
-        button.contentMode = .scaleAspectFill
-        button.isOpaque = true
-        return button
-    }()
-    
-    lazy var username: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 15)
-        button.setTitleColor(.white, for: .normal)
-        button.isOpaque = true
-        return button
-    }()
+    var userImage: UIButton!
+    var username: UIButton!
+    var atTime: UIButton!
+    var replyButton: UIButton!
+    var date: UILabel!
     
     lazy var comment: ActiveLabel = {
         let label = ActiveLabel()
         label.enabledTypes = [.mention]
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
         label.textColor = .white
-        label.mentionColor = color.blue()
         label.numberOfLines = 0
         label.isOpaque = true
         return label
-    }()
-    
-    lazy var atTime: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
-        button.setTitleColor(color.blue(), for: .normal)
-        button.isOpaque = true
-        return button
-    }()
-    
-    lazy var replyButton: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 15)
-        button.setTitleColor(.darkGray, for: .normal)
-        button.setTitle("Reply", for: .normal)
-        button.isOpaque = true
-        return button
-    }()
-    
-    lazy var date: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
-        label.numberOfLines = 0
-        label.textColor = .darkGray
-        label.isOpaque = true
-        return label
-    }()
-    
-    lazy var dividerLine: UIView = {
-        let line = UIView()
-        line.layer.borderWidth = 0.5
-        line.layer.borderColor = UIColor.darkGray.cgColor
-        line.isOpaque = true 
-        return line
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.addSubview(userImage)
-        self.addSubview(username)
-        self.addSubview(comment)
-        //self.comment.addSubview(username)
-        self.addSubview(atTime)
-        self.addSubview(date)
-        self.addSubview(replyButton)
         
-        userImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
+        let color = Color()
+        let uiElement = UIElement()
+        
+        let profileImageHeightWidth = 35
+
+        userImage = uiElement.soundbrewButton(nil, shouldShowBorder: true, backgroundColor: .white, image: UIImage(named: "profile_icon"), titleFont: nil, titleColor: .white, cornerRadius: CGFloat(profileImageHeightWidth / 2))
+        self.addSubview(userImage)
         userImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(profileImageHeightWidth)
             make.top.equalTo(self).offset(uiElement.topOffset)
             make.left.equalTo(self).offset(uiElement.leftOffset)
         }
         
+        username = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)-bold", size: 15), titleColor: .white, cornerRadius: nil)
+        self.addSubview(username)
         username.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(userImage)
             make.left.equalTo(userImage.snp.right).offset(uiElement.leftOffset)
         }
         
+        
+        self.addSubview(comment)
+        comment.font = UIFont(name: uiElement.mainFont, size: 15)
+        comment.textColor = .white
         comment.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(username.snp.bottom)
             make.left.equalTo(username)
             make.right.equalTo(self).offset(uiElement.rightOffset)
         }
         
+        date = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
+        self.addSubview(date)
         date.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(comment.snp.bottom).offset(uiElement.elementOffset)
             make.left.equalTo(comment)
             make.bottom.equalTo(self)
-
         }
+        
+        replyButton = uiElement.soundbrewButton("Reply", shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 15), titleColor: .darkGray, cornerRadius: nil)
+        self.addSubview(replyButton)
         replyButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(date)
             make.left.equalTo(date.snp.right).offset(uiElement.leftOffset)
             make.bottom.equalTo(date)
         }
-        
+
+        atTime = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 15), titleColor: color.blue(), cornerRadius: nil)
+        self.addSubview(atTime)
         atTime.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(date)
             make.right.equalTo(self).offset(uiElement.rightOffset)
             make.bottom.equalTo(date)
-            //make.top.equalTo(date)
         }
     }
     

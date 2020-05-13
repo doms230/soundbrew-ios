@@ -494,7 +494,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("fromUserId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.limit = 5
-        query.cachePolicy = .cacheThenNetwork
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -512,7 +512,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("userId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.limit = 5
-        query.cachePolicy = .cacheThenNetwork
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -769,6 +769,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //Mark: Data
     func loadArtistName(_ userId: String, label: UILabel) {
         let query = PFQuery(className: "_User")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
             if let user = user {
@@ -786,6 +787,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else if let username = username {
             query.whereKey("username", equalTo: username)
         }
+        query.cachePolicy = .networkElseCache
           query.getFirstObjectInBackground {
               (user: PFObject?, error: Error?) -> Void in
                 if let user = user {
@@ -801,6 +803,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             query.whereKey("fromUserId", equalTo: currentUserID)
             query.whereKey("toUserId", equalTo: profileArtist!.objectId!)
             query.whereKey("isRemoved", equalTo: false)
+            query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
                 if object != nil {

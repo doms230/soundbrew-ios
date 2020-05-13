@@ -345,6 +345,7 @@ class SoundList: NSObject, PlayerDelegate {
     //mark: data
     func loadSound(_ objectId: String, isForYouPage: Bool) {
         let query = PFQuery(className: "Post")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
@@ -369,6 +370,7 @@ class SoundList: NSObject, PlayerDelegate {
     func loadLastLike(_ userId: String) {
         let query = PFQuery(className: "Tip")
         query.whereKey("fromUserId", equalTo: userId)
+        query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
              if let object = object {
@@ -441,7 +443,7 @@ class SoundList: NSObject, PlayerDelegate {
         } else {
            query.whereKey("isRemoved", notEqualTo: true)
         }
-        
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if error == nil {
@@ -473,6 +475,7 @@ class SoundList: NSObject, PlayerDelegate {
         query.whereKey("soundId", notContainedIn: collectionSoundIds)
         query.limit = 50
         query.addDescendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadCollection = true 
@@ -499,6 +502,7 @@ class SoundList: NSObject, PlayerDelegate {
         query.whereKey("postId", notContainedIn: collectionSoundIds)
         query.limit = 50
         query.addDescendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadCollection = true

@@ -301,6 +301,7 @@ class MiniPlayerView: UIButton {
     
     func loadUserInfoFromCloud(_ userId: String) {
         let query = PFQuery(className:"_User")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
             if let user = user {

@@ -312,7 +312,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
         let query = PFQuery(className: "Post")
-        query.cachePolicy = .cacheThenNetwork
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {

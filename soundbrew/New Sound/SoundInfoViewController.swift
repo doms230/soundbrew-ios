@@ -616,6 +616,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func loadTag(_ tag: String, type: String?) {
         let query = PFQuery(className: "Tag")
         query.whereKey("tag", equalTo: tag)
+        query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             var retreivedTag: Tag!
@@ -986,6 +987,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func loadCurrentUserCity(_ userId: String) {
         let query = PFQuery(className: "_User")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
             if let error = error {

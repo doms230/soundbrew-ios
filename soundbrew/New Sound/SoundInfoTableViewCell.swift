@@ -11,70 +11,21 @@ import SnapKit
 import UICircularProgressRing
 
 class SoundInfoTableViewCell: UITableViewCell {
-
-    let color = Color()
-    let uiElement = UIElement()
     
-    lazy var artistImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "profile_icon")
-        image.clipsToBounds = true
-        image.backgroundColor = .black
-        return image
-    }()
+    var artistImage: UIImageView!
+    var soundArtImageButton: UIButton!
+    var soundTagLabel: UILabel!
+    var username: UILabel!
+    var chosenSoundTagLabel: UILabel!
+    var titleLabel: UILabel!
+    var inputTitle: UILabel!
+    var artistTypeButton: UIButton!
     
     lazy var audioProgress: UICircularProgressRing = {
        let audioProgress = UICircularProgressRing()
-        audioProgress.maxValue = 100
-        audioProgress.innerRingColor = color.darkGray()
         audioProgress.innerRingWidth = 3
-        audioProgress.outerRingColor = color.black()
+        audioProgress.maxValue = 100
         return audioProgress
-    }()
-    
-    lazy var soundArtImageButton: UIButton = {
-        let image = UIButton()
-        image.setImage(UIImage(named: "add_image"), for: .normal)
-        image.layer.cornerRadius = 5
-        image.clipsToBounds = true 
-        return image
-    }()
-    
-    lazy var soundTagLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.textColor = .white
-        return label
-    }()
-    
-    lazy var username: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .darkGray
-        return label
-    }()
-    
-    lazy var chosenSoundTagLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        return label
-    }()
-    
-    lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 20)
-        label.numberOfLines = 0 
-        return label
-    }()
-    
-    lazy var inputTitle: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.textColor = .white
-        label.backgroundColor = color.black()
-        label.numberOfLines = 0
-        return label
     }()
     
    lazy var percentageSlider: UISlider = {
@@ -88,18 +39,7 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     lazy var socialSwitch: UISwitch = {
        let socialSwitch = UISwitch()
-        socialSwitch.onTintColor = color.blue()
         return socialSwitch
-    }()
-    
-    lazy var artistTypeButton: UIButton = {
-        let localizedArtist = NSLocalizedString("artist", comment: "")
-        let button = UIButton()
-        button.setTitleColor(.white, for: .normal)
-        button.setTitle(localizedArtist, for: .normal)
-        button.setTitleColor(color.blue(), for: .normal)
-        button.clipsToBounds = true
-        return button
     }()
     
     lazy var dividerLine: UIView = {
@@ -111,8 +51,15 @@ class SoundInfoTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        let color = Color()
+        let uiElement = UIElement()
+        
+        soundTagLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+        
+        titleLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!, numberOfLines: 0)
+        
         switch reuseIdentifier {
-            
         case "dividerReuse":
             self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
@@ -125,29 +72,23 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "soundInfoReuse":
-            self.addSubview(dividerLine)
-            self.addSubview(inputTitle)
+            audioProgress.innerRingColor = color.darkGray()
+            audioProgress.outerRingColor = color.black()
             self.addSubview(audioProgress)
-            self.addSubview(soundArtImageButton)
-            
             audioProgress.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
+            soundArtImageButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: UIImage(named: "add_image"), titleFont: nil, titleColor: .white, cornerRadius: 5)
+            self.addSubview(soundArtImageButton)
             soundArtImageButton.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(75)
                 make.centerX.centerY.equalTo(audioProgress)
             }
             
-            inputTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(audioProgress)
-                make.left.equalTo(audioProgress.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(dividerLine).offset(uiElement.bottomOffset)
-            }
-            
+            self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(audioProgress.snp.bottom).offset(uiElement.topOffset)
@@ -156,18 +97,27 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            inputTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+            self.addSubview(inputTitle)
+            inputTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(audioProgress)
+                make.left.equalTo(audioProgress.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(dividerLine).offset(uiElement.bottomOffset)
+            }
+            
             break
             
         case "soundTagReuse":
             self.addSubview(soundTagLabel)
-            self.addSubview(chosenSoundTagLabel)
-            
             soundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            chosenSoundTagLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+            self.addSubview(chosenSoundTagLabel)
             chosenSoundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundTagLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
@@ -175,10 +125,7 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "soundSocialReuse":
-            self.addSubview(soundTagLabel)
-            self.addSubview(socialSwitch)
             self.addSubview(dividerLine)
-            
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -186,13 +133,15 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            socialSwitch.onTintColor = color.blue()
+            self.addSubview(socialSwitch)
             socialSwitch.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(soundTagLabel)
             soundTagLabel.snp.makeConstraints { (make) -> Void in
-               // make.top.equalTo(socialSwitch)
                 make.centerY.equalTo(socialSwitch)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
@@ -200,15 +149,10 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "creditReuse":
-            self.addSubview(percentageSlider)
-            self.addSubview(titleLabel)
-            self.addSubview(artistImage)
-            self.addSubview(soundTagLabel)
-            self.addSubview(artistTypeButton)
-            self.addSubview(dividerLine)
-            self.addSubview(username)
             //artist profile picture
             artistImage.layer.cornerRadius = 35/2
+            artistImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"))
+            self.addSubview(artistImage)
             artistImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -216,20 +160,24 @@ class SoundInfoTableViewCell: UITableViewCell {
             }
             
             //username
+            self.addSubview(soundTagLabel)
             soundTagLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistImage).offset(-5)
                 make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
-               // make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            //artist name 
+            //artist name
+            username = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+            self.addSubview(username)
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundTagLabel)
                 make.left.equalTo(soundTagLabel.snp.right).offset(uiElement.elementOffset)
-               // make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             //credit name
+            let localizedArtist = NSLocalizedString("artist", comment: "")
+            artistTypeButton = uiElement.soundbrewButton(localizedArtist, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)", size: 17)!, titleColor: color.blue(), cornerRadius: nil)
+            self.addSubview(artistTypeButton)
             artistTypeButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(20)
                 make.top.equalTo(soundTagLabel.snp.bottom)
@@ -237,19 +185,22 @@ class SoundInfoTableViewCell: UITableViewCell {
             }
             
             //percentage tip
-            titleLabel.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
+            titleLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+            self.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
             //percentage chooser
+            self.addSubview(percentageSlider)
             percentageSlider.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(titleLabel)
                 make.left.equalTo(titleLabel.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.topOffset)
@@ -257,23 +208,21 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
-            
             break
             
         case "newCreditReuse":
-            self.addSubview(titleLabel)
-            self.addSubview(dividerLine)
             titleLabel.text = "Add Credit"
             titleLabel.textColor = .darkGray
             titleLabel.textAlignment = .center
+            self.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(50)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                //make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.topOffset)

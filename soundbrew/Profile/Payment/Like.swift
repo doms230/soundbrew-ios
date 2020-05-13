@@ -278,6 +278,7 @@ class Like: NSObject, GADRewardedAdDelegate {
             let query = PFQuery(className: "Tip")
             query.whereKey("fromUserId", equalTo: userId)
             query.whereKey("soundId", equalTo: sound.objectId!)
+            query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {

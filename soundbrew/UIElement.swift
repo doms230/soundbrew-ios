@@ -397,6 +397,61 @@ class UIElement {
         label.font = UIFont(name: "\(self.mainFont)-bold", size: 30)
         target.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: label)
     }
+    
+    //mark: tableView Cell UI components
+    func soundbrewImageView(_ image: UIImage?) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.backgroundColor = .clear
+        imageView.contentMode = .scaleAspectFill
+        if let image = image {
+            imageView.image = image
+        }
+        return imageView
+    }
+    
+    func soundbrewButton(_ title: String?, shouldShowBorder: Bool, backgroundColor: UIColor, image: UIImage?, titleFont: UIFont?, titleColor: UIColor, cornerRadius: CGFloat?) -> UIButton {
+        let button = UIButton()
+        button.setTitleColor(titleColor, for: .normal)
+        button.backgroundColor = backgroundColor
+        button.contentMode = .scaleAspectFill
+        button.isOpaque = true
+        
+        if let title = title {
+            button.setTitle(title, for: .normal)
+        }
+        
+        if shouldShowBorder {
+            button.layer.borderWidth = 1
+        }
+        
+        if let cornerRadius = cornerRadius {
+            button.layer.cornerRadius = cornerRadius
+        }
+        
+        button.clipsToBounds = true
+
+        if let image = image {
+            button.setImage(image, for: .normal)
+        }
+        
+        if let titleFont = titleFont {
+            button.titleLabel?.font = titleFont
+        }
+    
+        return button
+    }
+    
+    func soundbrewLabel(_ text: String?, textColor: UIColor, font: UIFont, numberOfLines: Int) -> UILabel {
+        let label = UILabel()
+        if let text = text {
+            label.text = text
+        }
+        label.font = font
+        label.numberOfLines = numberOfLines
+        label.textColor = textColor
+        label.isOpaque = true
+        return label
+    }
 }
 
 public extension UIDevice {

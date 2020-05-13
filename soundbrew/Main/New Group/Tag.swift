@@ -53,6 +53,7 @@ class Tag {
     func loadArtistTagProfileImage(_ image: UIImageView, tag: String) {
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: tag)
+        query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {

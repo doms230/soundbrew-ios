@@ -16,11 +16,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     var isSearchActive = false
     
-    lazy var shareButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "share"), for: .normal)
-        return button
-    }()
+    var shareButton: UIButton!
     
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -46,103 +42,24 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     //credits
-    lazy var creditPercentage: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
-        label.textColor = .darkGray
-        return label
-    }()
-    
-    lazy var creditTitle: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 15)
-        label.numberOfLines = 0
-        label.textColor = .darkGray
-        return label
-    }()
+    var creditPercentage: UILabel!
+    var creditTitle: UILabel!
     
     //profile
-    lazy var profileImage: UIImageView = {
-        let image = UIImageView()
-        image.layer.borderWidth = 1
-        image.layer.borderColor = color.purpleBlack().cgColor
-        image.clipsToBounds = true
-        image.contentMode = .scaleAspectFill
-        image.image = UIImage(named: "profile_icon")
-        image.backgroundColor = .black
-        return image
-    }()
-    
-    lazy var displayNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-        label.textColor = .white
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var username: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .darkGray
-        return label
-    }()
-    
-    lazy var bio: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.numberOfLines = 0
-        label.textColor = .white
-        return label
-    }()
-    
-    lazy var city: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .darkGray
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    lazy var userCity: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = .darkGray
-        return label
-    }()
-    
-    lazy var website: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.textColor = color.blue()
-        return label
-    }()
-    
-    lazy var websiteView: UIButton = {
-        let button = UIButton()
-        button.setTitleColor(color.blue(), for: .normal)
-        return button
-    }()
-    
-    lazy var actionButton: UIButton = {
-        let localizedLoading = NSLocalizedString("loading", comment: "")
-        let button = UIButton()
-        button.setTitle(localizedLoading, for: .normal)
-        button.backgroundColor = .lightGray
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
-    }()
-    
-    lazy var newSoundButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .lightGray
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
-        return button
-    }()
+    var profileImage: UIImageView!
+    var displayNameLabel: UILabel!
+    var username: UILabel!
+    var bio: UILabel!
+    var city: UILabel!
+    var website: UILabel!
+    var websiteView: UIButton!
+    var actionButton: UIButton!
+    var editProfileLabel: UILabel!
+    var editProfileTitle: UILabel!
+    var rightArrow: UIImageView!
+    var editBioTitle: UILabel!
+    var editBioText: UILabel!
+    var privateInformationLabel: UILabel!
     
     lazy var seperatorLine: UIView = {
         let view = UIView()
@@ -153,23 +70,6 @@ class ProfileTableViewCell: UITableViewCell {
         return view
     }()
     
-    //EditProfile
-    lazy var editProfileLabel: UILabel = {
-        let localizedChangeProfilePhoto = NSLocalizedString("changeProfilePhoto", comment: "")
-        let label = UILabel()
-        label.text = localizedChangeProfilePhoto
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-        label.textAlignment = .center
-        label.textColor = color.blue()
-        return label
-    }()
-    
-    lazy var editProfileTitle: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.textColor = .lightGray
-        return label
-    }()
     lazy var editProfileInput: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .none
@@ -180,37 +80,23 @@ class ProfileTableViewCell: UITableViewCell {
         return textField
     }()
     
-    lazy var rightArrow: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "dismiss")
-        return image
-    }()
-    
-    lazy var editBioTitle: UILabel = {
-        let label = UILabel()
-        label.text = "Bio"
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-        label.textColor = .lightGray
-        return label
-    }()
-    lazy var editBioText: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.textColor = .white
-        return label
-    }()
-    
-    lazy var privateInformationLabel: UILabel = {
-        let localizedPrivateInformation = NSLocalizedString("privateInformation", comment: "")
-        let label = UILabel()
-        label.text = localizedPrivateInformation
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        label.textColor = .white 
-        return label
-    }()
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"))
+        profileImage.layer.borderWidth = 1
+        profileImage.layer.borderColor = color.purpleBlack().cgColor
+        profileImage.clipsToBounds = true
+        profileImage.backgroundColor = .black
+        
+        displayNameLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
+        
+        username = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+        
+        city = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+        
+        editProfileTitle = uiElement.soundbrewLabel(nil, textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+        
         switch reuseIdentifier {
             
         case "searchReuse":
@@ -225,14 +111,6 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "profileReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(city)
-            self.addSubview(bio)
-            self.addSubview(websiteView)
-            self.websiteView.addSubview(website)
-            self.addSubview(actionButton)
-            self.addSubview(seperatorLine)
-            
             profileImage.layer.cornerRadius = 75/2
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(75)
@@ -240,36 +118,47 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
+            let localizedLoading = NSLocalizedString("loading", comment: "")
+            actionButton = uiElement.soundbrewButton(localizedLoading, shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+            self.addSubview(actionButton)
             actionButton.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(profileImage)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(displayNameLabel)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(profileImage)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(city)
             city.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
+            bio = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+            self.addSubview(bio)
             bio.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(city.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
+            websiteView = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: color.blue(), cornerRadius: 0)
+            self.addSubview(websiteView)
             websiteView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(bio.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
+            website = uiElement.soundbrewLabel(nil, textColor: color.blue(), font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+            self.websiteView.addSubview(website)
             website.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(websiteView)
                 make.left.equalTo(websiteView)
@@ -277,6 +166,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(websiteView)
             }
             
+            self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(website.snp.bottom).offset(uiElement.topOffset)
@@ -288,9 +178,6 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "searchProfileReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(username)
-            
             profileImage.layer.cornerRadius = 25
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(50)
@@ -299,12 +186,14 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            self.addSubview(displayNameLabel)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage).offset(uiElement.elementOffset)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(username)
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
@@ -314,14 +203,9 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "creditProfileReuse":
-            self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(username)
-            self.addSubview(creditTitle)
-            self.addSubview(creditPercentage)
-            
             let profileImageHeightWidth = 75
             profileImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
+            self.addSubview(profileImage)
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(profileImageHeightWidth)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -329,24 +213,30 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            self.addSubview(displayNameLabel)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage).offset(uiElement.elementOffset)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(username)
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
+            creditTitle = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
+            self.addSubview(creditTitle)
             creditTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(username.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
             
+            creditPercentage = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
+            self.addSubview(creditPercentage)
             creditPercentage.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(creditTitle.snp.bottom)
                 make.left.equalTo(displayNameLabel)
@@ -356,8 +246,6 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "searchTagViewReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            
             profileImage.layer.cornerRadius = 25
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(50)
@@ -366,6 +254,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            self.addSubview(displayNameLabel)
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(profileImage)
@@ -377,10 +266,6 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "mentionsReuse":
             self.addSubview(profileImage)
-            self.addSubview(displayNameLabel)
-            self.addSubview(username)
-            self.addSubview(city)
-            
             profileImage.layer.cornerRadius = 25
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(50)
@@ -390,6 +275,7 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             //person username
+             self.addSubview(displayNameLabel)
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.top)
@@ -397,6 +283,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(city)
             city.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)
@@ -406,13 +293,9 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "settingsReuse":
-            self.addSubview(username)
-            self.addSubview(displayNameLabel)
-            self.addSubview(seperatorLine)
-            
             //Followers count, following count, earnings count, funds count
+            self.addSubview(displayNameLabel)
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 20)
-            //displayNameLabel.textAlignment = .center
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
@@ -420,15 +303,15 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             // follower label, following label, earnings label, funds labele
+            self.addSubview(username)
             username.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-            //username.textAlignment = .center
             username.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-               // make.bottom.equalTo(self).offset(uiE)
             }
             
+             self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(username.snp.bottom).offset(uiElement.topOffset)
@@ -440,16 +323,15 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "settingsTitleReuse":
-            self.addSubview(seperatorLine)
-            self.addSubview(displayNameLabel)
+            shareButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: UIImage(named: "share"), titleFont: nil, titleColor: .white, cornerRadius: nil)
             self.addSubview(shareButton)
-            
             shareButton.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(25)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
 
+            self.addSubview(displayNameLabel)
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -457,6 +339,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(shareButton.snp.left).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(shareButton.snp.bottom).offset(uiElement.topOffset)
@@ -468,8 +351,6 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "editProfileImageReuse":
             self.addSubview(profileImage)
-            self.addSubview(editProfileLabel)
-            self.addSubview(seperatorLine)
             profileImage.layer.cornerRadius = 50
             profileImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(100)
@@ -477,12 +358,17 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(self).offset(uiElement.topOffset)
             }
             
+            let localizedChangeProfilePhoto = NSLocalizedString("changeProfilePhoto", comment: "")
+            editProfileLabel = uiElement.soundbrewLabel(localizedChangeProfilePhoto, textColor: color.blue(), font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
+            editProfileLabel.textAlignment = .center
+            self.addSubview(editProfileLabel)
             editProfileLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(editProfileLabel.snp.bottom).offset(uiElement.topOffset)
@@ -494,19 +380,20 @@ class ProfileTableViewCell: UITableViewCell {
             
         case "editProfileInfoReuse":
             self.addSubview(editProfileTitle)
-            self.addSubview(editProfileInput)
-            self.addSubview(seperatorLine)
             editProfileTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
+            
+            self.addSubview(editProfileInput)
             editProfileInput.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editProfileTitle)
                 make.left.equalTo(editProfileTitle.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(editProfileInput.snp.bottom).offset(uiElement.topOffset)
@@ -518,28 +405,31 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "editBioReuse":
-            self.addSubview(editBioText)
+            editBioTitle = uiElement.soundbrewLabel("Bio", textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
             self.addSubview(editBioTitle)
-            self.addSubview(rightArrow)
-            self.addSubview(seperatorLine)
             editBioTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
+            rightArrow = uiElement.soundbrewImageView( UIImage(named: "dismiss"))
+            self.addSubview(rightArrow)
             rightArrow.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
                 make.centerY.equalTo(self)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            editBioText = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 0)
+            self.addSubview(editBioText)
             editBioText.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editBioTitle)
                 make.left.equalTo(editBioTitle.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(rightArrow.snp.left).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(editBioText.snp.bottom).offset(uiElement.topOffset)
@@ -551,27 +441,30 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "editPrivateInfoReuse":
+            let localizedPrivateInformation = NSLocalizedString("privateInformation", comment: "")
+            privateInformationLabel = uiElement.soundbrewLabel(localizedPrivateInformation, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 17)!, numberOfLines: 0)
             self.addSubview(privateInformationLabel)
-            self.addSubview(editProfileTitle)
-            self.addSubview(editProfileInput)
-            self.addSubview(seperatorLine)
             privateInformationLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(editProfileTitle)
             editProfileTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
                 make.top.equalTo(privateInformationLabel.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
+            
+            self.addSubview(editProfileInput)
             editProfileInput.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editProfileTitle)
                 make.left.equalTo(editProfileTitle.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
+            self.addSubview(seperatorLine)
             seperatorLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(editProfileInput.snp.bottom).offset(uiElement.topOffset)
