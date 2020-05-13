@@ -11,10 +11,11 @@ import Parse
 import GoogleMobileAds
 
 class Like: NSObject, GADRewardedAdDelegate {
+    static let shared = Like()
     let customer = Customer.shared
     let uiElement = UIElement()
-    let target: UIViewController!
-    var sound: Sound!
+    var target: UIViewController!
+    var sound: Sound?
     var paymentAmount = 10
     var soundCredits = [Credit]()
     var didPressLikeButtonBeforeRewardedAdLoaded = false
@@ -23,7 +24,7 @@ class Like: NSObject, GADRewardedAdDelegate {
     var likeSoundButton: UIButton!
     var paymentAmountForLike: UILabel!
     
-    init(sound: Sound, target: UIViewController, likeSoundButton: UIButton, paymentAmountForLike: UILabel) {
+   /* init(sound: Sound, target: UIViewController, likeSoundButton: UIButton, paymentAmountForLike: UILabel) {
             
         self.sound = sound
         self.target = target
@@ -34,14 +35,8 @@ class Like: NSObject, GADRewardedAdDelegate {
         
         checkIfUserLikedSong(sound)
         loadCredits()
-        
-        if let balance = customer.artist?.balance, balance < paymentAmount {
-            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
-        } else {
-            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
-        }
-    }
-
+    }*/
+    
     func sendPayment() {
         if customer.artist!.balance! >= self.paymentAmount {
             updatePayment()
@@ -60,8 +55,8 @@ class Like: NSObject, GADRewardedAdDelegate {
             if let fromUserId = PFUser.current()?.objectId {
                 let query = PFQuery(className: "Tip")
                 query.whereKey("fromUserId", equalTo: fromUserId)
-                query.whereKey("toUserId", equalTo: sound.artist!.objectId!)
-                query.whereKey("soundId", equalTo: sound.objectId!)
+                query.whereKey("toUserId", equalTo: sound!.artist!.objectId!)
+                query.whereKey("soundId", equalTo: sound!.objectId!)
                 query.getFirstObjectInBackground {
                     (object: PFObject?, error: Error?) -> Void in
                      if error == nil, let object = object {
@@ -89,15 +84,15 @@ class Like: NSObject, GADRewardedAdDelegate {
     func newPaymentRow() {
         let newPayment = PFObject(className: "Tip")
         newPayment["fromUserId"] = self.customer.artist?.objectId
-        newPayment["toUserId"] = self.sound.artist?.objectId
+        newPayment["toUserId"] = self.sound!.artist?.objectId
         newPayment["amount"] = self.paymentAmount
-        newPayment["soundId"] = self.sound.objectId
+        newPayment["soundId"] = self.sound!.objectId
         newPayment.saveEventually {
             (success: Bool, error: Error?) in
               if success {
                 self.customer.updateBalance(-self.paymentAmount)
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
-                self.newMention(self.sound, toUserId: (self.sound.artist?.objectId)!)
+                self.newMention(self.sound!, toUserId: (self.sound!.artist?.objectId)!)
                 self.incrementSoundPaymentAmount(true)
                 self.getCreditsAndSplit()
               }
@@ -106,7 +101,7 @@ class Like: NSObject, GADRewardedAdDelegate {
     
     func incrementSoundPaymentAmount(_ shouldUpdateTippers: Bool) {
         let query = PFQuery(className: "Post")
-        query.getObjectInBackground(withId: sound.objectId!) {
+        query.getObjectInBackground(withId: sound!.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
                 object.incrementKey("tips", byAmount: NSNumber(value: self.paymentAmount))
@@ -120,7 +115,7 @@ class Like: NSObject, GADRewardedAdDelegate {
     
     func getCreditsAndSplit() {
         if soundCredits.isEmpty {
-            updateArtistPayment(sound.artist!.objectId, paymentAmount: self.paymentAmount)
+            updateArtistPayment(sound!.artist!.objectId, paymentAmount: self.paymentAmount)
             
         } else {
             for credit in soundCredits {
@@ -203,6 +198,14 @@ class Like: NSObject, GADRewardedAdDelegate {
     }
 
     /// Tells the delegate that the user earned a reward.
+    func setUpPayment() {
+        if let balance = customer.artist?.balance, balance < paymentAmount {
+            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
+        } else {
+            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
+        }
+    }
+    
     func rewardedAd(_ rewardedAd: GADRewardedAd, userDidEarn reward: GADAdReward) {
         let rewardAmount = Int(truncating: reward.amount)
         self.paymentAmount = rewardAmount
@@ -246,9 +249,9 @@ class Like: NSObject, GADRewardedAdDelegate {
         target.present(alertView, animated: true, completion: nil)
     }
     
-    func loadCredits() {
+    func loadCredits(_ sound: Sound) {
         let query = PFQuery(className: "Credit")
-        query.whereKey("postId", equalTo: sound.objectId!)
+        query.whereKey("postId", equalTo: sound.objectId)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.creditsLoaded = true

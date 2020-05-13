@@ -63,9 +63,11 @@ class UIElement {
     }
     
     func showAlert(_ title: String, message: String, target: UIViewController) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
-        target.present(alert, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+            target.present(alert, animated: true, completion: nil)
+        }
     }
     
     func permissionDenied(_ title: String, message: String, target: UIViewController) {
@@ -140,9 +142,11 @@ class UIElement {
     }
     
     func showTextFieldErrorMessage(_ UITextField: UITextField, text: String) {
-        UITextField.attributedPlaceholder = NSAttributedString(string: text,
-                                                             attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
-        UITextField.text = ""
+        DispatchQueue.main.async {
+            UITextField.attributedPlaceholder = NSAttributedString(string: text,
+                                                                 attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
+            UITextField.text = ""
+        }
     }
     
     func cleanUpText(_ text: String, shouldLowercaseText: Bool) -> String {

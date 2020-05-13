@@ -29,7 +29,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     var tagDelegate: TagDelegate?
     
     var skipCount = 0
-    var like: Like!
+    let like = Like.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,7 +73,27 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         if let sound = player.currentSound {
             player.target = self
             
-            self.like = Like(sound: sound, target: self, likeSoundButton: self.likeSoundButton, paymentAmountForLike: self.paymentAmountForLike)
+            self.like.paymentAmountForLike = self.paymentAmountForLike
+            self.like.likeSoundButton = self.likeSoundButton
+            self.like.target = self
+            
+            if self.like.rewardedAd == nil {
+                self.like.setUpPayment()
+            }
+            
+            if let likeSound = self.like.sound {
+                if sound.objectId != likeSound.objectId {
+                    self.like.checkIfUserLikedSong(sound)
+                    self.like.loadCredits(sound)
+                } else if let tipAmount = likeSound.tipAmount {
+                    self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                }
+                 
+            } else {
+                self.like.checkIfUserLikedSong(sound)
+                self.like.loadCredits(sound)
+            }
+            self.like.sound = sound
             
             self.sound = sound
             

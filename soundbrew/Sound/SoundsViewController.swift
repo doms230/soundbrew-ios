@@ -61,7 +61,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     override func didReceiveMemoryWarning() {
-        soundList.sounds.removeAll()
+       // soundList.sounds.removeAll()
     }
     
     func setupNotificationCenter() {

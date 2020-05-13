@@ -71,7 +71,7 @@ class SoundListTableViewCell: UITableViewCell {
     lazy var artistImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "profile_icon")
-        image.layer.cornerRadius = 35 / 2
+        image.layer.cornerRadius = 25 / 2
         image.clipsToBounds = true
         image.backgroundColor = .black 
         return image
@@ -233,7 +233,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(dividerLine.snp.top)
             }
             
-            likesCountLabel.snp.makeConstraints { (make) -> Void in
+            /*likesCountLabel.snp.makeConstraints { (make) -> Void in
                 make.right.equalTo(soundDate)
                 make.bottom.equalTo(soundDate)
             }
@@ -242,7 +242,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.height.width.equalTo(15)
                 make.right.equalTo(likesCountLabel.snp.left).offset(-(uiElement.elementOffset))
                 make.bottom.equalTo(soundDate)
-            }
+            }*/
                         
             soundTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)

@@ -172,19 +172,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         }
     }
     
-    /*func getBalance(_ userId: String) {
-        let query = PFQuery(className: "Payment")
-        query.whereKey("userId", equalTo: userId)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if let balance = object?["tipsSinceLastPayout"] as? Int {
-                self.artist?.balance = balance
-            } else {
-                self.newArtistPaymentRow(userId, tipAmount: 0)
-            }
-        }
-    }*/
-    
     func updateBalance(_ addSubFunds: Int) {
         let newBalance = addSubFunds + self.artist!.balance!
         self.artist?.balance = newBalance

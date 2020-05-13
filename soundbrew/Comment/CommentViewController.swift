@@ -372,22 +372,24 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     let noSoundsReuse = "noSoundsReuse"
     let searchProfileReuse = "searchProfileReuse"
     func setUpTableView() {
-        tableView = UITableView()
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: commentReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
-        tableView.backgroundColor = color.black()
-        tableView.keyboardDismissMode = .onDrag
-        tableView.separatorStyle = .none
-        self.view.addSubview(tableView)
-        tableView.snp.makeConstraints { (make) -> Void in
-            //for some reason, attachinxg to the bottom of playerdividerline makes the tableview stretch all the way to the bottom of screen
-            make.top.equalTo(self.view).offset(45 + self.uiElement.topOffset)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
-            make.bottom.equalTo(self.inputToolbar.snp.top)
+        DispatchQueue.main.async {
+            self.tableView = UITableView()
+            self.tableView.dataSource = self
+            self.tableView.delegate = self
+            self.tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: self.commentReuse)
+            self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.noSoundsReuse)
+            self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.searchProfileReuse)
+            self.tableView.backgroundColor = self.color.black()
+            self.tableView.keyboardDismissMode = .onDrag
+            self.tableView.separatorStyle = .none
+            self.view.addSubview(self.tableView)
+            self.tableView.snp.makeConstraints { (make) -> Void in
+                //for some reason, attachinxg to the bottom of playerdividerline makes the tableview stretch all the way to the bottom of screen
+                make.top.equalTo(self.view).offset(45 + self.uiElement.topOffset)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.inputToolbar.snp.top)
+            }
         }
     }
     
@@ -635,7 +637,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                 
             } else {
                 self.comments.removeLast()
-                self.tableView.reloadData()
+                DispatchQueue.main.async {self.tableView.reloadData()}
             }
         }
     }
@@ -753,7 +755,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             if self.tableView == nil {
                 self.setUpTableView()
             } else {
-               self.tableView.reloadData()
+                DispatchQueue.main.async {self.tableView.reloadData()}
             }
             
             if self.selectedCommentFromMentions != nil && !self.didLoadComments {
@@ -786,8 +788,10 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
                 
-                self.tableView.reloadData()
-                self.tableView.isHidden = false
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                    self.tableView.isHidden = false
+                }
                 
             } else {
                 print("Error: \(error!)")

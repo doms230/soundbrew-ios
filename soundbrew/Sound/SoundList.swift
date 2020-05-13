@@ -117,9 +117,22 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
                         
-            if let hashtags = sound.tags, hashtags.indices.contains(0) {
-                cell.soundDate.text = "#\(hashtags[0])"
+           /* if let hashtags = sound.tags, hashtags.indices.contains(0) {
+                cell.soundDate.text = hashtags
+            }*/
+            
+            var hashtagString = ""
+            if let hashtags = sound.tags {
+                for hashtag in hashtags {
+                    if hashtagString == "" {
+                        hashtagString = "#\(hashtag)"
+                    } else {
+                       hashtagString = "\(hashtagString), #\(hashtag)"
+                    }
+                }
             }
+
+            cell.soundDate.text = hashtagString
             
             if let likes = sound.tipCount {
                 cell.likesCountLabel.text = "\(likes)"
