@@ -52,6 +52,11 @@ class Like: NSObject, GADRewardedAdDelegate {
                             (success: Bool, error: Error?) in
                             if success {
                                 self.customer.updateBalance(-self.paymentAmount)
+                                var currentPaymentAmount = 0
+                                if let paymentAmount = self.sound?.tipAmount {
+                                    currentPaymentAmount = paymentAmount
+                                }
+                                self.sound?.tipAmount = currentPaymentAmount + self.paymentAmount
                                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
                                 self.incrementSoundPaymentAmount(false)
                                 self.getCreditsAndSplit()
@@ -240,7 +245,8 @@ class Like: NSObject, GADRewardedAdDelegate {
     
     func loadCredits(_ sound: Sound) {
         let query = PFQuery(className: "Credit")
-        query.whereKey("postId", equalTo: sound.objectId)
+        query.whereKey("postId", equalTo: sound.objectId!)
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.creditsLoaded = true

@@ -50,6 +50,7 @@ class Artist {
     
     func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
         let query = PFQuery(className: "_User")
+       query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
             if let error = error {
@@ -97,9 +98,7 @@ class Artist {
                     if let username = self.username {
                         cell.username.text = "@\(username)"
                     }
-                   /* if let city = self.city {
-                        cell.city.text = city
-                    }*/
+
                     if let image = self.image {
                         cell.profileImage.kf.setImage(with: URL(string: image))
                     } else {
@@ -107,7 +106,6 @@ class Artist {
                     }
                     
                 } else if let cell = soundCell {
-                    //if let 
                     cell.artistLabel.text = self.name
                     
                     if let image = self.image {

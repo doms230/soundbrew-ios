@@ -97,7 +97,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         navigationController?.navigationBar.tintColor = .white
         
         if isAddingNewCredit {
-            print("asfd")
             let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressExitButton(_:)))
             navigationItem.leftBarButtonItem = cancelButton
         } else if sound != nil {
@@ -215,7 +214,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     })
                     
                 } else if self.filteredArtists.indices.contains(indexPath.row) {
-                        selectedArtist(self.filteredArtists[indexPath.row])
+                    selectedArtist(self.filteredArtists[indexPath.row])
                 }
             }
             
@@ -250,7 +249,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     func peopleCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
-       // self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, HomeCollectionCell: nil)
         self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
         return cell
     }
@@ -308,6 +306,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         }
         query.whereKey("isRemoved", equalTo: false)
         query.limit = 50
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -331,6 +330,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let query = PFQuery(className: "Tip")
         query.whereKey("soundId", equalTo: sound.objectId!)
         query.limit = 50
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -353,6 +353,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let query = PFQuery(className: "Listen")
         query.whereKey("postId", equalTo: sound.objectId!)
         query.limit = 50
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -375,6 +376,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let query = PFQuery(className: "Credit")
         query.whereKey("postId", equalTo: sound.objectId!)
         query.addAscendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -447,71 +449,67 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.whereKey("objectId", notContainedIn: self.creditArtistObjectIds)
         query.limit = 50
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for user in objects {
-                        let username = user["username"] as? String
-                        
-                        var email: String?
-                        
-                        if let currentUser = PFUser.current() {
-                            if currentUser.objectId! == user.objectId! {
-                                email = user["email"] as? String
-                            }
+            if let objects = objects {
+                for user in objects {
+                    let username = user["username"] as? String
+                    
+                    var email: String?
+                    
+                    if let currentUser = PFUser.current() {
+                        if currentUser.objectId! == user.objectId! {
+                            email = user["email"] as? String
                         }
-                        
-                        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
-                        
-                        if let followerCount = user["followerCount"] as? Int {
-                            artist.followerCount = followerCount
-                        }
-                        
-                        if let name = user["artistName"] as? String {
-                            artist.name = name
-                        } else {
-                            artist.name = ""
-                        }
-                        
-                        if let username = user["username"] as? String {
-                            if username.contains("@") {
-                                artist.username = ""
-                            } else {
-                                artist.username = username
-                            }
-                        }
-                        
-                        if let city = user["city"] as? String {
-                            artist.city = city
-                        }
-                        
-                        if let userImageFile = user["userImage"] as? PFFileObject {
-                            artist.image = userImageFile.url!
-                        }
-                        
-                        if let bio = user["bio"] as? String {
-                            artist.bio = bio
-                        }
-                        
-                        if let artistVerification = user["artistVerification"] as? Bool {
-                            artist.isVerified = artistVerification
-                        }
-                        
-                        if let website = user["website"] as? String {
-                            artist.website = website
-                        }
-                        
-                        self.filteredArtists.append(artist)
                     }
+                    
+                    let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                    
+                    if let followerCount = user["followerCount"] as? Int {
+                        artist.followerCount = followerCount
+                    }
+                    
+                    if let name = user["artistName"] as? String {
+                        artist.name = name
+                    } else {
+                        artist.name = ""
+                    }
+                    
+                    if let username = user["username"] as? String {
+                        if username.contains("@") {
+                            artist.username = ""
+                        } else {
+                            artist.username = username
+                        }
+                    }
+                    
+                    if let city = user["city"] as? String {
+                        artist.city = city
+                    }
+                    
+                    if let userImageFile = user["userImage"] as? PFFileObject {
+                        artist.image = userImageFile.url!
+                    }
+                    
+                    if let bio = user["bio"] as? String {
+                        artist.bio = bio
+                    }
+                    
+                    if let artistVerification = user["artistVerification"] as? Bool {
+                        artist.isVerified = artistVerification
+                    }
+                    
+                    if let website = user["website"] as? String {
+                        artist.website = website
+                    }
+                    
+                    self.filteredArtists.append(artist)
                 }
-                
-                DispatchQueue.main.async {
-                    self.tableView.reloadSections([1], with: .automatic)
-                }
-                
-            } else {
-                print("Error: \(error!)")
+            }
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadSections([1], with: .automatic)
             }
         }
     }

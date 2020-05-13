@@ -284,36 +284,38 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         query.addDescendingOrder("count")
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        let tagName = object["tag"] as! String
-                        let tagCount = object["count"] as! Int
-                        
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
-                        
-                        if let image = object["image"] as? PFFileObject {
-                            newTag.imageURL = image.url
-                        }
-                        
-                        if let tagType = object["type"] as? String {
-                            if !tagType.isEmpty {
-                                newTag.type = tagType
-                            }
-                        }
-                        self.searchTags.append(newTag)
+            if let objects = objects {
+                for object in objects {
+                    let tagName = object["tag"] as! String
+                    let tagCount = object["count"] as! Int
+                    
+                    let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+                    
+                    if let image = object["image"] as? PFFileObject {
+                        newTag.imageURL = image.url
                     }
+                    
+                    if let tagType = object["type"] as? String {
+                        if !tagType.isEmpty {
+                            newTag.type = tagType
+                        }
+                    }
+                    self.searchTags.append(newTag)
                 }
+            }
+            
+            self.handleTableViewLogic()
+          //  if error == nil {
+
                 
-                self.handleTableViewLogic()
-                
-            } else {
+         /*   } else {
                 print("Error: \(error!)")
                 let localizedOops = NSLocalizedString("oops", comment: "")
                 self.uiElement.showAlert(localizedOops, message: "\(error!.localizedDescription)", target: self)
-            }
+            }*/
         }
     }
     
@@ -481,25 +483,21 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.limit = 50
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for user in objects {
-                        let artist = self.uiElement.newArtistObject(user)
-                        if artist.username != nil {
-                            self.searchUsers.append(artist)
-                        }
+            if let objects = objects {
+                for user in objects {
+                    let artist = self.uiElement.newArtistObject(user)
+                    if artist.username != nil {
+                        self.searchUsers.append(artist)
                     }
                 }
-                
-                self.isLoadingResults = false
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-                
-            } else {
-                print("Error: \(error!)")
+            }
+            
+            self.isLoadingResults = false
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
         }
     }

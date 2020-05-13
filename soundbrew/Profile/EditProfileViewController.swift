@@ -434,10 +434,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
+            if let user = user {
                 user["artistName"] = self.nameText.text
                 
                 if let username = self.artist?.username {

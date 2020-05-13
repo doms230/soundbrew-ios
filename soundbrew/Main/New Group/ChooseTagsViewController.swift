@@ -487,70 +487,72 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         query.addDescendingOrder("count")
         query.limit = 50
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    var loadedTags = [Tag]()
-                    for object in objects {
-                        let tagName = object["tag"] as! String
-                        let tagCount = object["count"] as! Int
-                        
-                        let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
-                        
-                        if let image = object["image"] as? PFFileObject {
-                            newTag.imageURL = image.url
-                        }
-                        
-                        if let tagType = object["type"] as? String {
-                            if !tagType.isEmpty {
-                                newTag.type = tagType
-                            }
-                        }
-                        
-                        if self.chosenTags.count != 0 {
-                            let chosenTagObjectIds = self.chosenTags.map {$0.objectId}
-                            if !chosenTagObjectIds.contains(newTag.objectId) {
-                                loadedTags.append(newTag)
-                            }
-                            
-                        } else {
-                            loadedTags.append(newTag)
+            if let objects = objects {
+                var loadedTags = [Tag]()
+                for object in objects {
+                    let tagName = object["tag"] as! String
+                    let tagCount = object["count"] as! Int
+                    
+                    let newTag = Tag(objectId: object.objectId, name: tagName, count: tagCount, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+                    
+                    if let image = object["image"] as? PFFileObject {
+                        newTag.imageURL = image.url
+                    }
+                    
+                    if let tagType = object["type"] as? String {
+                        if !tagType.isEmpty {
+                            newTag.type = tagType
                         }
                     }
                     
-                    if searchText == nil {
-                        self.tags = loadedTags
-                        self.filteredTags = self.tags
-                        
-                    } else {
-                        self.filteredTags = loadedTags
-                    }
-                }
-                
-                if self.tagType != nil && searchText != nil && !self.isSelectingTagsForPlaylist {
-                    self.checkIfTagSearchTextExists()
-                }
-                
-                
-                DispatchQueue.main.async {
-                    if self.tableView == nil {
-                        if self.isViewTagsFromSound {
-                            self.setupTopView()
-                        } else {
-                            self.setupChooseTagsView()
+                    if self.chosenTags.count != 0 {
+                        let chosenTagObjectIds = self.chosenTags.map {$0.objectId}
+                        if !chosenTagObjectIds.contains(newTag.objectId) {
+                            loadedTags.append(newTag)
                         }
                         
                     } else {
-                        self.tableView.reloadData()
+                        loadedTags.append(newTag)
                     }
                 }
                 
-            } else {
+                if searchText == nil {
+                    self.tags = loadedTags
+                    self.filteredTags = self.tags
+                    
+                } else {
+                    self.filteredTags = loadedTags
+                }
+            }
+            
+            if self.tagType != nil && searchText != nil && !self.isSelectingTagsForPlaylist {
+                self.checkIfTagSearchTextExists()
+            }
+            
+            DispatchQueue.main.async {
+                if self.tableView == nil {
+                    if self.isViewTagsFromSound {
+                        self.setupTopView()
+                    } else {
+                        self.setupChooseTagsView()
+                    }
+                    
+                } else {
+                    self.tableView.reloadData()
+                }
+            }
+            
+           // if error == nil {
+
+                
+            /*} else {
                 print("Error: \(error!)")
                 let localizedOops = NSLocalizedString("oops", comment: "")
                 self.uiElement.showAlert(localizedOops, message: "\(error!)", target: self)
-            }
+            }*/
         }
     }
 }

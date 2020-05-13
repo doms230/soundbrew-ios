@@ -401,7 +401,6 @@ class SoundList: NSObject, PlayerDelegate {
         isUpdatingData = true 
         
         let query = PFQuery(className: "Post")
-        
         if let postIds = postIds {
             query.whereKey("objectId", containedIn: postIds)
         }

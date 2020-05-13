@@ -595,10 +595,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 let query = PFQuery(className: "Tag")
                 query.getObjectInBackground(withId: tagId) {
                     (object: PFObject?, error: Error?) -> Void in
-                    if let error = error {
-                        print(error)
-                        
-                    } else if let object = object {
+                     if let object = object {
                         object.incrementKey("count")
                         object.saveEventually()
                     }

@@ -245,6 +245,8 @@ class MiniPlayerView: UIButton {
                         self.like.loadCredits(sound)
                     } else if let tipAmount = likeSound.tipAmount {
                         self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                        self.likeSoundButton.isEnabled = true 
+                        self.likeImageView.image = UIImage(named: "sendTip")
                     }
                     
                 } else {
@@ -301,10 +303,7 @@ class MiniPlayerView: UIButton {
         let query = PFQuery(className:"_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
+            if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.text = artistName
                 self.sound!.artist?.name = artistName

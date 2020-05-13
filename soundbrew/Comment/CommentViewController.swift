@@ -687,6 +687,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: username)
+        query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             self.stopAnimating()
@@ -728,6 +729,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         }
         
         let query = PFQuery(className: "Comment")
+        query.cachePolicy = .networkElseCache
         query.whereKey("postId", equalTo: sound.objectId!)
         query.whereKey("isRemoved", equalTo: false)
         query.addAscendingOrder("atTime")
@@ -759,9 +761,12 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             
             if self.selectedCommentFromMentions != nil && !self.didLoadComments {
-                let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
-                self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                self.didLoadComments = true 
+                 DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                    let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
+                    self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    self.didLoadComments = true
+                }
             }
         }
     }
@@ -775,6 +780,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         let usernameQuery = PFQuery(className: "_User")
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
+        query.cachePolicy = .networkElseCache
         query.limit = 25
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -792,9 +798,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                     self.tableView.reloadData()
                     self.tableView.isHidden = false
                 }
-                
-            } else {
-                print("Error: \(error!)")
             }
         }
     }

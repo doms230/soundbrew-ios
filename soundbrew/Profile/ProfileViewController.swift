@@ -25,9 +25,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var profileArtist: Artist?
     
     var soundList: SoundList!
-   // var isCurrentUserProfile = false
     var soundType = "uploads"
     var profileSounds = [Sound]()
+    var isFromNavigationStack = true
     var selectedIndex = 0
     var currentUser: PFUser?
     let player = Player.sharedInstance
@@ -39,7 +39,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         setupNotificationCenter()
-        profileInfo()
+        determineTypeOfProfile()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -494,17 +494,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("fromUserId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.limit = 5
+        query.cachePolicy = .cacheThenNetwork
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        self.collectionSoundIds.append(object["soundId"] as! String)
-                    }
+            if let objects = objects {
+                for object in objects {
+                    self.collectionSoundIds.append(object["soundId"] as! String)
                 }
-                
-                self.loadSounds(self.collectionSoundIds, creditIds: nil, userId: nil)
             }
+            
+            self.loadSounds(self.collectionSoundIds, creditIds: nil, userId: nil)
         }
     }
     
@@ -513,17 +512,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("userId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.limit = 5
+        query.cachePolicy = .cacheThenNetwork
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    for object in objects {
-                        self.creditSoundIds.append(object["postId"] as! String)
-                    }
+            if let objects = objects {
+                for object in objects {
+                    self.creditSoundIds.append(object["postId"] as! String)
                 }
-                
-                self.loadSounds(nil, creditIds: self.creditSoundIds, userId: nil)
             }
+            
+            self.loadSounds(nil, creditIds: self.creditSoundIds, userId: nil)
         }
     }
     
@@ -541,35 +539,34 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("isRemoved", notEqualTo: true)
         query.whereKey("isDraft", notEqualTo: true)
         query.addDescendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if error == nil {
-                if let objects = objects {
-                    var sounds = [Sound]()
-                    for object in objects {
-                        let sound = self.uiElement.newSoundObject(object)
-                        sounds.append(sound)
-                    }
-                    
-                    if collectionIds != nil {
-                        self.artistCollection = sounds
-                        self.didLoadCollection = true
-                    } else if creditIds != nil {
-                        self.artistCredits = sounds
-                        self.didLoadCredits = true
-                    } else {
-                        self.artistReleases = sounds
-                        self.didloadReleases = true
-                    }
-                    
-                    self.setUpTableView()
+            if let objects = objects {
+                var sounds = [Sound]()
+                for object in objects {
+                    let sound = self.uiElement.newSoundObject(object)
+                    sounds.append(sound)
                 }
+                
+                if collectionIds != nil {
+                    self.artistCollection = sounds
+                    self.didLoadCollection = true
+                } else if creditIds != nil {
+                    self.artistCredits = sounds
+                    self.didLoadCredits = true
+                } else {
+                    self.artistReleases = sounds
+                    self.didloadReleases = true
+                }
+                
+                self.setUpTableView()
             }
         }
     }
     
     //mark: profileInfo
-    func profileInfo() {
+    func determineTypeOfProfile() {
         if let currentUser = PFUser.current() {
             self.currentUser = currentUser
         }
@@ -589,7 +586,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.setUpNavigationButtons()
             
         }  else if let currentArtist = Customer.shared.artist {
-            //isCurrentUserProfile = true
+            isFromNavigationStack = false
             self.profileArtist = currentArtist
             self.loadCollection(currentArtist.objectId)
             self.loadCredits(currentArtist.objectId)
@@ -597,7 +594,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
             }
-            //self.loadProfileData()
             self.setUpNavigationButtons()
         } else {
             let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
@@ -714,12 +710,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let currentArtist = self.profileArtist, currentArtist.objectId == Customer.shared.artist?.objectId {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
-            
+    
             if let username = currentArtist.username {
-                if !username.contains("@") {
-                    self.uiElement.addTitleView(username, target: self)
+                if isFromNavigationStack {
+                    if let username = self.profileArtist?.username {
+                        if !username.contains("@") {
+                            self.navigationItem.title = username
+                        }
+                    }
+                    
                 } else {
-                    self.uiElement.addTitleView("Your Profile", target: self)
+                    if !username.contains("@") {
+                        self.uiElement.addTitleView(username, target: self)
+                    } else {
+                        self.uiElement.addTitleView("Your Profile", target: self)
+                    }
                 }
             }
             
@@ -733,29 +738,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
         }
-        
-        /*if isCurrentUserProfile && self.currentUser != nil {
-            let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
-            self.navigationItem.rightBarButtonItem = menuButton
-            
-            if let username = PFUser.current()?.username {
-                if !username.contains("@") {
-                    self.uiElement.addTitleView(username, target: self)
-                } else {
-                    self.uiElement.addTitleView("Your Profile", target: self)
-                }
-            }
-            
-        } else {
-            let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShareProfileButton(_:)))
-            self.navigationItem.rightBarButtonItem = shareButton
-            
-            if let username = self.profileArtist?.username {
-                if !username.contains("@") {
-                    self.navigationItem.title = username
-                }
-            }
-        }*/
     }
     
     @objc func didPressWebsiteButton(_ sender: UIButton) {
@@ -789,10 +771,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
+            if let user = user {
                 if let username = user["username"] as? String {
                     label.text = username
                 }
@@ -824,7 +803,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             query.whereKey("isRemoved", equalTo: false)
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if object != nil && error == nil {
+                if object != nil {
                     self.profileArtist?.isFollowedByCurrentUser = true
                 } else {
                     self.profileArtist?.isFollowedByCurrentUser = false

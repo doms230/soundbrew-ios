@@ -470,12 +470,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
     //mark: data
     func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = user {
+            if let user = user {
                 self.sounds[i].artist = UIElement().newArtistObject(user)
                 self.setBackgroundAudioNowPlaying(self.player, sound: self.sounds[i])
             }

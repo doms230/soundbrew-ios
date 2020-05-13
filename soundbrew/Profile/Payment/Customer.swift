@@ -22,7 +22,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     let uiElement = UIElement()
     var hasUsedReferralCode = false
     var referralCode: String?
-    //let uiElement =
     //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
@@ -94,10 +93,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let object = object {
+             if let object = object {
                 object["customerId"] = customerId
                 object.saveEventually()
             }
@@ -106,12 +102,10 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     
     func getCustomer(_ objectId: String) {
         let query = PFQuery(className: "_User")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print(error)
-                
-            } else if let user = object {
+             if let user = object {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 
@@ -155,6 +149,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             query.whereKey("isRemoved", equalTo: false)
             query.addDescendingOrder("createdAt")
             query.limit = 100
+            query.cachePolicy = .networkElseCache
             query.findObjectsInBackground {
                 (objects: [PFObject]?, error: Error?) -> Void in
                 if let objects = objects {

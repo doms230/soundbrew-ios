@@ -282,6 +282,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         query.whereKey("objectId", notContainedIn: mentions.map {$0.objectId!})
         query.limit = 50
         query.addDescendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
@@ -316,6 +317,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func loadComment(_ commentId: String, mention: Mention) {
         let query = PFQuery(className: "Comment")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: commentId) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
@@ -332,6 +334,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func loadPost(_ soundId: String, mention: Mention) {
         let query = PFQuery(className: "Post")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: soundId) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
@@ -344,6 +347,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func loadArtist(_ mention: Mention) {
         let query = PFQuery(className: "_User")
+        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: mention.fromUserId) {
             (user: PFObject?, error: Error?) -> Void in
             if let user = user {

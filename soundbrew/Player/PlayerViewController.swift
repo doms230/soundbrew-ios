@@ -87,6 +87,8 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                     self.like.loadCredits(sound)
                 } else if let tipAmount = likeSound.tipAmount {
                     self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+                    self.paymentAmountForLike.isEnabled = true
+                    self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 }
                  
             } else {

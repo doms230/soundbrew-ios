@@ -316,9 +316,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if let currentUserID = PFUser.current()?.objectId {
             let query = PFQuery(className: "Stats")
             query.whereKey("userId", equalTo: currentUserID)
+            query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if error == nil, let object = object {
+                if let object = object {
                     if let followers = object["followers"] as? Int {
                         self.artist?.followerCount = followers
                     }
@@ -336,9 +337,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if let currentUserID = PFUser.current()?.objectId {
             let query = PFQuery(className: "Payment")
             query.whereKey("userId", equalTo: currentUserID)
+            query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if error == nil, let object = object {
+                if  let object = object {
                     if let earnings = object["tipsSinceLastPayout"] as? Int {
                         self.artist?.earnings = earnings
                     } else {
