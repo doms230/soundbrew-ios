@@ -26,9 +26,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var profileImage: UIImageView!
     var nameText: UITextField!
     var usernameText: UITextField!
-    var instagramText: UITextField!
-    var twitterText: UITextField!
-    var snapchatText: UITextField!
     var websiteText: UITextField!
 
     var emailText: UITextField!

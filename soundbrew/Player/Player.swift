@@ -23,9 +23,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     var currentSoundIndex = 0
     var sounds: Array<Sound>!
     var currentSound: Sound?
-    var tags = [String]()
     var tableView: UITableView?
-    var miniPlayerView: MiniPlayerView!
     var target: UIViewController!
     var secondsPlayed = 0.0
     var secondsPlayedTimer = Timer()

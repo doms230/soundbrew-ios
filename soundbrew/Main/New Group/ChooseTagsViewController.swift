@@ -15,7 +15,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     let uiElement = UIElement()
     let color = Color()
-    var selectedArtist: Artist!
     var sound: Sound?
     var isViewTagsFromSound = false
     
@@ -289,7 +288,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var isSelectingTagsForPlaylist = false
     
     var tagDelegate: TagDelegate?
-    let moreTags = "moreTags"
     
     //if tagtype is nil, means user is creating playlist
     var tagType: String?
@@ -298,9 +296,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var tags = [Tag]()
     var filteredTags = [Tag]()
     var featureTagTitles = ["genre", "mood", "activity", "artist", "city", "all"]
-    var featureTagScrollview: UIScrollView!
-    var xPositionForFeatureTags = UIElement().leftOffset
-    var selectedFeatureTagTypeIndex = 0
     
     var chosenTags = [Tag]()
     var xPositionForChosenTags = UIElement().leftOffset
@@ -544,15 +539,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                     self.tableView.reloadData()
                 }
             }
-            
-           // if error == nil {
-
-                
-            /*} else {
-                print("Error: \(error!)")
-                let localizedOops = NSLocalizedString("oops", comment: "")
-                self.uiElement.showAlert(localizedOops, message: "\(error!)", target: self)
-            }*/
         }
     }
 }

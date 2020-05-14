@@ -10,8 +10,6 @@ import UIKit
 import SnapKit
 
 class SoundListTableViewCell: UITableViewCell {
-    let uiElement = UIElement()
-    let color = Color()
     
     //mark: no sounds
     var headerTitle: UILabel!
@@ -46,6 +44,8 @@ class SoundListTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        let uiElement = UIElement()
+        
         artistButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
         soundTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)-bold", size: 18)!, numberOfLines: 2)
         soundDate = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 2)
@@ -63,7 +63,7 @@ class SoundListTableViewCell: UITableViewCell {
         
         switch reuseIdentifier {
         case "noSoundsReuse":
-            headerTitle = self.uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 20)!, numberOfLines: 0)
+            headerTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 20)!, numberOfLines: 0)
             self.addSubview(headerTitle)
             headerTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -78,7 +78,7 @@ class SoundListTableViewCell: UITableViewCell {
             artistButton.clipsToBounds = true
             artistButton.isHidden = true 
             artistButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(self.uiElement.buttonHeight)
+                make.height.equalTo(uiElement.buttonHeight)
                 make.top.equalTo(headerTitle.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)

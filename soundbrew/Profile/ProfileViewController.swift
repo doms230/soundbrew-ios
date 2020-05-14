@@ -26,9 +26,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     var soundList: SoundList!
     var soundType = "uploads"
-    var profileSounds = [Sound]()
     var isFromNavigationStack = true
-    var selectedIndex = 0
     var currentUser: PFUser?
     let player = Player.sharedInstance
     var followerOrFollowing: String!
