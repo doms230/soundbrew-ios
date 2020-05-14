@@ -399,13 +399,23 @@ class UIElement {
     }
     
     //mark: tableView Cell UI components
-    func soundbrewImageView(_ image: UIImage?) -> UIImageView {
+    func soundbrewImageView(_ image: UIImage?, cornerRadius: CGFloat?, backgroundColor: UIColor?) -> UIImageView {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFill
         if let image = image {
             imageView.image = image
         }
+        
+        if let cornerRadius = cornerRadius {
+            imageView.layer.cornerRadius = cornerRadius
+            imageView.clipsToBounds = true
+        }
+        
+        if let backgroundColor = backgroundColor {
+            imageView.backgroundColor = backgroundColor
+        }
+        
         return imageView
     }
     

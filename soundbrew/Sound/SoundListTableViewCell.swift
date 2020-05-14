@@ -14,41 +14,12 @@ class SoundListTableViewCell: UITableViewCell {
     let color = Color()
     
     //mark: no sounds
-    lazy var headerTitle: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 20)
-        label.numberOfLines = 0
-        label.textColor = .white
-        return label
-    }()
+    var headerTitle: UILabel!
     
     //filter new/popular
-    let localizedTags = NSLocalizedString("tags", comment: "")
-    lazy var searchTagsButton: UIButton = {
-        let button = UIButton()
-        button.setTitle(localizedTags, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(.white, for: .normal)
-        return button
-    }()
-    
-    lazy var searchArtistsButton: UIButton = {
-        let localizedArtists = NSLocalizedString("artists", comment: "")
-        let button = UIButton()
-        button.setTitle(localizedArtists, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(.darkGray, for: .normal)
-        return button
-    }()
-    
-    lazy var searchSoundsButton: UIButton = {
-        let localizedSounds = NSLocalizedString("sounds", comment: "")
-        let button = UIButton()
-        button.setTitle(localizedSounds, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 17)
-        button.setTitleColor(.darkGray, for: .normal)
-        return button
-    }()
+    var searchTagsButton: UIButton!
+    var searchArtistsButton: UIButton!
+    var searchSoundsButton: UIButton!
     
     lazy var tagsScrollview: UIScrollView = {
         let scrollView = UIScrollView()
@@ -63,83 +34,36 @@ class SoundListTableViewCell: UITableViewCell {
         return line
     }()
     
-    lazy var artistButton: UIButton = {
-        let button = UIButton()
-        return button
-    }()
-    
-    lazy var artistImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "profile_icon")
-        image.layer.cornerRadius = 25 / 2
-        image.clipsToBounds = true
-        image.backgroundColor = .black 
-        return image
-    }()
-    
-    lazy var artistLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 16)
-        label.textColor = .white
-        return label
-    }()
-    
-    lazy var soundArtImage: UIImageView = {
-        let image = UIImageView()
-        image.layer.borderWidth = 1
-        image.layer.borderColor = UIColor.black.cgColor
-        image.layer.cornerRadius = 5
-        image.clipsToBounds = true
-        image.contentMode = ContentMode.scaleAspectFill
-        return image
-    }()
-    
-    lazy var soundTitle: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)-bold", size: 18)
-        label.textColor = .white
-        label.backgroundColor = color.black().withAlphaComponent(0.5)
-        label.numberOfLines = 2
-        return label
-    }()
-    
-    lazy var soundDate: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 17)
-        label.textColor = .darkGray
-         label.backgroundColor = color.black().withAlphaComponent(0.5)
-        return label
-    }()
-    
-    lazy var menuButton: UIButton = {
-        let button = UIButton()
-        return button 
-    }()
-    
-    lazy var menuImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "more")
-        return image
-    }()
-    
-    lazy var likesImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "sendTipColored")
-        return image
-    }()
-    
-    lazy var likesCountLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(UIElement().mainFont)", size: 15)
-        label.textColor = .white
-        return label
-    }()
+    var artistButton: UIButton!
+    var artistImage: UIImageView!
+    var artistLabel: UILabel!
+    var soundArtImage: UIImageView!
+    var soundTitle: UILabel!
+    var soundDate: UILabel!
+    var menuButton: UIButton!
+    var menuImage: UIImageView!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        artistButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
+        soundTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)-bold", size: 18)!, numberOfLines: 2)
+        soundDate = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 2)
+        menuButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
+        menuImage = uiElement.soundbrewImageView(UIImage(named: "more"), cornerRadius: nil, backgroundColor: .clear)
+        soundArtImage = uiElement.soundbrewImageView(nil, cornerRadius: 5, backgroundColor: .clear)
+        artistImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: 25 / 2, backgroundColor: .black)
+        artistLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 16)!, numberOfLines: 0)
+        let localizedTags = NSLocalizedString("tags", comment: "")
+        searchTagsButton = uiElement.soundbrewButton(localizedTags, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .white, cornerRadius: nil)
+        let localizedArtists = NSLocalizedString("artists", comment: "")
+        searchArtistsButton = uiElement.soundbrewButton(localizedArtists, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .darkGray, cornerRadius: nil)
+        let localizedSounds = NSLocalizedString("sounds", comment: "")
+        searchSoundsButton = uiElement.soundbrewButton(localizedSounds, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .darkGray, cornerRadius: nil)
+        
         switch reuseIdentifier {
         case "noSoundsReuse":
+            headerTitle = self.uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 20)!, numberOfLines: 0)
             self.addSubview(headerTitle)
             headerTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -177,10 +101,6 @@ class SoundListTableViewCell: UITableViewCell {
             self.addSubview(soundDate)
             self.addSubview(dividerLine)
             
-            //adding seperate stuff because doesn't size right as one button.
-            self.addSubview(likesImage)
-            self.addSubview(likesCountLabel)
-            
             soundArtImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(125)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -204,11 +124,13 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(menuButton.snp.left).offset(uiElement.leftOffset)
             }
+            
             artistImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(25)
                 make.top.equalTo(artistButton)
                 make.left.equalTo(artistButton)
             }
+            
             artistLabel.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(artistImage)
                 make.left.equalTo(artistImage.snp.right).offset(uiElement.elementOffset)
@@ -220,42 +142,28 @@ class SoundListTableViewCell: UITableViewCell {
                 make.centerY.equalTo(artistButton)
             }
             
+            soundTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            soundDate.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(soundTitle)
+                make.right.equalTo(soundTitle)
+            }
+            
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.left.equalTo(soundTitle)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(soundArtImage)
             }
-            
-            soundDate.snp.makeConstraints { (make) -> Void in
-                make.left.equalTo(soundTitle)
-                make.right.equalTo(soundTitle)
-                make.bottom.equalTo(dividerLine.snp.top)
-            }
-            
-            /*likesCountLabel.snp.makeConstraints { (make) -> Void in
-                make.right.equalTo(soundDate)
-                make.bottom.equalTo(soundDate)
-            }
-            
-            likesImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(15)
-                make.right.equalTo(likesCountLabel.snp.left).offset(-(uiElement.elementOffset))
-                make.bottom.equalTo(soundDate)
-            }*/
-                        
-            soundTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistButton.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(soundDate.snp.top).offset(uiElement.bottomOffset)
-            }
             break
             
         case "filterSoundsReuse":
             self.addSubview(searchTagsButton)
-            self.addSubview(searchArtistsButton)
-            self.addSubview(searchSoundsButton)
             searchTagsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -263,6 +171,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            self.addSubview(searchArtistsButton)
             searchArtistsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -270,6 +179,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
+            self.addSubview(searchSoundsButton)
             searchSoundsButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(35)
                 make.top.equalTo(searchArtistsButton)

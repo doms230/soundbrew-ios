@@ -83,7 +83,7 @@ class ProfileTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"))
+        profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)
         profileImage.layer.borderWidth = 1
         profileImage.layer.borderColor = color.purpleBlack().cgColor
         profileImage.clipsToBounds = true
@@ -413,7 +413,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            rightArrow = uiElement.soundbrewImageView( UIImage(named: "dismiss"))
+            rightArrow = uiElement.soundbrewImageView(UIImage(named: "dismiss"), cornerRadius: nil, backgroundColor: nil)
             self.addSubview(rightArrow)
             rightArrow.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
