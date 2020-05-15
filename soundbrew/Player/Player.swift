@@ -93,7 +93,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
             self.play()
-            self.fetchAudioFromNextSound()
             
         } else {
             setUpNextSong(false, at: nil)

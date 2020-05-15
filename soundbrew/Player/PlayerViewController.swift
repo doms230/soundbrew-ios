@@ -75,15 +75,15 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             
             self.like.paymentAmountForLike = self.paymentAmountForLike
             self.like.likeSoundButton = self.likeSoundButton
+            self.like.likeImageView = nil
             self.like.target = self
             
-            if self.like.rewardedAd == nil {
+            /*if self.like.rewardedAd == nil {
                 self.like.setUpPayment()
-            }
+            }*/
             
             if let likeSound = self.like.sound {
                 if sound.objectId != likeSound.objectId {
-                    self.like.checkIfUserLikedSong(sound)
                     self.like.loadCredits(sound)
                 } else if let tipAmount = likeSound.tipAmount {
                     self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
@@ -92,7 +92,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                 }
                  
             } else {
-                self.like.checkIfUserLikedSong(sound)
+                //self.like.checkIfUserLikedSong(sound)
                 self.like.loadCredits(sound)
             }
             self.like.sound = sound
