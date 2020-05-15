@@ -83,7 +83,6 @@ class Like: NSObject, GADRewardedAdDelegate {
               if success {
                 self.customer.updateBalance(-self.paymentAmount)
                 self.setUpPayment()
-               // NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
                 self.newMention(self.sound!, toUserId: (self.sound!.artist?.objectId)!)
                 self.incrementSoundPaymentAmount(true)
                 self.getCreditsAndSplit()
@@ -225,7 +224,6 @@ class Like: NSObject, GADRewardedAdDelegate {
     }
     
     func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
-        //NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
         self.didPressLikeButtonBeforeRewardedAdLoaded = false
         askToAdFundsToTheirAccount()
     }
@@ -291,19 +289,8 @@ class Like: NSObject, GADRewardedAdDelegate {
                  if let object = object {
                     if let tipAmount = object["amount"] as? Int {
                         self.sound?.tipAmount = tipAmount
-                        /*DispatchQueue.main.async {
-                            self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-                        }*/
                     }
-                    
-                 } /*else {
-                    DispatchQueue.main.async {
-                        self.paymentAmountForLike.text = ""
-                    }
-                }*/
-               /* DispatchQueue.main.async {
-                    self.likeSoundButton.isEnabled = true
-                }*/
+                 }
                 
                 self.setUpPayment()
                 Player.sharedInstance.fetchAudioFromNextSound()

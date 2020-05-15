@@ -12,13 +12,13 @@ import Kingfisher
 import SnapKit
 import AppCenterCrashes
 
-class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate, UISearchBarDelegate {
+class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate, UISearchBarDelegate, UITabBarControllerDelegate {
     
     var soundList: SoundList!
     let uiElement = UIElement()
     let color = Color()
     var soundType = "follow"
-    func doesMatchHomeSoundType() -> Bool {
+    func doesMatchSoundType() -> Bool {
         if soundType == "follow" || soundType ==  "forYou" {
             return true
         }
@@ -28,10 +28,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.view.backgroundColor = color.black()
         setupNotificationCenter()
         
-        if doesMatchHomeSoundType() {
+        if doesMatchSoundType() {
             if let selectedIndex = self.tabBarController?.selectedIndex {
                 if selectedIndex == 1 {
                     self.soundType = "forYou"
@@ -52,6 +53,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        self.tabBarController?.delegate = self
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
@@ -60,8 +62,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    override func didReceiveMemoryWarning() {
-       // soundList.sounds.removeAll()
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
     func setupNotificationCenter() {
@@ -141,12 +143,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ miniPlayer: UIView?) {
-        self.tableView.removeFromSuperview()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.black()
+        tableView.isOpaque = true
         self.tableView.separatorStyle = .none
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)

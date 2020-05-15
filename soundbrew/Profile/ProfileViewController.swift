@@ -404,6 +404,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             soundArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
             soundArt.contentMode = .scaleAspectFill
             soundArt.layer.cornerRadius = 5
+            soundArt.layer.borderWidth = 1
+            soundArt.layer.borderColor = color.purpleBlack().cgColor
             soundArt.clipsToBounds = true
             scrollview.addSubview(soundArt)
             soundArt.snp.makeConstraints { (make) -> Void in

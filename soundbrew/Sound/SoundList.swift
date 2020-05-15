@@ -129,12 +129,6 @@ class SoundList: NSObject, PlayerDelegate {
             }
 
             cell.soundDate.text = hashtagString
-            
-           /* if let likes = sound.tipCount {
-                cell.likesCountLabel.text = "\(likes)"
-            } else {
-                cell.likesCountLabel.text = "0"
-            }*/
         }
         
         return cell
@@ -255,17 +249,10 @@ class SoundList: NSObject, PlayerDelegate {
     func changeArtistSongColor(_ cell: SoundListTableViewCell, color: UIColor, playIconName: String) {
         cell.soundTitle.textColor = color
         cell.artistLabel.textColor = color
-        let originalImage = UIImage(named: "sendTipColored")
-        let tintedImage = originalImage?.withRenderingMode(.alwaysTemplate)
-        //cell.likesImage.image = tintedImage
         if color == .white {
             cell.soundDate.textColor = .darkGray
-            //cell.likesCountLabel.textColor = .darkGray
-            //cell.likesImage.tintColor = .darkGray
         } else {
             cell.soundDate.textColor = color
-            //cell.likesCountLabel.textColor = color
-           // cell.likesImage.tintColor = color
         }
     }
     

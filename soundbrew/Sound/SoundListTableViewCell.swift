@@ -45,6 +45,7 @@ class SoundListTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let uiElement = UIElement()
+        let color = Color()
         
         artistButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
         soundTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)-bold", size: 18)!, numberOfLines: 2)
@@ -52,12 +53,14 @@ class SoundListTableViewCell: UITableViewCell {
         menuButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
         menuImage = uiElement.soundbrewImageView(UIImage(named: "more"), cornerRadius: nil, backgroundColor: .clear)
         soundArtImage = uiElement.soundbrewImageView(nil, cornerRadius: 5, backgroundColor: .clear)
+        soundArtImage.layer.borderColor = color.purpleBlack().cgColor
+        soundArtImage.layer.borderWidth = 1 
         artistImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: 25 / 2, backgroundColor: .black)
         artistLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 16)!, numberOfLines: 0)
         let localizedTags = NSLocalizedString("tags", comment: "")
         searchTagsButton = uiElement.soundbrewButton(localizedTags, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .white, cornerRadius: nil)
         let localizedArtists = NSLocalizedString("artists", comment: "")
-        searchArtistsButton = uiElement.soundbrewButton(localizedArtists, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .darkGray, cornerRadius: nil)
+        searchArtistsButton = uiElement.soundbrewButton(localizedArtists, shouldShowBorder: true, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .darkGray, cornerRadius: nil)
         let localizedSounds = NSLocalizedString("sounds", comment: "")
         searchSoundsButton = uiElement.soundbrewButton(localizedSounds, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(UIElement().mainFont)-bold", size: 17)!, titleColor: .darkGray, cornerRadius: nil)
         

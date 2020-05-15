@@ -78,10 +78,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             self.like.likeImageView = nil
             self.like.target = self
             
-            /*if self.like.rewardedAd == nil {
-                self.like.setUpPayment()
-            }*/
-            
             if let likeSound = self.like.sound {
                 if sound.objectId != likeSound.objectId {
                     self.like.loadCredits(sound)
@@ -92,7 +88,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                 }
                  
             } else {
-                //self.like.checkIfUserLikedSong(sound)
                 self.like.loadCredits(sound)
             }
             self.like.sound = sound

@@ -42,6 +42,8 @@ class MiniPlayerView: UIButton {
         image.backgroundColor = .clear 
         image.image = UIImage(named: "sound")
         image.layer.cornerRadius = 3
+        image.layer.borderWidth = 1
+        image.layer.borderColor = color.purpleBlack().cgColor
         image.clipsToBounds = true
         return image
     }()
@@ -236,23 +238,16 @@ class MiniPlayerView: UIButton {
                 self.like.likeImageView = self.likeImageView
                 self.like.target = player.target
                 
-                /*if self.like.rewardedAd == nil {
-                    self.like.setUpPayment()
-                }*/
-                
                 if let likeSound = self.like.sound {
                     if sound.objectId != likeSound.objectId {
-                        //self.like.checkIfUserLikedSong(sound)
                         self.like.loadCredits(sound)
                     } else if let tipAmount = likeSound.tipAmount {
                         self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
                         self.likeSoundButton.isEnabled = true
-                        //self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
                         self.likeImageView.image = UIImage(named: "sendTip")
                     }
                     
                 } else {
-                   // self.like.checkIfUserLikedSong(sound)
                     self.like.loadCredits(sound)
                 }
                 
