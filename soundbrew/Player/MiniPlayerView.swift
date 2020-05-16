@@ -20,6 +20,7 @@ class MiniPlayerView: UIButton {
     var player: Player?
     var sound: Sound?
     let like = Like.shared
+    var superViewController: UIViewController!
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
@@ -90,31 +91,20 @@ class MiniPlayerView: UIButton {
     
     lazy var likeSoundButton: UIButton = {
         let button = UIButton()
+        button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
-        button.isEnabled = false
+       // button.isEnabled = false
         return button
     }()
     
-    lazy var likeImageView: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "sendTip")
-        return image
-    }()
     @objc func didPressLikeButton(_ sender: UIButton) {
-        self.likeImageView.image = UIImage(named: "sendTipColored")
-        self.likeSoundButton.isEnabled = false
+        sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
+        sender.isEnabled = false
+        like.target = self.superViewController
+        like.likeSoundButton = sender
         like.sendPayment()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
-    
-    lazy var paymentAmountForLike: UILabel = {
-        let label = UILabel()
-        label.text = ""
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 10)
-        label.textAlignment = .center
-        return label
-    }()
     
     lazy var playBackSlider: UISlider = {
         let slider = UISlider()
@@ -160,22 +150,9 @@ class MiniPlayerView: UIButton {
             
             self.addSubview(likeSoundButton)
             likeSoundButton.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            
-            self.likeSoundButton.addSubview(likeImageView)
-            likeImageView.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(30)
+                make.height.width.equalTo(30)
                 make.centerY.equalTo(self)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            self.likeSoundButton.addSubview(paymentAmountForLike)
-            paymentAmountForLike.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(likeImageView.snp.bottom)
-                make.centerX.equalTo(likeImageView)
             }
             
             self.addSubview(playBackButton)
@@ -216,7 +193,7 @@ class MiniPlayerView: UIButton {
             shouldSetupConstraints = false
             setSound()
         }
-    
+            
         super.updateConstraints()
     }
     
@@ -227,33 +204,38 @@ class MiniPlayerView: UIButton {
     }
     
     @objc func didReceiveSoundUpdate() {
+        //print("didReceive sound update")
         setSound()
     }
     
     func setSound() {
         if let player = self.player {
             if let sound = player.currentSound {
-                self.like.paymentAmountForLike = self.paymentAmountForLike
                 self.like.likeSoundButton = self.likeSoundButton
-                self.like.likeImageView = self.likeImageView
-                self.like.target = player.target
+                self.like.target = self.superViewController
                 
                 if let likeSound = self.like.sound {
                     if sound.objectId != likeSound.objectId {
+                        print("loading crdits 0 from miniPlayer")
                         self.like.loadCredits(sound)
-                    } else if let tipAmount = likeSound.tipAmount {
-                        self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-                        self.likeSoundButton.isEnabled = true
-                        self.likeImageView.image = UIImage(named: "sendTip")
+                    } else if likeSound.currentUserTipDate != nil {
+                        print("got tipamount")
+                        self.likeSoundButton.isEnabled = false
+                        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                    } else {
+                        print("setting up payment from mini view")
+                        self.like.setUpPayment()
                     }
                     
                 } else {
+                    print("loading crdits 1 from miniPlayer")
+                   // self.like.sound = sound
                     self.like.loadCredits(sound)
                 }
                 
                 self.like.sound = sound
                 self.sound = sound
-                setCurrentSoundView(self.sound!)
+                setCurrentSoundView(sound)
                 self.playBackButton.isEnabled = true
             }
             
@@ -278,9 +260,10 @@ class MiniPlayerView: UIButton {
     }
     
     @objc func didReceivePreparingSoundNotification() {
+        print("preparing to update sound")
         self.activitySpinner.isHidden = false
         playBackButton.isHidden = true
-        self.likeSoundButton.isEnabled = false 
+       // self.likeSoundButton.isEnabled = false
     }
     
     func setCurrentSoundView(_ sound: Sound) {

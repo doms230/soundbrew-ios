@@ -217,6 +217,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     func setUpMiniPlayer() {
         DispatchQueue.main.async {
             self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+            self.miniPlayerView?.superViewController = self 
             self.view.addSubview(self.miniPlayerView!)
             let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
             slide.direction = .up

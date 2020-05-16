@@ -30,7 +30,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         let customer = Customer.shared
         let customerContext = STPCustomerContext(keyProvider: customer)
         paymentContext = STPPaymentContext(customerContext: customerContext)
-        paymentContext.paymentAmount = 299
+        paymentContext.paymentAmount = 300
         self.paymentContext.delegate = self
         self.paymentContext.hostViewController = self
         self.paymentContext.paymentCurrency = "usd"
@@ -168,7 +168,7 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Pay credited artists $0.10 every time you 'like' a song. You can 'like' the same song an unlimited amount of times."
+        label.text = "1 'Like' = $1"
         return label
     }()
     
@@ -213,19 +213,27 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     }()
     @objc func didPressChangeAddFundsAmount(_ sender: UIBarButtonItem) {
          let alertController = UIAlertController (title: "How much would you like to add?", message: nil, preferredStyle: .actionSheet)
-        let twoNineNineAction = UIAlertAction(title: "$2.99", style: .default) { (_) -> Void in
-            self.paymentContext.paymentAmount = 299
+        let threeDollarAction = UIAlertAction(title: "$3", style: .default) { (_) -> Void in
+            self.paymentContext.paymentAmount = 300
             self.paymentContextDidChange(self.paymentContext)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$2.99"])
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$3.00"])
          }
-         alertController.addAction(twoNineNineAction)
+         alertController.addAction(threeDollarAction)
         
-        let nineNineNineAction = UIAlertAction(title: "$9.99", style: .default) { (_) -> Void in
-            self.paymentContext.paymentAmount = 999
+        let tenDollarAction = UIAlertAction(title: "$10", style: .default) { (_) -> Void in
+            self.paymentContext.paymentAmount = 1000
             self.paymentContextDidChange(self.paymentContext)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$9.99"])
-         }
-         alertController.addAction(nineNineNineAction)
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$10.00"])
+        }
+        alertController.addAction(tenDollarAction)
+        
+        let oneHundredDollarAction = UIAlertAction(title: "$100", style: .default) { (_) -> Void in
+            self.paymentContext.paymentAmount = 10000
+            self.paymentContextDidChange(self.paymentContext)
+            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$100.00"])
+        }
+        alertController.addAction(oneHundredDollarAction)
+         
          let localizedCancel = NSLocalizedString("cancel", comment: "")
          let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
          alertController.addAction(cancelAction)

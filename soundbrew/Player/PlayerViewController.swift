@@ -73,25 +73,30 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         if let sound = player.currentSound {
             player.target = self
             
-            self.like.paymentAmountForLike = self.paymentAmountForLike
             self.like.likeSoundButton = self.likeSoundButton
-            self.like.likeImageView = nil
             self.like.target = self
             
             if let likeSound = self.like.sound {
                 if sound.objectId != likeSound.objectId {
+                    print("loading crdits 0 from Maxi Plyaer")
                     self.like.loadCredits(sound)
-                } else if let tipAmount = likeSound.tipAmount {
-                    self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
-                    self.paymentAmountForLike.isEnabled = true
-                    self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
+                    
+                } else if likeSound.currentUserTipDate != nil {
+                    print("got tip amount")
+                    self.likeSoundButton.isEnabled = false
+                    self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                    
+                } else {
+                    print("setting up payment from player view")
+                    self.like.setUpPayment()
                 }
                  
             } else {
+                print("loading crdits 1 from mazx Plyawer")
                 self.like.loadCredits(sound)
             }
-            self.like.sound = sound
             
+            self.like.sound = sound
             self.sound = sound
             
             self.songTitle.text = sound.title
@@ -164,7 +169,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         self.likeCountLabel.text = "0"
 
         self.likeSoundButton.isEnabled = false
-        self.paymentAmountForLike.text = ""
         
         self.shareButton.isEnabled = false
         
@@ -180,7 +184,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             self.playCountButton.isEnabled = true
             self.hashtagCountButton.isEnabled = true
             self.likesCountButton.isEnabled = true
-            self.likeSoundButton.isEnabled = true
 
             self.loadSoundSpinner.isHidden = true
             self.playBackButton.isHidden = false
@@ -408,26 +411,16 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         let button = UIButton()
         button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
-        button.isEnabled = false
+        //button.isEnabled = false
         button.isOpaque = true
         return button
     }()
     @objc func didPressLikeButton(_ sender: UIButton) {
-        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-        self.likeSoundButton.isEnabled = false
+        sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
+        sender.isEnabled = false
         self.like.sendPayment()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
-    
-    lazy var paymentAmountForLike: UILabel = {
-        let label = UILabel()
-        label.text = ""
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 10)
-        label.textAlignment = .center
-        label.isOpaque = true
-        return label
-    }()
     
     lazy var shareButton: UIButton = {
         let button = UIButton()
@@ -720,11 +713,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             make.centerY.equalTo(self.skipButton)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
-        self.view.addSubview(paymentAmountForLike)
-        paymentAmountForLike.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(likeSoundButton.snp.bottom)
-            make.centerX.equalTo(likeSoundButton)
-        }
         
         self.view.addSubview(shareButton)
         shareButton.snp.makeConstraints { (make) -> Void in
@@ -777,7 +765,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     }
     
     /// Tells the delegate an ad request loaded an ad.
-
     /// Tells the delegate that a user click will open another app (such as
     /// the App Store), backgrounding the current app.
     func adViewWillLeaveApplication(_ bannerView: GADBannerView) {

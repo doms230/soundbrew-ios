@@ -267,6 +267,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             case 3:
                 if let earnings = self.artist?.earnings {
                     cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
+                } else {
+                    cell.displayNameLabel.text = "$0.00"
                 }
                 cell.username.text = "Earnings"
                 break

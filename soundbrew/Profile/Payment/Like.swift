@@ -16,31 +16,32 @@ class Like: NSObject, GADRewardedAdDelegate {
     let uiElement = UIElement()
     var target: UIViewController!
     var sound: Sound?
-    var paymentAmount = 10
+    var paymentAmount = 100
     var soundCredits = [Credit]()
     var didPressLikeButtonBeforeRewardedAdLoaded = false
-    var creditsLoaded = false
+    //var creditsLoaded = false
     var likeSoundButton: UIButton!
-    var paymentAmountForLike: UILabel!
-    var likeImageView: UIImageView?
     
     func sendPayment() {
         if customer.artist!.balance! >= self.paymentAmount {
-            updatePayment()
+            newPaymentRow()
              
          } else if let rewardedAd = self.rewardedAd {
              if rewardedAd.isReady == true {
+                print("ad ready and going to present")
                  rewardedAd.present(fromRootViewController: target, delegate: self)
              } else {
+                print("did press like button before ad was loaded")
                 didPressLikeButtonBeforeRewardedAdLoaded = true
             }
          }
      }
     
     func updatePayment() {
-        if self.creditsLoaded {
-            if let fromUserId = PFUser.current()?.objectId {
-                let query = PFQuery(className: "Tip")
+        /*if self.creditsLoaded {
+           // if let fromUserId = PFUser.current()?.objectId {
+               // newPaymentRow()
+               /* let query = PFQuery(className: "Tip")
                 query.whereKey("fromUserId", equalTo: fromUserId)
                 query.whereKey("toUserId", equalTo: sound!.artist!.objectId!)
                 query.whereKey("soundId", equalTo: sound!.objectId!)
@@ -58,7 +59,8 @@ class Like: NSObject, GADRewardedAdDelegate {
                                 }
                                 self.sound?.tipAmount = currentPaymentAmount + self.paymentAmount
                                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
-                                self.setUpPayment()
+                                //self.setUpPayment()
+                                self.likeButtonUI()
                                 self.incrementSoundPaymentAmount(false)
                                 self.getCreditsAndSplit()
                             }
@@ -67,9 +69,9 @@ class Like: NSObject, GADRewardedAdDelegate {
                      } else {
                         self.newPaymentRow()
                     }
-                }
-            }
-        }
+                }*/
+            //}
+        }*/
     }
     
     func newPaymentRow() {
@@ -82,7 +84,11 @@ class Like: NSObject, GADRewardedAdDelegate {
             (success: Bool, error: Error?) in
               if success {
                 self.customer.updateBalance(-self.paymentAmount)
-                self.setUpPayment()
+                self.sound?.currentUserTipDate = newPayment.createdAt
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+                if let sound = self.sound {
+                    self.likeButtonUI(sound)
+                }
                 self.newMention(self.sound!, toUserId: (self.sound!.artist?.objectId)!)
                 self.incrementSoundPaymentAmount(true)
                 self.getCreditsAndSplit()
@@ -180,11 +186,12 @@ class Like: NSObject, GADRewardedAdDelegate {
         if let error = error {
           print("Loading failed: \(error)")
         } else if self.didPressLikeButtonBeforeRewardedAdLoaded  {
+            print("attempting to present view")
             self.rewardedAd?.present(fromRootViewController: self.target, delegate: self)
-            self.didPressLikeButtonBeforeRewardedAdLoaded = false
-        } else {
-            self.enableLikeButtonUI()
-        }
+        } /*else {
+            self.likeButtonUI()
+        }*/
+        self.didPressLikeButtonBeforeRewardedAdLoaded = false
       }
         
       return rewardedAd
@@ -192,14 +199,17 @@ class Like: NSObject, GADRewardedAdDelegate {
 
     /// Tells the delegate that the user earned a reward.
     func setUpPayment() {
-        if let balance = customer.artist?.balance {
-            if balance >= self.paymentAmount {
-                self.enableLikeButtonUI()
+        if let balance = customer.artist?.balance, balance < self.paymentAmount {
+            self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
+            print("setting up ad")
+            /*if balance >= self.paymentAmount {
+               // self.likeButtonUI()
             } else {
                 self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
-            }
+            }*/
             
         } else {
+            print("no balance, loading ad")
             self.rewardedAd = createAndLoadRewardedAd(testRewardedAdUnitId)
         }
     }
@@ -216,24 +226,34 @@ class Like: NSObject, GADRewardedAdDelegate {
             currentUser.artist?.balance = rewardAmount
         }
         
-        updatePayment()
+        newPaymentRow()
         
         target.dismiss(animated: true, completion: {() in
-            self.askToAdFundsToTheirAccount()
+            var soundArtistName = "this artist"
+            if let name = self.sound?.artist?.name {
+                soundArtistName = name
+            } else if let username = self.sound?.artist?.username {
+                soundArtistName = username
+            }
+            
+            let paymentAmountAsString = self.uiElement.convertCentsToDollarsAndReturnString(self.paymentAmount, currency: "$")
+            self.askToAdFundsToTheirAccount("You just paid \(soundArtistName) \(paymentAmountAsString)!")
         })
     }
     
     func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
-        self.didPressLikeButtonBeforeRewardedAdLoaded = false
-        askToAdFundsToTheirAccount()
+        print("was dissmissed")
+        askToAdFundsToTheirAccount("Tired of Ads?")
     }
     
-    func askToAdFundsToTheirAccount() {
-        self.setUpPayment()
+    func askToAdFundsToTheirAccount(_ title: String) {
+        if let sound = self.sound {
+            self.likeButtonUI(sound)
+        }
          DispatchQueue.main.async {
              let alertView = UIAlertController(
-                 title: "Tired of Ads?",
-                 message: "Add funds to your Soundbrew wallet to remove ads!",
+                title: title,
+                 message: "Add funds to your Soundbrew wallet to remove ads and pay artists more!",
                  preferredStyle: .actionSheet)
              
              let addFundsActionButton = UIAlertAction(title: "Add Funds", style: .default) { (_) -> Void in
@@ -256,7 +276,7 @@ class Like: NSObject, GADRewardedAdDelegate {
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            self.creditsLoaded = true
+            //self.creditsLoaded = true
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
@@ -287,30 +307,33 @@ class Like: NSObject, GADRewardedAdDelegate {
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {
-                    if let tipAmount = object["amount"] as? Int {
+                    self.sound?.currentUserTipDate = object.createdAt
+                    /*if let tipAmount = object["amount"] as? Int {
+                        print("tipAMount: \(tipAmount)")
                         self.sound?.tipAmount = tipAmount
-                    }
+                    }*/
                  }
-                
-                self.setUpPayment()
+                self.likeButtonUI(sound)
+                //self.setUpPayment()
                 Player.sharedInstance.fetchAudioFromNextSound()
             }
         }
     }
     
-    func enableLikeButtonUI() {
+    func likeButtonUI(_ sound: Sound) {
         DispatchQueue.main.async {
-            if let tipAmount = self.sound?.tipAmount {
-                self.paymentAmountForLike.text = self.uiElement.convertCentsToDollarsAndReturnString(tipAmount, currency: "$")
+            var uiImageName = "sendTip"
+            if sound.currentUserTipDate != nil {
+                print("tip exists")
+                self.likeSoundButton.isEnabled = false
+                uiImageName = "sendTipColored"
             } else {
-                self.paymentAmountForLike.text = ""
+                print("print exits")
+                self.likeSoundButton.isEnabled = true
+                self.setUpPayment()
             }
-            self.likeSoundButton.isEnabled = true
-            if let likeImageView = self.likeImageView {
-                likeImageView.image = UIImage(named: "sendTip")
-            } else {
-                self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            }
+            
+            self.likeSoundButton.setImage(UIImage(named: uiImageName), for: .normal)
         }
     }
 }
