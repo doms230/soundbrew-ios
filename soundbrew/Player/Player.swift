@@ -100,7 +100,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func sendSoundUpdateToUI() {
-        self.setBackgroundAudioNowPlaying(self.player, sound: currentSound!)
+        self.setBackgroundAudioNowPlaying()
         if let tableView = self.tableView {
             tableView.reloadData()
         }
@@ -139,27 +139,12 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let player = self.player, let sound = self.currentSound {
             if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
                 player.currentTime = 0.0
-                setBackgroundAudioNowPlaying(player, sound: sound)
+                setBackgroundAudioNowPlaying()
                 incrementPlayCount(sound)
                 recordListener(sound)
             } else {
                 self.setUpNextSong(true, at: nil)
             }
-        }
-    }
-    
-    func skipForward() {
-        if let player = self.player, let currentSound = self.currentSound {
-            let currentTime = player.currentTime
-            player.currentTime = currentTime + TimeInterval(15)
-            self.setBackgroundAudioNowPlaying(player, sound: currentSound)
-        }
-    }
-    
-    func skipBackward() {
-        if let player = self.player, let currentSound = self.currentSound {
-            self.setBackgroundAudioNowPlaying(player, sound: currentSound)
-            player.currentTime = player.currentTime - TimeInterval(15)
         }
     }
     
@@ -420,31 +405,33 @@ class Player: NSObject, AVAudioPlayerDelegate {
         commandCenter.previousTrackCommand.isEnabled = shouldEnable
     }
     
-    func setBackgroundAudioNowPlaying(_ player: AVAudioPlayer?, sound: Sound) {
-        DispatchQueue.main.async {
-            var nowPlayingInfo = [String : Any]()
-            
-            // Define Now Playing Info
-            nowPlayingInfo[MPMediaItemPropertyTitle] = sound.title
-            
-            nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artist?.name
-            
-            if let image = sound.artImage {
-                nowPlayingInfo[MPMediaItemPropertyArtwork] =
-                    MPMediaItemArtwork(boundsSize: image.size) { size in
-                        return image
+    func setBackgroundAudioNowPlaying() {
+        if let sound = self.currentSound {
+            DispatchQueue.main.async {
+                var nowPlayingInfo = [String : Any]()
+                
+                // Define Now Playing Info
+                nowPlayingInfo[MPMediaItemPropertyTitle] = sound.title
+                
+                nowPlayingInfo[MPMediaItemPropertyArtist] = sound.artist?.name
+                
+                if let image = sound.artImage {
+                    nowPlayingInfo[MPMediaItemPropertyArtwork] =
+                        MPMediaItemArtwork(boundsSize: image.size) { size in
+                            return image
+                    }
                 }
+                
+                if let player = self.player {
+                    let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
+                    nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
+                    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
+                    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+                }
+                
+                // Set the metadata
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             }
-            
-            if let player = player {
-                let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
-                nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
-                nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
-                nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
-            }
-            
-            // Set the metadata
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
     }
     
@@ -458,7 +445,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     let image = UIImage(data:imageData)
                     sound.artImage = image
                     
-                    self.setBackgroundAudioNowPlaying(self.player, sound: sound)
+                    self.setBackgroundAudioNowPlaying()
                 }
             }
         }
@@ -472,7 +459,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             (user: PFObject?, error: Error?) -> Void in
             if let user = user {
                 self.sounds[i].artist = UIElement().newArtistObject(user)
-                self.setBackgroundAudioNowPlaying(self.player, sound: self.sounds[i])
+                self.setBackgroundAudioNowPlaying()
             }
         }
     }

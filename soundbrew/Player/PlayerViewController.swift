@@ -23,13 +23,11 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     let uiElement = UIElement()
     
     var player = Player.sharedInstance
-    var sound: Sound?
     
     var playerDelegate: PlayerDelegate?
     var tagDelegate: TagDelegate?
     
     var skipCount = 0
-    let like = Like.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,32 +70,31 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     func setSound() {
         if let sound = player.currentSound {
             player.target = self
+            let like = Like.shared
+            like.likeSoundButton = self.likeSoundButton
+            like.target = self
             
-            self.like.likeSoundButton = self.likeSoundButton
-            self.like.target = self
-            
-            if let likeSound = self.like.sound {
+            if let likeSound = like.sound {
                 if sound.objectId != likeSound.objectId {
-                    print("loading crdits 0 from Maxi Plyaer")
-                    self.like.loadCredits(sound)
+                    like.loadCredits(sound)
                     
                 } else if likeSound.currentUserTipDate != nil {
-                    print("got tip amount")
                     self.likeSoundButton.isEnabled = false
                     self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
                     
+                } else if like.rewardedAd == nil {
+                    like.setUpPayment()
+                    
                 } else {
-                    print("setting up payment from player view")
-                    self.like.setUpPayment()
+                    self.likeSoundButton.isEnabled = true
+                    self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 }
                  
             } else {
-                print("loading crdits 1 from mazx Plyawer")
-                self.like.loadCredits(sound)
+                like.loadCredits(sound)
             }
             
-            self.like.sound = sound
-            self.sound = sound
+            like.sound = sound
             
             self.songTitle.text = sound.title
             
@@ -234,6 +231,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     }
     
     func soundInfoButton(_ imageName: String, buttonType: String?) -> UIButton {
+        let sound = self.player.currentSound
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         self.view.addSubview(button)
@@ -260,7 +258,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             case "comments":
                 imageView.tintColor = .lightGray
                 var commentCount = 1
-                if let soundCommentCount = self.sound?.commentCount {
+                if let soundCommentCount = sound?.commentCount {
                     commentCount = soundCommentCount
                 }
                 self.setCountLabel(label, count: commentCount)
@@ -269,12 +267,12 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                 
             case "likes":
                 imageView.tintColor = .lightGray
-                self.setCountLabel(label, count: self.sound?.tipCount)
+                self.setCountLabel(label, count: sound?.tipCount)
                 self.likeCountLabel = label
                 break
                 
             case "credits":
-                self.setCountLabel(label, count: self.sound?.creditCount)
+                self.setCountLabel(label, count: sound?.creditCount)
                 self.creditCountLabel = label
                 imageView.layer.cornerRadius = 25 / 2
                 imageView.clipsToBounds = true
@@ -283,14 +281,14 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                 
             case "plays":
                 imageView.tintColor = .lightGray
-                self.setCountLabel(label, count: self.sound?.playCount)
+                self.setCountLabel(label, count: sound?.playCount)
                 self.playCountLabel = label
                 break
                 
             case "tags":
                 imageView.tintColor = .lightGray
                 var tagCount = 0
-                if let tags = self.sound?.tags {
+                if let tags = sound?.tags {
                     tagCount = tags.count
                 }
                 self.setCountLabel(label, count: tagCount)
@@ -318,7 +316,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     
     @objc func didPressCommentCountButton(_ sender: UIButton) {
         let commentModal = CommentViewController()
-        if let sound = self.sound {
+        if let sound = self.player.currentSound  {
             commentModal.playerDelegate = self
             commentModal.sound = sound
         }
@@ -334,7 +332,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     }
     
     @objc func didPressCreditCountButton(_ sender: UIButton) {
-        if let sound = self.sound {
+        if let sound = self.player.currentSound {
             if let creditCount = sound.creditCount {
                 if creditCount > 1 {
                     setupAndPresentPeopleViewController("credits")
@@ -349,7 +347,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     }
     
     @objc func didPressTagCountButton(_ sender: UIButton) {
-        if let sound = sound {
+        if let sound = self.player.currentSound {
             let tagsModal = ChooseTagsViewController()
             tagsModal.tagDelegate = self
             tagsModal.sound = sound
@@ -368,7 +366,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     }
     
     func setupAndPresentPeopleViewController(_ loadType: String) {
-        if let sound = self.sound {
+        if let sound = self.player.currentSound {
             let modal = PeopleViewController()
             modal.playerDelegate = self
             modal.loadType = loadType
@@ -418,7 +416,11 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     @objc func didPressLikeButton(_ sender: UIButton) {
         sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
         sender.isEnabled = false
-        self.like.sendPayment()
+        let like = Like.shared
+        like.target = self
+        like.sound = self.player.currentSound
+        like.likeSoundButton = sender
+        like.sendPayment()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
     
@@ -430,7 +432,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         return button
     }()
     @objc func didPressShareButton(_ sender: UIButton) {
-        if let sound = self.sound {
+        if let sound = self.player.currentSound {
             self.uiElement.showShareOptions(self, sound: sound)
             MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Share", "Description": "User Pressed Share Button."])
         }
@@ -448,9 +450,9 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     
     @objc func sliderValueDidChange(_ sender: UISlider) {
         if let soundPlayer = player.player {
-            player.setBackgroundAudioNowPlaying(soundPlayer, sound: sound!)
-            soundPlayer.currentTime = TimeInterval(sender.value)
             playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
+            soundPlayer.currentTime = TimeInterval(sender.value)
+            player.setBackgroundAudioNowPlaying()
         }
         
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "PlayBackSlider", "Description": "User seeked time on song"])
@@ -758,7 +760,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     
     func setUpBannerView() {
         bannerView = GADBannerView(adSize: kGADAdSizeLeaderboard)
-        bannerView.adUnitID = testBannerAdUnitId
+        bannerView.adUnitID = liveBannerAdUnitId
         bannerView.rootViewController = self
         bannerView.delegate = self
         bannerView.load(GADRequest())

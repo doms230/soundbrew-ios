@@ -49,6 +49,10 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if let soundId = self.uiElement.getUserDefault("newSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "newSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: true)
+        } else if self.uiElement.getUserDefault("receivedUserId") != nil {
+            self.performSegue(withIdentifier: "showProfile", sender: self)
+        } else if self.uiElement.getUserDefault("receivedUsername") != nil {
+            self.performSegue(withIdentifier: "showProfile", sender: self)
         }
     }
     

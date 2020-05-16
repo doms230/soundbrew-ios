@@ -539,15 +539,19 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func validateWebsite() -> Bool {
-        if !websiteText.text!.isEmpty {
-            if !websiteText.text!.starts(with: "https") && !websiteText.text!.starts(with: "http") {
-                websiteText.text = "https://\(websiteText.text!)"
+        if let websiteText = websiteText {
+            if let text = websiteText.text {
+                if text.isEmpty {
+                    if !text.starts(with: "https") && !text.starts(with: "http") {
+                        self.websiteText.text = "https://\(text)"
+                    }
             }
-            
-            if !UIApplication.shared.canOpenURL(URL(string: websiteText.text!)!) {
-                let localizedInvalidURL = NSLocalizedString("invalidURL", comment: "")
-                self.uiElement.showTextFieldErrorMessage(self.websiteText, text: localizedInvalidURL)
-                return false
+                
+                if let url = URL(string: text), !UIApplication.shared.canOpenURL(url) {
+                    let localizedInvalidURL = NSLocalizedString("invalidURL", comment: "")
+                    self.uiElement.showTextFieldErrorMessage(self.websiteText, text: localizedInvalidURL)
+                    return false
+                }
             }
         }
         

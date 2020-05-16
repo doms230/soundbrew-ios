@@ -708,7 +708,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             setUpTableView()
         }
         
-        if let currentArtist = self.profileArtist, currentArtist.objectId == Customer.shared.artist?.objectId {
+        if let currentArtist = self.profileArtist, currentArtist.objectId == Customer.shared.artist?.objectId, self.so_containerViewController != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
     

@@ -234,6 +234,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func didSelectSoundAt(row: Int) {
         let player = soundList.player
+        player.sounds = soundList.sounds
         player.didSelectSoundAt(row)
         if player.player != nil {
             self.setUpMiniPlayer()
@@ -308,14 +309,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             
             self.handleTableViewLogic()
-          //  if error == nil {
-
-                
-         /*   } else {
-                print("Error: \(error!)")
-                let localizedOops = NSLocalizedString("oops", comment: "")
-                self.uiElement.showAlert(localizedOops, message: "\(error!.localizedDescription)", target: self)
-            }*/
         }
     }
     

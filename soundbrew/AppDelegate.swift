@@ -150,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     func receivedPostId(_ soundId: String) {
         self.uiElement.setUserDefault(soundId, key: "receivedSoundId")
-        showMainViewController(0)
+        showMainViewController(1)
     }
     
     func showMainViewController(_ selectedIndex: Int) {

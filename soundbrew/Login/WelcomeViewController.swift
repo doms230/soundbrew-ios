@@ -110,6 +110,8 @@ class WelcomeViewController: UIViewController {
     }
     
     func signupView() {
+        let viewWidth = self.view.frame.width
+        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
@@ -149,21 +151,23 @@ class WelcomeViewController: UIViewController {
         }
         
         let twitterButton = signInWithButton("Twitter", titleColor: .white, backgroundColor: color.uicolorFromHex(0x1DA1F2), imageName: "twitter", tag: 1, shouldShowBorderColor: false)
+        twitterButton.titleLabel?.textAlignment = .left
         self.view.addSubview(twitterButton)
         twitterButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
+            make.width.equalTo((Int(viewWidth) / 2) - 20)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset * 2)
         }
         
         let appleButton = signInWithButton("Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
+        appleButton.titleLabel?.textAlignment = .left
         self.view.addSubview(appleButton)
         appleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.width.equalTo((Int(viewWidth) / 2) - 20)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset * 2)
+            make.bottom.equalTo(twitterButton)
         }
         
         let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: false)

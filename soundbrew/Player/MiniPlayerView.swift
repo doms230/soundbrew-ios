@@ -18,8 +18,7 @@ class MiniPlayerView: UIButton {
     var shouldSetupConstraints = true
     
     var player: Player?
-    var sound: Sound?
-    let like = Like.shared
+    //var sound: Sound?
     var superViewController: UIViewController!
     
     lazy var songTitle: UILabel = {
@@ -93,14 +92,17 @@ class MiniPlayerView: UIButton {
         let button = UIButton()
         button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
-       // button.isEnabled = false
         return button
     }()
     
     @objc func didPressLikeButton(_ sender: UIButton) {
         sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
         sender.isEnabled = false
+        let like = Like.shared
         like.target = self.superViewController
+        if let player = player {
+            like.sound = player.currentSound
+        }
         like.likeSoundButton = sender
         like.sendPayment()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
@@ -204,37 +206,35 @@ class MiniPlayerView: UIButton {
     }
     
     @objc func didReceiveSoundUpdate() {
-        //print("didReceive sound update")
         setSound()
     }
     
     func setSound() {
         if let player = self.player {
             if let sound = player.currentSound {
-                self.like.likeSoundButton = self.likeSoundButton
-                self.like.target = self.superViewController
+                let like = Like.shared
+                like.likeSoundButton = self.likeSoundButton
+                like.target = self.superViewController
                 
-                if let likeSound = self.like.sound {
+                if let likeSound = like.sound {
                     if sound.objectId != likeSound.objectId {
-                        print("loading crdits 0 from miniPlayer")
-                        self.like.loadCredits(sound)
+                        like.loadCredits(sound)
                     } else if likeSound.currentUserTipDate != nil {
-                        print("got tipamount")
                         self.likeSoundButton.isEnabled = false
                         self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                    } else if like.rewardedAd == nil {
+                        like.setUpPayment()
                     } else {
-                        print("setting up payment from mini view")
-                        self.like.setUpPayment()
+                        self.likeSoundButton.isEnabled = true
+                        self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
                     }
                     
                 } else {
-                    print("loading crdits 1 from miniPlayer")
-                   // self.like.sound = sound
-                    self.like.loadCredits(sound)
+                    like.loadCredits(sound)
                 }
                 
-                self.like.sound = sound
-                self.sound = sound
+                like.sound = sound
+                
                 setCurrentSoundView(sound)
                 self.playBackButton.isEnabled = true
             }
@@ -287,7 +287,7 @@ class MiniPlayerView: UIButton {
             if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.text = artistName
-                self.sound!.artist?.name = artistName
+              //  self.sound!.artist?.name = artistName
             }
         }
     }    
