@@ -23,42 +23,42 @@ class Like: NSObject, GADRewardedAdDelegate {
     
     func sendPayment() {
         if let balance = customer.artist?.balance, balance >= self.paymentAmount {
-            newPayment()
+            newPayment(self.paymentAmount)
              
         } else {
             self.askToAdFundsToTheirAccount("")
         }
      }
     
-    func newPayment() {
+    func newPayment(_ paymentAmount: Int) {
         let newPayment = PFObject(className: "Tip")
         newPayment["fromUserId"] = self.customer.artist?.objectId
         newPayment["toUserId"] = sound!.artist?.objectId
-        newPayment["amount"] = self.paymentAmount
+        newPayment["amount"] = paymentAmount
         newPayment["soundId"] = sound!.objectId
         newPayment.saveEventually {
             (success: Bool, error: Error?) in
               if success {
-                self.customer.updateBalance(-self.paymentAmount)
+                self.customer.updateBalance(-paymentAmount)
                 self.sound?.currentUserTipDate = newPayment.createdAt
-                self.paymentAmount = 100
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
                 if let sound = self.sound {
                     self.likeButtonUI(sound)
                 }
                 self.newMention(self.sound!, toUserId: (self.sound!.artist?.objectId)!)
-                self.incrementSoundPaymentAmount(true)
-                self.getCreditsAndSplit()
+                self.incrementSoundPaymentAmount(true, paymentAmount: paymentAmount)
+                self.getCreditsAndSplit(paymentAmount)
+                self.paymentAmount = 100
               }
           }
     }
     
-    func incrementSoundPaymentAmount(_ shouldUpdateTippers: Bool) {
+    func incrementSoundPaymentAmount(_ shouldUpdateTippers: Bool, paymentAmount: Int) {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound!.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
-                object.incrementKey("tips", byAmount: NSNumber(value: self.paymentAmount))
+                object.incrementKey("tips", byAmount: NSNumber(value: paymentAmount))
                 if shouldUpdateTippers {
                     object.incrementKey("tippers")
                 }
@@ -67,16 +67,16 @@ class Like: NSObject, GADRewardedAdDelegate {
         }
     }
     
-    func getCreditsAndSplit() {
+    func getCreditsAndSplit(_ paymentAmount: Int) {
         if soundCredits.isEmpty {
-            updateArtistPayment(sound!.artist!.objectId, paymentAmount: self.paymentAmount)
+            updateArtistPayment(sound!.artist!.objectId, paymentAmount: paymentAmount)
             
         } else {
             for credit in soundCredits {
                 var paySplit: Float = 0
                 if let percentage = credit.percentage {
                     if percentage > 0 {
-                        paySplit = Float(percentage * self.paymentAmount)
+                        paySplit = Float(percentage * paymentAmount)
                         let paySplitInCents = paySplit / 100
                         updateArtistPayment(credit.artist!.objectId, paymentAmount: Int(paySplitInCents))
                     }
@@ -174,7 +174,7 @@ class Like: NSObject, GADRewardedAdDelegate {
             currentUser.artist?.balance = rewardAmount
         }
         
-        newPayment()
+        newPayment(rewardAmount)
     }
     
     func rewardedAd(_ rewardedAd: GADRewardedAd, didFailToPresentWithError error: Error) {

@@ -246,7 +246,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 let localizedusernameIsRequired = NSLocalizedString("usernameIsRequired", comment: "")
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedusernameIsRequired)
             }
-            
             break
             
         case 2:
@@ -257,6 +256,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if let website = artist?.website {
                 inputText = website
             }
+            break
             
         case 4:
             break
@@ -541,7 +541,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     func validateWebsite() -> Bool {
         if let websiteText = websiteText {
             if let text = websiteText.text {
-                if text.isEmpty {
+                if !text.isEmpty {
                     if !text.starts(with: "https") && !text.starts(with: "http") {
                         self.websiteText.text = "https://\(text)"
                     }

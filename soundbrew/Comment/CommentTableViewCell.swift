@@ -50,10 +50,11 @@ class CommentTableViewCell: UITableViewCell {
             make.left.equalTo(userImage.snp.right).offset(uiElement.leftOffset)
         }
         
-        
         self.addSubview(comment)
         comment.font = UIFont(name: uiElement.mainFont, size: 15)
         comment.textColor = .white
+        comment.mentionColor = color.blue()
+        comment.mentionSelectedColor = .darkGray
         comment.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(username.snp.bottom)
             make.left.equalTo(username)

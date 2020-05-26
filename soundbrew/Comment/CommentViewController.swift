@@ -568,7 +568,6 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func handleDismissal(_ artist: Artist) {
         if let playerDelegate = self.playerDelegate {
-            print(playerDelegate)
             self.dismiss(animated: false, completion: {() in
                 playerDelegate.selectedArtist(artist)
             })

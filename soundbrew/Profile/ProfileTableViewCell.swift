@@ -157,7 +157,7 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(displayNameLabel)
             }
             
-            website = uiElement.soundbrewLabel(nil, textColor: color.blue(), font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+            website = uiElement.soundbrewLabel(nil, textColor: color.blue(), font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 1)
             self.websiteView.addSubview(website)
             website.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(websiteView)

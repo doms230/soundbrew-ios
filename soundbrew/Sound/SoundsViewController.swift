@@ -28,7 +28,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setUpMiniPlayer()
         self.view.backgroundColor = color.black()
         setupNotificationCenter()
         
@@ -58,12 +58,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidAppear(_ animated: Bool) {
         self.tabBarController?.delegate = self
+        setUpTableView(nil)
+        /*self.tabBarController?.delegate = self
         let player = Player.sharedInstance
         if player.player != nil {
             setUpMiniPlayer()
         } else {
             setUpTableView(nil)
-        }
+        }*/
     }
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
@@ -158,7 +160,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
         tableView.refreshControl = refreshControl
         refreshControl.endRefreshing()
-        if let miniPlayer = miniPlayer {
+        self.view.addSubview(tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-100)
+        }
+       /* if let miniPlayer = miniPlayer {
             self.view.addSubview(tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.view)
@@ -170,7 +179,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else {
             self.view.addSubview(tableView)
             self.tableView.frame = self.view.bounds
-        }
+        }*/
         
         let player = Player.sharedInstance
         player.tableView = tableView
@@ -254,7 +263,26 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: miniPlayer
     var miniPlayerView: MiniPlayerView?
     func setUpMiniPlayer() {
-        DispatchQueue.main.async {
+        self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        if let miniPlayerView = self.miniPlayerView {
+            miniPlayerView.superViewController = self
+            //self.view.addSubview(miniPlayerView)
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.addSubview(miniPlayerView)
+                let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
+                slide.direction = .up
+                miniPlayerView.addGestureRecognizer(slide)
+                miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+                miniPlayerView.snp.makeConstraints { (make) -> Void in
+                    make.height.equalTo(75)
+                    make.right.equalTo(tabBar)
+                    make.left.equalTo(tabBar)
+                    make.bottom.equalTo(tabBar.snp.top)
+                }
+                self.setUpTableView(miniPlayerView)
+            }
+        }
+        /*DispatchQueue.main.async {
             self.miniPlayerView?.removeFromSuperview()
             self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
             if let miniPlayerView = self.miniPlayerView {
@@ -272,7 +300,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }
                 self.setUpTableView(miniPlayerView)
             }
-        }
+        }*/
     }
     
     @objc func miniPlayerWasSwiped() {

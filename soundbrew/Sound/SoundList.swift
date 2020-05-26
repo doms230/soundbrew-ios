@@ -117,18 +117,31 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
 
-            var hashtagString = ""
-            if let hashtags = sound.tags {
-                for hashtag in hashtags {
-                    if hashtagString == "" {
-                        hashtagString = "#\(hashtag)"
-                    } else {
-                       hashtagString = "\(hashtagString), #\(hashtag)"
+            
+            if let currentUser = PFUser.current()?.objectId, currentUser == self.domSmithUserId, let createdAt = sound.createdAt {
+                var tipCount = 0
+                var likeString = "likes"
+                if let tips = sound.tipCount {
+                    tipCount = tips
+                    if tips == 1 {
+                        likeString = "like"
                     }
                 }
-            }
+                cell.soundDate.text = "\(self.uiElement.formatDateAndReturnString(createdAt)) | \(tipCount) \(likeString)"
+            } else {
+                var hashtagString = ""
+                if let hashtags = sound.tags {
+                    for hashtag in hashtags {
+                        if hashtagString == "" {
+                            hashtagString = "#\(hashtag)"
+                        } else {
+                           hashtagString = "\(hashtagString), #\(hashtag)"
+                        }
+                    }
+                }
 
-            cell.soundDate.text = hashtagString
+                cell.soundDate.text = hashtagString
+            }
         }
         
         return cell
@@ -184,16 +197,52 @@ class SoundList: NSObject, PlayerDelegate {
     func showOtherMenuAlert(_ sound: Sound, row: Int) {
         var alert: UIAlertController!
         
-        let localizedReportSound = NSLocalizedString("reportSound", comment: "")
-        alert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
-                self.showReportSoundAlert(sound)
-        }))
+        if let currenUserObjectId = PFUser.current()?.objectId, currenUserObjectId == self.uiElement.d_innovatorObjectId {
+            var shouldAddToFeaturedList = true
+            var featuredTitle = "Feature this song?"
+            if let isSoundFeatured = sound.isFeatured, isSoundFeatured {
+                featuredTitle = "Un-Feature this song?"
+                shouldAddToFeaturedList = false
+            }
+            
+            alert = UIAlertController(title: "", message: nil , preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: featuredTitle, style: .default, handler: { action in
+                self.showAddRemoveSongFromFeaturedPage(sound, shouldAddToFeaturedList: shouldAddToFeaturedList, row: row)
+            }))
+            
+        } else {
+            let localizedReportSound = NSLocalizedString("reportSound", comment: "")
+            alert = UIAlertController(title: nil, message: nil , preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: localizedReportSound, style: .default, handler: { action in
+                    self.showReportSoundAlert(sound)
+            }))
+        }
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         alert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
 
         target.present(alert, animated: true, completion: nil)
+    }
+    
+    func showAddRemoveSongFromFeaturedPage(_ sound: Sound, shouldAddToFeaturedList: Bool, row: Int) {
+        if let objectId = sound.objectId {
+            let query = PFQuery(className: "Post")
+            query.getObjectInBackground(withId: objectId) {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    object["isFeatured"] = shouldAddToFeaturedList
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        if (success) {
+                            self.sounds[row].isFeatured = shouldAddToFeaturedList
+                           /* if let artistId = sound.artist?.objectId {
+                                self.uiElement.sendAlert("\(sound.title!) has been featured!", toUserId: artistId, shouldIncludeName: false)
+                            }*/
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func showReportSoundAlert(_ sound: Sound) {
@@ -261,12 +310,13 @@ class SoundList: NSObject, PlayerDelegate {
         switch soundType {
         case "forYou":
             if let currentUserId = PFUser.current()?.objectId {
-                loadLastLike(currentUserId)
+                if currentUserId == self.domSmithUserId {
+                    print("dom")
+                    loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                } else {
+                    loadLastLike(currentUserId)
+                }
             }
-            break
-            
-        case "chart":
-            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             break
             
         case "discover":
@@ -298,7 +348,9 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "follow":
-            if let followUserIds = self.uiElement.getUserDefault("friends") as? [String] {
+            if let currentUserId = PFUser.current()?.objectId, currentUserId == self.domSmithUserId {
+                loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+            } else if let followUserIds = self.uiElement.getUserDefault("friends") as? [String] {
                 self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds, tag: nil, forYouTags: nil)
             }
             break
