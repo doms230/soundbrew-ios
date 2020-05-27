@@ -13,13 +13,16 @@ import Parse
 import AppCenterAnalytics
 
 class MiniPlayerView: UIButton {
+    static let sharedInstance = MiniPlayerView()
+    
     let color = Color()
     let uiElement = UIElement()
     var shouldSetupConstraints = true
     
     var player: Player?
-    //var sound: Sound?
     var superViewController: UIViewController!
+    var playerDelegate: PlayerDelegate?
+    var tagDelegate: TagDelegate?
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
@@ -134,6 +137,28 @@ class MiniPlayerView: UIButton {
         self.backgroundColor = color.black()
         setupNotificationCenter()
         player = Player.sharedInstance
+        
+        let slide = UISwipeGestureRecognizer(target: superViewController, action: #selector(self.miniPlayerWasSwiped))
+        slide.direction = .up
+        self.addGestureRecognizer(slide)
+        self.addTarget(superViewController, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
+    }
+    
+    func showPlayerViewController() {
+        if let playerDelegate = self.playerDelegate, let tagDelegate = self.tagDelegate {
+            let modal = PlayerViewController()
+            modal.playerDelegate = playerDelegate
+            modal.tagDelegate = tagDelegate
+            superViewController.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    @objc func miniPlayerWasSwiped() {
+        showPlayerViewController()
+    }
+    
+    @objc func miniPlayerWasPressed(_ sender: UIButton) {
+        showPlayerViewController()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -254,16 +279,13 @@ class MiniPlayerView: UIButton {
                 
                 activitySpinner.isHidden = true
                 playBackButton.isHidden = false
-                self.isEnabled = true
             }
         }
     }
     
     @objc func didReceivePreparingSoundNotification() {
-        print("preparing to update sound")
         self.activitySpinner.isHidden = false
         playBackButton.isHidden = true
-       // self.likeSoundButton.isEnabled = false
     }
     
     func setCurrentSoundView(_ sound: Sound) {

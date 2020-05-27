@@ -23,25 +23,19 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
             self.uiElement.addTitleView("Activity", target: self)
+        
+            setUpTableView()
       }
     
     @objc func didReceiveSoundUpdate() {
         if PFUser.current() != nil {
-            let player = Player.sharedInstance
-            if player.player != nil {
-                setUpMiniPlayer()
-            }
+            self.tableView.reloadData()
         }
     }
       
       override func viewDidAppear(_ animated: Bool) {
         if PFUser.current() != nil {
-            let player = Player.sharedInstance
-            if player.player != nil {
-                setUpMiniPlayer()
-            } else if PFUser.current() != nil {
-                setUpTableView(nil)
-            }
+            self.setMiniPlayer()
         }
       }
           
@@ -72,10 +66,11 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       }
       
       //mark: tableview
-      var tableView = UITableView()
+    var tableView: UITableView!
       let mentionsReuse = "mentionsReuse"
       let noSoundsReuse = "noSoundsReuse"
-      func setUpTableView(_ miniPlayer: UIView?) {
+      func setUpTableView() {
+        tableView = UITableView()
           tableView.dataSource = self
           tableView.delegate = self
           tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: mentionsReuse)
@@ -85,19 +80,13 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           let refreshControl = UIRefreshControl()
           refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
           tableView.refreshControl = refreshControl
-          if let miniPlayer = miniPlayer {
-              self.view.addSubview(tableView)
-              self.tableView.snp.makeConstraints { (make) -> Void in
-                  make.top.equalTo(self.view)
-                  make.left.equalTo(self.view)
-                  make.right.equalTo(self.view)
-                  make.bottom.equalTo(miniPlayer.snp.top)
-              }
-              
-          } else {
-              self.tableView.frame = view.bounds
-              self.view.addSubview(tableView)
-          }
+        self.view.addSubview(self.tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-175)
+        }
         
         self.loadMentions()
       }
@@ -232,44 +221,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     }
       
       //mark: miniPlayer
-      var miniPlayerView: MiniPlayerView?
-      func setUpMiniPlayer() {
-        DispatchQueue.main.async {
-            self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-            self.miniPlayerView?.superViewController = self 
-            self.view.addSubview(self.miniPlayerView!)
-            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-            slide.direction = .up
-            self.miniPlayerView!.addGestureRecognizer(slide)
-            self.miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            self.miniPlayerView!.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(75)
-                make.right.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
-            }
-            
-            self.setUpTableView(self.miniPlayerView!)
-        }
-      }
-      
-      @objc func miniPlayerWasSwiped() {
-          showPlayerViewController()
-      }
-      
-      @objc func miniPlayerWasPressed(_ sender: UIButton) {
-          showPlayerViewController()
-      }
-      
-      func showPlayerViewController() {
-          let player = Player.sharedInstance
-          if player.player != nil {
-              let modal = PlayerViewController()
-              modal.playerDelegate = self
-              modal.tagDelegate = self
-              self.present(modal, animated: true, completion: nil)
-          }
-      }
+    func setMiniPlayer() {
+        let miniPlayerView = MiniPlayerView.sharedInstance
+        miniPlayerView.superViewController = self
+        miniPlayerView.tagDelegate = self
+        miniPlayerView.playerDelegate = self
+    }
     
     var mentions = [Mention]()
     var isLoadingMentions = true

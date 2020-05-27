@@ -36,26 +36,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        setupNotificationCenter()
         determineTypeOfProfile()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        } else {
-            setUpTableView()
-        }
-    }
-    
-    func setupNotificationCenter() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
-    }
-    @objc func didReceiveSoundUpdate() {
-        if self.view.window != nil {
-            self.setUpMiniPlayer()
-        }
+        setMiniPlayer()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -162,18 +147,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
         tableView.refreshControl = refreshControl
-        if let miniPlayer = self.miniPlayerView {
-            self.view.addSubview(tableView)
-            self.tableView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.right.equalTo(self.view)
-                make.bottom.equalTo(miniPlayer.snp.top)
-            }
-            
-        } else {
-            self.tableView.frame = view.bounds
-            self.view.addSubview(tableView)
+        self.view.addSubview(tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-175)
         }
         
         let player = Player.sharedInstance
@@ -201,44 +180,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: miniPlayer
-    var miniPlayerView: MiniPlayerView?
-    func setUpMiniPlayer() {
-        DispatchQueue.main.async {
-            self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-            if let miniPlayerView = self.miniPlayerView {
-                miniPlayerView.superViewController = self
-                self.view.addSubview(miniPlayerView)
-                let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-                slide.direction = .up
-                miniPlayerView.addGestureRecognizer(slide)
-                miniPlayerView.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-                miniPlayerView.snp.makeConstraints { (make) -> Void in
-                    make.height.equalTo(75)
-                    make.right.equalTo(self.view)
-                    make.left.equalTo(self.view)
-                    make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
-                }
-                self.setUpTableView()
-            }
-        }
-    }
-    
-    @objc func miniPlayerWasSwiped() {
-        showPlayerViewController()
-    }
-    
-    @objc func miniPlayerWasPressed(_ sender: UIButton) {
-        showPlayerViewController()
-    }
-    
-    func showPlayerViewController() {
-        let player = Player.sharedInstance
-        if player.player != nil {
-            let modal = PlayerViewController()
-            modal.playerDelegate = self
-            modal.tagDelegate = self 
-            self.present(modal, animated: true, completion: nil)
-        }
+    func setMiniPlayer() {
+        let miniPlayerView = MiniPlayerView.sharedInstance
+        miniPlayerView.superViewController = self
+        miniPlayerView.tagDelegate = self
+        miniPlayerView.playerDelegate = self
     }
     
     //mark: selectedArtist
@@ -485,9 +431,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func didSelectSound(_ sounds: Array<Sound>, row: Int) {
         self.player.sounds = sounds
         player.didSelectSoundAt(row)
-        if self.miniPlayerView == nil && self.tabBarController != nil {
-            self.setUpMiniPlayer()
-        }
     }
     
     func loadCollection(_ profileUserId: String) {
@@ -699,15 +642,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func setUpNavigationButtons() {
-        //player.target = self
-        if self.player.player != nil && self.tabBarController != nil {
-            setUpMiniPlayer()
-            
-        } else {
-            setUpTableView()
-        }
-        
+    func setUpNavigationButtons() {        
         if let currentArtist = self.profileArtist, currentArtist.objectId == Customer.shared.artist?.objectId, self.so_containerViewController != nil {
             let menuButton = UIBarButtonItem(image: UIImage(named: "menu"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSettingsButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
@@ -812,7 +747,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 } else {
                     self.profileArtist?.isFollowedByCurrentUser = false
                 }
-                self.tableView.reloadData()
+                if self.tableView == nil {
+                    self.setUpTableView()
+                } else {
+                   self.tableView.reloadData()
+                }
             }
         }
     }

@@ -39,12 +39,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let backItem = UIBarButtonItem()
         backItem.title = localizedBack
         navigationItem.backBarButtonItem = backItem
-        
-        let player = Player.sharedInstance
-        if player.player != nil {
-            setUpMiniPlayer()
-        }
+        setMiniPlayer()
     }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
@@ -103,7 +100,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let searchTagViewReuse = "searchTagViewReuse"
     let noSoundsReuse = "noSoundsReuse"
     let newSoundsReuse = "newSoundsReuse"
-    func setUpTableView(_ miniPlayer: UIView?) {
+    func setUpTableView() {
         tableView = UITableView()
         tableView.backgroundColor = color.black()
         tableView.dataSource = self
@@ -118,18 +115,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: newSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
-        if let miniPlayer = miniPlayer {
-            self.view.addSubview(tableView)
-            self.tableView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.right.equalTo(self.view)
-                make.bottom.equalTo(miniPlayer.snp.top)
-            }
-            
-        } else {
-            self.tableView.frame = view.bounds
-            self.view.addSubview(tableView)
+        self.view.addSubview(self.tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-170)
         }
     }
     
@@ -236,10 +227,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let player = soundList.player
         player.sounds = soundList.sounds
         player.didSelectSoundAt(row)
-        if player.player != nil {
-            self.setUpMiniPlayer()
-        } else if self.tableView == nil {
-            self.setUpTableView(nil)
+        if self.tableView == nil {
+            self.setUpTableView()
         } else {
             self.tableView.reloadData()
         }
@@ -314,55 +303,19 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func handleTableViewLogic() {
         self.isLoadingResults = false
-        let player = Player.sharedInstance
-        if player.player != nil {
-            self.setUpMiniPlayer()
-        } else if self.tableView == nil {
-            self.setUpTableView(nil)
+        if self.tableView == nil {
+            self.setUpTableView()
         } else {
             self.tableView.reloadData()
         }
     }
     
     //mark: miniPlayer
-    var miniPlayerView: MiniPlayerView?
-    func setUpMiniPlayer() {
-        DispatchQueue.main.async {
-            self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-            self.miniPlayerView?.superViewController = self 
-            self.view.addSubview(self.miniPlayerView!)
-             let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-             slide.direction = .up
-            self.miniPlayerView!.addGestureRecognizer(slide)
-            self.miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            self.miniPlayerView!.snp.makeConstraints { (make) -> Void in
-                 make.height.equalTo(75)
-                 make.right.equalTo(self.view)
-                 make.left.equalTo(self.view)
-                 make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
-             }
-            self.setUpTableView(self.miniPlayerView)
-        }
-    }
-    
-    @objc func miniPlayerWasSwiped() {
-        showPlayerViewController()
-        MSAnalytics.trackEvent("Mini Player", withProperties: ["View" : "SearchViewController", "description": "User did start Searching."])
-    }
-    
-    @objc func miniPlayerWasPressed(_ sender: UIButton) {
-        showPlayerViewController()
-        MSAnalytics.trackEvent("Mini Player", withProperties: ["View" : "SearchViewController", "description": "User did start Searching."])
-    }
-    
-    func showPlayerViewController() {
-        let player = Player.sharedInstance
-        if player.player != nil {
-            let modal = PlayerViewController()
-            modal.playerDelegate = self
-            modal.tagDelegate = self
-            self.present(modal, animated: true, completion: nil)
-        }
+    func setMiniPlayer() {
+        let miniPlayerView = MiniPlayerView.sharedInstance
+        miniPlayerView.superViewController = self
+        miniPlayerView.tagDelegate = self
+        miniPlayerView.playerDelegate = self
     }
     
     //mark: selectedArtist

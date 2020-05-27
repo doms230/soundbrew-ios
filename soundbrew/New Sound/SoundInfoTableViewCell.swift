@@ -150,8 +150,9 @@ class SoundInfoTableViewCell: UITableViewCell {
             
         case "creditReuse":
             //artist profile picture
-            artistImage.layer.cornerRadius = 35/2
             artistImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)
+            artistImage.layer.cornerRadius = 35/2
+            artistImage.clipsToBounds = true 
             self.addSubview(artistImage)
             artistImage.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(35)

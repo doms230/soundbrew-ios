@@ -34,14 +34,12 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        setMiniPlayer()
         if PFUser.current() != nil {
-            showSounds()
-            
-            let player = Player.sharedInstance
-            if player.player != nil {
-                setUpMiniPlayer()
-            } else if PFUser.current() != nil {
-                setUpTableView(nil)
+            if tableView != nil {
+                showSounds()
+            } else {
+                setUpTableView()
             }
             
         } else {
@@ -98,35 +96,29 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     //mark: tableview
-    let tableView = UITableView()
+    var tableView: UITableView!
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
-    func setUpTableView(_ miniPlayer: UIView?) {
-        DispatchQueue.main.async {
-            self.tableView.dataSource = self
-            self.tableView.delegate = self
-            self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.soundReuse)
-            self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.noSoundsReuse)
-            self.tableView.separatorStyle = .none
-            self.tableView.keyboardDismissMode = .onDrag
-            self.tableView.backgroundColor = self.color.black()
-            let refreshControl = UIRefreshControl()
-            refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
-            self.tableView.refreshControl = refreshControl
-            if let miniPlayer = miniPlayer {
-                self.view.addSubview(self.tableView)
-                self.tableView.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(self.view)
-                    make.left.equalTo(self.view)
-                    make.right.equalTo(self.view)
-                    make.bottom.equalTo(miniPlayer.snp.top)
-                }
-                
-            } else {
-                self.tableView.frame = self.view.bounds
-                self.view.addSubview(self.tableView)
-            }
+    func setUpTableView() {
+        self.tableView = UITableView()
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.soundReuse)
+        self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.noSoundsReuse)
+        self.tableView.separatorStyle = .none
+        self.tableView.keyboardDismissMode = .onDrag
+        self.tableView.backgroundColor = self.color.black()
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
+        self.tableView.refreshControl = refreshControl
+        self.view.addSubview(self.tableView)
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-175)
         }
+        self.showSounds()
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
@@ -138,10 +130,10 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if soundList.sounds.count == 0 {
-            return 1
+        if soundList != nil, soundList.sounds.count != 0 {
+            return soundList.sounds.count
         }
-        return soundList.sounds.count
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -174,9 +166,6 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         let player = Player.sharedInstance
         player.sounds = soundList.sounds
         player.didSelectSoundAt(row)
-        if miniPlayerView == nil {
-            self.setUpMiniPlayer()
-        }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -213,24 +202,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     //mark: miniPlayer
-    var miniPlayerView: MiniPlayerView?
-    func setUpMiniPlayer() {
-        DispatchQueue.main.async {
-            self.miniPlayerView = MiniPlayerView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-            self.miniPlayerView?.superViewController = self 
-            self.view.addSubview(self.miniPlayerView!)
-            let slide = UISwipeGestureRecognizer(target: self, action: #selector(self.miniPlayerWasSwiped))
-            slide.direction = .up
-            self.miniPlayerView!.addGestureRecognizer(slide)
-            self.miniPlayerView!.addTarget(self, action: #selector(self.miniPlayerWasPressed(_:)), for: .touchUpInside)
-            self.miniPlayerView!.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(75)
-                make.right.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!))
-            }
-            self.setUpTableView(self.miniPlayerView)
-        }
+    func setMiniPlayer() {
+        let miniPlayerView = MiniPlayerView.sharedInstance
+        miniPlayerView.superViewController = self
+        miniPlayerView.tagDelegate = self
+        miniPlayerView.playerDelegate = self
     }
     
     @objc func miniPlayerWasSwiped() {

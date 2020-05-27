@@ -311,7 +311,6 @@ class SoundList: NSObject, PlayerDelegate {
         case "forYou":
             if let currentUserId = PFUser.current()?.objectId {
                 if currentUserId == self.domSmithUserId {
-                    print("dom")
                     loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
                 } else {
                     loadLastLike(currentUserId)
@@ -478,7 +477,6 @@ class SoundList: NSObject, PlayerDelegate {
         
         if self.soundType == "drafts" {
             query.whereKey("isDraft", equalTo: true)
-            
         } else {
            query.whereKey("isRemoved", notEqualTo: true)
         }

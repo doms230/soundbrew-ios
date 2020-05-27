@@ -17,4 +17,13 @@ class ContainerViewController: SOContainerViewController {
         self.topViewController = self.storyboard?.instantiateViewController(withIdentifier: "topScreen")
         self.sideViewController = self.storyboard?.instantiateViewController(withIdentifier: "rightScreen")
     }
+    
+    override var isSideViewControllerPresented: Bool {
+        didSet {
+            //doing this because miniPlayerView shows on top of sideViewController causing bottom views to be blocked
+            let miniPlayer = MiniPlayerView.sharedInstance
+            miniPlayer.isHidden = isSideViewControllerPresented
+        }
+    }
+
 }

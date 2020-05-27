@@ -137,7 +137,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.tintColor = color.black()
         self.view.addSubview(tableView)
         if sound == nil {
-            tableView.frame = view.bounds
+            tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.view).offset(-165)
+            }
         } else {
             tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(exitButton.snp.bottom)
