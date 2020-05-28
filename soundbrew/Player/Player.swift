@@ -35,7 +35,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         setupRemoteTransportControls()
     }
     
-    func prepareAndPlay(_ audioData: Data) {
+    func prepareAudio(_ audioData: Data, shouldPlay: Bool) {
+        print("should play: \(shouldPlay)")
         var soundPlayable = true
         
         //need audio url so can see what type of file audio is... helps get audio duration
@@ -92,10 +93,15 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
-            self.play()
+            if shouldPlay {
+               self.play()
+            } else {
+                let miniPlayerView = MiniPlayerView.sharedInstance
+                miniPlayerView.isEnabled = true
+            }
             
         } else {
-            setUpNextSong(false, at: nil)
+            setUpNextSong(false, at: nil, shouldPlay: false)
         }
     }
     
@@ -131,7 +137,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func next() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-        self.setUpNextSong(false, at: nil)
+        self.setUpNextSong(false, at: nil, shouldPlay: true)
     }
     
     func previous() {
@@ -143,25 +149,25 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 incrementPlayCount(sound)
                 recordListener(sound)
             } else {
-                self.setUpNextSong(true, at: nil)
+                self.setUpNextSong(true, at: nil, shouldPlay: true)
             }
         }
     }
     
     func didSelectSoundAt(_ i: Int) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-        self.setUpNextSong(false, at: i)
+        self.setUpNextSong(false, at: i, shouldPlay: true)
         
         MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            setUpNextSong(false, at: nil)
+            setUpNextSong(false, at: nil, shouldPlay: true)
         }
     }
     
-    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?) {
+    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool) {
         //stop soundplayer audio from playing over each other
         if player != nil {
             player = nil
@@ -176,7 +182,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
             currentSound = sound
             self.sendSoundUpdateToUI()
-            prepareToPlaySound(sound)
+            prepareToPlaySound(sound, shouldPlay: shouldPlay)
         }
     }
     
@@ -207,10 +213,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
         return sound
     }
     
-    func prepareToPlaySound(_ sound: Sound) {
+    func prepareToPlaySound(_ sound: Sound, shouldPlay: Bool) {
         if let audioData = sound.audioData {
-            self.prepareAndPlay(audioData)
-            
+            self.prepareAudio(audioData, shouldPlay: shouldPlay)
         } else {
             self.sounds[currentSoundIndex].isNextUpToPlay = true
             self.sounds[currentSoundIndex].fetchAudioData()

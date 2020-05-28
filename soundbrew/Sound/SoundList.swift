@@ -381,7 +381,7 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedTagForFiltering: Tag!
 
     //mark: data
-    func loadSound(_ objectId: String, isForYouPage: Bool) {
+    func loadSound(_ objectId: String, isForYouPage: Bool, isForLastSoundUserListenedTo: Bool) {
         let query = PFQuery(className: "Post")
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
@@ -393,6 +393,13 @@ class SoundList: NSObject, PlayerDelegate {
                 if isForYouPage {
                     let tags = object["tags"] as! [String]?
                     self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: tags)
+                } else if isForLastSoundUserListenedTo {
+                    let sound = self.uiElement.newSoundObject(object)
+                    let player = self.player
+                    player.sounds = [sound]
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
+                    player.setUpNextSong(false, at: 0, shouldPlay: false)
+                    
                 } else {
                     let sound = self.uiElement.newSoundObject(object)
                     self.sounds.append(sound)
@@ -413,7 +420,7 @@ class SoundList: NSObject, PlayerDelegate {
             (object: PFObject?, error: Error?) -> Void in
              if let object = object {
                 let soundId = object["soundId"] as! String
-                self.loadSound(soundId, isForYouPage: true)
+                self.loadSound(soundId, isForYouPage: true, isForLastSoundUserListenedTo: false)
              } else {
                 self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             }

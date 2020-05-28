@@ -362,7 +362,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             player.sounds = [sound]
             player.currentSound = sound
             player.currentSoundIndex = 0
-            player.setUpNextSong(false, at: 0)
+            player.setUpNextSong(false, at: 0, shouldPlay: true)
         }
     }
         

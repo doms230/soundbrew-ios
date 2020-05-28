@@ -28,9 +28,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpMiniPlayer()
-
         self.view.backgroundColor = color.black()
+        setUpMiniPlayer()
+        setUpTableView()
         setupNotificationCenter()
         
         if doesMatchSoundType() {
@@ -40,17 +40,24 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }
             }
             createTopView()
-        } else {
-            showSoundList()
         }
         
+        checkForDefaultValue()
+    }
+    
+    func checkForDefaultValue() {
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
-            loadDynamicLinkSound(soundId, shouldShowShareSoundView: false)
+            loadDynamicLinkSound(soundId, shouldShowShareSoundView: false, shouldPlay: true)
         } else if let soundId = self.uiElement.getUserDefault("newSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "newSoundId")
-            loadDynamicLinkSound(soundId, shouldShowShareSoundView: true)
-        } else if self.uiElement.getUserDefault("receivedUserId") != nil {
+            loadDynamicLinkSound(soundId, shouldShowShareSoundView: true, shouldPlay: true)
+        } else {
+            print("loadLastListen")
+            self.loadLastListen()
+        }
+        
+        if self.uiElement.getUserDefault("receivedUserId") != nil {
             self.performSegue(withIdentifier: "showProfile", sender: self)
         } else if self.uiElement.getUserDefault("receivedUsername") != nil {
             self.performSegue(withIdentifier: "showProfile", sender: self)
@@ -59,34 +66,25 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidAppear(_ animated: Bool) {
         self.tabBarController?.delegate = self
-        if tableView == nil {
-            setUpTableView()
-        } /*else {
-            self.tableView.reload
-        }*/
-        //setUpTableView()
         setMiniPlayer()
+        if self.tableView != nil {
+            self.tableView.reloadData()
+        }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+        if self.tableView != nil {
+            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+        }
     }
     
     func setupNotificationCenter() {
-      //  NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveFriendsLoaded), name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
     }
     
     @objc func didReceiveFriendsLoaded() {
         showSoundList()
     }
-    
-   /* @objc func didReceiveSoundUpdate(){
-        if self.view.window != nil {
-
-        }
-    }*/
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
@@ -132,7 +130,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         self.uiElement.addTitleView(soundTypeTitle, target: self)
-        showSoundList()
     }
     
     @objc func didPressSearchButton(_ sender: UIBarButtonItem) {
@@ -166,6 +163,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let player = Player.sharedInstance
         player.tableView = tableView
+        
+        showSoundList()
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
@@ -242,6 +241,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: miniPlayer
     func setMiniPlayer() {
         let miniPlayerView = MiniPlayerView.sharedInstance
+        miniPlayerView.isEnabled = false 
         miniPlayerView.superViewController = self
         miniPlayerView.tagDelegate = self
         miniPlayerView.playerDelegate = self
@@ -289,7 +289,24 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool) {
+    func loadLastListen() {
+        if let currentUserId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Listen")
+            query.whereKey("userId", equalTo: currentUserId)
+            query.addDescendingOrder("updatedAt")
+            query.cachePolicy = .networkElseCache
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    if let soundId = object["postId"] as? String {
+                        self.loadDynamicLinkSound(soundId, shouldShowShareSoundView: false, shouldPlay: false)
+                    }
+                }
+            }
+        }
+    }
+    
+    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool, shouldPlay: Bool) {
         let query = PFQuery(className: "Post")
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
@@ -299,20 +316,20 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 if shouldShowShareSoundView {
                     self.uiElement.showShareOptions(self, sound: sound)
                 }
-                self.resetPlayer(sounds: [sound])
+                self.resetPlayer(sounds: [sound], shouldPlay: shouldPlay)
             }
         }
     }
     
-    func resetPlayer(sounds: [Sound]) {
+    func resetPlayer(sounds: [Sound], shouldPlay: Bool) {
         let player = Player.sharedInstance
         player.player = nil
         player.sounds = sounds
         player.currentSound = sounds[0]
         player.currentSoundIndex = 0
-        player.setUpNextSong(false, at: 0)
+        player.setUpNextSong(false, at: 0, shouldPlay: shouldPlay)
     }
-    
+        
     //mark: tags
     var selectedTagForFiltering: Tag!
     var selectedTagFromPlayerView: Tag!

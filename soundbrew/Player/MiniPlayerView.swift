@@ -26,7 +26,7 @@ class MiniPlayerView: UIButton {
     
     lazy var songTitle: UILabel = {
         let label = UILabel()
-        label.text = "Welcome"
+        label.text = ""
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         return label
@@ -34,7 +34,7 @@ class MiniPlayerView: UIButton {
     
     lazy var artistName: UILabel = {
         let label = UILabel()
-        label.text = "Press Play"
+        label.text = ""
         label.textColor = .white
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         return label
@@ -43,7 +43,7 @@ class MiniPlayerView: UIButton {
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.backgroundColor = .clear 
-        image.image = UIImage(named: "sound")
+        //image.image = UIImage(named: "sound")
         image.layer.cornerRadius = 3
         image.layer.borderWidth = 1
         image.layer.borderColor = color.purpleBlack().cgColor
@@ -309,8 +309,7 @@ class MiniPlayerView: UIButton {
             if let user = user {
                 let artistName = user["artistName"] as? String
                 self.artistName.text = artistName
-              //  self.sound!.artist?.name = artistName
             }
         }
-    }    
+    }
 }

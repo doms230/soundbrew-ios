@@ -65,13 +65,12 @@ class Sound {
                     print(error)
                     
                 } else if let audioData = audioData {
-                    print("fetched \(self.title!)")
                     self.audioData = audioData
                     if self.isNextUpToPlay {
                         self.isNextUpToPlay = false
                         let player = Player.sharedInstance
                         if player.player == nil {
-                            player.prepareAndPlay(audioData)
+                            player.prepareAudio(audioData, shouldPlay: false)
                         }
                     }
                     
