@@ -51,7 +51,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
             
-            let player = Player.sharedInstance
+            if let tabBar = self.tabBarController?.tabBar {
+                let miniPlayer = MiniPlayerView.sharedInstance
+                miniPlayer.removeFromSuperview()
+                for subview in tabBar.subviews{
+                    if subview == miniPlayer {
+                        subview.removeFromSuperview()
+                    }
+                }
+            }
+            
+           let player = Player.sharedInstance
+            player.pause()
             player.player = nil
             player.sounds = nil
             player.currentSound = nil
@@ -145,7 +156,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.signOut.snp.top)
             }
-            
         }
     }
     

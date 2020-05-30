@@ -36,7 +36,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func prepareAudio(_ audioData: Data, shouldPlay: Bool) {
-        print("should play: \(shouldPlay)")
         var soundPlayable = true
         
         //need audio url so can see what type of file audio is... helps get audio duration
@@ -112,6 +111,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        let miniPlayer = MiniPlayerView.sharedInstance
+        miniPlayer.setSound()
     }
     
     func play() {
@@ -189,7 +190,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func fetchAudioFromNextSound() {
         let nextIndex = self.currentSoundIndex + 1
         if self.sounds.indices.contains(nextIndex) {
-            self.sounds[nextIndex].fetchAudioData()
+            self.sounds[nextIndex].fetchAudioData(false)
             self.sounds[nextIndex].isNextUpToPlay = false
         }
     }
@@ -218,7 +219,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             self.prepareAudio(audioData, shouldPlay: shouldPlay)
         } else {
             self.sounds[currentSoundIndex].isNextUpToPlay = true
-            self.sounds[currentSoundIndex].fetchAudioData()
+            self.sounds[currentSoundIndex].fetchAudioData(shouldPlay)
         }
     }
     

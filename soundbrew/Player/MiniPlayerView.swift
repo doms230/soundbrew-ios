@@ -19,7 +19,7 @@ class MiniPlayerView: UIButton {
     let uiElement = UIElement()
     var shouldSetupConstraints = true
     
-    var player: Player?
+    var player = Player.sharedInstance
     var superViewController: UIViewController!
     var playerDelegate: PlayerDelegate?
     var tagDelegate: TagDelegate?
@@ -43,7 +43,6 @@ class MiniPlayerView: UIButton {
     lazy var songArt: UIImageView = {
         let image = UIImageView()
         image.backgroundColor = .clear 
-        //image.image = UIImage(named: "sound")
         image.layer.cornerRadius = 3
         image.layer.borderWidth = 1
         image.layer.borderColor = color.purpleBlack().cgColor
@@ -66,29 +65,22 @@ class MiniPlayerView: UIButton {
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
-        if let player = self.player {
-            if let soundPlayer = player.player {
-                if soundPlayer.isPlaying {
-                    player.pause()
-                    timer.invalidate()
-                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                    MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Pause", "description": "User pressed pause."])
-                    
-                } else {
-                    player.play()
-                    startTimer()
-                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Play", "description": "User pressed play."])
-                }
+        if let soundPlayer = player.player {
+            if soundPlayer.isPlaying {
+                player.pause()
+                timer.invalidate()
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Pause", "description": "User pressed pause."])
+            } else {
+                player.play()
+                startTimer()
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+                MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Play", "description": "User pressed play."])
             }
-            
-            activitySpinner.isHidden = true
-            playBackButton.isHidden = false
-            
-        } else {
-            activitySpinner.isHidden = false
-            playBackButton.isHidden = true
         }
+        
+        activitySpinner.isHidden = true
+        playBackButton.isHidden = false
     }
     
     lazy var likeSoundButton: UIButton = {
@@ -103,9 +95,7 @@ class MiniPlayerView: UIButton {
         sender.isEnabled = false
         let like = Like.shared
         like.target = self.superViewController
-        if let player = player {
-            like.sound = player.currentSound
-        }
+        like.sound = player.currentSound
         like.likeSoundButton = sender
         like.sendPayment()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
@@ -127,7 +117,7 @@ class MiniPlayerView: UIButton {
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     @objc func UpdateTimer(_ timer: Timer) {
-        if let currentTime = player?.player?.currentTime {
+        if let currentTime = player.player?.currentTime {
             playBackSlider.value = Float(currentTime)
         }
     }
@@ -136,7 +126,6 @@ class MiniPlayerView: UIButton {
         super.init(frame: frame)
         self.backgroundColor = color.black()
         setupNotificationCenter()
-        player = Player.sharedInstance
         
         let slide = UISwipeGestureRecognizer(target: superViewController, action: #selector(self.miniPlayerWasSwiped))
         slide.direction = .up
@@ -224,9 +213,8 @@ class MiniPlayerView: UIButton {
         super.updateConstraints()
     }
     
-    func setupNotificationCenter(){
+    func setupNotificationCenter() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceivePreparingSoundNotification), name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
     }
     
@@ -235,51 +223,48 @@ class MiniPlayerView: UIButton {
     }
     
     func setSound() {
-        if let player = self.player {
-            if let sound = player.currentSound {
-                let like = Like.shared
-                like.likeSoundButton = self.likeSoundButton
-                like.target = self.superViewController
-                
-                if let likeSound = like.sound {
-                    if sound.objectId != likeSound.objectId {
-                        like.loadCredits(sound)
-                    } else if likeSound.currentUserTipDate != nil {
-                        self.likeSoundButton.isEnabled = false
-                        self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-                    } else if like.rewardedAd == nil {
-                        like.setUpPayment()
-                    } else {
-                        self.likeSoundButton.isEnabled = true
-                        self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-                    }
-                    
-                } else {
+        if let sound = player.currentSound {
+            let like = Like.shared
+            like.likeSoundButton = self.likeSoundButton
+            like.target = self.superViewController
+            
+            if let likeSound = like.sound {
+                if sound.objectId != likeSound.objectId {
                     like.loadCredits(sound)
-                }
-                
-                like.sound = sound
-                
-                setCurrentSoundView(sound)
-                self.playBackButton.isEnabled = true
-            }
-            
-            if let duration = self.player?.player?.duration {
-                playBackSlider.maximumValue = Float(duration)
-                self.startTimer()
-            }
-            
-            if let audioPlayer = player.player {
-                if audioPlayer.isPlaying {
-                    self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                    
+                } else if likeSound.currentUserTipDate != nil {
+                    self.likeSoundButton.isEnabled = false
+                    self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                } else if like.rewardedAd == nil {
+                    like.setUpPayment()
                 } else {
-                    self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                    self.likeSoundButton.isEnabled = true
+                    self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
                 }
                 
-                activitySpinner.isHidden = true
-                playBackButton.isHidden = false
+            } else {
+                like.loadCredits(sound)
             }
+            
+            like.sound = sound
+            
+            setCurrentSoundView(sound)
+            self.playBackButton.isEnabled = true
+        }
+        
+        if let duration = self.player.player?.duration {
+            playBackSlider.maximumValue = Float(duration)
+            self.startTimer()
+        }
+        
+        if let audioPlayer = player.player {
+            if audioPlayer.isPlaying {
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+            } else {
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            }
+            
+            activitySpinner.isHidden = true
+            playBackButton.isHidden = false
         }
     }
     

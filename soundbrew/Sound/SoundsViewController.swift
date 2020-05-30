@@ -29,20 +29,18 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
-        setUpMiniPlayer()
-        setUpTableView()
-        setupNotificationCenter()
-        
         if doesMatchSoundType() {
             if let selectedIndex = self.tabBarController?.selectedIndex {
                 if selectedIndex == 1 {
                     self.soundType = "forYou"
+                } else {
+                    setUpMiniPlayer()
                 }
             }
             createTopView()
         }
-        
-        checkForDefaultValue()
+        setUpTableView()
+        setupNotificationCenter()
     }
     
     func checkForDefaultValue() {
@@ -53,7 +51,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             UserDefaults.standard.removeObject(forKey: "newSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: true, shouldPlay: true)
         } else {
-            print("loadLastListen")
             self.loadLastListen()
         }
         
@@ -79,7 +76,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func setupNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveFriendsLoaded), name: NSNotification.Name(rawValue: "friendsLoaded"), object: nil)
+    }
+    
+    @objc func didReceiveSoundUpdate(){
+        if self.tableView != nil {
+            self.tableView.reloadData()
+        }
     }
     
     @objc func didReceiveFriendsLoaded() {
@@ -241,17 +245,18 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: miniPlayer
     func setMiniPlayer() {
         let miniPlayerView = MiniPlayerView.sharedInstance
-        miniPlayerView.isEnabled = false 
+        //miniPlayerView.isEnabled = false
         miniPlayerView.superViewController = self
         miniPlayerView.tagDelegate = self
         miniPlayerView.playerDelegate = self
     }
+    
     func setUpMiniPlayer() {
-        if let tabBarController = self.tabBarController {
-            let miniPlayerView = MiniPlayerView.sharedInstance
-            miniPlayerView.superViewController = self
-            miniPlayerView.tagDelegate = self
-            miniPlayerView.playerDelegate = self
+        let miniPlayerView = MiniPlayerView.sharedInstance
+        if let tabBarController = self.tabBarController, !tabBarController.tabBar.subviews.contains(miniPlayerView) {
+           // miniPlayerView.superViewController = self
+            //miniPlayerView.tagDelegate = self
+            //miniPlayerView.playerDelegate = self
             tabBarController.view.addSubview(miniPlayerView)
             miniPlayerView.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(75)
@@ -260,6 +265,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.bottom.equalTo(tabBarController.tabBar.snp.top)
             }
         }
+        checkForDefaultValue()
     }
     
     //mark: selectedArtist
@@ -297,19 +303,28 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
+                var objectId: String?
                 if let object = object {
                     if let soundId = object["postId"] as? String {
-                        self.loadDynamicLinkSound(soundId, shouldShowShareSoundView: false, shouldPlay: false)
+                        objectId = soundId
                     }
                 }
+                self.loadDynamicLinkSound(objectId, shouldShowShareSoundView: false, shouldPlay: false)
             }
         }
     }
     
-    func loadDynamicLinkSound(_ objectId: String, shouldShowShareSoundView: Bool, shouldPlay: Bool) {
+    func loadDynamicLinkSound(_ objectId: String?, shouldShowShareSoundView: Bool, shouldPlay: Bool) {
         let query = PFQuery(className: "Post")
+        if let objectId = objectId {
+            query.whereKey("objectId", equalTo: objectId)
+            query.addDescendingOrder("updatedAt")
+        } else {
+            query.whereKey("isFeatured", equalTo: true)
+            query.addDescendingOrder("tippers")
+        }
         query.cachePolicy = .networkElseCache
-        query.getObjectInBackground(withId: objectId) {
+        query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
                 let sound = self.uiElement.newSoundObject(object)

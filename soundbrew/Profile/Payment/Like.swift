@@ -273,6 +273,7 @@ class Like: NSObject, GADRewardedAdDelegate {
                 (object: PFObject?, error: Error?) -> Void in
                  if let object = object {
                     self.sound?.currentUserTipDate = object.createdAt
+                    sound.currentUserTipDate = object.createdAt
                  }
                 self.likeButtonUI(sound)
                 Player.sharedInstance.fetchAudioFromNextSound()
@@ -297,5 +298,7 @@ class Like: NSObject, GADRewardedAdDelegate {
             self.likeSoundButton.isEnabled = shouldEnableLikeSoundButton
             self.likeSoundButton.setImage(UIImage(named: uiImageName), for: .normal)
         }
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
     }
 }

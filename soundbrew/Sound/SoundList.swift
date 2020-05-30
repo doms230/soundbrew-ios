@@ -235,9 +235,6 @@ class SoundList: NSObject, PlayerDelegate {
                         (success: Bool, error: Error?) in
                         if (success) {
                             self.sounds[row].isFeatured = shouldAddToFeaturedList
-                           /* if let artistId = sound.artist?.objectId {
-                                self.uiElement.sendAlert("\(sound.title!) has been featured!", toUserId: artistId, shouldIncludeName: false)
-                            }*/
                         }
                     }
                 }

@@ -57,7 +57,7 @@ class Sound {
         self.isFeatured = isFeatured
     }
     
-    func fetchAudioData() {
+    func fetchAudioData(_ shouldPlay: Bool) {
         if self.audioData == nil, let audio = self.audio {            
             audio.getDataInBackground {
                 (audioData: Data?, error: Error?) -> Void in
@@ -70,7 +70,7 @@ class Sound {
                         self.isNextUpToPlay = false
                         let player = Player.sharedInstance
                         if player.player == nil {
-                            player.prepareAudio(audioData, shouldPlay: false)
+                            player.prepareAudio(audioData, shouldPlay: shouldPlay)
                         }
                     }
                     

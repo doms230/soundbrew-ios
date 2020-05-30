@@ -81,10 +81,8 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                 } else if likeSound.currentUserTipDate != nil {
                     self.likeSoundButton.isEnabled = false
                     self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-                    
                 } else if like.rewardedAd == nil {
                     like.setUpPayment()
-                    
                 } else {
                     self.likeSoundButton.isEnabled = true
                     self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
@@ -753,8 +751,8 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     
     //mark: ads
     //mark: Banner Ads
-    let liveBannerAdUnitId = "ca-app-pub-9150756002517285~6608111231"
-    let testBannerAdUnitId = "ca-app-pub-9150756002517285/6558051480"
+    let testBannerAdUnitId = "ca-app-pub-9150756002517285~6608111231"
+    let liveBannerAdUnitId = "ca-app-pub-9150756002517285/6558051480"
     var bannerView = GADBannerView()
     var bannerRemoveAdsButton = UIButton()
     
