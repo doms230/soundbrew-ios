@@ -44,22 +44,24 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     }
     
     func update() {
-        let url = self.baseURL!.appendingPathComponent("update")
-        let parameters: Parameters = [
-            "email": "\(self.artist!.email!)",
-            "name": "\(self.artist!.username!)",
-            "customerId": self.artist!.customerId!]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                switch responseJSON.result {
-                case .success(let json):
-                    let json = JSON(json)
-                    print(json)
-                case .failure(let error):
-                    print(error)
-                }
+        if let email = self.artist?.email, let username = self.artist?.username, let customerId = self.artist?.customerId {
+            let url = self.baseURL!.appendingPathComponent("update")
+            let parameters: Parameters = [
+                "email": "\(email)",
+                "name": "\(username)",
+                "customerId": customerId]
+            
+            AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+                .validate(statusCode: 200..<300)
+                .responseJSON { responseJSON in
+                    switch responseJSON.result {
+                    case .success(let json):
+                        let json = JSON(json)
+                        print(json)
+                    case .failure(let error):
+                        print(error)
+                    }
+            }
         }
     }
     

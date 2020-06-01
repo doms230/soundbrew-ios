@@ -119,7 +119,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
                 make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
                 make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-                make.bottom.equalTo(self.view).offset(-((self.tabBarController?.tabBar.frame.height)!) + CGFloat(self.uiElement.bottomOffset))
+                if let tabBarHeight = self.tabBarController?.tabBar.frame.height {
+                    make.bottom.equalTo(self.view).offset(-(tabBarHeight) + CGFloat(self.uiElement.bottomOffset))
+                } else {
+                    make.bottom.equalTo(self.view).offset(self.uiElement.bottomOffset * 2)
+                }
             }
             
             self.view.addSubview(self.connectWithUsButton)

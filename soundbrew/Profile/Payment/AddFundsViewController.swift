@@ -61,10 +61,10 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
         
-            if let currentUser = PFUser.current() {
+        if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email {
                 let payment = Payment.shared
                 let paymentAmount = paymentContext.paymentAmount
-                payment.createPaymentIntent(currentUser.objectId!, email: currentUser.email!, name: currentUser.username!, amount: paymentAmount, currency: paymentContext.paymentCurrency, description: "") { [weak self] (result) in
+                payment.createPaymentIntent(objectId, email: email, name: currentUser.username!, amount: paymentAmount, currency: paymentContext.paymentCurrency, description: "") { [weak self] (result) in
                             
                     guard self != nil else {
                         // View controller was deallocated
