@@ -252,6 +252,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func setUpMiniPlayer() {
+        print("set up mini player")
         let miniPlayerView = MiniPlayerView.sharedInstance
         if let tabBarController = self.tabBarController, !tabBarController.tabBar.subviews.contains(miniPlayerView) {
            // miniPlayerView.superViewController = self

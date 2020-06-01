@@ -55,9 +55,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 let miniPlayer = MiniPlayerView.sharedInstance
                 miniPlayer.removeFromSuperview()
                 for subview in tabBar.subviews{
-                    if subview == miniPlayer {
+                    print("remove: \(subview)")
+                    subview.removeFromSuperview()
+                    /*if subview == miniPlayer {
+                        print("remove mini Player")
                         subview.removeFromSuperview()
-                    }
+                    }*/
                 }
             }
             

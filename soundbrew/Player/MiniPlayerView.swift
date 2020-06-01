@@ -271,6 +271,7 @@ class MiniPlayerView: UIButton {
     @objc func didReceivePreparingSoundNotification() {
         self.activitySpinner.isHidden = false
         playBackButton.isHidden = true
+        playBackSlider.value = 0
     }
     
     func setCurrentSoundView(_ sound: Sound) {
