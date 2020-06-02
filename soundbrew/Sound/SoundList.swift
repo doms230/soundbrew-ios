@@ -169,19 +169,21 @@ class SoundList: NSObject, PlayerDelegate {
 
                 let menuAlert = UIAlertController(title: "\(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
                     
-                if let isDraft = sound.isDraft, isDraft {
-                    let localizedEditSound = NSLocalizedString("editSound", comment: "")
-                    menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
+                
+                let localizedEditSound = NSLocalizedString("editSound", comment: "")
+                menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
+                    if let isDraft = sound.isDraft, isDraft {
                         self.selectedSound = sound
                         self.target.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
-                    }))
-                }
+                    } else {
+                        self.addSoundBackToDraftsToEdit(sound, row: row)
+                    }
+                }))
 
                 let localizedDeleteSound = NSLocalizedString("deleteSound", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
                     self.deleteSong(sound.objectId!, row: row)
                     }))
-                
                     
                 let localizedCancel = NSLocalizedString("cancel", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -235,6 +237,32 @@ class SoundList: NSObject, PlayerDelegate {
                         (success: Bool, error: Error?) in
                         if (success) {
                             self.sounds[row].isFeatured = shouldAddToFeaturedList
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func addSoundBackToDraftsToEdit(_ sound: Sound, row: Int) {
+        if let objectId = sound.objectId {
+            let query = PFQuery(className: "Post")
+            query.getObjectInBackground(withId: objectId) {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    object["isDraft"] = true
+                    object["isRemoved"] = true
+                    object.saveEventually {
+                        (success: Bool, error: Error?) in
+                        if (success) {
+                            object.saveEventually()
+                            self.sounds.remove(at: row)
+                            DispatchQueue.main.async {
+                                let menuAlert = UIAlertController(title: "Go to Drafts", message: "\(sound.title ?? "Your sound") has been added to your drafts on the new sounds page. You can edit and re-release from there.", preferredStyle: .alert)
+                                menuAlert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+                                self.target.present(menuAlert, animated: true, completion: nil)
+                                self.tableView?.reloadData()
+                            }
                         }
                     }
                 }

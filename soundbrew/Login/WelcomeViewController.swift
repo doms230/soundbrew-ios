@@ -141,7 +141,7 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(appLabel.snp.top)
         }
         
-        let signupButton = signInWithButton("Sign Up", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 0, shouldShowBorderColor: true)
+        let signupButton = signInWithButton("Sign Up", titleColor: .black, backgroundColor: .white, imageName: nil, tag: 0, shouldShowBorderColor: false)
         self.view.addSubview(signupButton)
         signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -150,27 +150,29 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let twitterButton = signInWithButton("Twitter", titleColor: .white, backgroundColor: color.uicolorFromHex(0x1DA1F2), imageName: "twitter", tag: 1, shouldShowBorderColor: false)
+        let twitterButton = signInWithButton("Sign in with Twitter", titleColor: .white, backgroundColor: color.uicolorFromHex(0x1DA1F2), imageName: "twitter", tag: 1, shouldShowBorderColor: false)
         twitterButton.titleLabel?.textAlignment = .left
         self.view.addSubview(twitterButton)
         twitterButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.width.equalTo((Int(viewWidth) / 2) - 20)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset * 2)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let appleButton = signInWithButton("Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
+        let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
         appleButton.titleLabel?.textAlignment = .left
         self.view.addSubview(appleButton)
         appleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.width.equalTo((Int(viewWidth) / 2) - 20)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(twitterButton)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: false)
+        let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: true)
         self.view.addSubview(signInButton)
         signInButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
