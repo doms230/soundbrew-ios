@@ -28,8 +28,9 @@ class Artist {
     var customerId: String?
     var balance: Int?
     var friendObjectIds: [String]?
+    var accountId: String?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, accountId: String?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -46,6 +47,7 @@ class Artist {
         self.balance = balance
         self.earnings = earnings
         self.friendObjectIds = friendObjectIds
+        self.accountId = accountId
     }
     
     func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
@@ -88,6 +90,10 @@ class Artist {
                 
                 if let website = user["website"] as? String {
                     self.website = website
+                }
+                
+                if let accountId = user["accountId"] as? String {
+                    self.accountId = accountId
                 }
                 
                 if let cell = profileCell {

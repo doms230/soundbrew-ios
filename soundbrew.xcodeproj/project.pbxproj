@@ -15,6 +15,7 @@
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
+		E44A66492489B7A6004672DC /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A66482489B7A6004672DC /* Account.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -153,6 +154,7 @@
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
+		E44A66482489B7A6004672DC /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -416,6 +418,7 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				E44A66482489B7A6004672DC /* Account.swift */,
 				E43AB28E241D7181003263C9 /* Follow.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
@@ -801,6 +804,7 @@
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
+				E44A66492489B7A6004672DC /* Account.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */,
 				F2BE03ED22CAD610009A5760 /* Payment.swift in Sources */,

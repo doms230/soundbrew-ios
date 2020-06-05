@@ -300,7 +300,7 @@ class UIElement {
     }
     
     func newArtistObject(_ user: PFObject) -> Artist {
-        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+        let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil)
         
         if PFUser.current() != nil {
             if user.objectId! == PFUser.current()!.objectId {
@@ -332,6 +332,10 @@ class UIElement {
         
         if let website = user["website"] as? String {
             artist.website = website
+        }
+        
+        if let accountId = user["accountId"] as? String {
+            artist.accountId = accountId
         }
         
         return artist 
@@ -378,7 +382,7 @@ class UIElement {
         sound.isFeatured = object["isFeatured"] as? Bool
         
         let userId = object["userId"] as! String
-        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil)
         
         sound.artist = artist
         return sound

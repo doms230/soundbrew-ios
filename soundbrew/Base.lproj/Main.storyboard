@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Lj6-sG-10O">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -11,7 +11,7 @@
         <!--Add Funds View Controller-->
         <scene sceneID="yMB-m9-2Wb">
             <objects>
-                <viewController id="1du-u4-rT6" customClass="AddFundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="1du-u4-rT6" customClass="AddFundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="e8b-dp-1c2">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -28,7 +28,7 @@
         <!--New Sound View Controller-->
         <scene sceneID="54r-NH-38P">
             <objects>
-                <viewController id="NMN-7Y-7rd" customClass="NewSoundViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="NMN-7Y-7rd" customClass="NewSoundViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="A3F-jb-vka">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -51,7 +51,7 @@
         <!--Sound Info View Controller-->
         <scene sceneID="R29-0C-CbA">
             <objects>
-                <viewController id="dwr-Yl-wEr" customClass="SoundInfoViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="dwr-Yl-wEr" customClass="SoundInfoViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hnj-xW-x0E">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -73,7 +73,7 @@
         <!--New Credit View Controller-->
         <scene sceneID="gMb-z9-KTT">
             <objects>
-                <viewController id="lxV-jO-Kiy" customClass="NewCreditViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="lxV-jO-Kiy" customClass="NewCreditViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3R5-4q-yuI">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -119,7 +119,7 @@
         <!--Container View Controller-->
         <scene sceneID="Sfx-x4-dys">
             <objects>
-                <viewController id="SLi-Nt-QNQ" customClass="ContainerViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="SLi-Nt-QNQ" customClass="ContainerViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xgc-0j-19W">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -140,7 +140,7 @@
         <!--Settings View Controller-->
         <scene sceneID="hGd-cC-7F9">
             <objects>
-                <viewController storyboardIdentifier="rightScreen" id="x4F-XS-TSO" customClass="SettingsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="rightScreen" id="x4F-XS-TSO" customClass="SettingsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1SG-aW-yZS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -156,7 +156,7 @@
         <!--People View Controller-->
         <scene sceneID="qm0-cr-3uq">
             <objects>
-                <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -176,7 +176,7 @@
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
             <objects>
-                <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gtO-iq-VKq">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -201,7 +201,7 @@
         <!--Profile View Controller-->
         <scene sceneID="CKO-y2-IBC">
             <objects>
-                <viewController id="CXo-oV-yRo" customClass="ProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="CXo-oV-yRo" customClass="ProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HCd-Pg-5WJ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -223,7 +223,7 @@
         <!--Edit Profile View Controller-->
         <scene sceneID="WTu-yJ-a88">
             <objects>
-                <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Eku-wh-htc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -244,7 +244,7 @@
         <!--Edit Bio View Controller-->
         <scene sceneID="UXW-zh-5xg">
             <objects>
-                <viewController id="3jl-7I-oti" customClass="EditBioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="3jl-7I-oti" customClass="EditBioViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eBy-XP-uAL">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -261,7 +261,7 @@
         <!--Choose Tags View Controller-->
         <scene sceneID="M20-Wr-7YN">
             <objects>
-                <viewController id="Wod-6r-vBx" customClass="ChooseTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Wod-6r-vBx" customClass="ChooseTagsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dVL-dQ-Z1D">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -332,7 +332,7 @@
         <!--Home-->
         <scene sceneID="fPV-tP-H57">
             <objects>
-                <viewController title="Home" id="PaH-jC-wog" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Home" id="PaH-jC-wog" customClass="SoundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vNu-jc-DsV">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -354,7 +354,7 @@
         <!--Sounds View Controller-->
         <scene sceneID="uic-Xu-A5d">
             <objects>
-                <viewController id="z2Z-3H-bjC" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="z2Z-3H-bjC" customClass="SoundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="inD-v4-DU1">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -434,7 +434,7 @@
         <!--Sounds View Controller-->
         <scene sceneID="22d-aA-pa8">
             <objects>
-                <viewController id="poT-rp-tYb" customClass="SoundsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="poT-rp-tYb" customClass="SoundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CuL-Nf-2iV">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -459,7 +459,7 @@
         <!--Search View Controller-->
         <scene sceneID="3wX-QT-ffH">
             <objects>
-                <viewController id="Vkq-eO-lz7" customClass="SearchViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Vkq-eO-lz7" customClass="SearchViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7iz-NQ-oQf">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -480,7 +480,7 @@
         <!--Earnings View Controller-->
         <scene sceneID="wwU-qi-IOl">
             <objects>
-                <viewController id="zJZ-n2-4Wd" customClass="EarningsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="zJZ-n2-4Wd" customClass="EarningsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3Pe-9L-Qec">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -560,7 +560,7 @@
         <!--Mentions View Controller-->
         <scene sceneID="qwK-R6-Jl7">
             <objects>
-                <viewController id="mpg-Ld-wKM" customClass="MentionsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="mpg-Ld-wKM" customClass="MentionsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VP1-IL-pMh">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -44,10 +44,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         //let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
         let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
         
+        Stripe.setDefaultPublishableKey(liveStripeKey)
         let config = STPPaymentConfiguration.shared()
-        config.publishableKey = liveStripeKey
+       // config.publishableKey = liveStripeKey
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
-        config.companyName = "Soundbrew Artists"
+        config.companyName = "Soundbrew, Inc."
         
         let configuration = ParseClientConfiguration {
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"

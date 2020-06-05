@@ -125,14 +125,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
+        return 7
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
             return 3
             
-        } else if section == 5 {
+        } else if section == 6 {
             return 9
         }
         
@@ -167,6 +167,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             break
             
         case 4:
+            cell = subScell(indexPath, tableView: tableView)
+            break
+            
+        case 5:
             cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             tableView.separatorInset = .zero
@@ -182,7 +186,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
             break
             
-        case 5:
+        case 6:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             break
@@ -209,6 +213,27 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         case 3:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             self.performSegue(withIdentifier: "showEditBio", sender: self)
+            break
+            
+        case 4:
+            tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
+            if let artist = self.artist, let accountId = artist.accountId, !accountId.isEmpty {
+                //TODO: show account info screen
+            } else {
+                let alertController = UIAlertController (title: "Earn From Your Followers", message: "Release exclusive sounds to followers who subscribe. You can choose which sounds are exclusive.", preferredStyle: .actionSheet)
+                
+                let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
+                    //TODO: show account info screen
+                }
+                alertController.addAction(getStartedAction)
+                
+                let cancelAction = UIAlertAction(title: "Later", style: .default) { (_) -> Void in
+                    self.didFinishProcessingImage = true
+                }
+                alertController.addAction(cancelAction)
+                
+                present(alertController, animated: true, completion: nil)
+            }
             break
             
         default:
@@ -256,9 +281,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if let website = artist?.website {
                 inputText = website
             }
-            break
-            
-        case 4:
             break
             
         default:
@@ -425,6 +447,23 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.tableView.reloadData()
     }
     
+    //MARK: Subscription
+    func subScell(_ indexpath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
+        cell.backgroundColor = .white
+        cell.selectionStyle = .gray
+        tableView.separatorInset = .zero
+        
+        if artist?.accountId == nil {
+            cell.editBioTitle.text = "Subscription"
+            cell.editBioText.text = "FREE"
+        } else {
+            //TODO: Get account id info and set subscription amount 
+        }
+        
+        return cell
+    }
+    
     //MARK: Data
     func updateUserInfo() {
         let customer = Customer.shared
@@ -488,6 +527,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         
                         if let profileImage = user["userImage"] as? PFFileObject {
                             customer.artist?.image = profileImage.url
+                        }
+                        
+                        if let accountId = user["accountId"] as? String {
+                            customer.artist?.accountId = accountId
                         }
                         
                         customer.update()

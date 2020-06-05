@@ -164,7 +164,6 @@ class Like: NSObject, GADRewardedAdDelegate {
     func rewardedAd(_ rewardedAd: GADRewardedAd, userDidEarn reward: GADAdReward) {
         self.rewardedAd = nil
         let rewardAmount = Int(truncating: reward.amount)
-        self.paymentAmount = rewardAmount
         let currentUser = Customer.shared
         var newBalance = 0
         if let currentBalance = currentUser.artist?.balance {
@@ -245,7 +244,7 @@ class Like: NSObject, GADRewardedAdDelegate {
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil)
                     
                     let credit = Credit(objectId: object.objectId, artist: artist, title: nil, percentage: 0)
                     if let title = object["title"] as? String {

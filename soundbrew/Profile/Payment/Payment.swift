@@ -7,11 +7,10 @@
 //
 
 import Foundation
-import Stripe
 import Alamofire
-import SnapKit
 import UIKit
 import SwiftyJSON
+
 class Payment: NSObject {
     let uiElement = UIElement()
     static let shared = Payment()
