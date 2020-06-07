@@ -10,6 +10,7 @@
 import UIKit
 import SnapKit
 import Parse
+import FlagKit
 
 class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
@@ -17,6 +18,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     let color = Color()
     var sound: Sound?
     var isViewTagsFromSound = false
+    
+    let availableCountries = ["United States", "Canada", "United Kingdom", "Australia", "Austria", "Belgium", "Bulgaria", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "India", "Ireland", "Italy", "Japan", "Latvia", "Lithuania", "Luxembourg", "Malta", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
+    let availableCountryCodes = ["US", "CA", "GB", "AU", "AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HK", "IN", "IE", "IT", "JP", "LV", "LT", "LU", "MT", "MX", "NL", "NZ", "NO", "PL", "PT",  "RO", "SG", "SK", "SI", "ES", "SE", "CH"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +31,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if let tagType = self.tagType, tagType != "more" {
             if isViewTagsFromSound {
                 loadTags(nil, searchText: nil, tags: sound?.tags)
+            } else if tagType == "country" {
+                setUpTableView()
             } else {
                loadTags(tagType, searchText: nil, tags: sound?.tags)
             }
@@ -57,7 +63,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     //MARK: done Button
     @objc func didPressChooseTagsDoneButton(_ sender: UIBarButtonItem) {
-        handleTagsForDismissal(true)
+        if tagType == "country" {
+            self.dismiss(animated: true, completion: nil)
+        } else {
+           handleTagsForDismissal(true)
+        }
     }
     
     //MARK: SearchBar
@@ -88,30 +98,36 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         return searchBar
     }()
     
-    func setUpNavigationBar() {        
-        if let tagType = self.tagType {
-            searchBar.placeholder = "\(tagType.capitalized) Tags"
-        }
-        
-        let searchBarItem = UIBarButtonItem(customView: searchBar)
-        
-        if isSelectingTagsForPlaylist {
-            self.navigationItem.rightBarButtonItem = searchBarItem
-            
-        } else if tagType == "more" {
-            let localizedDone = NSLocalizedString("done", comment: "")
-            let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+    func setUpNavigationBar() {
+        if tagType == "country" {
+            let doneButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
-            self.navigationItem.leftBarButtonItem = searchBarItem
-            
-            self.searchBar.becomeFirstResponder()
-            
+            self.uiElement.addTitleView("Your Country?", target: self)
         } else {
-            searchBar.setShowsCancelButton(true, animated: true)
-            self.navigationItem.leftBarButtonItem = searchBarItem
+            if let tagType = self.tagType {
+                searchBar.placeholder = "\(tagType.capitalized) Tags"
+            }
+            
+            let searchBarItem = UIBarButtonItem(customView: searchBar)
+            
+            if isSelectingTagsForPlaylist {
+                self.navigationItem.rightBarButtonItem = searchBarItem
+                
+            } else if tagType == "more" {
+                let localizedDone = NSLocalizedString("done", comment: "")
+                let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+                self.navigationItem.rightBarButtonItem = doneButton
+                self.navigationItem.leftBarButtonItem = searchBarItem
+                
+                self.searchBar.becomeFirstResponder()
+                
+            } else {
+                searchBar.setShowsCancelButton(true, animated: true)
+                self.navigationItem.leftBarButtonItem = searchBarItem
+            }
         }
     }
-    
+        
     lazy var exitButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "dismiss"), for: .normal)
@@ -240,10 +256,16 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if tagType == nil && section == 0 {
             return 1
         }
+        if tagType == "country" {
+            return availableCountries.count
+        }
         return filteredTags.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if tagType == "country" {
+            return countryCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
+        }
         if filteredTags.indices.contains(indexPath.row) {
             return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
         }
@@ -262,7 +284,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if filteredTags.indices.contains(indexPath.row) {
+        if tagType == "country" {
+            let tag = Tag(objectId: self.availableCountryCodes[indexPath.row], name: self.availableCountries[indexPath.row], count: 0, isSelected: false, type: "country", imageURL: nil, uiImage: nil)
+            self.chosenTags.append(tag)
+            self.handleTagsForDismissal(true)
+        } else if filteredTags.indices.contains(indexPath.row) {
             didSelectRowAt(indexPath.row)
         }
     }
@@ -277,11 +303,31 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.performSegue(withIdentifier: "showSounds", sender: self)
         } else {
             if chosenTags.count == 5 {
-                self.uiElement.showAlert("Max Reached", message: "You've reached the max allowed tags.", target: self)
+                self.uiElement.showAlert("Max Reached", message: "Up to 5 additional tags allowed.", target: self)
             } else {
                appendTag(selectedTag)
             }
         }
+    }
+    
+    //MARK: country
+    func countryCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
+        cell.selectionStyle = .gray
+        cell.backgroundColor = Color().black()
+        let country = availableCountries[row]
+        let countryCode = availableCountryCodes[row]
+        cell.profileImage.backgroundColor = .white
+        if let flagImage = Flag(countryCode: countryCode)?.image(style: .circle) {
+            cell.profileImage.image = flagImage
+            cell.profileImage.contentMode = .scaleAspectFill
+        } else {
+            cell.profileImage.image = nil
+            
+        }
+        cell.displayNameLabel.text = country
+        
+        return cell
     }
     
     //MARK: tags

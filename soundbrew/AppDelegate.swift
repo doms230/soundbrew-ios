@@ -85,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                 let url = userActivity.webpageURL!
                 
                 let pathComponents = url.pathComponents
-                print(url.lastPathComponent)
+                
                 if url.host == "www.soundbrew.app" || url.host == "soundbrew.app" {
                     if pathComponents.contains("s") {
                        self.receivedPostId(url.lastPathComponent)

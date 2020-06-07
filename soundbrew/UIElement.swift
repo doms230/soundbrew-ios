@@ -334,7 +334,7 @@ class UIElement {
             artist.website = website
         }
         
-        if let accountId = user["accountId"] as? String {
+        if let accountId = user["accountId"] as? String, !accountId.isEmpty {
             artist.accountId = accountId
         }
         

@@ -92,7 +92,7 @@ class Artist {
                     self.website = website
                 }
                 
-                if let accountId = user["accountId"] as? String {
+                if let accountId = user["accountId"] as? String, !accountId.isEmpty  {
                     self.accountId = accountId
                 }
                 

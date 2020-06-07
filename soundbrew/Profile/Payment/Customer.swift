@@ -54,9 +54,10 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 .validate(statusCode: 200..<300)
                 .responseJSON { responseJSON in
                     switch responseJSON.result {
-                    case .success(let json):
-                        let json = JSON(json)
-                        print(json)
+                    case .success(_):
+                        break
+                        //let json = JSON(json)
+                        //print(json)
                     case .failure(let error):
                         print(error)
                     }

@@ -12,6 +12,8 @@ import Parse
 import NVActivityIndicatorView
 import Kingfisher
 import CropViewController
+import Alamofire
+import SwiftyJSON
 
 class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate, CropViewControllerDelegate {
     
@@ -32,13 +34,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var shouldUpdateEmail = false
     
     var isOnboarding = false
+    
+    var tagType: String!
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
         setupNavigationViews()
+        setupView()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -46,7 +48,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if segue.identifier == "showTags" {
                 let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
                 viewController.tagDelegate = self
-                viewController.tagType = "city"
+                viewController.tagType = tagType
                 
             } else if segue.identifier == "showEditBio" {
                 let viewController = navigationController.topViewController as! EditBioViewController
@@ -67,11 +69,22 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
         
-        if let CurrentArtist = Customer.shared.artist {
-            self.artist = CurrentArtist
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+    }
+    
+    func setupView() {
+        if let currentArtist = Customer.shared.artist {
+            self.artist = currentArtist
+             self.setUpTableView()
+            if let accountId = currentArtist.accountId {
+                self.retreiveAccountIfo(accountId)
+            }
+            
+        } else {
+            self.uiElement.goBackToPreviousViewController(self)
         }
-        
-        self.setUpTableView()
     }
     
     //MARK: Button Actions
@@ -107,6 +120,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     let editProfileImageReuse = "editProfileImageReuse"
     let editProfileInfoReuse = "editProfileInfoReuse"
     let editPrivateInfoReuse = "editPrivateInfoReuse"
+    let privateInfoTitleReuse = "privateInfoTitleReuse"
     let editBioReuse = "editBioReuse"
     let spaceReuse = "spaceReuse"
     func setUpTableView() {
@@ -115,6 +129,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileImageReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPrivateInfoReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: privateInfoTitleReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editBioReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: spaceReuse)
         tableView.backgroundColor = color.black()
@@ -125,14 +140,19 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 9
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
             return 3
-            
-        } else if section == 6 {
+        }
+        
+        if section == 6 && self.artist?.accountId != nil {
+            return 3
+        }
+        
+        if section == 7 {
             return 9
         }
         
@@ -144,26 +164,18 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         switch indexPath.section{
         case 0:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileImageReuse) as? ProfileTableViewCell
-            cell.backgroundColor = Color().darkGray() 
-            tableView.separatorInset = .zero
-            cell.selectionStyle = .none
-            
-            profileImage = cell.profileImage
-            if let image = artist?.image {
-                cell.profileImage.kf.setImage(with: URL(string: image))
-            }
+            cell = profileImageCell(tableView, indexPath: indexPath)
             break
             
         case 1:
-            cell = profileInfo(indexPath, tableView: tableView)
+            cell = profileInfo(tableView, indexPath: indexPath)
             break
             
         case 2:
-            cell = cityCell(indexPath, tableView: tableView)
+            cell = cityCell(tableView, indexPath: indexPath)
             
         case 3:
-            cell = bioCell(indexPath, tableView: tableView)
+            cell = bioCell(tableView, indexPath: indexPath)
             break
             
         case 4:
@@ -171,27 +183,23 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             break
             
         case 5:
-            cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as? ProfileTableViewCell
+            cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
-            tableView.separatorInset = .zero
-            
-            cell.editProfileTitle.text = "Email"
-            emailText = cell.editProfileInput
-            if let email = artist?.email {
-                cell.editProfileInput.text = email
-                
-            } else {
-                cell.editProfileInput.text = PFUser.current()?.email
-                artist?.email = PFUser.current()?.email
-            }
             break
             
         case 6:
+            cell = privateInfoCell(tableView, indexPath: indexPath)
+            break
+            
+        case 7:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
+            
             break
             
         default:
+            cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
+            cell.selectionStyle = .none
             break
         }
         cell.backgroundColor = color.black()
@@ -200,12 +208,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         artist?.website = websiteText.text
+        artist?.email = emailText.text?.lowercased()
+        
         switch indexPath.section {
         case 0:
             showChangeProfilePhotoPicker()
             break
             
         case 2:
+            tagType = "city"
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             self.performSegue(withIdentifier: "showTags", sender: self)
             break
@@ -218,12 +229,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         case 4:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             if let artist = self.artist, let accountId = artist.accountId, !accountId.isEmpty {
-                //TODO: show account info screen
+                //TODO: show option to change subscription price.. Have to have something where users are sent an email alerting about subscription price change.
             } else {
-                let alertController = UIAlertController (title: "Earn From Your Followers", message: "Release exclusive sounds to followers who subscribe. You can choose which sounds are exclusive.", preferredStyle: .actionSheet)
+                let alertController = UIAlertController (title: "Earn From Your Followers", message: "Release exclusive sounds to followers who subscribe. You can choose how much you charge per month and which sounds are exclusive.", preferredStyle: .actionSheet)
                 
                 let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
-                    //TODO: show account info screen
+                    self.tagType = "country"
+                    self.performSegue(withIdentifier: "showTags", sender: self)
                 }
                 alertController.addAction(getStartedAction)
                 
@@ -236,12 +248,26 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
             break
             
+        case 6:
+            if indexPath.row == 1 {
+                //TODO: add bank logic
+            } else if indexPath.row == 2{
+                if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.accountId {
+                    let modal = AccountWebViewController()
+                    modal.accountId = accountId
+                    self.present(modal, animated: true, completion: nil)
+                } else {
+                    self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
+                }
+            }
+            break
+            
         default:
             break
         }
     }
     
-    func profileInfo(_ indexPath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+    func profileInfo(_ tableView: UITableView, indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
         let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
         cell.backgroundColor = .white
@@ -293,7 +319,86 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         return cell
     }
     
+    func privateInfoCell(_ tableView: UITableView, indexPath: IndexPath) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editPrivateInfoReuse) as! ProfileTableViewCell
+        cell.selectionStyle = .none
+        tableView.separatorInset = .zero
+        
+        var indexTitle: String!
+        
+        switch indexPath.row {
+        case 0:
+            indexTitle = "Email"
+            emailText = cell.editProfileInput
+            cell.editProfileInput.isEnabled = true
+            cell.editProfileInput.textColor = .white
+            if let email = artist?.email {
+                cell.editProfileInput.text = email
+                
+            } else {
+                cell.editProfileInput.text = PFUser.current()?.email
+                artist?.email = PFUser.current()?.email
+            }
+            break
+            
+        case 1:
+            indexTitle = "Payout Bank"
+            cell.editProfileInput.textColor = .white
+            cell.editProfileInput.isEnabled = false
+            if let bankTitle = self.bankTitle {
+                cell.editProfileInput.text = bankTitle
+                cell.editProfileInput.textColor = .white
+            } else {
+                cell.editProfileInput.text = "Add Bank"
+                cell.editProfileInput.textColor = color.red()
+            }
+                        
+            break
+            
+        case 2:
+            indexTitle = "Account"
+            cell.editProfileInput.isEnabled = false
+            if let requiresAttentionItems = self.requiresAttentionItems {
+                if requiresAttentionItems > 0 {
+                    var itemTitle = "1 item"
+                    itemTitle = "\(self.requiresAttentionItems ?? 2) items"
+                    cell.editProfileInput.text = "Requires Attention: \(itemTitle)"
+                    cell.editProfileInput.textColor = color.red()
+                } else {
+                    cell.editProfileInput.text = "In Good Standing"
+                    cell.editProfileInput.textColor = color.green()
+                }
+
+            } else {
+                cell.editProfileInput.text = ""
+                cell.editProfileInput.textColor = .darkGray
+            }
+            break
+            
+        default:
+            break
+        }
+        
+        cell.editProfileTitle.text = indexTitle
+
+        return cell
+        
+    }
+    
     //mark: media
+    func profileImageCell(_ tableView: UITableView, indexPath: IndexPath) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileImageReuse) as! ProfileTableViewCell
+        cell.backgroundColor = Color().darkGray()
+        tableView.separatorInset = .zero
+        cell.selectionStyle = .none
+        
+        profileImage = cell.profileImage
+        if let image = artist?.image {
+            cell.profileImage.kf.setImage(with: URL(string: image))
+        }
+        return cell
+    }
+    
     var didFinishProcessingImage = true
     func showChangeProfilePhotoPicker() {
         didFinishProcessingImage = false
@@ -386,7 +491,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     //MARK: city
-    func cityCell(_ indexpath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+    func cityCell(_ tableView: UITableView, indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
@@ -409,15 +514,22 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         return cell
     }
     
+    //MARK: Tag
     func receivedTags(_ chosenTags: Array<Tag>?) {
-        if let tag = chosenTags {
-            artist?.city = tag[0].name
+        if let tagArray = chosenTags {
+            let tag = tagArray[0]
+            if tag.type == "country",  let countryCode = tag.objectId, let email = artist?.email {
+                self.createNewAccount(countryCode, email: email)
+            } else if tag.type == "city" {
+               artist?.city = tag.name
+            }
         }
         self.tableView.reloadData()
+        //TODO: if tagType == country, create Stripe custom account, save details to user profile, then show Subscription section and required info
     }
     
     //MARK: bio
-    func bioCell(_ indexpath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
+    func bioCell(_ tableView: UITableView, indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
@@ -458,7 +570,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell.editBioTitle.text = "Subscription"
             cell.editBioText.text = "FREE"
         } else {
-            //TODO: Get account id info and set subscription amount 
+            cell.editBioTitle.text = "Subscription"
+            cell.editBioText.text = "FREE"
         }
         
         return cell
@@ -599,5 +712,91 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         return true
+    }
+    
+    //MARK: Account
+    let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
+    var requiresAttentionItems: Int?
+    var bankTitle: String?
+    
+    func createNewAccount(_ countryCode: String, email: String) {
+        self.startAnimating()
+        let url = self.baseURL!.appendingPathComponent("create")
+        let parameters: Parameters = [
+            "country": countryCode,
+            "email": email]
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    self.updateUserInfoWithAccountNumber(json["id"].stringValue)
+                case .failure(let error):
+                    self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
+                }
+        }
+    }
+    
+    func retreiveAccountIfo(_ accountId: String) {
+        let url = self.baseURL!.appendingPathComponent("retrieve")
+        let parameters: Parameters = [
+            "accountId": accountId]
+        
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    print(json)
+                    if let currentlyDue = json["requirements"]["currently_due"].arrayObject as? [String], let eventuallyDue = json["requirements"]["eventually_due"].arrayObject as? [String], let pastDue = json["requirements"]["past_due"].arrayObject as? [String] {
+                        if !currentlyDue.isEmpty  && !eventuallyDue.isEmpty && !pastDue.isEmpty {
+                            self.requiresAttentionItems = currentlyDue.count + eventuallyDue.count + pastDue.count
+                            
+                            self.shouldSubstractRequiresAttentionNumber(currentlyDue)
+                            self.shouldSubstractRequiresAttentionNumber(eventuallyDue)
+                            self.shouldSubstractRequiresAttentionNumber(pastDue)
+                        }
+                    }
+                    
+                    if let bankName = json["external_accounts"]["data"][0]["bank_name"].string, let last4 = json["external_accounts"]["data"][0]["last4"].string {
+                        self.bankTitle = "\(bankName) \(last4)"
+                    }
+                    
+                    self.tableView.reloadData()
+                case .failure(let error):
+                    print(error)
+                }
+        }
+    }
+    
+    func shouldSubstractRequiresAttentionNumber(_ due: [String]) {
+        //Don't want user going to Stripe Account Link if they don't have to.
+        if due.contains("external_account") {
+            self.requiresAttentionItems = self.requiresAttentionItems! - 1
+        }
+    }
+    
+    func updateUserInfoWithAccountNumber(_ accountId: String) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let user = user {
+                user["accountId"] = accountId
+                user.saveInBackground() {
+                    (success: Bool, error: Error?) in
+                    self.stopAnimating()
+                    if (success) {
+                        self.artist?.accountId = accountId
+                        Customer.shared.artist?.accountId = accountId
+                        self.tableView.reloadData()
+                    } else if let error = error {
+                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
+                    }
+                }
+            }
+        }
     }
 }

@@ -45,4 +45,5 @@ target 'soundbrew' do
   pod 'UICircularProgressRing'
   #pod 'AppCenterAnalytics'
   #pod 'OnboardKit'
+  pod 'FlagKit'
 end

@@ -440,7 +440,7 @@ class ProfileTableViewCell: UITableViewCell {
 
             break
             
-        case "editPrivateInfoReuse":
+        case "privateInfoTitleReuse":
             let localizedPrivateInformation = NSLocalizedString("privateInformation", comment: "")
             privateInformationLabel = uiElement.soundbrewLabel(localizedPrivateInformation, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 17)!, numberOfLines: 0)
             self.addSubview(privateInformationLabel)
@@ -448,12 +448,15 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
+            break
             
+        case "editPrivateInfoReuse":
             self.addSubview(editProfileTitle)
             editProfileTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
-                make.top.equalTo(privateInformationLabel.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
