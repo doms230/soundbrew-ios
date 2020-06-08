@@ -47,7 +47,6 @@ class AccountWebViewController: UIViewController, WKUIDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
-    
     //MARK: Account
     func getAccountLink(_ accountId: String) {
         let baseURL = URL(string: "https://www.soundbrew.app/accounts/")

@@ -250,15 +250,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 6:
             if indexPath.row == 1 {
-                //TODO: add bank logic
+                self.showBankAlert()
             } else if indexPath.row == 2{
-                if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.accountId {
-                    let modal = AccountWebViewController()
-                    modal.accountId = accountId
-                    self.present(modal, animated: true, completion: nil)
-                } else {
-                    self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
-                }
+
             }
             break
             
@@ -352,7 +346,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 cell.editProfileInput.text = "Add Bank"
                 cell.editProfileInput.textColor = color.red()
             }
-                        
             break
             
         case 2:
@@ -382,7 +375,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.editProfileTitle.text = indexTitle
 
         return cell
-        
     }
     
     //mark: media
@@ -525,7 +517,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
         }
         self.tableView.reloadData()
-        //TODO: if tagType == country, create Stripe custom account, save details to user profile, then show Subscription section and required info
     }
     
     //MARK: bio
@@ -718,6 +709,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
     var requiresAttentionItems: Int?
     var bankTitle: String?
+    var bankAccountId: String?
+    var accountCountry: String!
+    var accountCurrency: String!
     
     func createNewAccount(_ countryCode: String, email: String) {
         self.startAnimating()
@@ -754,15 +748,29 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     if let currentlyDue = json["requirements"]["currently_due"].arrayObject as? [String], let eventuallyDue = json["requirements"]["eventually_due"].arrayObject as? [String], let pastDue = json["requirements"]["past_due"].arrayObject as? [String] {
                         if !currentlyDue.isEmpty  && !eventuallyDue.isEmpty && !pastDue.isEmpty {
                             self.requiresAttentionItems = currentlyDue.count + eventuallyDue.count + pastDue.count
-                            
                             self.shouldSubstractRequiresAttentionNumber(currentlyDue)
                             self.shouldSubstractRequiresAttentionNumber(eventuallyDue)
                             self.shouldSubstractRequiresAttentionNumber(pastDue)
+                        } else {
+                            self.requiresAttentionItems = 0
                         }
                     }
                     
                     if let bankName = json["external_accounts"]["data"][0]["bank_name"].string, let last4 = json["external_accounts"]["data"][0]["last4"].string {
                         self.bankTitle = "\(bankName) \(last4)"
+                    }
+                    
+                    if let bankAccountId = json["external_accounts"]["data"][0]["id"].string {
+                        self.bankAccountId = bankAccountId
+                        print("current bank id: \(bankAccountId)")
+                    }
+                    
+                    if let country = json["country"].string {
+                        self.accountCountry = country
+                    }
+                    
+                    if let currency = json["default_currency"].string {
+                        self.accountCurrency = currency
                     }
                     
                     self.tableView.reloadData()
@@ -798,5 +806,43 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             }
         }
+    }
+    
+    func showRequireAccountAttention() {
+        if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.accountId {
+            let modal = AccountWebViewController()
+            modal.accountId = accountId
+            self.present(modal, animated: true, completion: nil)
+        } else {
+            self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
+        }
+    }
+    
+    func showBankAlert() {
+        if let banktitle = self.bankTitle, let bankAccountId =  self.bankAccountId {
+            let alertController = UIAlertController (title: "Replace current Bank Account?", message: "\(banktitle)", preferredStyle: .actionSheet)
+            
+            let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
+                self.showBank(bankAccountId)
+            }
+            alertController.addAction(getStartedAction)
+            
+            let cancelAction = UIAlertAction(title: "No", style: .cancel) { (_) -> Void in
+            }
+            alertController.addAction(cancelAction)
+            
+            present(alertController, animated: true, completion: nil)
+        } else {
+            self.showBank(nil)
+        }
+    }
+    
+    func showBank(_ bankAccountId: String?) {
+        let modal = NewBankViewController()
+        modal.currentBankAccountId = bankAccountId
+        modal.currency = self.accountCurrency
+        modal.country = self.accountCountry
+        modal.accountId = self.artist!.accountId!
+        self.present(modal, animated: true, completion: nil)
     }
 }

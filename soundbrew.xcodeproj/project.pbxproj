@@ -16,6 +16,7 @@
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
+		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -155,6 +156,7 @@
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
+		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -429,6 +431,7 @@
 				F28A9861222FA5F200C96EED /* EditBioViewController.swift */,
 				F2860643232823DF00399F2A /* PeopleViewController.swift */,
 				E44A664B248C4BE1004672DC /* AccountWebViewController.swift */,
+				E44A664D248D835A004672DC /* NewBankViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -784,6 +787,7 @@
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */,
 				E4C9DCEF23E10FE6003835E5 /* CommentTableViewCell.swift in Sources */,
+				E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
 				F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */,

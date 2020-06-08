@@ -146,7 +146,7 @@ class UIElement {
     func showTextFieldErrorMessage(_ UITextField: UITextField, text: String) {
         DispatchQueue.main.async {
             UITextField.attributedPlaceholder = NSAttributedString(string: text,
-                                                                 attributes:[NSAttributedString.Key.foregroundColor: UIColor.red])
+                                                                   attributes:[NSAttributedString.Key.foregroundColor: self.color.red()])
             UITextField.text = ""
         }
     }
