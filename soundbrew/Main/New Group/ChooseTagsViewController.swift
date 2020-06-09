@@ -22,6 +22,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     let availableCountries = ["United States", "Canada", "United Kingdom", "Australia", "Austria", "Belgium", "Bulgaria", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "India", "Ireland", "Italy", "Japan", "Latvia", "Lithuania", "Luxembourg", "Malta", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
     let availableCountryCodes = ["US", "CA", "GB", "AU", "AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HK", "IN", "IE", "IT", "JP", "LV", "LT", "LU", "MT", "MX", "NL", "NZ", "NO", "PL", "PT",  "RO", "SG", "SK", "SI", "ES", "SE", "CH"]
     
+    var prices = [Price]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
@@ -31,7 +33,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if let tagType = self.tagType, tagType != "more" {
             if isViewTagsFromSound {
                 loadTags(nil, searchText: nil, tags: sound?.tags)
-            } else if tagType == "country" {
+            } else if tagType == "country" || tagType == "price" {
                 setUpTableView()
             } else {
                loadTags(tagType, searchText: nil, tags: sound?.tags)
@@ -99,11 +101,16 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setUpNavigationBar() {
-        if tagType == "country" {
+        if tagType == "country" || tagType == "price" {
             let doneButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
-            self.uiElement.addTitleView("Your Country?", target: self)
-        } else {
+            if tagType == "price" {
+                self.uiElement.addTitleView("Choose a Price", target: self)
+            } else {
+               self.uiElement.addTitleView("Your Country?", target: self)
+            }
+            
+        }  else {
             if let tagType = self.tagType {
                 searchBar.placeholder = "\(tagType.capitalized) Tags"
             }
@@ -118,7 +125,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
                 self.navigationItem.rightBarButtonItem = doneButton
                 self.navigationItem.leftBarButtonItem = searchBarItem
-                
                 self.searchBar.becomeFirstResponder()
                 
             } else {
@@ -258,6 +264,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         if tagType == "country" {
             return availableCountries.count
+        } else if tagType == "price" {
+            return prices.count
         }
         return filteredTags.count
     }
@@ -265,6 +273,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tagType == "country" {
             return countryCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
+        } else if tagType == "price" {
+            return priceCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
         }
         if filteredTags.indices.contains(indexPath.row) {
             return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
@@ -286,6 +296,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.deselectRow(at: indexPath, animated: true)
         if tagType == "country" {
             let tag = Tag(objectId: self.availableCountryCodes[indexPath.row], name: self.availableCountries[indexPath.row], count: 0, isSelected: false, type: "country", imageURL: nil, uiImage: nil)
+            self.chosenTags.append(tag)
+            self.handleTagsForDismissal(true)
+        } else if tagType == "price" {
+            let price = self.prices[indexPath.row]
+            let tag = Tag(objectId: price.objectId, name: nil, count: price.amount, isSelected: false, type: "price", imageURL: nil, uiImage: nil)
             self.chosenTags.append(tag)
             self.handleTagsForDismissal(true)
         } else if filteredTags.indices.contains(indexPath.row) {
@@ -327,6 +342,18 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         cell.displayNameLabel.text = country
         
+        return cell
+    }
+    
+    //MARK: price
+    func priceCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
+        cell.selectionStyle = .gray
+        cell.backgroundColor = Color().black()
+        let price = self.prices[row]
+        cell.profileImage.backgroundColor = .black
+        cell.profileImage.image = UIImage(named: "dollar_sign")
+        cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(price.amount, currency: "")
         return cell
     }
     

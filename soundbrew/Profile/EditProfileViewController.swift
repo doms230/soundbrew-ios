@@ -41,6 +41,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         super.viewDidLoad()
         setupNavigationViews()
         setupView()
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -49,6 +50,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
                 viewController.tagDelegate = self
                 viewController.tagType = tagType
+                if tagType == "price" {
+                    viewController.prices = self.availablePrices
+                }
                 
             } else if segue.identifier == "showEditBio" {
                 let viewController = navigationController.topViewController as! EditBioViewController
@@ -229,7 +233,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         case 4:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             if let artist = self.artist, let accountId = artist.accountId, !accountId.isEmpty {
-                //TODO: show option to change subscription price.. Have to have something where users are sent an email alerting about subscription price change.
+                if artist.priceId == nil {
+                    self.getAvailablePrices()
+                } else {
+                    self.showPriceAlert()
+                }
             } else {
                 let alertController = UIAlertController (title: "Earn From Your Followers", message: "Release exclusive sounds to followers who subscribe. You can choose how much you charge per month and which sounds are exclusive.", preferredStyle: .actionSheet)
                 
@@ -252,7 +260,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             if indexPath.row == 1 {
                 self.showBankAlert()
             } else if indexPath.row == 2{
-
+                showRequireAccountAttention()
             }
             break
             
@@ -512,11 +520,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             let tag = tagArray[0]
             if tag.type == "country",  let countryCode = tag.objectId, let email = artist?.email {
                 self.createNewAccount(countryCode, email: email)
+            } else if tag.type == "price", let priceId = tag.objectId {
+                self.updateUserInfoWithAccountNumberOrPrice(nil, priceId: priceId)
             } else if tag.type == "city" {
                artist?.city = tag.name
+                self.tableView.reloadData()
             }
         }
-        self.tableView.reloadData()
     }
     
     //MARK: bio
@@ -556,13 +566,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
         tableView.separatorInset = .zero
+        cell.editBioTitle.text = "Subscription"
         
         if artist?.accountId == nil {
-            cell.editBioTitle.text = "Subscription"
-            cell.editBioText.text = "FREE"
-        } else {
-            cell.editBioTitle.text = "Subscription"
-            cell.editBioText.text = "FREE"
+            cell.editBioText.text = "NONE"
+        } else if let priceId = artist?.priceId {
+            cell.editBioText.text = "loading..."
+            artist?.getAccountPrice(priceId, priceInput: cell.editBioText)
         }
         
         return cell
@@ -712,6 +722,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var bankAccountId: String?
     var accountCountry: String!
     var accountCurrency: String!
+    var availablePrices = [Price]()
     
     func createNewAccount(_ countryCode: String, email: String) {
         self.startAnimating()
@@ -726,7 +737,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    self.updateUserInfoWithAccountNumber(json["id"].stringValue)
+                    self.updateUserInfoWithAccountNumberOrPrice(json["id"].stringValue, priceId: nil)
                 case .failure(let error):
                     self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
                 }
@@ -744,7 +755,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    print(json)
+                  //  print(json)
                     if let currentlyDue = json["requirements"]["currently_due"].arrayObject as? [String], let eventuallyDue = json["requirements"]["eventually_due"].arrayObject as? [String], let pastDue = json["requirements"]["past_due"].arrayObject as? [String] {
                         if !currentlyDue.isEmpty  && !eventuallyDue.isEmpty && !pastDue.isEmpty {
                             self.requiresAttentionItems = currentlyDue.count + eventuallyDue.count + pastDue.count
@@ -780,6 +791,36 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    func getAvailablePrices() {
+        if let currency = self.accountCurrency {
+            let url = self.baseURL!.appendingPathComponent("listPrices")
+            let parameters: Parameters = [
+                "currency": currency]
+            
+            AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+                .validate(statusCode: 200..<300)
+                .responseJSON { responseJSON in
+                    switch responseJSON.result {
+                    case .success(let json):
+                        self.availablePrices.removeAll()
+                        let json = JSON(json)
+                        for (_,subJson):(String, JSON) in json["data"] {
+                            if let objectId = subJson["id"].string, let amount = subJson["unit_amount"].int {
+                                let price = Price(objectId, amount: amount)
+                                self.availablePrices.append(price)
+                            }
+                        }
+                        self.availablePrices.sort(by: {$0.amount > $1.amount})
+                        self.showPricePicker()
+                    case .failure(let error):
+                        self.uiElement.showAlert("Error Loading Prices", message: error.localizedDescription, target: self)
+                    }
+            }
+        } else {
+            self.uiElement.showAlert("No Currency", message: "We were unable to retrieve your account's currency.", target: self)
+        }
+    }
+    
     func shouldSubstractRequiresAttentionNumber(_ due: [String]) {
         //Don't want user going to Stripe Account Link if they don't have to.
         if due.contains("external_account") {
@@ -787,18 +828,28 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func updateUserInfoWithAccountNumber(_ accountId: String) {
+    func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?, priceId: String?) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
             if let user = user {
-                user["accountId"] = accountId
-                user.saveInBackground() {
+                if let accountId = accountId {
+                    user["accountId"] = accountId
+                } else if let priceId = priceId {
+                    user["priceId"] = priceId
+                }
+                user.saveEventually {
                     (success: Bool, error: Error?) in
                     self.stopAnimating()
                     if (success) {
-                        self.artist?.accountId = accountId
-                        Customer.shared.artist?.accountId = accountId
+                        if let accountId = accountId {
+                            self.artist?.accountId = accountId
+                            Customer.shared.artist?.accountId = accountId
+                        } else if let priceId = priceId {
+                            self.artist?.priceId = priceId
+                            Customer.shared.artist?.priceId = priceId
+                        }
+
                         self.tableView.reloadData()
                     } else if let error = error {
                         UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
@@ -823,7 +874,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             let alertController = UIAlertController (title: "Replace current Bank Account?", message: "\(banktitle)", preferredStyle: .actionSheet)
             
             let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
-                self.showBank(bankAccountId)
+                self.showAddBankView(bankAccountId)
             }
             alertController.addAction(getStartedAction)
             
@@ -833,16 +884,46 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
             present(alertController, animated: true, completion: nil)
         } else {
-            self.showBank(nil)
+            self.showAddBankView(nil)
         }
     }
     
-    func showBank(_ bankAccountId: String?) {
+    func showAddBankView(_ bankAccountId: String?) {
         let modal = NewBankViewController()
         modal.currentBankAccountId = bankAccountId
         modal.currency = self.accountCurrency
         modal.country = self.accountCountry
         modal.accountId = self.artist!.accountId!
         self.present(modal, animated: true, completion: nil)
+    }
+    
+    func showPriceAlert() {
+        let alertController = UIAlertController (title: "Change your Subscription Price?", message: "Doing so will notify your subscribers of the change.", preferredStyle: .actionSheet)
+        
+        let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
+            self.getAvailablePrices()
+        }
+        alertController.addAction(getStartedAction)
+        
+        let cancelAction = UIAlertAction(title: "No", style: .cancel) { (_) -> Void in
+        }
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func showPricePicker() {
+        self.tagType = "price"
+        self.performSegue(withIdentifier: "showTags", sender: self)
+    }
+}
+
+class Price {
+    var objectId: String!
+    var amount: Int!
+    
+    init(_ objectId: String!, amount: Int!) {
+        self.objectId = objectId
+        self.amount = amount
     }
 }

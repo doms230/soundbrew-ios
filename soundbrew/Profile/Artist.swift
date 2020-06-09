@@ -10,6 +10,8 @@
 import Foundation
 import Parse
 import Kingfisher
+import SwiftyJSON
+import Alamofire
 
 class Artist {
     var objectId: String!
@@ -29,8 +31,9 @@ class Artist {
     var balance: Int?
     var friendObjectIds: [String]?
     var accountId: String?
+    var priceId: String?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, accountId: String?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, accountId: String?, priceId: String?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -48,6 +51,7 @@ class Artist {
         self.earnings = earnings
         self.friendObjectIds = friendObjectIds
         self.accountId = accountId
+        self.priceId = priceId
     }
     
     func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
@@ -183,6 +187,28 @@ class Artist {
         }
         
         return cell
+    }
+    
+    func getAccountPrice(_ priceId: String, priceInput: UILabel) {
+        let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
+        let url = baseURL!.appendingPathComponent("retrievePrice")
+        let parameters: Parameters = [
+            "priceId": priceId]
+        
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    if let amount = json["unit_amount"].int, let _ = json["currency"].string {
+                        let amountAsString = UIElement().convertCentsToDollarsAndReturnString(amount, currency: "$")
+                        priceInput.text = amountAsString
+                    }
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+        }
     }
 }
 

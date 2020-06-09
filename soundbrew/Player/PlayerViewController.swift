@@ -835,7 +835,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
     }
     
     @objc func didPressRemoveAdsbutton() {
-        let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil)
+        let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
         self.handleDismissal(artist)
         self.player.next()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
