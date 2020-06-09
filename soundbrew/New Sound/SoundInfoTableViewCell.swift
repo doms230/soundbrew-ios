@@ -79,6 +79,7 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.height.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             soundArtImageButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: UIImage(named: "add_image"), titleFont: nil, titleColor: .white, cornerRadius: 5)
@@ -88,14 +89,14 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.centerX.centerY.equalTo(audioProgress)
             }
             
-            self.addSubview(dividerLine)
+            /*self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
                 make.top.equalTo(audioProgress.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
+            }*/
             
             inputTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
             self.addSubview(inputTitle)
@@ -103,7 +104,7 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.top.equalTo(audioProgress)
                 make.left.equalTo(audioProgress.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(dividerLine).offset(uiElement.bottomOffset)
+                make.bottom.equalTo(audioProgress)
             }
             
             break
@@ -125,19 +126,12 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "soundSocialReuse":
-            self.addSubview(dividerLine)
-            dividerLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
             socialSwitch.onTintColor = color.blue()
             self.addSubview(socialSwitch)
             socialSwitch.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(self).offset(uiElement.topOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             self.addSubview(soundTagLabel)
@@ -148,6 +142,7 @@ class SoundInfoTableViewCell: UITableViewCell {
             
             break
             
+            //MARK: New CreditViewController
         case "creditReuse":
             //artist profile picture
             artistImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)

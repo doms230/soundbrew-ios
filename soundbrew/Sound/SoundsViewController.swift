@@ -93,7 +93,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
+          //  soundList.prepareToShowSelectedArtist(segue)
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem

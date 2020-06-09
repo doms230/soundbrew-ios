@@ -346,7 +346,7 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil)
+        let sound = Sound(objectId: nil, title: nil, artURL: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipAmount: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil)
         
         if let createdAt = object.createdAt {
             sound.createdAt = createdAt
@@ -384,6 +384,7 @@ class UIElement {
         sound.creditCount = object["credits"] as? Int
         sound.isDraft = object["isDraft"] as? Bool
         sound.isFeatured = object["isFeatured"] as? Bool
+        sound.isExclusive = object["isExclusive"] as? Bool
         
         let userId = object["userId"] as! String
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)

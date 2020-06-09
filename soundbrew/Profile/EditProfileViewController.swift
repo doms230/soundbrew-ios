@@ -239,7 +239,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.showPriceAlert()
                 }
             } else {
-                let alertController = UIAlertController (title: "Earn From Your Followers", message: "Release exclusive sounds to followers who subscribe. You can choose how much you charge per month and which sounds are exclusive.", preferredStyle: .actionSheet)
+                let alertController = UIAlertController (title: "Earn From Your Followers", message:
+                    "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
                 
                 let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
                     self.tagType = "country"
@@ -566,9 +567,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
         tableView.separatorInset = .zero
-        cell.editBioTitle.text = "Subscription"
+        cell.editBioTitle.text = "Fan Club"
         
-        if artist?.accountId == nil {
+        if artist?.accountId == nil || artist?.priceId == nil {
             cell.editBioText.text = "NONE"
         } else if let priceId = artist?.priceId {
             cell.editBioText.text = "loading..."
@@ -810,7 +811,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                                 self.availablePrices.append(price)
                             }
                         }
-                        self.availablePrices.sort(by: {$0.amount > $1.amount})
+                        self.availablePrices.sort(by: {$0.amount < $1.amount})
                         self.showPricePicker()
                     case .failure(let error):
                         self.uiElement.showAlert("Error Loading Prices", message: error.localizedDescription, target: self)

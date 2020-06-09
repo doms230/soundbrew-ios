@@ -152,7 +152,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let soundProgressReuse = "soundProgressReuse"
     let soundSocialReuse = "soundSocialReuse"
     let dividerReuse = "dividerReuse"
-    
+    let tagCellSection = 6
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -163,7 +163,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
         tableView.frame = view.bounds
-        tableView.separatorStyle = .none 
+        tableView.separatorStyle = .none
         self.view.addSubview(tableView)
         
         if soundThatIsBeingEdited?.objectId == nil {
@@ -174,13 +174,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 9
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 {
-            return 2
-        } else if section == 2 {
+         if section == tagCellSection {
             return 5
         }
         return 1
@@ -194,19 +192,24 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = audioImageTitleCell()
             break
             
-        case 1:
+        case 2:
+            cell = fanClubExclusiveCell()
+            break
+            
+        case 4:
             cell = creditCell(indexPath)
             break
             
-        case 2:
+        case tagCellSection:
             cell = tagCell(indexPath, tableView: tableView)
             break
             
-        case 3:
+        case 8:
             cell = socialCell(indexPath)
             break
             
         default:
+            cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as? SoundInfoTableViewCell
             break
         }
         
@@ -221,11 +224,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.performSegue(withIdentifier: "showEditTitle", sender: self)
             break
             
-        case 1:
+        case 2:
             self.performSegue(withIdentifier: "showNewCredit", sender: self)
             break
             
-        case 2:
+        case 3:
             didPressTagSection(indexPath)
             break
             
@@ -234,27 +237,45 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    //mark: Fan Club Exclusive
+    func fanClubExclusiveCell() -> SoundInfoTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
+        if Customer.shared.artist?.priceId != nil {
+            cell.socialSwitch.isOn = true
+            self.soundThatIsBeingEdited?.isExclusive = true 
+        } else {
+            cell.socialSwitch.isOn = false
+        }
+        
+        cell.soundTagLabel.text = "Fan Club Exclusive 💎"
+        cell.socialSwitch.addTarget(self, action: #selector(self.didPressFanClubExclusiveSwitch(_:)), for: .valueChanged)
+        return cell
+    }
+    
+    @objc func didPressFanClubExclusiveSwitch(_ sender: UISwitch) {
+        if Customer.shared.artist?.priceId == nil {
+            sender.isOn = false
+            self.uiElement.showAlert("Fan Club Required", message: "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive! Create your fan club on edit profile.", target: self)
+        } else {
+            self.soundThatIsBeingEdited?.isExclusive = sender.isOn
+        }
+    }
+    
+    
     //mark: credits
     var credits = [Credit]()
     func creditCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var cell: SoundInfoTableViewCell!
-            
-        if indexPath.row == 0 {
             cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
             
-            cell.soundTagLabel.text = "Credits"
+            cell.soundTagLabel.text = "Features"
                     
             cell.chosenSoundTagLabel.textColor = .white
             if credits.count == 1 {
-                cell.chosenSoundTagLabel.text = "\(credits.count) Credit"
+                cell.chosenSoundTagLabel.text = "\(credits.count) Feature"
             } else {
-                cell.chosenSoundTagLabel.text = "\(credits.count) Credits"
+                cell.chosenSoundTagLabel.text = "\(credits.count) Features"
             }
-            
-        } else {
-            cell = (self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell)
-        }
-
         return cell
     }
     
@@ -722,7 +743,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let soundFileString = soundThatIsBeingEdited?.audioURL {
             if let soundFileURL = URL(string: soundFileString) {
                 if pathExtensionIsUncompressed(soundFileURL.pathExtension) {
-                    self.convertAudiotoM4a(soundFileURL)
+                    self.convertAudioToM4a(soundFileURL)
                 } else {
                     convertURLToDataAndSavetoDatabase(soundFileURL)
                 }
@@ -755,7 +776,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func convertAudiotoM4a(_ audioURL: URL) {
+    func convertAudioToM4a(_ audioURL: URL) {
         let dirPath = FileManager.default.temporaryDirectory
         let outputURL = dirPath.appendingPathComponent("audio.m4a")
         let converter = AKConverter(inputURL: audioURL, outputURL: outputURL)
@@ -902,6 +923,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["isDraft"] = isDraft
         newSound["isRemoved"] = isDraft
         newSound["credits"] = credits.count
+        if let isExclusive = sound.isExclusive {
+            newSound["isExclusive"] = isExclusive
+        }
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
@@ -945,6 +969,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 object["isDraft"] = isDraft
                 object["isRemoved"] = isDraft
                 object["credits"] = self.credits.count
+                if let isExclusive = sound.isExclusive {
+                    object["isExclusive"] = isExclusive
+                }
                 object.saveEventually {
                     (success: Bool, error: Error?) in
                     if (success) {
