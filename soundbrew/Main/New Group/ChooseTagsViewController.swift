@@ -12,18 +12,13 @@ import SnapKit
 import Parse
 import FlagKit
 
-class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlaylistDelegate {
     
     let uiElement = UIElement()
     let color = Color()
     var sound: Sound?
     var isViewTagsFromSound = false
-    
-    let availableCountries = ["United States", "Canada", "United Kingdom", "Australia", "Austria", "Belgium", "Bulgaria", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "India", "Ireland", "Italy", "Japan", "Latvia", "Lithuania", "Luxembourg", "Malta", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
-    let availableCountryCodes = ["US", "CA", "GB", "AU", "AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HK", "IN", "IE", "IT", "JP", "LV", "LT", "LU", "MT", "MX", "NL", "NZ", "NO", "PL", "PT",  "RO", "SG", "SK", "SI", "ES", "SE", "CH"]
-    
-    var prices = [Price]()
-    
+            
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
@@ -35,8 +30,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 loadTags(nil, searchText: nil, tags: sound?.tags)
             } else if tagType == "country" || tagType == "price" {
                 setUpTableView()
+            } else if tagType == "playlist" {
+               loadPlaylists()
             } else {
-               loadTags(tagType, searchText: nil, tags: sound?.tags)
+                loadTags(tagType, searchText: nil, tags: sound?.tags)
             }
             
         } else {
@@ -101,13 +98,24 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }()
     
     func setUpNavigationBar() {
-        if tagType == "country" || tagType == "price" {
+        if tagType == "country" || tagType == "price" || tagType == "playlist" {
             let doneButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
-            if tagType == "price" {
+            switch tagType {
+            case "price":
                 self.uiElement.addTitleView("Choose a Price", target: self)
-            } else {
-               self.uiElement.addTitleView("Your Country?", target: self)
+                break
+                
+            case "country":
+                self.uiElement.addTitleView("Your Country?", target: self)
+                break
+                
+            case "playlist":
+                self.uiElement.addTitleView("Choose Playlist", target: self)
+                break
+                
+            default:
+                break
             }
             
         }  else {
@@ -219,11 +227,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     var tableView: UITableView!
     let searchTagViewReuse = "searchTagViewReuse"
     let tagsReuse = "tagsReuse"
-    
+    let newPlaylistReuse = "newCreditReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: newPlaylistReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         tableView.keyboardDismissMode = .onDrag
@@ -251,10 +260,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if tagType == nil {
+        if tagType == nil || tagType == "playlist" {
             return 2
         }
-        
         return 1
     }
     
@@ -262,19 +270,50 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         if tagType == nil && section == 0 {
             return 1
         }
-        if tagType == "country" {
-            return availableCountries.count
-        } else if tagType == "price" {
-            return prices.count
+        
+        if tagType == "playlist" && section == 0 {
+            return 1
         }
+        
+        switch tagType {
+        case "country":
+            return availableCountries.count
+            
+        case "price":
+            return prices.count
+            
+        case "playlist":
+            return playlists.count
+            
+        default:
+            break
+        }
+        
         return filteredTags.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tagType == "country" {
+        switch tagType {
+        case "country":
             return countryCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
-        } else if tagType == "price" {
+            
+        case "price":
             return priceCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
+            
+        case "playlist":
+            if indexPath.section == 0 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: newPlaylistReuse) as! SoundInfoTableViewCell
+                cell.titleLabel.textAlignment = .left
+                cell.titleLabel.text = "Create Playlist"
+                cell.backgroundColor = color.black()
+                cell.selectionStyle = .none
+                return cell
+            } else {
+                return playlistCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
+            }
+            
+        default:
+            break
         }
         if filteredTags.indices.contains(indexPath.row) {
             return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
@@ -294,17 +333,29 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if tagType == "country" {
+        
+        switch tagType {
+        case "country":
             let tag = Tag(objectId: self.availableCountryCodes[indexPath.row], name: self.availableCountries[indexPath.row], count: 0, isSelected: false, type: "country", imageURL: nil, uiImage: nil)
             self.chosenTags.append(tag)
             self.handleTagsForDismissal(true)
-        } else if tagType == "price" {
+            break
+        case "price":
             let price = self.prices[indexPath.row]
             let tag = Tag(objectId: price.objectId, name: nil, count: price.amount, isSelected: false, type: "price", imageURL: nil, uiImage: nil)
             self.chosenTags.append(tag)
             self.handleTagsForDismissal(true)
-        } else if filteredTags.indices.contains(indexPath.row) {
-            didSelectRowAt(indexPath.row)
+            break
+            
+        case "playlist":
+            didSelectPlaylist(indexPath)
+            break
+            
+        default:
+            if filteredTags.indices.contains(indexPath.row) {
+                didSelectRowAt(indexPath.row)
+            }
+            break
         }
     }
     
@@ -325,7 +376,93 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
+    //MARK: playlist
+    var playlistDelegate: PlaylistDelegate?
+    var playlists = [Playlist]()
+    
+    func showCreateNewPlaylistView() {
+        let modal = NewPlaylistViewController()
+        modal.playlistDelegate = self
+        self.present(modal, animated: true, completion: nil)
+    }
+
+    func receivedPlaylist(_ chosenPlaylist: Playlist?) {
+        if let newPlaylist = chosenPlaylist {
+            playlists.append(newPlaylist)
+            self.tableView.reloadData()
+        }
+    }
+    
+    func handleAndDismissPlaylist(_ selectedPlaylist: Playlist) {
+        if let playlistDelegate = self.playlistDelegate {
+            self.dismiss(animated: true, completion: {() in
+                if selectedPlaylist.objectId == nil {
+                    //user selected uploads as playlist
+                    playlistDelegate.receivedPlaylist(nil)
+                } else {
+                    playlistDelegate.receivedPlaylist(selectedPlaylist)
+                }
+            })
+        }
+    }
+    
+    func playlistCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
+        cell.selectionStyle = .gray
+        cell.backgroundColor = Color().black()
+        cell.profileImage.backgroundColor = color.purpleBlack()
+        cell.profileImage.image = UIImage(named: "playlist")
+        
+        if let title = playlists[row].title {
+            cell.displayNameLabel.text = title
+        }
+        return cell
+    }
+    
+    func didSelectPlaylist(_ indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            showCreateNewPlaylistView()
+        } else {
+            handleAndDismissPlaylist(playlists[indexPath.row])
+        }
+    }
+    
+    func loadPlaylists() {
+        if let userId = PFUser.current()?.objectId {
+            let uploadsPlaylist = Playlist(objectId: nil, userId: userId, title: "Uploads", type: nil)
+            self.playlists.append(uploadsPlaylist)
+            let playlistQuery = PFQuery(className: "Playlist")
+            playlistQuery.whereKey("userId", equalTo: userId)
+            playlistQuery.findObjectsInBackground {
+                (objects: [PFObject]?, error: Error?) -> Void in
+                if let objects = objects {
+                    for object in objects {
+                        let playlist = Playlist(objectId: object.objectId, userId: userId, title: nil, type: nil)
+                        
+                        if let title = object["title"] as? String {
+                            playlist.title = title
+                        }
+                        if let type = object["type"] as? String {
+                            playlist.type = type
+                        }
+                        self.playlists.append(playlist)
+                    }
+                }
+                DispatchQueue.main.async {
+                    if self.tableView == nil {
+                        self.setUpTableView()
+                    } else {
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }
+    }
+    
     //MARK: country
+    let availableCountries = ["United States", "Canada", "United Kingdom", "Australia", "Austria", "Belgium", "Bulgaria", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "India", "Ireland", "Italy", "Japan", "Latvia", "Lithuania", "Luxembourg", "Malta", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
+    let availableCountryCodes = ["US", "CA", "GB", "AU", "AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HK", "IN", "IE", "IT", "JP", "LV", "LT", "LU", "MT", "MX", "NL", "NZ", "NO", "PL", "PT",  "RO", "SG", "SK", "SI", "ES", "SE", "CH"]
+    
     func countryCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         cell.selectionStyle = .gray
@@ -346,6 +483,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: price
+    var prices = [Price]()
+
     func priceCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         cell.selectionStyle = .gray

@@ -17,7 +17,7 @@ import UICircularProgressRing
 import CropViewController
 //import Zip
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate, CropViewControllerDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, PlaylistDelegate, UITextViewDelegate, CropViewControllerDelegate {
     
     func receivedArtist(_ value: Artist?) {
     }
@@ -233,7 +233,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case playlistSection:
-            //show current user's playlists with the ability to create a new playlist
+            self.showChoosePlaylist()
             break
             
         case creditCellSection:
@@ -253,10 +253,27 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func playlistCell() -> SoundInfoTableViewCell {
         var cell: SoundInfoTableViewCell!
         cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
+        
         cell.soundTagLabel.text = "Playlist"
         cell.chosenSoundTagLabel.textColor = .white
-        cell.chosenSoundTagLabel.text = "Uploads"
+        
+        if let playlist = soundThatIsBeingEdited?.artistSelectedPlaylist, let title = playlist.title {
+            cell.chosenSoundTagLabel.text = title
+        } else {
+           cell.chosenSoundTagLabel.text = "Uploads"
+        }
+        
         return cell
+    }
+    
+    func receivedPlaylist(_ chosenPlaylist: Playlist?) {
+        soundThatIsBeingEdited?.artistSelectedPlaylist = chosenPlaylist
+        self.tableView.reloadData()
+    }
+    
+    func showChoosePlaylist() {
+        self.tagType = "playlist"
+        self.performSegue(withIdentifier: showTags, sender: self)
     }
     
     //mark: Fan Club Exclusive
@@ -282,7 +299,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.soundThatIsBeingEdited?.isExclusive = sender.isOn
         }
     }
-    
     
     //mark: credits
     var credits = [Credit]()
@@ -463,9 +479,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if let tagType = tagType {
             viewController.tagType = tagType
-            
             if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
                 viewController.chosenTags = tags
+                
+            } else if tagType == "playlist" {
+                viewController.playlistDelegate = self
             }
         }
     }
@@ -947,6 +965,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let isExclusive = sound.isExclusive {
             newSound["isExclusive"] = isExclusive
         }
+        
+        if let playlistId = sound.artistSelectedPlaylist?.objectId {
+            newSound["playlistId"] = playlistId
+        }
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
@@ -992,6 +1014,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 object["credits"] = self.credits.count
                 if let isExclusive = sound.isExclusive {
                     object["isExclusive"] = isExclusive
+                }
+                if let playlistId = sound.artistSelectedPlaylist?.objectId {
+                    object["playlistId"] = playlistId
                 }
                 object.saveEventually {
                     (success: Bool, error: Error?) in

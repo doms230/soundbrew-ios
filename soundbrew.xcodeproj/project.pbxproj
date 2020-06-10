@@ -17,6 +17,8 @@
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
+		E44A665224913707004672DC /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665124913706004672DC /* Playlist.swift */; };
+		E44A665424916B4F004672DC /* NewPlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665324916B4E004672DC /* NewPlaylistViewController.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -157,6 +159,8 @@
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
+		E44A665124913706004672DC /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
+		E44A665324916B4E004672DC /* NewPlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPlaylistViewController.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -376,6 +380,7 @@
 		F2689899215AF7FB00C21663 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				E44A665124913706004672DC /* Playlist.swift */,
 				E425D7C623C2836A0031DB0B /* Credit.swift */,
 				F26898A5215B527900C21663 /* Sound.swift */,
 				F2EA85742244110B005D6153 /* SoundList.swift */,
@@ -383,6 +388,7 @@
 				F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */,
 				F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */,
 				F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */,
+				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -787,6 +793,7 @@
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */,
 				E4C9DCEF23E10FE6003835E5 /* CommentTableViewCell.swift in Sources */,
+				E44A665224913707004672DC /* Playlist.swift in Sources */,
 				E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */,
 				F268989E215AF8F100C21663 /* UIElement.swift in Sources */,
 				F2F8B9A121DBEF640024AFB6 /* ProfileViewController.swift in Sources */,
@@ -799,6 +806,7 @@
 				E4EB6870238CBC5000FB1D71 /* AKConverter.swift in Sources */,
 				E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */,
 				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,
+				E44A665424916B4F004672DC /* NewPlaylistViewController.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,
 				E40070732463375E005BBB92 /* Like.swift in Sources */,

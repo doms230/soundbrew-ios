@@ -118,7 +118,6 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else {
             cell.editProfileTitle.text = "Account #"
             accountText = cell.editProfileInput
-
         }
         cell.backgroundColor = color.black()
         return cell
