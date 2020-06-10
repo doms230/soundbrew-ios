@@ -22,7 +22,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Credits"
+        self.title = "Features"
         let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
         self.navigationItem.rightBarButtonItem = doneButton
         setUpTableView()
@@ -102,8 +102,8 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            if credits.count == 17 {
-                self.uiElement.showAlert("Limit Reached", message: "You can credit up to 17 people", target: self)
+            if credits.count == 10 {
+                self.uiElement.showAlert("Limit Reached", message: "You can feature up to 10 people", target: self)
             } else {
                 self.performSegue(withIdentifier: "showSearchUser", sender: self)
             }
@@ -120,9 +120,6 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if indexPath.section == 0 && indexPath.row != 0 {
-                if let percentage = self.credits[indexPath.row].percentage {
-                    addSplitAmountBackToUploader(percentage)
-                }
                 self.credits.remove(at: indexPath.row)
                 self.tableView.reloadData()
             }
@@ -150,7 +147,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             if let creditTitle = credit.title {
                 cell.artistTypeButton.setTitle(creditTitle, for: .normal)
             } else {
-                cell.artistTypeButton.setTitle("Add Credit Title", for: .normal)
+                cell.artistTypeButton.setTitle("Add Feature Title", for: .normal)
             }
             
             if indexPath.row == 0 {
@@ -162,13 +159,6 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.artistTypeButton.addTarget(self, action: #selector(didPressChangeCreditTitle(_:)), for: .touchUpInside)
                 cell.artistTypeButton.tag = indexPath.row
             }
-
-            cell.titleLabel.text = "Pay Split: \(credit.percentage!)%"
-            
-            cell.percentageSlider.value = Float(credit.percentage!)
-            cell.percentageSlider.isEnabled = shouldEnableSlider
-            cell.percentageSlider.addTarget(self, action: #selector(didChangeTipSplit(_:)), for: .valueChanged)
-            cell.percentageSlider.tag = indexPath.row
         }
         
         return cell
@@ -188,33 +178,11 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.reloadData()
     }
     
-    @objc func didChangeTipSplit(_ sender: UISlider) {
-        var totalAvailablePercentage = 100
-        let selectedSplit = Int(sender.value)
-        
-        for i in 0..<self.credits.count {
-            if i != sender.tag && i != 0 {
-                totalAvailablePercentage = totalAvailablePercentage - self.credits[i].percentage!
-            }
-        }
-        
-        if selectedSplit <= totalAvailablePercentage {
-            self.credits[sender.tag].percentage = selectedSplit
-            self.credits[0].percentage = totalAvailablePercentage - selectedSplit
-        }
-        self.tableView.reloadData()
-    }
-    
-    func addSplitAmountBackToUploader(_ amount: Int) {
-        self.credits[0].percentage = self.credits[0].percentage! + amount
-    }
-    
     func receivedArtist(_ value: Artist?) {
         if let artist = value {
-            let credit = Credit(objectId: nil, artist: artist, title: nil, percentage: 0)
+            let credit = Credit(objectId: nil, artist: artist, title: nil)
             self.credits.append(credit)
             self.tableView.reloadData()
         }
     }
-
 }

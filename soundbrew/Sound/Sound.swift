@@ -27,14 +27,13 @@ class Sound {
     var createdAt: Date?
     var artist: Artist?
     var tmpFile: TemporaryFile?
-    var tipAmount: Int?
     var currentUserTipDate: Date?
     var tipCount: Int?
     var isDraft: Bool?
     var isFeatured: Bool?
     var isExclusive: Bool?
     
-    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipAmount: Int?, tipCount: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?) {
+    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -48,7 +47,6 @@ class Sound {
         self.audioData = audioData
         self.artist = artist
         self.tmpFile = tmpFile
-        self.tipAmount = tipAmount
         self.tipCount = tipCount
         self.currentUserTipDate = currentUserTipDate
         self.isDraft = isDraft

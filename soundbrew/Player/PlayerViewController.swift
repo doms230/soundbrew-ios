@@ -81,8 +81,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
                 } else if likeSound.currentUserTipDate != nil {
                     self.likeSoundButton.isEnabled = false
                     self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-                } else if like.rewardedAd == nil {
-                    like.setUpPayment()
                 } else {
                     self.likeSoundButton.isEnabled = true
                     self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
@@ -418,7 +416,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         like.target = self
         like.sound = self.player.currentSound
         like.likeSoundButton = sender
-        like.sendPayment()
+        like.newLike()
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
     

@@ -156,19 +156,9 @@ class SoundList: NSObject, PlayerDelegate {
         let row = sender.tag
         if sounds.indices.contains(sender.tag) {
             let sound = sounds[sender.tag]
-            
-            var tips = 0
-            if let soundTips = sound.tipCount {
-                tips = soundTips
-            }
-            let tipsInDollarString = self.uiElement.convertCentsToDollarsAndReturnString(tips, currency: "$")
                         
             if let currentUser = PFUser.current(), sound.artist!.objectId == currentUser.objectId {
-                let localizedTips = NSLocalizedString("tips", comment: "")
-                let localizedIn = NSLocalizedString("in", comment: "")
-
-                let menuAlert = UIAlertController(title: "\(tipsInDollarString) \(localizedIn) \(localizedTips)", message: nil, preferredStyle: .actionSheet)
-                    
+                let menuAlert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
                 
                 let localizedEditSound = NSLocalizedString("editSound", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in

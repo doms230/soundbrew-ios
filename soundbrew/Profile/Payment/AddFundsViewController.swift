@@ -5,6 +5,7 @@
 //  Created by Dominic  Smith on 7/2/19.
 //  Copyright © 2019 Dominic  Smith. All rights reserved.
 //
+//TODO: refactor to pay artist
 
 import UIKit
 import Stripe
@@ -117,8 +118,6 @@ class AddFundsViewController: UIViewController, STPPaymentContextDelegate, NVAct
             self.uiElement.showAlert(localizedPaymentDeclined, message: "", target: self)
             
         case .success:
-            let customer = Customer.shared
-            customer.updateBalance(paymentContext.paymentAmount)
            // if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                 SKStoreReviewController.requestReview()
             //}

@@ -14,13 +14,11 @@ class Credit {
     var objectId: String?
     var artist: Artist?
     var title: String?
-    var percentage: Int?
 
-    init(objectId: String?, artist: Artist?, title: String?, percentage: Int?) {
+    init(objectId: String?, artist: Artist?, title: String?) {
         self.objectId = objectId
         self.artist = artist
         self.title = title
-        self.percentage = percentage
     }
 }
 

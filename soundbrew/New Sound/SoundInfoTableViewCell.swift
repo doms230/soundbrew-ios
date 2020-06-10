@@ -28,15 +28,6 @@ class SoundInfoTableViewCell: UITableViewCell {
         return audioProgress
     }()
     
-   lazy var percentageSlider: UISlider = {
-        let slider = UISlider()
-        slider.value = 0
-        slider.minimumValue = 0
-        slider.maximumValue = 100
-        slider.tintColor = .white 
-        return slider
-    }()
-    
     lazy var socialSwitch: UISwitch = {
        let socialSwitch = UISwitch()
         return socialSwitch
@@ -180,26 +171,10 @@ class SoundInfoTableViewCell: UITableViewCell {
                 make.left.equalTo(soundTagLabel)
             }
             
-            //percentage tip
-            titleLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
-            self.addSubview(titleLabel)
-            titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            //percentage chooser
-            self.addSubview(percentageSlider)
-            percentageSlider.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(titleLabel)
-                make.left.equalTo(titleLabel.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
             self.addSubview(dividerLine)
             dividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
-                make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.topOffset)
+                make.top.equalTo(artistTypeButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
@@ -207,9 +182,10 @@ class SoundInfoTableViewCell: UITableViewCell {
             break
             
         case "newCreditReuse":
-            titleLabel.text = "Add Credit"
+            titleLabel.text = "Add Featured Artist, Producer, etc."
             titleLabel.textColor = .darkGray
             titleLabel.textAlignment = .center
+            titleLabel.numberOfLines = 1
             self.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(50)

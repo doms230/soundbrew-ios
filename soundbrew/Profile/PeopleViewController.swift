@@ -243,11 +243,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         if let title = credit.title {
             cell.creditTitle.text = title
         }
-        
-        if let percentage = credit.percentage {
-            cell.creditPercentage.text = "\(percentage)%"
-        }
-        
         return cell
     }
     
@@ -391,12 +386,9 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
-                        let credit = Credit(objectId: object.objectId, artist: artist, title: nil, percentage: 0)
+                        let credit = Credit(objectId: object.objectId, artist: artist, title: nil)
                         if let title = object["title"] as? String {
                             credit.title = title
-                        }
-                        if let percentage = object["percentage"] as? Int {
-                            credit.percentage = percentage
                         }
                         self.soundCredits.append(credit)
                     }

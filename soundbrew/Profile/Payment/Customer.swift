@@ -174,28 +174,4 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             }
         }
     }
-    
-    func updateBalance(_ addSubFunds: Int) {
-        let newBalance = addSubFunds + self.artist!.balance!
-        self.artist?.balance = newBalance
-        
-        if let artistObjectId = self.artist?.objectId {
-            let query = PFQuery(className: "_User")
-                query.getObjectInBackground(withId: artistObjectId) {
-                (object: PFObject?, error: Error?) -> Void in
-                    if let object = object {
-                        object["balance"] = newBalance
-                        object.saveEventually()
-                    }
-                }
-        }
-    }
-    
-    func newArtistPaymentRow(_ artistObjectId: String, tipAmount: Int) {
-        let newPaymentRow = PFObject(className: "Payment")
-        newPaymentRow["userId"] = artistObjectId
-        newPaymentRow["tipsSinceLastPayout"] = tipAmount
-        newPaymentRow["tips"] = tipAmount
-        newPaymentRow.saveEventually()
-    }
 }

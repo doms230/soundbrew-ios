@@ -152,7 +152,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let soundProgressReuse = "soundProgressReuse"
     let soundSocialReuse = "soundSocialReuse"
     let dividerReuse = "dividerReuse"
-    let tagCellSection = 6
+    let audioImageCellSection = 0
+    let playlistSection = 4
+    let creditCellSection = 6
+    let tagCellSection = 8
+        
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -174,7 +178,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 9
+        return 11
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -188,7 +192,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var cell: SoundInfoTableViewCell!
         
         switch indexPath.section {
-        case 0:
+        case audioImageCellSection:
             cell = audioImageTitleCell()
             break
             
@@ -196,7 +200,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = fanClubExclusiveCell()
             break
             
-        case 4:
+        case playlistSection:
+            cell = playlistCell()
+            break
+            
+        case creditCellSection:
             cell = creditCell(indexPath)
             break
             
@@ -204,7 +212,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = tagCell(indexPath, tableView: tableView)
             break
             
-        case 8:
+        case 10:
             cell = socialCell(indexPath)
             break
             
@@ -220,21 +228,35 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 0:
+        case audioImageCellSection:
             self.performSegue(withIdentifier: "showEditTitle", sender: self)
             break
             
-        case 2:
+        case playlistSection:
+            //show current user's playlists with the ability to create a new playlist
+            break
+            
+        case creditCellSection:
             self.performSegue(withIdentifier: "showNewCredit", sender: self)
             break
             
-        case 3:
+        case tagCellSection:
             didPressTagSection(indexPath)
             break
             
         default:
             break
         }
+    }
+    
+    //mark: playlist
+    func playlistCell() -> SoundInfoTableViewCell {
+        var cell: SoundInfoTableViewCell!
+        cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
+        cell.soundTagLabel.text = "Playlist"
+        cell.chosenSoundTagLabel.textColor = .white
+        cell.chosenSoundTagLabel.text = "Uploads"
+        return cell
     }
     
     //mark: Fan Club Exclusive
@@ -293,7 +315,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func createUploaderCredit() {
-        let credit = Credit(objectId: nil, artist: nil, title: "Artist", percentage: 100)
+        let credit = Credit(objectId: nil, artist: nil, title: "Artist")
         if let artist = Customer.shared.artist {
             credit.artist = artist
         }
@@ -318,7 +340,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             newCredit["title"] = ""
         }
-        newCredit["percentage"] = credit.percentage!
         newCredit["userId"] = credit.artist!.objectId!
         newCredit["postId"] = postId
         newCredit.saveEventually()

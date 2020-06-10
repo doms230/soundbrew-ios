@@ -376,10 +376,10 @@
 		F2689899215AF7FB00C21663 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
-				F2EA85742244110B005D6153 /* SoundList.swift */,
-				F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */,
 				E425D7C623C2836A0031DB0B /* Credit.swift */,
 				F26898A5215B527900C21663 /* Sound.swift */,
+				F2EA85742244110B005D6153 /* SoundList.swift */,
+				F2F8B99021DBEF140024AFB6 /* SoundListTableViewCell.swift */,
 				F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */,
 				F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */,
 				F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */,
