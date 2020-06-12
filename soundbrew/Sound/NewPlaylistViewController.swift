@@ -9,14 +9,20 @@
 import UIKit
 import NVActivityIndicatorView
 import Parse
+import CropViewController
+import Kingfisher
 
-class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable {
+class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate {
+    
     let uiElement = UIElement()
     let color = Color()
         
     var playlistTitle: UITextField!
-    var newPlaylist = Playlist(objectId: nil, userId: nil, title: nil, type: "playlist")
+    var newPlaylist = Playlist(objectId: nil, userId: nil, title: nil, image: nil)
     var playlistDelegate: PlaylistDelegate?
+    
+    var soundList: SoundList!
+    var playlistSounds = [Sound]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +36,10 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         }
         setupTopButtons()
         setUpTableView()
+        
+        soundList = SoundList(target: self, tableView: tableView, soundType: "", userId: nil, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil)
+        soundList.sounds = playlistSounds
+        soundList.updateTableView()
     }
     
     lazy var cancelButton: UIButton = {
@@ -77,11 +87,15 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     let tableView = UITableView()
     let editProfileInfoReuse = "editProfileInfoReuse"
     let editPlaylistTypeReuse = "editBioReuse"
+    let soundReuse = "soundReuse"
+    let soundInfoReuse = "soundInfoReuse"
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPlaylistTypeReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
@@ -105,79 +119,132 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            return titleCell()
+            return playlistImageTitleCell()
         } else {
-            return typeCell()
+            return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
-            let alertController = UIAlertController (title: "Type of Playlist?", message: "", preferredStyle: .actionSheet)
-            let playlistAction = UIAlertAction(title: "Playlist", style: .default) { (_) -> Void in
-                self.updatePlaylistType("playlist")
-            }
-            alertController.addAction(playlistAction)
-            
-            let albumAction = UIAlertAction(title: "Album", style: .default) { (_) -> Void in
-                self.updatePlaylistType("album")
-            }
-            alertController.addAction(albumAction)
-            
-            let epAction = UIAlertAction(title: "EP", style: .default) { (_) -> Void in
-                self.updatePlaylistType("ep")
-            }
-            alertController.addAction(epAction)
-            
-            let mixtapeAction = UIAlertAction(title: "Mixtape", style: .default) { (_) -> Void in
-                self.updatePlaylistType("mixtape")
-            }
-            alertController.addAction(mixtapeAction)
-            
-            self.present(alertController, animated: true, completion: nil)
-        }
+
     }
     
-    func updatePlaylistType(_ type: String) {
-        self.newPlaylist.type = type
-        self.tableView.reloadData()
-    }
-    
-    func titleCell() -> ProfileTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
-        let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
-        cell.backgroundColor = color.black()
-        cell.selectionStyle = .none
-        tableView.separatorInset = edgeInsets
+    func playlistImageTitleCell() -> SoundInfoTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
+                
+        cell.soundArtImageButton.addTarget(self, action: #selector(self.didPressUploadSoundArtButton(_:)), for: .touchUpInside)
+
+        cell.audioProgress.isHidden = true 
         
-        cell.editProfileTitle.text = "Title"
-        playlistTitle = cell.editProfileInput
-        playlistTitle.becomeFirstResponder()
-        cell.backgroundColor = color.black()
-        return cell
-    }
-    
-    func typeCell() -> ProfileTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: editPlaylistTypeReuse) as! ProfileTableViewCell
-        cell.backgroundColor = color.black()
-        cell.selectionStyle = .none
-        tableView.separatorInset = .zero
-        cell.editBioTitle.text = "Type"
-        if let type = self.newPlaylist.type {
-            cell.editBioText.text = type.capitalized
+        if let playlist = self.newPlaylist.title {
+            cell.inputTitle.text = playlist
         } else {
-            cell.editBioText.text = "Playlist"
+            cell.inputTitle.text = "Add Title/Description"
         }
-        
+                                
+        if let image = self.selectedPlaylistImage {
+            cell.soundArtImageButton.setImage(image, for: .normal)
+        } else if let imageURL = self.newPlaylist.image?.url {
+            cell.soundArtImageButton.kf.setImage(with: URL(string: imageURL), for: .normal)
+        }
+                
         return cell
     }
     
+    //mark: media upload
+    var soundArtDidFinishProcessing = false
+    var didPressUploadButton = false
+    var selectedPlaylistImage: UIImage?
+    
+    @objc func didPressUploadSoundArtButton(_ sender: UIButton){
+        self.soundArtDidFinishProcessing = false
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = false
+        imagePicker.sourceType = .photoLibrary
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // Local variable inserted by Swift 4.2 migrator.
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        var selectedImage: UIImage?
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+            selectedImage = image
+        }
+        
+        dismiss(animated: true, completion: {() in
+            if let image = selectedImage {
+                self.presentImageCropViewController(image)
+            }
+        })
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+        self.soundArtDidFinishProcessing = true
+    }
+    
+    // Helper function inserted by Swift 4.2 migrator.
+    fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+        return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+    }
+    
+    // Helper function inserted by Swift 4.2 migrator.
+    fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+        return input.rawValue
+    }
+    
+    func presentImageCropViewController(_ image: UIImage) {
+        let cropViewController = CropViewController(croppingStyle: .default, image: image)
+        cropViewController.aspectRatioLockEnabled = true
+        cropViewController.aspectRatioPickerButtonHidden = true
+        cropViewController.aspectRatioPreset = .presetSquare
+        cropViewController.resetAspectRatioEnabled = false
+        cropViewController.delegate = self
+        present(cropViewController, animated: false, completion: nil)
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        self.selectedPlaylistImage = image
+        self.tableView.reloadData()
+        
+        let proPic = image.jpegData(compressionQuality: 0.5)
+        self.newPlaylist.image = PFFileObject(name: "playlistArt.jpeg", data: proPic!)
+        self.newPlaylist.image?.saveInBackground({
+            (succeeded: Bool, error: Error?) -> Void in
+            if succeeded {
+                self.soundArtDidFinishProcessing = true
+                if self.didPressUploadButton {
+                    //TODO: create playlist
+                }
+                
+            } else if let error = error {
+                self.stopAnimating()
+                let localizedArtProcessingFailed = NSLocalizedString("artProcessingFailded", comment: "")
+                self.uiElement.showAlert(localizedArtProcessingFailed, message: error.localizedDescription, target: self)
+            }
+            
+        }, progressBlock: {
+            (percentDone: Int32) -> Void in
+            // Update your progress spinner here. percentDone will be between 0 and 100.
+        })
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+        dismiss(animated: true, completion: nil)
+        self.soundArtDidFinishProcessing = true
+    }
+    
+    //
     func createNewPlaylist(_ playlist: Playlist) {
         startAnimating()
         let newPlaylist = PFObject(className: "Playlist")
         newPlaylist["userId"] = playlist.userId
         newPlaylist["title"] = playlist.title
-        newPlaylist["type"] = playlist.type
+        newPlaylist["image"] = playlist.image
         newPlaylist.saveEventually {
             (success: Bool, error: Error?) in
             self.stopAnimating()

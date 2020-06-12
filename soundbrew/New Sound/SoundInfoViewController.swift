@@ -11,7 +11,7 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
-import TwitterKit
+//import TwitterKit
 import AppCenterAnalytics
 import UICircularProgressRing
 import CropViewController
@@ -39,7 +39,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         createUploaderCredit()
-        getTwitterUserID()
+       // getTwitterUserID()
         getSelectedTags()
         setUpViews()
         setUpTableView()
@@ -153,10 +153,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let soundSocialReuse = "soundSocialReuse"
     let dividerReuse = "dividerReuse"
     let audioImageCellSection = 0
+    let fanClubExclusiveSection = 2
     let playlistSection = 4
     let creditCellSection = 6
     let tagCellSection = 8
-        
+    //let socialSection = 10
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -178,7 +179,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 11
+        return 9
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -196,7 +197,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = audioImageTitleCell()
             break
             
-        case 2:
+        case fanClubExclusiveSection:
             cell = fanClubExclusiveCell()
             break
             
@@ -212,9 +213,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = tagCell(indexPath, tableView: tableView)
             break
             
-        case 10:
+       /* case socialSection:
             cell = socialCell(indexPath)
-            break
+            break*/
             
         default:
             cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as? SoundInfoTableViewCell
@@ -362,7 +363,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: social
-    func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
+    /*func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var socialTitle: String!
         var tag: Int!
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
@@ -382,10 +383,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     @objc func didPressSocialSwitch(_ sender: UISwitch) {
         checkTwitterAuth(sender)
-    }
+    }*/
         
     //mark: twitter
-    var twitterUserID: String?
+  /*  var twitterUserID: String?
     var shouldPostLinkToTwitter = false
     
     func getTwitterUserID() {
@@ -445,7 +446,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
-    }
+    }*/
     
     //MARK: tags
     var showTags = "showTags"
@@ -975,7 +976,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if isDraft {
                     self.finishUp(false, object: newSound)
                 } else {
-                    self.handleSocials(newSound)
+                   // self.handleSocials(newSound)
                     self.saveTags(tags)
                     sound.objectId = newSound.objectId
                     self.saveCredits(sound)
@@ -1027,7 +1028,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                             self.saveTags(tags)
                             sound.objectId = object.objectId
                             self.saveCredits(sound)
-                            self.handleSocials(object)
+                            //self.handleSocials(object)
                             self.finishUp(true, object: object)
                         }
                         
@@ -1043,7 +1044,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func handleSocials(_ object: PFObject) {
+   /* func handleSocials(_ object: PFObject) {
         DispatchQueue.main.async {
             if self.shouldPostLinkToTwitter {
                 var title = ""
@@ -1056,7 +1057,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
-    }
+    }*/
     
     func loadCurrentUserCity(_ userId: String) {
         let query = PFQuery(className: "_User")

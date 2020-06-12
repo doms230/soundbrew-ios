@@ -26,11 +26,73 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         view.backgroundColor = color.black()
-        
-        let uploadButton = UIBarButtonItem(image: UIImage(named: "new_nav"), style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
-        self.navigationItem.rightBarButtonItem = uploadButton
-        
+        setupNavigationBar()
         self.uiElement.addTitleView("Drafts", target: self)
+    }
+    
+    func setupNavigationBar() {
+        if didSelectNewPlaylist {
+            if selectedSoundsForPlaylist.count == 0 {
+                let cancelPlaylistButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressNavigationButton(_:)))
+                cancelPlaylistButton.tag = 0
+                self.navigationItem.rightBarButtonItem = cancelPlaylistButton
+            } else {
+                let continuePlaylistButton = UIBarButtonItem(title: "Continue", style: .plain, target: self, action: #selector(self.didPressNavigationButton(_:)))
+                continuePlaylistButton.tag = 1
+                self.navigationItem.rightBarButtonItem = continuePlaylistButton
+            }
+            
+        } else {
+            let newButton = UIBarButtonItem(image: UIImage(named: "new_nav"), style: .plain, target: self, action: #selector(self.didPressNavigationButton(_:)))
+            newButton.tag = 2
+            self.navigationItem.rightBarButtonItem = newButton
+        }
+    }
+    
+    @objc func didPressNavigationButton(_ sender: UIBarButtonItem) {
+        switch sender.tag {
+        case 0:
+            self.didSelectNewPlaylist = false
+            selectedSoundsForPlaylist.removeAll()
+            self.tableView.reloadData()
+            setupNavigationBar()
+            break
+            
+        case 1:
+            
+            //TODO: segue to newPlaylistViewController
+            //Attached selectedsounds
+            break
+            
+        case 2:
+            decideAction()
+            break
+            
+        default:
+            break
+        }
+    }
+    
+    func decideAction() {
+        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+        
+        let newPlaylistAction = UIAlertAction(title: "New Playlist", style: .default) { (_) -> Void in
+            self.didSelectNewPlaylist = true
+            self.tableView.reloadData()
+            self.setupNavigationBar()
+        }
+        alertController.addAction(newPlaylistAction)
+        
+        let newUploadAction = UIAlertAction(title: "New Upload", style: .default) { (_) -> Void in
+            self.showNewUpload()
+        }
+        alertController.addAction(newUploadAction)
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -99,12 +161,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     var tableView: UITableView!
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
+    let selectPlaylistSoundsReuse = "selectPlaylistSoundsReuse"
     func setUpTableView() {
         self.tableView = UITableView()
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.soundReuse)
         self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.noSoundsReuse)
+        self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: selectPlaylistSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = self.color.black()
@@ -153,13 +217,36 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
 
             return cell
             
+        } else if didSelectNewPlaylist {
+            let cell = soundList.soundCell(indexPath, tableView: tableView, reuse: selectPlaylistSoundsReuse)
+            let sound = soundList.sounds[indexPath.row]
+            
+           let selectedPlaylistSoundObjectIds = selectedSoundsForPlaylist.map {$0.objectId}
+            if selectedPlaylistSoundObjectIds.contains(sound.objectId) {
+                for i in 0..<selectedSoundsForPlaylist.count {
+                    let playlistSound = selectedSoundsForPlaylist[i]
+                    if sound.objectId == playlistSound.objectId {
+                        let index = i + 1
+                        cell.circleImage.text = "\(index)"
+                        cell.circleImage.textColor = color.blue()
+                    }
+                }
+            } else {
+                cell.circleImage.text = "○"
+                cell.circleImage.textColor = .darkGray
+            }
+            return cell
         } else {
             return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        didSelectRowAt(indexPath.row)
+        if didSelectNewPlaylist {
+            didSelectPlaylistSoundAt(indexPath)
+        } else {
+           didSelectRowAt(indexPath.row)
+        }
     }
     
     func didSelectRowAt(_ row: Int) {
@@ -174,11 +261,28 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         }
     }
     
-    //mark: new sound upload
-    @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        showNewUpload()
+    //mark: playlist
+    var didSelectNewPlaylist = false
+    var selectedSoundsForPlaylist = [Sound]()
+    func didSelectPlaylistSoundAt(_ indexPath: IndexPath) {
+        let objectIds = selectedSoundsForPlaylist.map {$0.objectId}
+        let selectedSound = soundList.sounds[indexPath.row]
+        if objectIds.contains(selectedSound.objectId) {
+            for i in 0..<selectedSoundsForPlaylist.count {
+                let sound = selectedSoundsForPlaylist[i]
+                if sound.objectId == selectedSound.objectId {
+                    selectedSoundsForPlaylist.remove(at: i)
+                }
+            }
+            
+        } else {
+            selectedSoundsForPlaylist.append(selectedSound)
+        }
+        self.tableView.reloadData()
+        setupNavigationBar()
     }
     
+    //mark: new sound upload
     func showNewUpload() {
         let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
         let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)

@@ -429,7 +429,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func loadPlaylists() {
         if let userId = PFUser.current()?.objectId {
-            let uploadsPlaylist = Playlist(objectId: nil, userId: userId, title: "Uploads", type: nil)
+            let uploadsPlaylist = Playlist(objectId: nil, userId: userId, title: "Uploads", image: nil)
             self.playlists.append(uploadsPlaylist)
             let playlistQuery = PFQuery(className: "Playlist")
             playlistQuery.whereKey("userId", equalTo: userId)
@@ -437,13 +437,13 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 (objects: [PFObject]?, error: Error?) -> Void in
                 if let objects = objects {
                     for object in objects {
-                        let playlist = Playlist(objectId: object.objectId, userId: userId, title: nil, type: nil)
+                        let playlist = Playlist(objectId: object.objectId, userId: userId, title: nil, image: nil)
                         
                         if let title = object["title"] as? String {
                             playlist.title = title
                         }
-                        if let type = object["type"] as? String {
-                            playlist.type = type
+                        if let image = object["image"] as? PFFileObject {
+                            playlist.image = image
                         }
                         self.playlists.append(playlist)
                     }

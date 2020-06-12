@@ -14,13 +14,13 @@ class Playlist {
     var objectId: String?
     var userId: String?
     var title: String?
-    var type: String?
+    var image: PFFileObject?
     
-    init(objectId: String?, userId: String?, title: String?, type: String?) {
+    init(objectId: String?, userId: String?, title: String?, image: PFFileObject?) {
         self.objectId = objectId
         self.userId = userId
         self.title = title
-        self.type = type
+        self.image = image
     }
     
     func loadPlaylist() {
@@ -34,7 +34,7 @@ class Playlist {
                         (success: Bool, error: Error?) in
                         if success && error == nil {
                             self.title = object["title"] as? String
-                            self.type = object["type"] as? String 
+                            self.image = object["image"] as? PFFileObject
                         }
                     }
                 }

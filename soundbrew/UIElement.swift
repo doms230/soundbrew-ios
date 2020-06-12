@@ -377,7 +377,7 @@ class UIElement {
         }
         
         if let playlistId = object["playlistId"] as? String {
-            sound.artistSelectedPlaylist = Playlist(objectId: playlistId, userId: sound.objectId, title: nil, type: nil)
+            sound.artistSelectedPlaylist = Playlist(objectId: playlistId, userId: sound.objectId, title: nil, image: nil)
             sound.artistSelectedPlaylist?.loadPlaylist()
         }
         

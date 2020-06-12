@@ -74,7 +74,7 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedSound: Sound?
     var descendingOrder = "createdAt"
     
-    func soundCell(_ indexPath: IndexPath, tableView: UITableView, reuse: String) -> UITableViewCell {
+    func soundCell(_ indexPath: IndexPath, tableView: UITableView, reuse: String) -> SoundListTableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! SoundListTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
@@ -83,7 +83,6 @@ class SoundList: NSObject, PlayerDelegate {
             if let currentSoundPlaying = self.player.currentSound {
                 if currentSoundPlaying.objectId == sound.objectId {
                     changeArtistSongColor(cell, color: color.blue(), playIconName: "playIcon_blue")
-                    
                 } else {
                     changeArtistSongColor(cell, color: .white, playIconName: "playIcon")
                 }
@@ -106,8 +105,10 @@ class SoundList: NSObject, PlayerDelegate {
             cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
             cell.artistButton.tag = indexPath.row
             
-            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-            cell.menuButton.tag = indexPath.row
+            if reuse == "soundReuse" {
+                cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+                cell.menuButton.tag = indexPath.row
+            }
             
             if let soundURL = sound.artURL {
                 cell.soundArtImage.kf.setImage(with: URL(string: soundURL), placeholder: UIImage(named: "sound"))
@@ -117,7 +118,6 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
 
-            
             if let currentUser = PFUser.current()?.objectId, currentUser == self.domSmithUserId, let createdAt = sound.createdAt {
                 var tipCount = 0
                 var likeString = "likes"

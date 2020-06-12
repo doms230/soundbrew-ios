@@ -348,13 +348,13 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F226B5CA2329A47C00C3E951 /* NewUser.storyboard */,
+				F2FB14CB22CBFBFF00ED157E /* Main */,
+				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
+				F2689899215AF7FB00C21663 /* Sound */,
 				E4C9DCED23E10FC0003835E5 /* Comment */,
 				F23C620F21DC34DB005C9FF0 /* Login */,
-				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2F8B9A321DBEF690024AFB6 /* Profile */,
-				F2FB14CB22CBFBFF00ED157E /* Main */,
 				F2EA6F51220BDE89007FA614 /* Player */,
-				F2689899215AF7FB00C21663 /* Sound */,
 			);
 			path = soundbrew;
 			sourceTree = "<group>";
