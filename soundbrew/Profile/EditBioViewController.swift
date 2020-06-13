@@ -20,9 +20,6 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
-        setUpDoneButton()
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillShow),
@@ -30,16 +27,11 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
             object: nil
         )
         
-        setupBioView()
+         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        setupBioView(dividerLine)
     }
     
     //done
-    func setUpDoneButton() {
-        let localizedDone = NSLocalizedString("done", comment: "")
-        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
-        self.navigationItem.rightBarButtonItem = doneButton
-    }
-    
     @objc func didPressDoneButton(_ sender: UIButton) {
         if let artistDelegate = self.artistDelegate {
             if inputBio.text == "" {
@@ -71,7 +63,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
         return label
     }()
     
-    func setupBioView() {
+    func setupBioView(_ dividerLine: UIView) {
         if let bioText = self.bio {
             inputBio.text = bioText
         }
@@ -80,7 +72,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
         self.view.addSubview(inputBio)
         inputBio.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(self.view.frame.height / 2)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
+            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }

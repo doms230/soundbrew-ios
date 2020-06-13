@@ -23,7 +23,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pyG-2h-fp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1438" y="1864"/>
+            <point key="canvasLocation" x="-1448" y="1661"/>
         </scene>
         <!--New Sound View Controller-->
         <scene sceneID="54r-NH-38P">
@@ -63,59 +63,11 @@
                     <navigationItem key="navigationItem" id="nxg-Om-mwg"/>
                     <connections>
                         <segue destination="W2D-HU-YWf" kind="presentation" identifier="showTags" id="QFf-vL-w9n"/>
-                        <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditTitle" id="UgY-SI-XY8"/>
-                        <segue destination="Ply-1L-SRG" kind="presentation" identifier="showNewCredit" id="BKU-FV-DBY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jtU-ch-LW7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1109" y="-1254"/>
-        </scene>
-        <!--New Credit View Controller-->
-        <scene sceneID="gMb-z9-KTT">
-            <objects>
-                <viewController id="lxV-jO-Kiy" customClass="NewCreditViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="3R5-4q-yuI">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="jSo-K4-Y43"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="MAn-89-9dy"/>
-                    <connections>
-                        <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditCreditTitle" id="9UM-NA-8J6"/>
-                        <segue destination="HA0-66-dRP" kind="presentation" identifier="showSearchUser" id="9s0-e6-43t"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="MBe-x2-tDf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1352" y="-978"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="hBf-Hp-Hp9">
-            <objects>
-                <navigationController id="HA0-66-dRP" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="zZ0-q7-yO2">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
-                        <textAttributes key="largeTitleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="Btf-EX-uKz" kind="relationship" relationship="rootViewController" id="bfU-qG-pE9"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Uus-FA-Kvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2215.9420289855075" y="-492.1875"/>
         </scene>
         <!--Container View Controller-->
         <scene sceneID="Sfx-x4-dys">
@@ -159,7 +111,7 @@
             <objects>
                 <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -172,14 +124,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3261" y="59"/>
+            <point key="canvasLocation" x="3139" y="119"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
             <objects>
                 <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gtO-iq-VKq">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -204,7 +156,7 @@
             <objects>
                 <viewController id="CXo-oV-yRo" customClass="ProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HCd-Pg-5WJ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -226,7 +178,7 @@
             <objects>
                 <viewController storyboardIdentifier="editProfile" id="rEM-qb-roe" customClass="EditProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Eku-wh-htc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -234,30 +186,12 @@
                     </view>
                     <navigationItem key="navigationItem" id="3A4-h1-0pg"/>
                     <connections>
-                        <segue destination="n4H-QI-4Ol" kind="presentation" identifier="showEditBio" id="t1V-yP-gW0"/>
                         <segue destination="W2D-HU-YWf" kind="show" identifier="showTags" id="Pro-Wr-Tmr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dKi-TO-VfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3755" y="1679"/>
-        </scene>
-        <!--Edit Bio View Controller-->
-        <scene sceneID="UXW-zh-5xg">
-            <objects>
-                <viewController id="3jl-7I-oti" customClass="EditBioViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="eBy-XP-uAL">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="WKJ-WH-T7i"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="smL-OJ-pEv"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tvS-2b-70E" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-3349" y="3142"/>
         </scene>
         <!--Choose Tags View Controller-->
         <scene sceneID="M20-Wr-7YN">
@@ -375,33 +309,6 @@
             <point key="canvasLocation" x="-7049" y="100"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="LMc-NU-utU">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="n4H-QI-4Ol" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5ux-yi-Vqb">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
-                        <textAttributes key="largeTitleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="3jl-7I-oti" kind="relationship" relationship="rootViewController" id="1JY-4R-GMW"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="xm3-aw-Ekz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-3349" y="2446"/>
-        </scene>
-        <!--Navigation Controller-->
         <scene sceneID="LYJ-Ge-DSD">
             <objects>
                 <navigationController storyboardIdentifier="main" automaticallyAdjustsScrollViewInsets="NO" id="3Mr-Tw-OSi" sceneMemberID="viewController">
@@ -498,7 +405,7 @@
             <objects>
                 <viewController id="zJZ-n2-4Wd" customClass="EarningsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3Pe-9L-Qec">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -623,33 +530,6 @@
             <point key="canvasLocation" x="-2768.1159420289855" y="215.625"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="2Fi-DC-GU0">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ply-1L-SRG" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="KH0-mR-bWc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
-                        <textAttributes key="largeTitleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="lxV-jO-Kiy" kind="relationship" relationship="rootViewController" id="4U5-ZS-9Cd"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SMl-Fm-hkf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="229" y="-978"/>
-        </scene>
-        <!--Navigation Controller-->
         <scene sceneID="dpi-lW-9ue">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="SHp-2x-uhh" sceneMemberID="viewController">
@@ -686,12 +566,10 @@
     <inferredMetricsTieBreakers>
         <segue reference="DRe-nT-YVJ"/>
         <segue reference="QFf-vL-w9n"/>
-        <segue reference="UgY-SI-XY8"/>
         <segue reference="KtZ-Sp-Nxi"/>
         <segue reference="YJM-4e-UbW"/>
         <segue reference="CdJ-ew-HPh"/>
-        <segue reference="8ie-Jd-veP"/>
-        <segue reference="Ejz-iv-iC5"/>
+        <segue reference="Nhf-bc-kRf"/>
         <segue reference="jCE-No-XFc"/>
     </inferredMetricsTieBreakers>
     <resources>

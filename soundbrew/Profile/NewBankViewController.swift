@@ -32,40 +32,8 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        setupTopButtons()
-        setUpTableView()
-    }
-    
-    lazy var cancelButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Cancel", for: .normal)
-        button.addTarget(self, action: #selector(self.didPressDoneButton), for: .touchUpInside)
-        button.isOpaque = true
-        button.tag = 0
-        return button
-    }()
-    
-    lazy var doneButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Add bank", for: .normal)
-        button.addTarget(self, action: #selector(self.didPressDoneButton), for: .touchUpInside)
-        button.isOpaque = true
-        button.tag = 1
-        return button
-    }()
-    
-    func setupTopButtons() {
-        self.view.addSubview(cancelButton)
-        cancelButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-        }
-        
-        self.view.addSubview(doneButton)
-        doneButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
+        let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add Bank")
+        setUpTableView(dividerLine)
     }
     
     @objc func didPressDoneButton(_ sender: UIButton) {
@@ -79,7 +47,7 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
     //MARK: TableView
     let tableView = UITableView()
     let editProfileInfoReuse = "editProfileInfoReuse"
-    func setUpTableView() {
+    func setUpTableView(_ dividerLine: UIView) {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
@@ -87,9 +55,9 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
-        self.view.addSubview(cancelButton)
+        //self.view.addSubview(cancelButton)
         tableView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.doneButton.snp.bottom)
+            make.top.equalTo(dividerLine.snp.bottom)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view)

@@ -11,11 +11,9 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
-//import TwitterKit
 import AppCenterAnalytics
 import UICircularProgressRing
 import CropViewController
-//import Zip
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, PlaylistDelegate, UITextViewDelegate, CropViewControllerDelegate {
     
@@ -39,7 +37,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         createUploaderCredit()
-       // getTwitterUserID()
         getSelectedTags()
         setUpViews()
         setUpTableView()
@@ -56,14 +53,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         switch segue.identifier {
         case "showTags":
             prepareTagView(navigationController)
-            break
-            
-        case "showEditTitle":
-            prepareEditTitle(navigationController)
-            break
-            
-        case "showNewCredit":
-            prepareNewCredit(navigationController)
             break
             
         default:
@@ -88,7 +77,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         var shouldUploadButtonBeEnabled = false
         if soundThatIsBeingEdited?.objectId != nil {
             shouldUploadButtonBeEnabled = true
-            //soundParseFileDidFinishProcessing = true
             localizedGoback = NSLocalizedString("back", comment: "")
         } else {
             localizedGoback = NSLocalizedString("cancel", comment: "")
@@ -154,10 +142,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let dividerReuse = "dividerReuse"
     let audioImageCellSection = 0
     let fanClubExclusiveSection = 2
-    //let playlistSection = 4
     let creditCellSection = 4
     let tagCellSection = 6
-    //let socialSection = 10
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -200,11 +186,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         case fanClubExclusiveSection:
             cell = fanClubExclusiveCell()
             break
-            
-       /* case playlistSection:
-            cell = playlistCell()
-            break*/
-            
         case creditCellSection:
             cell = creditCell(indexPath)
             break
@@ -212,11 +193,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         case tagCellSection:
             cell = tagCell(indexPath, tableView: tableView)
             break
-            
-       /* case socialSection:
-            cell = socialCell(indexPath)
-            break*/
-            
+ 
         default:
             cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as? SoundInfoTableViewCell
             break
@@ -230,15 +207,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case audioImageCellSection:
-            self.performSegue(withIdentifier: "showEditTitle", sender: self)
+            self.showEditTitleView()
             break
             
-       /* case playlistSection:
-            self.showChoosePlaylist()
-            break*/
-            
         case creditCellSection:
-            self.performSegue(withIdentifier: "showNewCredit", sender: self)
+            let modal = NewCreditViewController()
+            modal.creditDelegate = self
+            modal.credits = credits
+            self.present(modal, animated: true, completion: nil)
             break
             
         case tagCellSection:
@@ -249,24 +225,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
         }
     }
-    
-    //mark: playlist
-   /*func playlistCell() -> SoundInfoTableViewCell {
-        var cell: SoundInfoTableViewCell!
-        cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
-        
-        cell.soundTagLabel.text = "Playlist"
-        cell.chosenSoundTagLabel.textColor = .white
-        
-        if let playlist = soundThatIsBeingEdited?.artistSelectedPlaylist, let title = playlist.title {
-            cell.chosenSoundTagLabel.text = title
-        } else {
-           cell.chosenSoundTagLabel.text = "Uploads"
-        }
-        
-        return cell
-    }*/
-    
+
     func receivedPlaylist(_ chosenPlaylist: Playlist?) {
         soundThatIsBeingEdited?.artistSelectedPlaylist = chosenPlaylist
         self.tableView.reloadData()
@@ -318,12 +277,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         return cell
     }
     
-    func prepareNewCredit(_ navigationController: UINavigationController) {
-        let viewController: NewCreditViewController = navigationController.topViewController as! NewCreditViewController
-        viewController.creditDelegate = self
-        viewController.credits = credits
-    }
-    
     func receivedCredits(_ chosenCredits: Array<Credit>?) {
         if let credits = chosenCredits {
             self.credits = credits
@@ -361,93 +314,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newCredit["postId"] = postId
         newCredit.saveEventually()
     }
-    
-    //mark: social
-    /*func socialCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
-        var socialTitle: String!
-        var tag: Int!
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
-        
-        socialTitle = "Twitter"
-        if shouldPostLinkToTwitter {
-            cell.socialSwitch.isOn = true
-        }
-        tag = 0
-        
-        let localizedShareLinkTo = NSLocalizedString("shareLinkTo", comment: "")
-        cell.soundTagLabel.text = "\(localizedShareLinkTo) \(socialTitle!)"
-        cell.socialSwitch.addTarget(self, action: #selector(self.didPressSocialSwitch(_:)), for: .valueChanged)
-        cell.socialSwitch.tag = tag
-       
-        return cell
-    }
-    @objc func didPressSocialSwitch(_ sender: UISwitch) {
-        checkTwitterAuth(sender)
-    }*/
-        
-    //mark: twitter
-  /*  var twitterUserID: String?
-    var shouldPostLinkToTwitter = false
-    
-    func getTwitterUserID() {
-        let store = TWTRTwitter.sharedInstance().sessionStore
-        
-        if let userId = store.session()?.userID {
-            self.twitterUserID = userId
-            shouldPostLinkToTwitter = true
-            self.tableView.reloadData()
-        }
-    }
-    
-    func checkTwitterAuth(_ sender: UISwitch) {
-        if sender.isOn {
-            if twitterUserID == nil {
-                authenticateTwitter(sender)
-            } else {
-                shouldPostLinkToTwitter = true
-            }
-        } else {
-            shouldPostLinkToTwitter = false
-        }
-        self.tableView.reloadData()
-    }
-    
-    func authenticateTwitter(_ sender: UISwitch) {
-        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
-            if let session = session {
-                self.twitterUserID = session.userID
-                self.shouldPostLinkToTwitter = true
-                self.tableView.reloadData()
-            } else if let error = error {
-                print("error: \(error.localizedDescription)");
-                sender.isOn = false
-            }
-        })
-    }
-    
-    func postTweet(_ url: URL, title: String?) {
-        if let userID = self.twitterUserID {
-            let client = TWTRAPIClient(userID: userID)
-            let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/update.json"
-            let params = ["status": "\(title ?? "\(self.uiElement.soundbrewSocialHandle)") \(self.uiElement.soundbrewSocialHandle) \(url)"]
-            var clientError : NSError?
-            let request = client.urlRequest(withMethod: "POST", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
-            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
-                if let connectionError = connectionError {
-                    print("Error: \(connectionError)")
-                }
-                do {
-                    if let data = data {
-                        let json = try JSONSerialization.jsonObject(with: data, options: [])
-                        print("json: \(json)")
-                    }
-                } catch let jsonError {
-                    print("json error: \(jsonError.localizedDescription)")
-                }
-            }
-        }
-    }*/
-    
+
     //MARK: tags
     var showTags = "showTags"
     var tagType: String?
@@ -727,14 +594,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: Title
-    func prepareEditTitle(_ navigationController: UINavigationController) {
-        let viewController = navigationController.topViewController as! EditBioViewController
-        viewController.title = "Edit Title/Description"
+    func showEditTitleView() {
+        let modal = EditBioViewController()
         if let title = self.soundThatIsBeingEdited?.title {
-            viewController.bio = title
+            modal.bio = title
         }
-        viewController.totalAllowedTextLength = 50
-        viewController.artistDelegate = self
+        modal.totalAllowedTextLength = 50
+        modal.artistDelegate = self
+        self.present(modal, animated: true, completion: nil)
     }
     
     func audioImageTitleCell() -> SoundInfoTableViewCell {
@@ -976,7 +843,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if isDraft {
                     self.finishUp(false, object: newSound)
                 } else {
-                   // self.handleSocials(newSound)
                     self.saveTags(tags)
                     sound.objectId = newSound.objectId
                     self.saveCredits(sound)
@@ -1028,7 +894,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                             self.saveTags(tags)
                             sound.objectId = object.objectId
                             self.saveCredits(sound)
-                            //self.handleSocials(object)
                             self.finishUp(true, object: object)
                         }
                         
@@ -1043,21 +908,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
     }
-    
-   /* func handleSocials(_ object: PFObject) {
-        DispatchQueue.main.async {
-            if self.shouldPostLinkToTwitter {
-                var title = ""
-                if let objectTitle = object["title"] as? String {
-                    title = objectTitle
-                }
-                let objectId = object.objectId!
-                if let url = self.uiElement.getSoundbrewURL(objectId, path: "s") {
-                    self.postTweet(url, title: title)
-                }
-            }
-        }
-    }*/
     
     func loadCurrentUserCity(_ userId: String) {
         let query = PFQuery(className: "_User")

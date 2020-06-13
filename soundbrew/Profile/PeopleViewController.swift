@@ -70,15 +70,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    lazy var exitButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "dismiss"), for: .normal)
-        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
-        return button
-    }()
-    @objc func didPressExitButton(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
-        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
+    @objc func didPressExitButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            self.dismiss(animated: true, completion: nil)
+            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
+        }
     }
     
     lazy var appTitle: UILabel = {
@@ -91,29 +87,15 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }()
     
     //mark: top view
+    var dividerLine: UIView!
+    
     func setupTopView() {
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        if isAddingNewCredit {
-            let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressExitButton(_:)))
-            navigationItem.leftBarButtonItem = cancelButton
-        } else if sound != nil {
-            self.title = "\(loadType.capitalized)"
-            self.view.addSubview(exitButton)
-            exitButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(self.view).offset(uiElement.topOffset)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            }
-            
-            appTitle.text = loadType.capitalized
-            self.view.addSubview(appTitle)
-            appTitle.snp.makeConstraints { (make) -> Void in
-                make.centerX.equalTo(self.view)
-                make.centerY.equalTo(exitButton)
-            }
+        if isAddingNewCredit || sound != nil {
+            dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressExitButton(_:)), doneButtonTitle: "")
         }
     }
     
@@ -136,21 +118,28 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.backgroundColor = color.black()
         tableView.tintColor = color.black()
         self.view.addSubview(tableView)
-        if sound == nil {
+        if isAddingNewCredit || sound != nil {
+            tableView.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.dividerLine.snp.bottom)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+                make.bottom.equalTo(self.view)
+            }
+        } else if sound == nil {
             tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.view).offset(-165)
             }
-        } else {
+        } /*else {
             tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(exitButton.snp.bottom)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.view)
             }
-        }
+        }*/
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

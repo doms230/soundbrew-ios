@@ -22,31 +22,11 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Features"
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(didPressDoneButton(_:)))
-        self.navigationItem.rightBarButtonItem = doneButton
-        setUpTableView()
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let navigationController = segue.destination as! UINavigationController
-        if segue.identifier == "showSearchUser" {
-            let viewController: PeopleViewController = navigationController.topViewController as! PeopleViewController
-            viewController.artistDelegate = self
-            viewController.isAddingNewCredit = true
-            let artists = self.credits.map {$0.artist}
-            let artistObjectIds: [String] = artists.map {$0!.objectId}
-            viewController.creditArtistObjectIds = artistObjectIds
-            
-        } else if segue.identifier == "showEditCreditTitle" {
-            let viewController: EditBioViewController = navigationController.topViewController as! EditBioViewController
-            viewController.totalAllowedTextLength = 25
-            viewController.artistDelegate = self
-            viewController.title = "Credit Title"
-            if let title = self.credits[creditTitleCurrentlyBeingEdited].title {
-                viewController.inputBio.text = title
-            }
-        }
+        self.view.backgroundColor = .black
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+        let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        setUpTableView(dividerLine)
     }
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
@@ -61,15 +41,20 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     var tableView = UITableView()
     let creditReuse = "creditReuse"
     let newCreditReuse = "newCreditReuse"
-    func setUpTableView() {
+    func setUpTableView(_ dividerLine: UIView) {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: creditReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: newCreditReuse)
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
-        tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(dividerLine.snp.bottom)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -105,7 +90,13 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             if credits.count == 10 {
                 self.uiElement.showAlert("Limit Reached", message: "You can feature up to 10 people", target: self)
             } else {
-                self.performSegue(withIdentifier: "showSearchUser", sender: self)
+                let modal = PeopleViewController()
+                modal.artistDelegate = self
+                modal.isAddingNewCredit = true
+                let artists = self.credits.map {$0.artist}
+                let artistObjectIds: [String] = artists.map {$0!.objectId}
+                modal.creditArtistObjectIds = artistObjectIds
+                self.present(modal, animated: true, completion: nil)
             }
         }
     }
@@ -166,7 +157,13 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @objc func didPressChangeCreditTitle(_ sender: UIButton) {
         creditTitleCurrentlyBeingEdited = sender.tag
-        self.performSegue(withIdentifier: "showEditCreditTitle", sender: self)
+        let modal = EditBioViewController()
+        modal.totalAllowedTextLength = 25
+        modal.artistDelegate = self
+        if let title = self.credits[creditTitleCurrentlyBeingEdited].title {
+            modal.inputBio.text = title
+        }
+        self.present(modal, animated: true, completion: nil)
     }
     
     func changeBio(_ value: String?) {

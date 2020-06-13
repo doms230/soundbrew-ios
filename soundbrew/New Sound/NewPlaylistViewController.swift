@@ -12,7 +12,9 @@ import Parse
 import CropViewController
 import Kingfisher
 
-class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate {
+class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, ArtistDelegate {
+    func receivedArtist(_ value: Artist?) {
+    }
     
     let uiElement = UIElement()
     let color = Color()
@@ -26,9 +28,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .black
-        navigationController?.navigationBar.barTintColor = color.black()
-        navigationController?.navigationBar.tintColor = .white
         if let userId = PFUser.current()?.objectId {
             newPlaylist.userId = userId
         } else {
@@ -95,9 +94,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
-       // tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPlaylistTypeReuse)
         self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: selectPlaylistSoundsReuse)
-        //tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
@@ -145,7 +142,20 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
-           // self.performSegue(withIdentifier: "showEditTitle", sender: self)
+            let modal = EditBioViewController()
+            if let title = self.newPlaylist.title {
+                modal.bio = title
+            }
+            modal.totalAllowedTextLength = 50
+            modal.artistDelegate = self
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    func changeBio(_ value: String?) {
+        if let newPlaylistTitle = value {
+            self.newPlaylist.title = newPlaylistTitle
+            self.tableView.reloadData()
         }
     }
     

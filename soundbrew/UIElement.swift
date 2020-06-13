@@ -475,6 +475,44 @@ class UIElement {
         label.isOpaque = true
         return label
     }
+        
+    func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String) -> UIView {
+        let cancelButton = UIButton()
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.addTarget(target, action: action, for: .touchUpInside)
+        cancelButton.isOpaque = true
+        cancelButton.tag = 0
+        target.view.addSubview(cancelButton)
+        cancelButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(target.view).offset(self.topOffset)
+            make.left.equalTo(target.view).offset(self.leftOffset)
+        }
+        
+        let doneButton = UIButton()
+        doneButton.setTitle(doneButtonTitle, for: .normal)
+        doneButton.addTarget(target, action: action, for: .touchUpInside)
+        doneButton.isOpaque = true
+        doneButton.tag = 1
+        target.view.addSubview(doneButton)
+        doneButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(target.view).offset(self.topOffset)
+            make.right.equalTo(target.view).offset(self.rightOffset)
+        }
+        
+        let dividerLine = UIView()
+        dividerLine.layer.borderWidth = 1
+        dividerLine.layer.borderColor = UIColor.darkGray.cgColor
+        target.view.addSubview(dividerLine)
+        dividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(cancelButton.snp.bottom).offset(self.topOffset)
+            make.left.equalTo(target.view).offset(self.leftOffset)
+            make.right.equalTo(target.view).offset(self.rightOffset)
+        }
+        
+        //return view so that the next view can set constraints 
+        return dividerLine
+    }
 }
 
 public extension UIDevice {

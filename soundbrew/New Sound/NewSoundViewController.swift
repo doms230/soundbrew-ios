@@ -74,7 +74,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     func decideAction() {
         let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
         
-        let newPlaylistAction = UIAlertAction(title: "New Playlist", style: .default) { (_) -> Void in
+        let newPlaylistAction = UIAlertAction(title: "New Collection", style: .default) { (_) -> Void in
             self.didSelectNewPlaylist = true
             self.tableView.reloadData()
             self.setupNavigationBar()
@@ -112,7 +112,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         switch segue.identifier {
             case "showNewPlaylist":
                 let backItem = UIBarButtonItem()
-                backItem.title = "New Playlist"
+                backItem.title = "New Collection"
                 navigationItem.backBarButtonItem = backItem
                 
                 let viewController = segue.destination as! NewPlaylistViewController

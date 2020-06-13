@@ -53,12 +53,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 if tagType == "price" {
                     viewController.prices = self.availablePrices
                 }
-                
-            } else if segue.identifier == "showEditBio" {
-                let viewController = navigationController.topViewController as! EditBioViewController
-                viewController.bio = self.artist!.bio
-                viewController.artistDelegate = self
-                viewController.title = "Edit Bio"
             }
             
         } else {
@@ -227,7 +221,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 3:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            self.performSegue(withIdentifier: "showEditBio", sender: self)
+            let modal = EditBioViewController()
+            modal.artistDelegate = self
+            modal.bio = self.artist!.bio
+            self.present(modal, animated: true, completion: nil)
             break
             
         case 4:
