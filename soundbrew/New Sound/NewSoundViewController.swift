@@ -59,9 +59,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             break
             
         case 1:
-            
-            //TODO: segue to newPlaylistViewController
-            //Attached selectedsounds
+            self.performSegue(withIdentifier: "showNewPlaylist", sender: self)
             break
             
         case 2:
@@ -112,6 +110,15 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
+            case "showNewPlaylist":
+                let backItem = UIBarButtonItem()
+                backItem.title = "New Playlist"
+                navigationItem.backBarButtonItem = backItem
+                
+                let viewController = segue.destination as! NewPlaylistViewController
+                viewController.playlistSounds = selectedSoundsForPlaylist
+            break
+            
             case "showEditSoundInfo":
                 var soundToBeEdited: Sound!
                 if let selectedSound = soundList.selectedSound {

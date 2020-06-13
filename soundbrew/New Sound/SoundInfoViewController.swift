@@ -154,9 +154,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let dividerReuse = "dividerReuse"
     let audioImageCellSection = 0
     let fanClubExclusiveSection = 2
-    let playlistSection = 4
-    let creditCellSection = 6
-    let tagCellSection = 8
+    //let playlistSection = 4
+    let creditCellSection = 4
+    let tagCellSection = 6
     //let socialSection = 10
     func setUpTableView() {
         tableView.delegate = self
@@ -179,7 +179,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 9
+        return 7
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -201,9 +201,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = fanClubExclusiveCell()
             break
             
-        case playlistSection:
+       /* case playlistSection:
             cell = playlistCell()
-            break
+            break*/
             
         case creditCellSection:
             cell = creditCell(indexPath)
@@ -233,9 +233,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.performSegue(withIdentifier: "showEditTitle", sender: self)
             break
             
-        case playlistSection:
+       /* case playlistSection:
             self.showChoosePlaylist()
-            break
+            break*/
             
         case creditCellSection:
             self.performSegue(withIdentifier: "showNewCredit", sender: self)
@@ -251,7 +251,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //mark: playlist
-    func playlistCell() -> SoundInfoTableViewCell {
+   /*func playlistCell() -> SoundInfoTableViewCell {
         var cell: SoundInfoTableViewCell!
         cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
         
@@ -265,7 +265,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         return cell
-    }
+    }*/
     
     func receivedPlaylist(_ chosenPlaylist: Playlist?) {
         soundThatIsBeingEdited?.artistSelectedPlaylist = chosenPlaylist

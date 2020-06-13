@@ -388,7 +388,6 @@
 				F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */,
 				F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */,
 				F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */,
-				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -419,6 +418,7 @@
 				F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
 				E425D7C823C289630031DB0B /* NewCreditViewController.swift */,
+				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";

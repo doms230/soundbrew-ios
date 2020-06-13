@@ -89,13 +89,17 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     let editPlaylistTypeReuse = "editBioReuse"
     let soundReuse = "soundReuse"
     let soundInfoReuse = "soundInfoReuse"
+    let dividerReuse = "dividerReuse"
+    let selectPlaylistSoundsReuse = "selectPlaylistSoundsReuse"
     func setUpTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPlaylistTypeReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
+       // tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editPlaylistTypeReuse)
+        self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: selectPlaylistSoundsReuse)
+        //tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
@@ -110,28 +114,45 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 2 {
+            return soundList.sounds.count
+        }
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
             return playlistImageTitleCell()
-        } else {
-            return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
+            
+        case 2:
+            let cell = soundList.soundCell(indexPath, tableView: tableView, reuse: selectPlaylistSoundsReuse)
+            let index = indexPath.row + 1
+            cell.circleImage.text = "\(index)"
+            cell.circleImage.textColor = .darkGray
+            return cell
+            
+        default:
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell
+            cell.backgroundColor = color.black()
+            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        if indexPath.section == 0 {
+           // self.performSegue(withIdentifier: "showEditTitle", sender: self)
+        }
     }
     
     func playlistImageTitleCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundInfoReuse) as! SoundInfoTableViewCell
-                
+        cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
         cell.soundArtImageButton.addTarget(self, action: #selector(self.didPressUploadSoundArtButton(_:)), for: .touchUpInside)
 
         cell.audioProgress.isHidden = true 
