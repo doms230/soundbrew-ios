@@ -74,17 +74,17 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     func decideAction() {
         let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
         
+        let newUploadAction = UIAlertAction(title: "New Upload", style: .default) { (_) -> Void in
+            self.showNewUpload()
+        }
+        alertController.addAction(newUploadAction)
+        
         let newPlaylistAction = UIAlertAction(title: "New Collection", style: .default) { (_) -> Void in
             self.didSelectNewPlaylist = true
             self.tableView.reloadData()
             self.setupNavigationBar()
         }
         alertController.addAction(newPlaylistAction)
-        
-        let newUploadAction = UIAlertAction(title: "New Upload", style: .default) { (_) -> Void in
-            self.showNewUpload()
-        }
-        alertController.addAction(newUploadAction)
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
