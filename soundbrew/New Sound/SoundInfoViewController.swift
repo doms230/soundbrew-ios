@@ -82,8 +82,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             localizedGoback = NSLocalizedString("cancel", comment: "")
         }
         
-        let localizedRelease = NSLocalizedString("release", comment: "")
-        uploadButton = UIBarButtonItem(title: localizedRelease, style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
+        uploadButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
         
@@ -93,7 +92,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
-        if self.soundParseFileDidFinishProcessing {
+        self.uiElement.goBackToPreviousViewController(self)
+       /* if self.soundParseFileDidFinishProcessing {
             var titleMessage: String!
             if self.soundThatIsBeingEdited?.objectId != nil {
                 titleMessage = "Update the changes you made to this upload?"
@@ -120,7 +120,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.present(alertController, animated: true, completion: nil)
         } else {
             self.uiElement.goBackToPreviousViewController(self)
-        }
+        }*/
     }
     
     func saveDraft() {
@@ -775,7 +775,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if succeeded {
                 self.soundArtDidFinishProcessing = true
                 if self.didPressUploadButton {
-                    self.handleUploadButtonAction()
+                    self.releaseSound()
                 }
                 
             } else if let error = error {
@@ -799,11 +799,36 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //
     @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
-        self.didPressUploadButton = true
-        handleUploadButtonAction()
+        /*var titleMessage: String!
+        if self.soundThatIsBeingEdited?.objectId != nil {
+            titleMessage = "Update the changes you made to this upload?"
+        } else {
+            titleMessage = "Save this upload for later?"
+        }*/
+        
+        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+        
+        let yesAction = UIAlertAction(title: "Release as Single", style: .default) { (_) -> Void in
+            self.releaseSound()
+        }
+        alertController.addAction(yesAction)
+        
+        let noAction = UIAlertAction(title: "Save to Drafts", style: .default) { (_) -> Void in
+            self.saveDraft()
+        }
+        alertController.addAction(noAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
+        }
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+       // self.didPressUploadButton = true
+       // handleUploadButtonAction()
     }
     
-    func handleUploadButtonAction() {
+    func releaseSound() {
+        self.didPressUploadButton = true
         self.startAnimating()
         if self.soundArtDidFinishProcessing, let sound = soundThatIsBeingEdited {
             if sound.objectId != nil {
