@@ -320,7 +320,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             make.centerY.equalTo(self.playBackButton)
         }
         
-        if let image = self.sound?.artURL {
+        if let image = self.sound?.artFile?.url  {
             songArtButton.kf.setImage(with: URL(string: image), for: .normal)
         }
         

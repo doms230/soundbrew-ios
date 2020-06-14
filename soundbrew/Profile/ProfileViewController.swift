@@ -348,7 +348,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let sound = sounds[i]
             
             let soundArt = UIImageView()
-            soundArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
+            soundArt.kf.setImage(with: URL(string: sound.artFile?.url  ?? ""), placeholder: UIImage(named: "sound"))
             soundArt.contentMode = .scaleAspectFill
             soundArt.layer.cornerRadius = 5
             soundArt.layer.borderWidth = 1

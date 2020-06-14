@@ -275,7 +275,7 @@ class MiniPlayerView: UIButton {
     func setCurrentSoundView(_ sound: Sound) {
         self.songTitle.text = sound.title
         
-        self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
+        self.songArt.kf.setImage(with: URL(string: sound.artFile?.url ?? ""), placeholder: UIImage(named: "sound"))
         
         if let artistName = sound.artist?.name {
             self.artistName.text = artistName

@@ -17,7 +17,6 @@ class Sound {
     var audioURL: String?
     var audioData: Data?
     var isNextUpToPlay: Bool!
-    var artURL: String?
     var artFile: PFFileObject?
     var artImage: UIImage?
     var tags: Array<String>?
@@ -35,12 +34,11 @@ class Sound {
     //defaults to uploads if nil
     var artistSelectedPlaylist: Playlist?
     
-    init(objectId: String?, title: String?, artURL: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, artistSelectedPlaylist: Playlist?) {
+    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, artistSelectedPlaylist: Playlist?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
         self.audioURL = audioURL
-        self.artURL = artURL
         self.artImage = artImage
         self.artFile = artFile
         self.tags = tags

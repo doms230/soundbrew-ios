@@ -34,7 +34,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
             
             for i in 0..<playlistSounds.count {
                 playlistSounds[i].artFile = nil
-                playlistSounds[i].artURL = nil
             }
             
             setUpTableView()
@@ -236,7 +235,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     func updateSoundImages() {
         if let playlistImage = self.newPlaylist.image {
             for i in 0..<soundList.sounds.count {
-                soundList.sounds[i].artURL = playlistImage.url
                 soundList.sounds[i].artFile = playlistImage
             }
             soundList.updateTableView()
@@ -250,7 +248,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         newPlaylist["userId"] = playlist.userId
         newPlaylist["title"] = playlist.title
         newPlaylist["image"] = playlist.image
-        newPlaylist["isRemoved"] = false 
+        newPlaylist["isRemoved"] = false
         newPlaylist.saveEventually {
             (success: Bool, error: Error?) in
             self.stopAnimating()

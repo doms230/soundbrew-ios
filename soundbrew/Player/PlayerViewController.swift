@@ -94,7 +94,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             
             self.songTitle.text = sound.title
             
-            self.songArt.kf.setImage(with: URL(string: sound.artURL ?? ""), placeholder: UIImage(named: "sound"))
+            self.songArt.kf.setImage(with: URL(string: sound.artFile?.url  ?? ""), placeholder: UIImage(named: "sound"))
             
             if let duration = self.player.player?.duration {
                 self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))

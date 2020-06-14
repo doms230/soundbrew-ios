@@ -624,7 +624,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         
             if let image = sound.artImage {
                 cell.soundArtImageButton.setImage(image, for: .normal)
-            } else if let imageURL = sound.artURL {
+            } else if let imageURL = sound.artFile?.url  {
                 cell.soundArtImageButton.kf.setImage(with: URL(string: imageURL), for: .normal)
             }
         }

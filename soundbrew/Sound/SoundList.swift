@@ -110,7 +110,7 @@ class SoundList: NSObject, PlayerDelegate {
                 cell.menuButton.tag = indexPath.row
             }
             
-            if let soundURL = sound.artURL {
+            if let soundURL = sound.artFile?.url  {
                 cell.soundArtImage.kf.setImage(with: URL(string: soundURL), placeholder: UIImage(named: "sound"))
             } else {
                 cell.soundArtImage.image = UIImage(named: "sound")
