@@ -394,7 +394,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if searchType == 1 {
                 searchUsers(searchBar.text!)
             } else {
-                soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil)
+                soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
             }
         }
         

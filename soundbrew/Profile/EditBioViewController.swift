@@ -74,7 +74,8 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
             (success: Bool, error: Error?) in
             self.stopAnimating()
             if (success) {
-                let newPlaylist = Playlist(objectId: newPlaylist.objectId, userId: userId, title: self.inputBio.text, image: nil)
+                let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                let newPlaylist = Playlist(objectId: newPlaylist.objectId, artist: artist, title: self.inputBio.text, image: nil)
                 self.dismiss(animated: true, completion: {() in
                     playlistDelegate.receivedPlaylist(newPlaylist)
                 })

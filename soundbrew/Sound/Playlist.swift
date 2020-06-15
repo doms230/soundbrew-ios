@@ -12,13 +12,13 @@ import Alamofire
 
 class Playlist {
     var objectId: String?
-    var userId: String?
+    var artist: Artist?
     var title: String?
     var image: PFFileObject?
     
-    init(objectId: String?, userId: String?, title: String?, image: PFFileObject?) {
+    init(objectId: String?, artist: Artist?, title: String?, image: PFFileObject?) {
         self.objectId = objectId
-        self.userId = userId
+        self.artist = artist
         self.title = title
         self.image = image
     }

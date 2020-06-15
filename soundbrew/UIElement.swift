@@ -346,7 +346,7 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, artistSelectedPlaylist: nil)
+        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil)
         
         if let createdAt = object.createdAt {
             sound.createdAt = createdAt
@@ -373,11 +373,6 @@ class UIElement {
         
         if let art = object["songArt"] as? PFFileObject {
             sound.artFile = art 
-        }
-        
-        if let playlistId = object["playlistId"] as? String {
-            sound.artistSelectedPlaylist = Playlist(objectId: playlistId, userId: sound.objectId, title: nil, image: nil)
-            sound.artistSelectedPlaylist?.loadPlaylist()
         }
         
         sound.tags = object["tags"] as? Array<String>

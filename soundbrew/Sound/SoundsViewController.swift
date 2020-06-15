@@ -18,6 +18,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let uiElement = UIElement()
     let color = Color()
     var soundType = "follow"
+    var playlistId: String!
+    
     func doesMatchSoundType() -> Bool {
         if soundType == "follow" || soundType ==  "forYou" {
             return true
@@ -121,7 +123,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showSoundList() {
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil, playlistId: playlistId)
     }
     
     //mark: Page Title

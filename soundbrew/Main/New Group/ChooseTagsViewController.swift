@@ -12,7 +12,7 @@ import SnapKit
 import Parse
 import FlagKit
 
-class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlaylistDelegate {
+class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -30,8 +30,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 loadTags(nil, searchText: nil, tags: sound?.tags)
             } else if tagType == "country" || tagType == "price" {
                 setUpTableView()
-            } else if tagType == "playlist" {
-               loadPlaylists()
             } else {
                 loadTags(tagType, searchText: nil, tags: sound?.tags)
             }
@@ -260,7 +258,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if tagType == nil || tagType == "playlist" {
+        if tagType == nil {
             return 2
         }
         return 1
@@ -271,19 +269,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             return 1
         }
         
-        if tagType == "playlist" && section == 0 {
-            return 1
-        }
-        
         switch tagType {
         case "country":
             return availableCountries.count
             
         case "price":
             return prices.count
-            
-        case "playlist":
-            return playlists.count
             
         default:
             break
@@ -299,18 +290,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             
         case "price":
             return priceCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
-            
-        case "playlist":
-            if indexPath.section == 0 {
-                let cell = self.tableView.dequeueReusableCell(withIdentifier: newPlaylistReuse) as! SoundInfoTableViewCell
-                cell.titleLabel.textAlignment = .left
-                cell.titleLabel.text = "Create Playlist"
-                cell.backgroundColor = color.black()
-                cell.selectionStyle = .none
-                return cell
-            } else {
-                return playlistCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
-            }
             
         default:
             break
@@ -347,10 +326,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.handleTagsForDismissal(true)
             break
             
-        case "playlist":
-            didSelectPlaylist(indexPath)
-            break
-            
         default:
             if filteredTags.indices.contains(indexPath.row) {
                 didSelectRowAt(indexPath.row)
@@ -372,89 +347,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.uiElement.showAlert("Max Reached", message: "Up to 5 additional tags allowed.", target: self)
             } else {
                appendTag(selectedTag)
-            }
-        }
-    }
-    
-    //MARK: playlist
-    var playlistDelegate: PlaylistDelegate?
-    var playlists = [Playlist]()
-    
-    func showCreateNewPlaylistView() {
-        let modal = NewPlaylistViewController()
-        modal.playlistDelegate = self
-        self.present(modal, animated: true, completion: nil)
-    }
-
-    func receivedPlaylist(_ chosenPlaylist: Playlist?) {
-        if let newPlaylist = chosenPlaylist {
-            playlists.append(newPlaylist)
-            self.tableView.reloadData()
-        }
-    }
-    
-    func handleAndDismissPlaylist(_ selectedPlaylist: Playlist) {
-        if let playlistDelegate = self.playlistDelegate {
-            self.dismiss(animated: true, completion: {() in
-                if selectedPlaylist.objectId == nil {
-                    //user selected uploads as playlist
-                    playlistDelegate.receivedPlaylist(nil)
-                } else {
-                    playlistDelegate.receivedPlaylist(selectedPlaylist)
-                }
-            })
-        }
-    }
-    
-    func playlistCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
-        cell.selectionStyle = .gray
-        cell.backgroundColor = Color().black()
-        cell.profileImage.backgroundColor = color.purpleBlack()
-        cell.profileImage.image = UIImage(named: "playlist")
-        
-        if let title = playlists[row].title {
-            cell.displayNameLabel.text = title
-        }
-        return cell
-    }
-    
-    func didSelectPlaylist(_ indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            showCreateNewPlaylistView()
-        } else {
-            handleAndDismissPlaylist(playlists[indexPath.row])
-        }
-    }
-    
-    func loadPlaylists() {
-        if let userId = PFUser.current()?.objectId {
-            let uploadsPlaylist = Playlist(objectId: nil, userId: userId, title: "Uploads", image: nil)
-            self.playlists.append(uploadsPlaylist)
-            let playlistQuery = PFQuery(className: "Playlist")
-            playlistQuery.whereKey("userId", equalTo: userId)
-            playlistQuery.findObjectsInBackground {
-                (objects: [PFObject]?, error: Error?) -> Void in
-                if let objects = objects {
-                    for object in objects {
-                        let playlist = Playlist(objectId: object.objectId, userId: userId, title: nil, image: nil)
-                        
-                        if let title = object["title"] as? String {
-                            playlist.title = title
-                        }
-                        if let image = object["image"] as? PFFileObject {
-                            playlist.image = image
-                        }
-                        self.playlists.append(playlist)
-                    }
-                }
-                DispatchQueue.main.async {
-                    if self.tableView == nil {
-                        self.setUpTableView()
-                    } else {
-                        self.tableView.reloadData()
-                    }
-                }
             }
         }
     }

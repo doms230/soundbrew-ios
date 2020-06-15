@@ -15,6 +15,8 @@
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
+		E445FC5C24980939000A082A /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC5B24980939000A082A /* PlaylistViewController.swift */; };
+		E445FC5E24980984000A082A /* PlaylistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
 		E44A665224913707004672DC /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665124913706004672DC /* Playlist.swift */; };
@@ -157,6 +159,8 @@
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
+		E445FC5B24980939000A082A /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
+		E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewCell.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
 		E44A665124913706004672DC /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
@@ -277,6 +281,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E445FC5924980857000A082A /* Playlist */ = {
+			isa = PBXGroup;
+			children = (
+				E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */,
+				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
+				E445FC5B24980939000A082A /* PlaylistViewController.swift */,
+			);
+			path = Playlist;
+			sourceTree = "<group>";
+		};
 		E4C9DCED23E10FC0003835E5 /* Comment */ = {
 			isa = PBXGroup;
 			children = (
@@ -348,6 +362,7 @@
 				F2689872215AEF9000C21663 /* LaunchScreen.storyboard */,
 				F268986D215AEF8F00C21663 /* Main.storyboard */,
 				F226B5CA2329A47C00C3E951 /* NewUser.storyboard */,
+				E445FC5924980857000A082A /* Playlist */,
 				F2FB14CB22CBFBFF00ED157E /* Main */,
 				F2F8B99421DBEF2D0024AFB6 /* New Sound */,
 				F2689899215AF7FB00C21663 /* Sound */,
@@ -418,7 +433,6 @@
 				F2F8B99821DBEF4A0024AFB6 /* NewSoundViewController.swift */,
 				F2F8B99521DBEF430024AFB6 /* SoundInfoViewController.swift */,
 				E425D7C823C289630031DB0B /* NewCreditViewController.swift */,
-				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
 			);
 			path = "New Sound";
 			sourceTree = "<group>";
@@ -823,11 +837,13 @@
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				E4C9DCF123E11018003835E5 /* CommentViewController.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
+				E445FC5E24980984000A082A /* PlaylistTableViewCell.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				E425D7C723C2836A0031DB0B /* Credit.swift in Sources */,
 				E43AB28F241D7181003263C9 /* Follow.swift in Sources */,
 				F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
+				E445FC5C24980939000A082A /* PlaylistViewController.swift in Sources */,
 				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,

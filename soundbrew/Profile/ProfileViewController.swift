@@ -76,13 +76,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 break
                 
             case "showSounds":
-                let backItem = UIBarButtonItem()
-                backItem.title = showSoundsTitle
-                navigationItem.backBarButtonItem = backItem
-                
-                let viewController = segue.destination as! SoundsViewController
-                viewController.soundType = selectedSoundType
-                viewController.userId = profileArtist?.objectId
+                if let indexPath = tableView.indexPathForSelectedRow, let title = self.artistPlaylists[indexPath.row].title, let objectId = self.artistPlaylists[indexPath.row].objectId  {
+                    let backItem = UIBarButtonItem()
+                    backItem.title = title
+                    navigationItem.backBarButtonItem = backItem
+                    
+                    let viewController = segue.destination as! SoundsViewController
+                    viewController.soundType = "playlist"
+                    viewController.playlistId = objectId
+                    //viewController.userId = profileArtist?.objectId
+                }
                 break
                 
             case "showFollowerFollowing":
@@ -120,9 +123,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 checkFollowStatus()
             }
             
-            self.loadCollection(profileArtist.objectId)
-            self.loadCredits(profileArtist.objectId)
-            self.loadSounds(nil, creditIds: nil, userId: profileArtist.objectId)
+          //  self.loadCollection(profileArtist.objectId)
+          //  self.loadCredits(profileArtist.objectId)
+           // self.loadSounds(nil, creditIds: nil, userId: profileArtist.objectId)
+            self.loadPlaylists(profileUserId: profileArtist.objectId)
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
             }
@@ -131,17 +135,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //MARK: Tableview
     var tableView: UITableView!
-    let soundReuse = "soundReuse"
     let profileReuse = "profileReuse"
-    let profileSoundReuse = "profileSoundReuse"
-    
+   // let profileSoundReuse = "profileSoundReuse"
+    let playlistReuse = "playlistReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: profileSoundReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: playlistReuse)
+       // tableView.register(TagTableViewCell.self, forCellReuseIdentifier: profileSoundReuse)
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
         let refreshControl = UIRefreshControl()
@@ -164,18 +167,28 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        if section == 0 {
+            return 1
+        }
+        
+        return artistPlaylists.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             return profileInfoReuse()
         } else {
-            return soundsReuse(indexPath)
+           return playlistReuse(indexPath)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 1 {
+            self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
     
@@ -217,14 +230,74 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: Playlist
+    var artistPlaylists = [Playlist]()
     func receivedPlaylist(_ chosenPlaylist: Playlist?) {
         if let newPlaylist = chosenPlaylist {
             print(newPlaylist.objectId)
+            //TODO: show new playlist and give user option of adding songs to playlist
+        }
+    }
+    
+    func playlistReuse(_ indexPath: IndexPath) -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: playlistReuse) as! SoundListTableViewCell
+         cell.backgroundColor = color.black()
+         cell.selectionStyle = .none
+                    
+        if artistPlaylists.indices.contains(indexPath.row) {
+            let playlist = artistPlaylists[indexPath.row]
+             
+            cell.artistImage.image = UIImage(named: "profile_icon")
+            cell.artistLabel.text = "loading..."
+            if let name = playlist.artist?.name {
+                cell.artistLabel.text = name
+                if let image = playlist.artist?.image {
+                    cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+                 }
+             } else if let artist = playlist.artist {
+                 artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+             }
+             
+            //TODO: didPressArtistButton
+            // cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
+             cell.artistButton.tag = indexPath.row
+             
+            if let playlistImageURL = playlist.image?.url  {
+                 cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "sound"))
+             } else {
+                 cell.soundArtImage.image = UIImage(named: "sound")
+             }
+             
+            cell.soundTitle.text = playlist.title
+        }
+        return cell 
+    }
+    
+    func loadPlaylists(profileUserId: String) {
+        let singlesPlaylist = Playlist(objectId: nil, artist: self.profileArtist, title: "Singles", image: nil)
+        self.artistPlaylists.append(singlesPlaylist)
+        let query = PFQuery(className: "Playlist")
+        query.whereKey("userId", equalTo: profileUserId)
+        query.addDescendingOrder("createdAt")
+        query.whereKey("isRemoved", equalTo: false)
+        query.cachePolicy = .networkElseCache
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if let objects = objects {
+                for object in objects {
+                    let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil)
+                    let artist = Artist(objectId: object["userId"] as? String, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    playlist.artist = artist
+                    playlist.title = object["title"] as? String
+                    playlist.image = object["image"] as? PFFileObject
+                    self.artistPlaylists.append(playlist)
+                }
+            }
+            self.setUpTableView()
         }
     }
     
     //mark: sounds
-    var artistReleases = [Sound]()
+   /* var artistReleases = [Sound]()
     var artistCollection = [Sound]()
     var artistCredits = [Sound]()
     var collectionSoundIds = [String]()
@@ -514,7 +587,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.setUpTableView()
             }
         }
-    }
+    }*/
     
     //mark: profileInfo
     func determineTypeOfProfile() {
@@ -539,9 +612,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }  else if let currentArtist = Customer.shared.artist {
             isFromNavigationStack = false
             self.profileArtist = currentArtist
-            self.loadCollection(currentArtist.objectId)
-            self.loadCredits(currentArtist.objectId)
-            self.loadSounds(nil, creditIds: nil, userId: currentArtist.objectId)
+           // self.loadCollection(currentArtist.objectId)
+            //self.loadCredits(currentArtist.objectId)
+            //self.loadSounds(nil, creditIds: nil, userId: currentArtist.objectId)
+            self.loadPlaylists(profileUserId: currentArtist.objectId)
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
             }
@@ -794,8 +868,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tags = chosenTags {
             self.selectedTagFromPlayerView = tags[0]
-            self.selectedSoundType = "discover"
-            self.showSoundsTitle = tags[0].name
+           // self.selectedSoundType = "discover"
+         //   self.showSoundsTitle = tags[0].name
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }

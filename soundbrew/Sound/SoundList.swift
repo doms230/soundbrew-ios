@@ -30,8 +30,9 @@ class SoundList: NSObject, PlayerDelegate {
     var searchText: String?
     var domSmithUserId = "AWKPPDI4CB"
     var linkObjectId: String?
+    var playlistId: String?
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?, linkObjectId: String?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?, linkObjectId: String?, playlistId: String?) {
         super.init()
         self.target = target
         self.tableView = tableView
@@ -40,6 +41,7 @@ class SoundList: NSObject, PlayerDelegate {
         self.selectedTagForFiltering = tags
         self.searchText = searchText
         self.linkObjectId = linkObjectId
+        self.playlistId = playlistId
         if let descendingOrder = descendingOrder {
             self.descendingOrder = descendingOrder
         }
@@ -323,6 +325,12 @@ class SoundList: NSObject, PlayerDelegate {
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.isUpdatingData = true
         switch soundType {
+        case "playlist":
+            if let playlistId = self.playlistId {
+                self.loadPlaylistSounds(playlistId)
+            }
+            break
+            
         case "forYou":
             if let currentUserId = PFUser.current()?.objectId {
                 if currentUserId == self.domSmithUserId {
@@ -396,6 +404,33 @@ class SoundList: NSObject, PlayerDelegate {
     var selectedTagForFiltering: Tag!
 
     //mark: data
+    var playlistIds = [String]()
+    var didLoadPlaylist = false
+    func loadPlaylistSounds(_ playlistId: String) {
+        let query = PFQuery(className: "PlaylistSound")
+        print(playlistId)
+        query.whereKey("playlistId", equalTo: playlistId)
+        query.limit = 50
+        query.addDescendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            self.didLoadPlaylist = true
+            if error == nil {
+                if let objects = objects {
+                    for object in objects {
+                        self.playlistIds.append(object["soundId"] as! String)
+                    }
+                }
+                
+                self.loadSounds(self.descendingOrder, postIds: self.playlistIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                
+            } else {
+                print("Error: \(error!)")
+            }
+        }
+    }
+    
     func loadSound(_ objectId: String, isForYouPage: Bool, isForLastSoundUserListenedTo: Bool) {
         let query = PFQuery(className: "Post")
         query.cachePolicy = .networkElseCache
@@ -459,9 +494,9 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?, forYouTags: [String]?) {
-        
+        print("load SOunds")
         isUpdatingData = true 
-        
+        print(playlistIds.count)
         let query = PFQuery(className: "Post")
         if let postIds = postIds {
             query.whereKey("objectId", containedIn: postIds)

@@ -15,7 +15,7 @@ import AppCenterAnalytics
 import UICircularProgressRing
 import CropViewController
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, PlaylistDelegate, UITextViewDelegate, CropViewControllerDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate, CropViewControllerDelegate {
     
     func receivedArtist(_ value: Artist?) {
     }
@@ -93,34 +93,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
         self.uiElement.goBackToPreviousViewController(self)
-       /* if self.soundParseFileDidFinishProcessing {
-            var titleMessage: String!
-            if self.soundThatIsBeingEdited?.objectId != nil {
-                titleMessage = "Update the changes you made to this upload?"
-            } else {
-                titleMessage = "Save this upload for later?"
-            }
-            
-            let alertController = UIAlertController (title: titleMessage, message: "", preferredStyle: .actionSheet)
-            
-            let yesAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
-                self.saveDraft()
-            }
-            alertController.addAction(yesAction)
-            
-            let noAction = UIAlertAction(title: "No", style: .default) { (_) -> Void in
-                self.uiElement.goBackToPreviousViewController(self)
-            }
-            alertController.addAction(noAction)
-            
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
-            }
-            alertController.addAction(cancelAction)
-            
-            self.present(alertController, animated: true, completion: nil)
-        } else {
-            self.uiElement.goBackToPreviousViewController(self)
-        }*/
     }
     
     func saveDraft() {
@@ -226,16 +198,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
 
-    func receivedPlaylist(_ chosenPlaylist: Playlist?) {
-        soundThatIsBeingEdited?.artistSelectedPlaylist = chosenPlaylist
-        self.tableView.reloadData()
-    }
-    
-    func showChoosePlaylist() {
-        self.tagType = "playlist"
-        self.performSegue(withIdentifier: showTags, sender: self)
-    }
-    
     //mark: Fan Club Exclusive
     func fanClubExclusiveCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
@@ -349,9 +311,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             viewController.tagType = tagType
             if tagType == "more", let tags = tagsToUpdateInChooseTagsViewController {
                 viewController.chosenTags = tags
-                
-            } else if tagType == "playlist" {
-                viewController.playlistDelegate = self
             }
         }
     }
@@ -859,9 +818,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             newSound["isExclusive"] = isExclusive
         }
         
-        if let playlistId = sound.artistSelectedPlaylist?.objectId {
-            newSound["playlistId"] = playlistId
-        }
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
@@ -907,9 +863,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if let isExclusive = sound.isExclusive {
                     object["isExclusive"] = isExclusive
                 }
-                if let playlistId = sound.artistSelectedPlaylist?.objectId {
-                    object["playlistId"] = playlistId
-                }
+
                 object.saveEventually {
                     (success: Bool, error: Error?) in
                     if (success) {

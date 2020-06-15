@@ -161,7 +161,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func showSounds() {
-        soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
     }
     
     //mark: tableview
@@ -309,7 +309,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         }
         wasShownNewUpload = true 
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, artistSelectedPlaylist: nil)
+        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserTipDate: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     

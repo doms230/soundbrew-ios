@@ -20,7 +20,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     let color = Color()
         
     var playlistTitle: UITextField!
-    var newPlaylist = Playlist(objectId: nil, userId: nil, title: nil, image: nil)
+    var newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil)
     var playlistDelegate: PlaylistDelegate?
     
     var soundList: SoundList!
@@ -28,9 +28,9 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         if let userId = PFUser.current()?.objectId {
-            newPlaylist.userId = userId
+            let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+            newPlaylist.artist = artist
             
             for i in 0..<playlistSounds.count {
                 playlistSounds[i].artFile = nil
@@ -38,7 +38,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
             
             setUpTableView()
             
-            soundList = SoundList(target: self, tableView: tableView, soundType: "", userId: nil, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "", userId: nil, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
             soundList.sounds = playlistSounds
             soundList.updateTableView()
             
@@ -81,7 +81,12 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
-        self.tableView.frame = view.bounds
+        self.tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-175)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -245,7 +250,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     func createNewPlaylist(_ playlist: Playlist) {
         startAnimating()
         let newPlaylist = PFObject(className: "Playlist")
-        newPlaylist["userId"] = playlist.userId
+        newPlaylist["userId"] = playlist.artist?.objectId
         newPlaylist["title"] = playlist.title
         newPlaylist["image"] = playlist.image
         newPlaylist["isRemoved"] = false
