@@ -272,19 +272,24 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     var didSelectNewPlaylist = false
     var selectedSoundsForPlaylist = [Sound]()
     func didSelectPlaylistSoundAt(_ indexPath: IndexPath) {
-        let objectIds = selectedSoundsForPlaylist.map {$0.objectId}
-        let selectedSound = soundList.sounds[indexPath.row]
-        if objectIds.contains(selectedSound.objectId) {
-            for i in 0..<selectedSoundsForPlaylist.count {
-                let sound = selectedSoundsForPlaylist[i]
-                if sound.objectId == selectedSound.objectId {
-                    selectedSoundsForPlaylist.remove(at: i)
+        let selectedSoundIds = selectedSoundsForPlaylist.map {$0.objectId}
+        let currentSelectedSound = soundList.sounds[indexPath.row]
+        if soundList.sounds.indices.contains(indexPath.row) {
+            if selectedSoundIds.contains(currentSelectedSound.objectId) {
+                for i in 0..<selectedSoundsForPlaylist.count {
+                    if selectedSoundsForPlaylist.indices.contains(i) {
+                        let sound = selectedSoundsForPlaylist[i]
+                        if sound.objectId == currentSelectedSound.objectId {
+                            selectedSoundsForPlaylist.remove(at: i)
+                        }
+                    }
                 }
+                
+            } else {
+                selectedSoundsForPlaylist.append(currentSelectedSound)
             }
-            
-        } else {
-            selectedSoundsForPlaylist.append(selectedSound)
         }
+
         self.tableView.reloadData()
         setupNavigationBar()
     }

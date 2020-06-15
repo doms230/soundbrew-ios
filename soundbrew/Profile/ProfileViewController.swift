@@ -17,7 +17,7 @@ import SidebarOverlay
 import TwitterKit
 import AppCenterAnalytics
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -213,6 +213,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     }
                     break
             }
+        }
+    }
+    
+    //mark: Playlist
+    func receivedPlaylist(_ chosenPlaylist: Playlist?) {
+        if let newPlaylist = chosenPlaylist {
+            print(newPlaylist.objectId)
         }
     }
     
@@ -570,7 +577,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.websiteView.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
             }
             
-            cell.actionButton.addTarget(self, action: #selector(self.didPressActionButton(_:)), for: .touchUpInside)
+            cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
+            
+            cell.subscribeUserCreatePlaylistButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
             
             let localizedFollow = NSLocalizedString("follow", comment: "")
             let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
@@ -578,31 +587,44 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             if let currentUserID = PFUser.current()?.objectId {
                 if currentUserID == self.profileArtist!.objectId {
-                    cell.actionButton.setTitle(localizedEditProfile, for: .normal)
-                    cell.actionButton.backgroundColor = color.black()
-                    cell.actionButton.setTitleColor(.white, for: .normal)
-                    cell.actionButton.layer.borderColor = color.lightGray().cgColor
-                    cell.actionButton.layer.borderWidth = 1
-                    cell.actionButton.clipsToBounds = true
-                    cell.actionButton.tag = 0
-                } else if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
-                    if isFollowedByCurrentUser {
-                        cell.actionButton.setTitle(localizedFollowing, for: .normal)
-                        cell.actionButton.backgroundColor = color.lightGray()
-                        cell.actionButton.setTitleColor(color.black(), for: .normal)
-                        cell.actionButton.tag = 1
-                    } else {
-                        cell.actionButton.setTitle(localizedFollow, for: .normal)
-                        cell.actionButton.backgroundColor = color.blue()
-                        cell.actionButton.setTitleColor(.white, for: .normal)
-                        cell.actionButton.tag = 2
+                    cell.followUserEditProfileButton.setTitle(localizedEditProfile, for: .normal)
+                    cell.followUserEditProfileButton.backgroundColor = color.black()
+                    cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                    cell.followUserEditProfileButton.layer.borderColor = color.lightGray().cgColor
+                    cell.followUserEditProfileButton.layer.borderWidth = 1
+                    cell.followUserEditProfileButton.clipsToBounds = true
+                    cell.followUserEditProfileButton.tag = 0
+                    
+                    cell.subscribeUserCreatePlaylistButton.setTitle("Create Playlist", for: .normal)
+                    cell.subscribeUserCreatePlaylistButton.backgroundColor = color.black()
+                    cell.subscribeUserCreatePlaylistButton.setTitleColor(.white, for: .normal)
+                    cell.subscribeUserCreatePlaylistButton.layer.borderColor = color.lightGray().cgColor
+                    cell.subscribeUserCreatePlaylistButton.layer.borderWidth = 1
+                    cell.subscribeUserCreatePlaylistButton.clipsToBounds = true
+                    cell.subscribeUserCreatePlaylistButton.tag = 0
+                    
+                } else {
+                    if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
+                        if isFollowedByCurrentUser {
+                            cell.followUserEditProfileButton.setTitle(localizedFollowing, for: .normal)
+                            cell.followUserEditProfileButton.backgroundColor = color.lightGray()
+                            cell.followUserEditProfileButton.setTitleColor(color.black(), for: .normal)
+                            cell.followUserEditProfileButton.tag = 1
+                        } else {
+                            cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
+                            cell.followUserEditProfileButton.backgroundColor = color.blue()
+                            cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                            cell.followUserEditProfileButton.tag = 2
+                        }
                     }
+                    
+                    //TODO: show subscribe option
                 }
             } else {
-                cell.actionButton.setTitle(localizedFollow, for: .normal)
-                cell.actionButton.backgroundColor = color.blue()
-                cell.actionButton.setTitleColor(.white, for: .normal)
-                cell.actionButton.tag = 3
+                cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
+                cell.followUserEditProfileButton.backgroundColor = color.blue()
+                cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                cell.followUserEditProfileButton.tag = 3
             }
         }
         
@@ -610,7 +632,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: button actions
-    @objc func didPressActionButton(_ sender: UIButton) {
+    @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            let modal = EditBioViewController()
+            modal.playlistDelegate = self
+            modal.totalAllowedTextLength = 50
+            self.present(modal, animated: true, completion: nil)
+        } else {
+            //TODO: show info about subscribing to user
+        }
+    }
+    
+    @objc func didPressFollowUserEditProfileButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
             self.performSegue(withIdentifier: "showEditProfile", sender: self)

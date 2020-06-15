@@ -30,10 +30,14 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        if let creditDelegate = self.creditDelegate {
-            self.dismiss(animated: true, completion: {() in
-                creditDelegate.receivedCredits(self.credits)
-            })
+        if sender.tag == 0 {
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            if let creditDelegate = self.creditDelegate {
+                self.dismiss(animated: true, completion: {() in
+                    creditDelegate.receivedCredits(self.credits)
+                })
+            }
         }
     }
     

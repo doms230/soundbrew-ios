@@ -7,12 +7,14 @@
 //
 
 import UIKit
-
-class EditBioViewController: UIViewController, UITextViewDelegate {
+import Parse
+import NVActivityIndicatorView
+class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityIndicatorViewable {
     
     let uiElement = UIElement()
     let color = Color()
     var artistDelegate: ArtistDelegate?
+    var playlistDelegate: PlaylistDelegate?
     var totalAllowedTextLength = 150
     
     override func viewDidLoad() {
@@ -27,23 +29,61 @@ class EditBioViewController: UIViewController, UITextViewDelegate {
             object: nil
         )
         
-         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        var buttonTitle = "Done"
+        if playlistDelegate != nil {
+            buttonTitle = "Create Playlist"
+        }
+        
+         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: buttonTitle)
         setupBioView(dividerLine)
     }
     
     //done
     @objc func didPressDoneButton(_ sender: UIButton) {
-        if let artistDelegate = self.artistDelegate {
-            if inputBio.text == "" {
-                artistDelegate.changeBio(nil)
-            } else {
-                let newCreditTitleWithNoSpaces = inputBio.text.trimmingCharacters(
-                    in: NSCharacterSet.whitespacesAndNewlines
-                )
-                artistDelegate.changeBio(newCreditTitleWithNoSpaces)
-            }            
+        if sender.tag == 0 {
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            if let artistDelegate = self.artistDelegate {
+                if inputBio.text == "" {
+                    artistDelegate.changeBio(nil)
+                } else {
+                    let newCreditTitleWithNoSpaces = inputBio.text.trimmingCharacters(
+                        in: NSCharacterSet.whitespacesAndNewlines
+                    )
+                    artistDelegate.changeBio(newCreditTitleWithNoSpaces)
+                }
+                self.dismiss(animated: true, completion: nil)
+
+            } else if let playlistDelegate = self.playlistDelegate, let userId = PFUser.current()?.objectId {
+                if inputBio.text.isEmpty {
+                    self.uiElement.showAlert("Playlist Title Required", message: "", target: self)
+                } else {
+                    self.createNewPlaylist(playlistDelegate, userId: userId)
+                }
+            }
         }
-        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func createNewPlaylist(_ playlistDelegate: PlaylistDelegate, userId: String) {
+        startAnimating()
+        let newPlaylist = PFObject(className: "Playlist")
+        newPlaylist["userId"] = userId
+        newPlaylist["title"] = inputBio.text
+        newPlaylist["isRemoved"] = false
+        newPlaylist.saveEventually {
+            (success: Bool, error: Error?) in
+            self.stopAnimating()
+            if (success) {
+                let newPlaylist = Playlist(objectId: newPlaylist.objectId, userId: userId, title: self.inputBio.text, image: nil)
+                self.dismiss(animated: true, completion: {() in
+                    playlistDelegate.receivedPlaylist(newPlaylist)
+                })
+                
+            } else if let error = error {
+                self.uiElement.showAlert("Error", message: error.localizedDescription, target: self)
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
     }
     
     //bio

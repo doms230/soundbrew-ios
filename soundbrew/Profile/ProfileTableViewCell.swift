@@ -53,7 +53,8 @@ class ProfileTableViewCell: UITableViewCell {
     var city: UILabel!
     var website: UILabel!
     var websiteView: UIButton!
-    var actionButton: UIButton!
+    var followUserEditProfileButton: UIButton!
+    var subscribeUserCreatePlaylistButton: UIButton!
     var editProfileLabel: UILabel!
     var editProfileTitle: UILabel!
     var rightArrow: UIImageView!
@@ -119,12 +120,20 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             let localizedLoading = NSLocalizedString("loading", comment: "")
-            actionButton = uiElement.soundbrewButton(localizedLoading, shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
-            self.addSubview(actionButton)
-            actionButton.snp.makeConstraints { (make) -> Void in
+            followUserEditProfileButton = uiElement.soundbrewButton(localizedLoading, shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+            self.addSubview(followUserEditProfileButton)
+            followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(profileImage)
+                make.width.equalTo(125)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            subscribeUserCreatePlaylistButton = uiElement.soundbrewButton(localizedLoading, shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+            self.addSubview(subscribeUserCreatePlaylistButton)
+            subscribeUserCreatePlaylistButton.snp.makeConstraints { (make) -> Void in
+                make.centerY.equalTo(profileImage)
+                make.width.equalTo(125)
+                make.left.equalTo(followUserEditProfileButton.snp.right).offset(uiElement.leftOffset)
             }
             
             self.addSubview(displayNameLabel)
