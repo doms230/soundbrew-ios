@@ -76,15 +76,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 break
                 
             case "showSounds":
-                if let indexPath = tableView.indexPathForSelectedRow, let title = self.artistPlaylists[indexPath.row].title, let objectId = self.artistPlaylists[indexPath.row].objectId  {
+                if let indexPath = tableView.indexPathForSelectedRow, let title = self.artistPlaylists[indexPath.row].title, let objectId = self.artistPlaylists[indexPath.row].objectId, let userId = self.artistPlaylists[indexPath.row].artist?.objectId {
+                    
                     let backItem = UIBarButtonItem()
                     backItem.title = title
                     navigationItem.backBarButtonItem = backItem
                     
                     let viewController = segue.destination as! SoundsViewController
-                    viewController.soundType = "playlist"
-                    viewController.playlistId = objectId
-                    //viewController.userId = profileArtist?.objectId
+                    if objectId == "uploads" {
+                        viewController.soundType = "uploads"
+                        viewController.userId = userId
+                    } else {
+                        viewController.soundType = "playlist"
+                        viewController.playlist = self.artistPlaylists[indexPath.row]
+                    }
                 }
                 break
                 
@@ -122,10 +127,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 checkFollowStatus()
             }
-            
-          //  self.loadCollection(profileArtist.objectId)
-          //  self.loadCredits(profileArtist.objectId)
-           // self.loadSounds(nil, creditIds: nil, userId: profileArtist.objectId)
+
             self.loadPlaylists(profileUserId: profileArtist.objectId)
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
@@ -136,15 +138,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //MARK: Tableview
     var tableView: UITableView!
     let profileReuse = "profileReuse"
-   // let profileSoundReuse = "profileSoundReuse"
     let playlistReuse = "playlistReuse"
+    let profileTitleReuse = "profileTitleReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: playlistReuse)
-       // tableView.register(TagTableViewCell.self, forCellReuseIdentifier: profileSoundReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileTitleReuse)
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
         let refreshControl = UIRefreshControl()
@@ -167,27 +169,35 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
+        if section == 2 {
+            return artistPlaylists.count
         }
         
-        return artistPlaylists.count
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
             return profileInfoReuse()
-        } else {
-           return playlistReuse(indexPath)
+            
+        case 2:
+            return playlistReuse(indexPath)
+            
+        default:
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: profileTitleReuse) as! ProfileTableViewCell
+            cell.backgroundColor = color.black()
+            cell.selectionStyle = .none
+            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
+        if indexPath.section == 2 {
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
@@ -273,7 +283,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func loadPlaylists(profileUserId: String) {
-        let singlesPlaylist = Playlist(objectId: nil, artist: self.profileArtist, title: "Singles", image: nil)
+        let singlesPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil)
         self.artistPlaylists.append(singlesPlaylist)
         let query = PFQuery(className: "Playlist")
         query.whereKey("userId", equalTo: profileUserId)
@@ -295,299 +305,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.setUpTableView()
         }
     }
-    
-    //mark: sounds
-   /* var artistReleases = [Sound]()
-    var artistCollection = [Sound]()
-    var artistCredits = [Sound]()
-    var collectionSoundIds = [String]()
-    var creditSoundIds = [String]()
-    var didloadReleases = false
-    var didLoadCollection = false
-    var didLoadCredits = false
-    var showSoundsTitle: String!
-    var selectedSoundType: String!
-    
-    func soundsReuse(_ indexPath: IndexPath) -> TagTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: profileSoundReuse) as! TagTableViewCell
-        cell.backgroundColor = color.black()
-        cell.selectionStyle = .none
-        
-        if cell.tagsScrollview.subviews.count > 0 {
-            for subview in cell.tagsScrollview.subviews{
-                subview.removeFromSuperview()
-            }
-        }
-        
-        cell.tagTypeButton.addTarget(self, action: #selector(self.didPressViewAllSoundsButton(_:)), for: .touchUpInside)
-        switch indexPath.section {
-        case 1:
-            let localizedNoReleasesYet = NSLocalizedString("noReleasesYet", comment: "")
-
-            cell.TagTypeTitle.text = "Releases"
-            if artistReleases.count == 0 && didloadReleases {
-                cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: localizedNoReleasesYet)
-            } else {
-                cell.tagTypeButton.tag = 0
-                cell.viewAllLabel.isHidden = false
-                addSounds(cell.tagsScrollview, sounds: artistReleases, row: 0)
-            }
-            break
-            
-        case 2:
-            cell.TagTypeTitle.text = "Likes"
-            if artistCollection.count == 0 && didLoadCollection  {
-                cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: "No Likes yet.")
-            } else {
-                cell.tagTypeButton.tag = 1
-                cell.viewAllLabel.isHidden = false
-                addSounds(cell.tagsScrollview, sounds: artistCollection, row: 1)
-            }
-            break
-            
-        case 3:
-            cell.TagTypeTitle.text = "Credits"
-            if artistCredits.count == 0 && didLoadCredits  {
-                cell.viewAllLabel.isHidden = true
-                addNoSounds(cell.tagsScrollview, title: "No credits yet.")
-            } else {
-                cell.tagTypeButton.tag = 2
-                cell.viewAllLabel.isHidden = false
-                addSounds(cell.tagsScrollview, sounds: artistCredits, row: 2)
-            }
-            break
-            
-        default:
-            break
-        }
-        
-        return cell 
-    }
-    
-    @objc func didPressViewAllSoundsButton(_ sender: UIButton) {
-        var shouldSegueToSounds = true
-        if let artist = self.profileArtist {
-            switch sender.tag {
-            case 0:
-                showSoundsTitle = "\(artist.username!)'s Releases"
-                selectedSoundType = "uploads"
-                if self.artistReleases.count == 0 {
-                    shouldSegueToSounds = false
-                }
-                break
-                
-            case 1:
-                showSoundsTitle = "\(artist.username!)'s Likes"
-                selectedSoundType = "collection"
-                if self.artistCollection.count == 0 {
-                    shouldSegueToSounds = false
-                }
-                break
-                
-            case 2:
-                showSoundsTitle = "\(artist.username!)'s Credits"
-                selectedSoundType = "credit"
-                if self.artistCredits.count == 0 {
-                    shouldSegueToSounds = false
-                }
-                break
-                
-            default:
-                break
-            }
-        }
-        
-        if shouldSegueToSounds {
-            self.performSegue(withIdentifier: "showSounds", sender: self)
-        }
-    }
-    
-    func addNoSounds(_ scrollview: UIScrollView, title: String) {
-        let titleLabel = UILabel()
-        titleLabel.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-        titleLabel.text = title
-        titleLabel.textColor = .white
-        scrollview.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(scrollview)
-            make.left.equalTo(scrollview).offset(uiElement.leftOffset)
-            make.right.equalTo(scrollview).offset(uiElement.rightOffset)
-        }        
-    }
-    
-    func addSounds(_ scrollview: UIScrollView, sounds: Array<Sound>, row: Int) {
-        //not using snpakit to set button frame becuase not able to get button width from button title.
-        let buttonHeight = 150
-        let buttonWidth = 150
-        var xPositionForFeatureTags = UIElement().leftOffset
-        
-        //for sound in sounds {
-        for i in 0..<sounds.count {
-            let sound = sounds[i]
-            
-            let soundArt = UIImageView()
-            soundArt.kf.setImage(with: URL(string: sound.artFile?.url  ?? ""), placeholder: UIImage(named: "sound"))
-            soundArt.contentMode = .scaleAspectFill
-            soundArt.layer.cornerRadius = 5
-            soundArt.layer.borderWidth = 1
-            soundArt.layer.borderColor = color.purpleBlack().cgColor
-            soundArt.clipsToBounds = true
-            scrollview.addSubview(soundArt)
-            soundArt.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(buttonHeight)
-                make.top.equalTo(scrollview)
-                make.left.equalTo(scrollview).offset(xPositionForFeatureTags)
-            }
-            
-            let titleLabel = UILabel()
-            titleLabel.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)
-            titleLabel.text = sound.title
-            titleLabel.textAlignment = .center
-            titleLabel.textColor = .white
-            scrollview.addSubview(titleLabel)
-            titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(soundArt.snp.bottom)
-                make.left.equalTo(soundArt)
-                make.right.equalTo(soundArt)
-            }
-            
-            let artistLabel = UILabel()
-            artistLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-            self.loadArtistName(sound.artist!.objectId, label: artistLabel)
-            artistLabel.textColor = .white
-            artistLabel.textAlignment = .center
-            scrollview.addSubview(artistLabel)
-            artistLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(titleLabel.snp.bottom)
-                make.left.equalTo(soundArt)
-                make.right.equalTo(soundArt)
-            }
-            
-            let dateLabel = UILabel()
-            dateLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-            let formattedDate = self.uiElement.formatDateAndReturnString(sound.createdAt!)
-            dateLabel.text = formattedDate
-            dateLabel.textColor = .lightGray
-            dateLabel.textAlignment = .center
-            scrollview.addSubview(dateLabel)
-            dateLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(artistLabel.snp.bottom)
-                make.left.equalTo(soundArt)
-                make.right.equalTo(soundArt)
-            }
-            
-            let soundViewButton = UIButton()
-            if row == 0 {
-                //releases
-                soundViewButton.addTarget(self, action: #selector(self.didPressArtistReleases(_:)), for: .touchUpInside)
-            } else {
-                //collection
-                soundViewButton.addTarget(self, action: #selector(self.didPressArtistCollection(_:)), for: .touchUpInside)
-            }
-            soundViewButton.tag = i
-            scrollview.addSubview(soundViewButton)
-            soundViewButton.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(scrollview)
-                make.left.equalTo(soundArt)
-                make.right.equalTo(soundArt)
-                make.bottom.equalTo(dateLabel.snp.bottom)
-            }
-            
-            xPositionForFeatureTags = xPositionForFeatureTags + buttonWidth + uiElement.leftOffset
-            scrollview.contentSize = CGSize(width: xPositionForFeatureTags, height: buttonHeight)
-        }
-    }
-    
-    @objc func didPressArtistReleases(_ sender: UIButton) {
-        didSelectSound(artistReleases, row: sender.tag)
-    }
-    
-    @objc func didPressArtistCollection(_ sender: UIButton) {
-        didSelectSound(artistCollection, row: sender.tag)
-    }
-    
-    func didSelectSound(_ sounds: Array<Sound>, row: Int) {
-        self.player.sounds = sounds
-        player.didSelectSoundAt(row)
-    }
-    
-    func loadCollection(_ profileUserId: String) {
-        let query = PFQuery(className: "Tip")
-        query.whereKey("fromUserId", equalTo: profileUserId)
-        query.addDescendingOrder("createdAt")
-        query.limit = 5
-        query.cachePolicy = .networkElseCache
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                for object in objects {
-                    self.collectionSoundIds.append(object["soundId"] as! String)
-                }
-            }
-            
-            self.loadSounds(self.collectionSoundIds, creditIds: nil, userId: nil)
-        }
-    }
-    
-    func loadCredits(_ profileUserId: String) {
-        let query = PFQuery(className: "Credit")
-        query.whereKey("userId", equalTo: profileUserId)
-        query.addDescendingOrder("createdAt")
-        query.limit = 5
-        query.cachePolicy = .networkElseCache
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                for object in objects {
-                    self.creditSoundIds.append(object["postId"] as! String)
-                }
-            }
-            
-            self.loadSounds(nil, creditIds: self.creditSoundIds, userId: nil)
-        }
-    }
-    
-    func loadSounds(_ collectionIds: Array<String>?, creditIds: Array<String>?, userId: String?) {
-        let query = PFQuery(className: "Post")
-        if let collectionIds = collectionIds {
-            query.whereKey("objectId", containedIn: collectionIds)
-        } else if let creditIds = creditIds {
-            query.whereKey("objectId", containedIn: creditIds)
-        }
-        if let userId = userId {
-            query.whereKey("userId", equalTo: userId)
-        }
-        query.limit = 5
-        query.whereKey("isRemoved", notEqualTo: true)
-        query.whereKey("isDraft", notEqualTo: true)
-        query.addDescendingOrder("createdAt")
-        query.cachePolicy = .networkElseCache
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                var sounds = [Sound]()
-                for object in objects {
-                    let sound = self.uiElement.newSoundObject(object)
-                    sounds.append(sound)
-                }
-                
-                if collectionIds != nil {
-                    self.artistCollection = sounds
-                    self.didLoadCollection = true
-                } else if creditIds != nil {
-                    self.artistCredits = sounds
-                    self.didLoadCredits = true
-                } else {
-                    self.artistReleases = sounds
-                    self.didloadReleases = true
-                }
-                
-                self.setUpTableView()
-            }
-        }
-    }*/
     
     //mark: profileInfo
     func determineTypeOfProfile() {
@@ -612,9 +329,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }  else if let currentArtist = Customer.shared.artist {
             isFromNavigationStack = false
             self.profileArtist = currentArtist
-           // self.loadCollection(currentArtist.objectId)
-            //self.loadCredits(currentArtist.objectId)
-            //self.loadSounds(nil, creditIds: nil, userId: currentArtist.objectId)
             self.loadPlaylists(profileUserId: currentArtist.objectId)
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()

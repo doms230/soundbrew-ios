@@ -41,7 +41,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         navigationItem.backBarButtonItem = backItem
         setMiniPlayer()
     }
-
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {

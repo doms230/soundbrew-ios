@@ -18,7 +18,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let uiElement = UIElement()
     let color = Color()
     var soundType = "follow"
-    var playlistId: String!
+    var playlist: Playlist?
     
     func doesMatchSoundType() -> Bool {
         if soundType == "follow" || soundType ==  "forYou" {
@@ -40,9 +40,33 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }
             }
             createTopView()
+            
+        } else if soundType == "playlist", let playlist = self.playlist, let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
+            let menuButton = UIBarButtonItem(image: UIImage(named: "more"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressPlaylistMenuButton(_:)))
+            self.navigationItem.rightBarButtonItem = menuButton
+            
         }
         setUpTableView()
         setupNotificationCenter()
+    }
+    
+    @objc func didPressPlaylistMenuButton(_ sender: UIBarButtonItem) {
+        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+        
+        let addSoundsAction = UIAlertAction(title: "Add Sounds", style: .default) { (_) -> Void in
+            
+        }
+        alertController.addAction(addSoundsAction)
+        
+        let editNameAction = UIAlertAction(title: "Edit Name", style: .default) { (_) -> Void in
+        }
+        alertController.addAction(editNameAction)
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func checkForDefaultValue() {
@@ -123,7 +147,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showSoundList() {
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil, playlistId: playlistId)
+        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil, playlistId: playlist?.objectId)
     }
     
     //mark: Page Title
@@ -247,7 +271,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //mark: miniPlayer
     func setMiniPlayer() {
         let miniPlayerView = MiniPlayerView.sharedInstance
-        //miniPlayerView.isEnabled = false
         miniPlayerView.superViewController = self
         miniPlayerView.tagDelegate = self
         miniPlayerView.playerDelegate = self
@@ -256,9 +279,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func setUpMiniPlayer() {
         let miniPlayerView = MiniPlayerView.sharedInstance
         if let tabBarController = self.tabBarController, !tabBarController.tabBar.subviews.contains(miniPlayerView) {
-           // miniPlayerView.superViewController = self
-            //miniPlayerView.tagDelegate = self
-            //miniPlayerView.playerDelegate = self
             tabBarController.view.addSubview(miniPlayerView)
             miniPlayerView.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(75)

@@ -61,6 +61,7 @@ class ProfileTableViewCell: UITableViewCell {
     var editBioTitle: UILabel!
     var editBioText: UILabel!
     var privateInformationLabel: UILabel!
+    var profileTitle: UILabel!
     
     lazy var seperatorLine: UIView = {
         let view = UIView()
@@ -98,8 +99,18 @@ class ProfileTableViewCell: UITableViewCell {
         
         editProfileTitle = uiElement.soundbrewLabel(nil, textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
         
+        profileTitle = uiElement.soundbrewLabel("Playlists and Collections", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!, numberOfLines: 1)
+        
         switch reuseIdentifier {
-            
+        case "profileTitleReuse":
+            self.addSubview(profileTitle)
+            profileTitle.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
         case "searchReuse":
             self.addSubview(searchBar)
             searchBar.snp.makeConstraints { (make) -> Void in

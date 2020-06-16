@@ -21,7 +21,7 @@ class SoundList: NSObject, PlayerDelegate {
     var sounds = [Sound]()
     let uiElement = UIElement()
     let color = Color()
-    var profileUserId: String?
+    var userId: String?
     let player = Player.sharedInstance
     var collectionSoundIds = [String]()
     var creditSoundIds = [String]()
@@ -37,7 +37,7 @@ class SoundList: NSObject, PlayerDelegate {
         self.target = target
         self.tableView = tableView
         self.soundType = soundType
-        self.profileUserId = userId
+        self.userId = userId
         self.selectedTagForFiltering = tags
         self.searchText = searchText
         self.linkObjectId = linkObjectId
@@ -328,6 +328,11 @@ class SoundList: NSObject, PlayerDelegate {
         case "playlist":
             if let playlistId = self.playlistId {
                 self.loadPlaylistSounds(playlistId)
+               /* if playlistId == "single" {
+                    loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                } else {
+                    self.loadPlaylistSounds(playlistId)
+                }*/
             }
             break
             
@@ -350,17 +355,17 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "uploads":
-            loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+            loadSounds(descendingOrder, postIds: nil, userId: userId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             break
             
         case "collection":
-            if let profileUserId = self.profileUserId {
+            if let profileUserId = self.userId {
                 self.loadCollection(descendingOrder, profileUserId: profileUserId)
             }
             break
             
         case "credit":
-            if let profileUserId = self.profileUserId {
+            if let profileUserId = self.userId {
                 self.loadCredit(descendingOrder, profileUserId: profileUserId)
             }
             break
@@ -378,7 +383,7 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "drafts":
-            if let userId = self.profileUserId {
+            if let userId = self.userId {
                 self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
             }
             break
@@ -494,9 +499,7 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?, forYouTags: [String]?) {
-        print("load SOunds")
-        isUpdatingData = true 
-        print(playlistIds.count)
+        isUpdatingData = true
         let query = PFQuery(className: "Post")
         if let postIds = postIds {
             query.whereKey("objectId", containedIn: postIds)
