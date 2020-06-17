@@ -15,12 +15,16 @@ class Playlist {
     var artist: Artist?
     var title: String?
     var image: PFFileObject?
+    var type: String?
+    var count: Int?
     
-    init(objectId: String?, artist: Artist?, title: String?, image: PFFileObject?) {
+    init(objectId: String?, artist: Artist?, title: String?, image: PFFileObject?, type: String?, count: Int?) {
         self.objectId = objectId
         self.artist = artist
         self.title = title
         self.image = image
+        self.type = type
+        self.count = count
     }
     
     func loadPlaylist() {
@@ -35,6 +39,8 @@ class Playlist {
                         if success && error == nil {
                             self.title = object["title"] as? String
                             self.image = object["image"] as? PFFileObject
+                            self.type = object["type"] as? String
+                            self.count = object["count"] as? Int 
                         }
                     }
                 }

@@ -36,8 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
         
         FirebaseApp.configure()
-        // Initialize the Google Mobile Ads SDK.
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
 
         //usrname: testaccount
         //password: asdf

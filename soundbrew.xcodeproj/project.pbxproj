@@ -15,7 +15,6 @@
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
-		E445FC5C24980939000A082A /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC5B24980939000A082A /* PlaylistViewController.swift */; };
 		E445FC5E24980984000A082A /* PlaylistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
@@ -159,7 +158,6 @@
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
-		E445FC5B24980939000A082A /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewCell.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
@@ -286,7 +284,6 @@
 			children = (
 				E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */,
 				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
-				E445FC5B24980939000A082A /* PlaylistViewController.swift */,
 			);
 			path = Playlist;
 			sourceTree = "<group>";
@@ -843,7 +840,6 @@
 				E43AB28F241D7181003263C9 /* Follow.swift in Sources */,
 				F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */,
 				F23C621B21DC3582005C9FF0 /* ForgotPasswordViewController.swift in Sources */,
-				E445FC5C24980939000A082A /* PlaylistViewController.swift in Sources */,
 				F2FB14C822CBF99600ED157E /* ContainerViewController.swift in Sources */,
 				F2F8B9A721DBFBE30024AFB6 /* Artist.swift in Sources */,
 				F2F8B99C21DBEF4A0024AFB6 /* NewSoundViewController.swift in Sources */,

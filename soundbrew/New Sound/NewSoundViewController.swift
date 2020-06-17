@@ -117,6 +117,8 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
                 
                 let viewController = segue.destination as! NewPlaylistViewController
                 viewController.playlistSounds = selectedSoundsForPlaylist
+                let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "collection", count: selectedSoundsForPlaylist.count)
+                viewController.newPlaylist = newPlaylist
             break
             
             case "showEditSoundInfo":

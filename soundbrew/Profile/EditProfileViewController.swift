@@ -437,11 +437,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             selectedImage = image
         }
         
-        picker.dismiss(animated: true, completion: {() in
-            if let image = selectedImage {
-                self.presentImageCropViewController(image)
-            }
-        })
+        if let image = selectedImage {
+            self.presentImageCropViewController(image, picker: picker)
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -449,14 +447,14 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         picker.dismiss(animated: true, completion: nil)
     }
     
-    func presentImageCropViewController(_ image: UIImage) {
+    func presentImageCropViewController(_ image: UIImage, picker: UIImagePickerController) {
         let cropViewController = CropViewController(croppingStyle: .default, image: image)
         cropViewController.aspectRatioLockEnabled = true
         cropViewController.aspectRatioPickerButtonHidden = true
         cropViewController.aspectRatioPreset = .presetSquare
         cropViewController.resetAspectRatioEnabled = false
         cropViewController.delegate = self
-        self.present(cropViewController, animated: false, completion: nil)
+        picker.present(cropViewController, animated: false, completion: nil)
     }
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {

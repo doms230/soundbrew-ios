@@ -11,6 +11,7 @@ import Parse
 import SnapKit
 import Kingfisher
 import AppCenterAnalytics
+import NotificationBannerSwift
 
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate, TagDelegate {
     let color = Color()
@@ -18,6 +19,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var soundType: String!
     var soundList: SoundList!
     var isLoadingResults = false
+    var playlist: Playlist?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +27,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         view.backgroundColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         setupSearchBar()
-        setupTags()
+        if playlist == nil {
+            setupTags()
+        } else {
+            handleTableViewLogic()
+            if let currentUserId = PFUser.current()?.objectId {
+                soundList = SoundList(target: self, tableView: tableView, soundType: "collection", userId: currentUserId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+            }
+        }
     }
     
     func setupTags() {
@@ -56,7 +65,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
-            
             break
             
         case "showTags":
@@ -95,23 +103,18 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let reuse = "reuse"
     let soundReuse = "soundReuse"
     let searchProfileReuse = "searchProfileReuse"
-    let filterSoundsReuse = "filterSoundsReuse"
     let searchTagViewReuse = "searchTagViewReuse"
-    let noSoundsReuse = "noSoundsReuse"
-    let newSoundsReuse = "newSoundsReuse"
+    let selectPlaylistSoundsReuse = "selectPlaylistSoundsReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
-        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: newSoundsReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: filterSoundsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
-        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: newSoundsReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: selectPlaylistSoundsReuse)
         self.tableView.separatorStyle = .none
         self.tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(self.tableView)
@@ -124,100 +127,73 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        if self.playlist == nil {
+            return 3
+        }
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isSearchActive {
+        if playlist == nil {
             if section == 0 {
-                //search title section
-                return 1
+                return searchUsers.count
+            } else if section == 1 {
+                return searchTags.count
             } else {
-                //search content section
-                if searchType == 0 && searchTags.count != 0 {
-                    return searchTags.count
-                } else if searchType == 1  && searchUsers.count != 0 {
-                    return searchUsers.count
-                } else if searchType == 2 && soundList != nil {
-                    if soundList.sounds.count != 0 {
-                        return soundList.sounds.count
-                    }
-                    return 1 
+                if soundList != nil {
+                    return soundList.sounds.count
+                } else {
+                    return 0
                 }
-                
-                return 1
             }
             
-        } else if !isSearchActive && section == 0 {
-            return 1
+        } else {
+            if soundList != nil {
+                return soundList.sounds.count
+            } else {
+                return 0
+            }
         }
-        
-        return featureTagTypes.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: filterSoundsReuse) as! SoundListTableViewCell
-            cell.selectionStyle = .none
-            cell.backgroundColor = color.black()
-            
-            cell.searchTagsButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
-            cell.searchTagsButton.tag = 0
-            
-            cell.searchArtistsButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
-            cell.searchArtistsButton.tag = 1
-            
-            cell.searchSoundsButton.addTarget(self, action: #selector(didPressSearchTypeButton(_:)), for: .touchUpInside)
-            cell.searchSoundsButton.tag = 2
-            
-            if searchType == 0 {
-                cell.searchTagsButton.setTitleColor(.white, for: .normal)
-                cell.searchArtistsButton.setTitleColor(.darkGray, for: .normal)
-                cell.searchSoundsButton.setTitleColor(.darkGray, for: .normal)
-                
-            } else if searchType == 1 {
-                cell.searchTagsButton.setTitleColor(.darkGray, for: .normal)
-                cell.searchArtistsButton.setTitleColor(.white, for: .normal)
-                cell.searchSoundsButton.setTitleColor(.darkGray, for: .normal)
+        if playlist == nil {
+            if indexPath.section == 0 {
+                return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
+            } else if indexPath.section == 1 {
+                return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
             } else {
-                cell.searchTagsButton.setTitleColor(.darkGray, for: .normal)
-                cell.searchArtistsButton.setTitleColor(.darkGray, for: .normal)
-                cell.searchSoundsButton.setTitleColor(.white, for: .normal)
+                return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
             }
-            return cell
             
         } else {
-            if searchType == 0 && searchTags.count != 0 {
-                return searchTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
-                
-            } else if searchType == 1 && searchUsers.count != 0 {
-                return searchUsers[indexPath.row].cell(tableView, reuse: searchProfileReuse)
-                
-            } else if searchType == 2 && soundList != nil {
-                if soundList.sounds.count != 0 {
-                    return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
-                } else {
-                    return noResultsCell()
-                }
-                
-            } else {
-                return noResultsCell()
-            }
+            let cell = soundList.soundCell(indexPath, tableView: tableView, reuse: selectPlaylistSoundsReuse)
+            cell.circleImage.text = "⨁"
+            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
-            tableView.cellForRow(at: indexPath)?.isSelected = false
-            if searchType == 0 {
+        tableView.cellForRow(at: indexPath)?.isSelected = false
+        if playlist == nil {
+            if indexPath.section == 0 {
+                self.selectedArtist = searchUsers[indexPath.row]
+                self.performSegue(withIdentifier: "showProfile", sender: self)
+            } else if indexPath.section == 1 {
                 let tag = searchTags[indexPath.row]
                 showSounds(tag, soundType: "discover")
                 MSAnalytics.trackEvent("Selected Tag", withProperties: ["Tag" : "\(tag.name ?? "")"])
-            } else if searchType == 1 {
-                self.selectedArtist = searchUsers[indexPath.row]
-                self.performSegue(withIdentifier: "showProfile", sender: self)
-            } else if searchType == 2 {
+            } else {
                 didSelectSoundAt(row: indexPath.row)
+            }
+            
+        } else if let playlistId = playlist?.objectId, let playlistTitle = playlist?.title, let soundTitle = soundList.sounds[indexPath.row].title, let soundId = soundList.sounds[indexPath.row].objectId {
+            attachSoundToPlaylist(soundId, playlistId: playlistId)
+            let banner = StatusBarNotificationBanner(title: "\(soundTitle) added to \(playlistTitle).", style: .success)
+            banner.show()
+            if soundList.sounds.indices.contains(indexPath.row) {
+                soundList.sounds.remove(at: indexPath.row)
+                self.tableView.reloadData()
             }
         }
     }
@@ -233,7 +209,26 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func noResultsCell() -> SoundListTableViewCell {
+    func attachSoundToPlaylist(_ soundId: String, playlistId: String) {
+        let newPlaylistSound = PFObject(className: "PlaylistSound")
+        newPlaylistSound["playlistId"] = playlistId
+        newPlaylistSound["soundId"] = soundId
+        newPlaylistSound.saveEventually()
+        updatePlaylistCount(playlistId)
+    }
+    
+    func updatePlaylistCount(_ playlistId: String) {
+        let query = PFQuery(className: "Playlist")
+        query.getObjectInBackground(withId: playlistId) {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                object.incrementKey("count")
+                object.saveEventually()
+            }
+        }
+    }
+    
+    /*func noResultsCell() -> SoundListTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
         cell.backgroundColor = color.black()
         if isLoadingResults {
@@ -243,7 +238,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.headerTitle.text = localizedNoResults
         }
         return cell
-    }
+    }*/
     
     //mark: tags
     var featureTagTypes = ["genre","city", "mood", "activity"]
@@ -262,7 +257,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if let text = searchText {
             self.searchTags.removeAll()
             query.whereKey("tag", matchesRegex: text.lowercased())
-            query.limit = 25
+            query.limit = 5
         } else {
             if type != "all" {
                 query.whereKey("type", equalTo: type)
@@ -355,7 +350,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 50, height: 10))
-        searchBar.placeholder = "Search"
+        var searchPlaceholder = "Search Soundbrew"
+        if self.playlist != nil {
+            searchPlaceholder = "Search Sounds"
+        }
+        searchBar.placeholder = searchPlaceholder
         searchBar.delegate = self
         if #available(iOS 13.0, *) {
             let searchTextField = searchBar.searchTextField
@@ -387,16 +386,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func search() {
         isLoadingResults = true
-        if searchType == 0 {
+        if playlist != nil {
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+        } else {
             loadTags("", searchText: searchBar.text!)
-        } else if !searchBar.text!.isEmpty {
-            if searchType == 1 {
-                searchUsers(searchBar.text!)
-            } else {
-                soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
-            }
+            searchUsers(searchBar.text!)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
         }
-        
         handleTableViewLogic()
     }
     
@@ -428,7 +424,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
-        query.limit = 50
+        query.limit = 5
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in

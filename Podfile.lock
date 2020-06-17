@@ -43,8 +43,6 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 6.6)
     - PromisesObjC (~> 1.2)
   - FlagKit (2.2)
-  - Google-Mobile-Ads-SDK (7.59.0):
-    - GoogleAppMeasurement (~> 6.0)
   - GoogleAppMeasurement (6.5.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
@@ -78,11 +76,15 @@ PODS:
   - Kingfisher (5.13.4):
     - Kingfisher/Core (= 5.13.4)
   - Kingfisher/Core (5.13.4)
+  - MarqueeLabel (4.0.2)
   - nanopb (1.30905.0):
     - nanopb/decode (= 1.30905.0)
     - nanopb/encode (= 1.30905.0)
   - nanopb/decode (1.30905.0)
   - nanopb/encode (1.30905.0)
+  - NotificationBannerSwift (3.0.2):
+    - MarqueeLabel (~> 4.0.0)
+    - SnapKit (~> 5.0.0)
   - NVActivityIndicatorView (4.8.0):
     - NVActivityIndicatorView/Presenter (= 4.8.0)
   - NVActivityIndicatorView/Presenter (4.8.0)
@@ -121,9 +123,9 @@ DEPENDENCIES:
   - CropViewController
   - Firebase/Core
   - FlagKit
-  - Google-Mobile-Ads-SDK
   - GrowingTextView
   - Kingfisher
+  - NotificationBannerSwift
   - NVActivityIndicatorView
   - Parse
   - ShareInstagram
@@ -149,14 +151,15 @@ SPEC REPOS:
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstallations
     - FlagKit
-    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleUtilities
     - GrowingTextView
     - Kingfisher
+    - MarqueeLabel
     - nanopb
+    - NotificationBannerSwift
     - NVActivityIndicatorView
     - Parse
     - PINCache
@@ -185,14 +188,15 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstallations: 2119fb3e46b0a88bfdbf12562f855ee3252462fa
   FlagKit: eca7dc89064b0c986302ba9acefad1bf80a435b1
-  Google-Mobile-Ads-SDK: 118217ac8b80e28aabe0c00aedab1cd885857776
   GoogleAppMeasurement: 4c644d86835d827bab30ab6aabb9ecaf1f500735
   GoogleDataTransport: f6f8eba931df03ebd2232ff4645aa85f8f47b5ab
   GoogleDataTransportCCTSupport: d70a561f7d236af529fee598835caad5e25f6d3d
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
   GrowingTextView: 876bf42005b5e4a4fd740597db12caaf41f0fe6c
   Kingfisher: d2279a7abece3c7f25a80cd2b7f363ca5cf3f44c
+  MarqueeLabel: f762aa681ae201f66c1d511858b171f75d83013a
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
+  NotificationBannerSwift: 713e20f21b6105f4a36a00e5d9fa414a930d3d8e
   NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
   Parse: 79bdda34fdb7eb2a707a43a951c8aae236cb3e34
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
@@ -208,6 +212,6 @@ SPEC CHECKSUMS:
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
   UICircularProgressRing: e6852e8f88e296cbbbe2720cccb55241acda6708
 
-PODFILE CHECKSUM: d0f64e3691445cfdf5798f3769c174091e0fe6ab
+PODFILE CHECKSUM: 084ddc03a4de34b618bb334e0ce3bd02e106ede5
 
 COCOAPODS: 1.9.1

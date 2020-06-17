@@ -691,11 +691,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             selectedImage = image
         }
         
-        dismiss(animated: true, completion: {() in
-            if let image = selectedImage {
-                self.presentImageCropViewController(image)
-            }
-        })
+        if let image = selectedImage {
+            self.presentImageCropViewController(image, picker: picker)
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -713,14 +711,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         return input.rawValue
     }
     
-    func presentImageCropViewController(_ image: UIImage) {
+    func presentImageCropViewController(_ image: UIImage, picker: UIImagePickerController) {
         let cropViewController = CropViewController(croppingStyle: .default, image: image)
         cropViewController.aspectRatioLockEnabled = true
         cropViewController.aspectRatioPickerButtonHidden = true
         cropViewController.aspectRatioPreset = .presetSquare
         cropViewController.resetAspectRatioEnabled = false
         cropViewController.delegate = self
-        present(cropViewController, animated: false, completion: nil)
+        picker.present(cropViewController, animated: false, completion: nil)
     }
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {

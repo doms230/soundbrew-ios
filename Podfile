@@ -32,7 +32,7 @@ target 'soundbrew' do
   pod 'GrowingTextView'
   pod 'Firebase/Core'
   #pod 'Firebase/DynamicLinks'
-  pod 'Google-Mobile-Ads-SDK'
+  #pod 'Google-Mobile-Ads-SDK'
   #pod 'Firebase/AdMob'
   pod 'TwitterKit'
   pod 'ActiveLabel'
@@ -46,4 +46,5 @@ target 'soundbrew' do
   #pod 'AppCenterAnalytics'
   #pod 'OnboardKit'
   pod 'FlagKit'
+  pod 'NotificationBannerSwift'
 end

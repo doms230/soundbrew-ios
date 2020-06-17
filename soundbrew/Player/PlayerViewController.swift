@@ -15,9 +15,8 @@ import Kingfisher
 import SnapKit
 import Photos
 import AppCenterAnalytics
-import GoogleMobileAds
 
-class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBannerViewDelegate {
+class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
     
     let color = Color()
     let uiElement = UIElement()
@@ -35,17 +34,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
         setupNotificationCenter()
         setSound()
    }
-        
-    override func viewDidAppear(_ animated: Bool) {
-        customer = Customer.shared
-        if let balance = customer.artist?.balance {
-            if balance == 0 {
-                setUpBannerView()
-            }
-        } else {
-            setUpBannerView()
-        }
-    }
     
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
@@ -553,19 +541,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             }
         }
         
-        if skipCount > 1 {
-            player.player = nil
-            addBannerViewtoPlayerView(bannerView)
-            self.songArt.isHidden = true
-            skipCount = 0
-
-        } else {
-            skipCount += 1
-            bannerView.removeFromSuperview()
-            bannerRemoveAdsButton.removeFromSuperview()
-            player.next()
-        }
-        
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
     }
     
@@ -745,97 +720,5 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate, GADBa
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.playBackTotalTime.snp.top).offset(uiElement.bottomOffset)
         }                
-    }
-    
-    //mark: ads
-    //mark: Banner Ads
-    let testBannerAdUnitId = "ca-app-pub-9150756002517285~6608111231"
-    let liveBannerAdUnitId = "ca-app-pub-9150756002517285/6558051480"
-    var bannerView = GADBannerView()
-    var bannerRemoveAdsButton = UIButton()
-    
-    func setUpBannerView() {
-        bannerView = GADBannerView(adSize: kGADAdSizeLeaderboard)
-        bannerView.adUnitID = liveBannerAdUnitId
-        bannerView.rootViewController = self
-        bannerView.delegate = self
-        bannerView.load(GADRequest())
-    }
-    
-    /// Tells the delegate an ad request loaded an ad.
-    /// Tells the delegate that a user click will open another app (such as
-    /// the App Store), backgrounding the current app.
-    func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
-        bannerView.removeFromSuperview()
-        bannerRemoveAdsButton.removeFromSuperview()
-        self.skipTimerLabel.removeFromSuperview()
-        self.labelAmount = 4
-        self.skipButton.isHidden = false
-        player.next()
-    }
-    
-    var skipTimerLabel: UILabel!
-    var labelAmount = 4
-    
-    func addBannerViewtoPlayerView(_ bannerView: GADBannerView) {
-        let songArtHeightWidth = (self.view.frame.height / 2) - 100
-        self.view.addSubview(bannerView)
-        bannerView.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(songArtHeightWidth)
-            make.top.equalTo(exitButton.snp.bottom).offset(uiElement.topOffset * 3)
-            make.centerX.equalTo(self.view)
-        }
-        
-        bannerRemoveAdsButton = UIButton()
-        bannerRemoveAdsButton.setTitle("Remove Ads", for: .normal)
-        bannerRemoveAdsButton.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        bannerRemoveAdsButton.layer.cornerRadius = 5
-        bannerRemoveAdsButton.clipsToBounds = true
-        bannerRemoveAdsButton.backgroundColor = color.blue()
-        bannerRemoveAdsButton.setTitleColor(.white, for: .normal)
-        bannerRemoveAdsButton.addTarget(self, action: #selector(self.didPressRemoveAdsbutton), for: .touchUpInside)
-        self.view.addSubview(bannerRemoveAdsButton)
-        bannerRemoveAdsButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.width.equalTo(150)
-            make.top.equalTo(bannerView.snp.bottom).offset(uiElement.topOffset * 2)
-            make.centerX.equalTo(self.view)
-        }
-        
-        self.skipButton.isHidden = true
-        skipTimerLabel = UILabel()
-        skipTimerLabel.text = ""
-        skipTimerLabel.textColor = .white
-        skipTimerLabel.font = UIFont(name: "\(uiElement.mainFont)", size: 20)
-        skipTimerLabel.layer.cornerRadius = 30 / 2
-        skipTimerLabel.layer.borderWidth = 1
-        skipTimerLabel.layer.borderColor = UIColor.white.cgColor
-        skipTimerLabel.textAlignment = .center
-        self.view.addSubview(skipTimerLabel)
-        skipTimerLabel.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.centerX.centerY.equalTo(self.skipButton)
-        }
-        let timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSkipTimer(_:)), userInfo: nil, repeats: true)
-        timer.fire()
-    }
-    
-    @objc func updateSkipTimer(_ timer: Timer) {
-        if labelAmount == 0 {
-            timer.invalidate()
-            self.skipTimerLabel.removeFromSuperview()
-            self.labelAmount = 4
-            self.skipButton.isHidden = false
-        } else {
-            labelAmount = labelAmount - 1
-            skipTimerLabel.text = "\(labelAmount)"
-        }
-    }
-    
-    @objc func didPressRemoveAdsbutton() {
-        let artist = Artist(objectId: "addFunds", name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
-        self.handleDismissal(artist)
-        self.player.next()
-        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Function" : "sendTip", "Description": "User went to Add Funds Page"])
     }
 }

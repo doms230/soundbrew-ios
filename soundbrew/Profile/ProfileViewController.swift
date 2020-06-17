@@ -273,9 +273,17 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
              
             if let playlistImageURL = playlist.image?.url  {
                  cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "sound"))
-             } else {
-                 cell.soundArtImage.image = UIImage(named: "sound")
-             }
+            } else if playlist.objectId == "uploads" {
+                cell.soundArtImage.image = UIImage(named: "upload")
+            } else if playlist.objectId == "likes" {
+                cell.soundArtImage.image = UIImage(named: "like")
+            } else {
+                cell.soundArtImage.image = UIImage(named: "sound")
+            }
+            
+            if let count = playlist.count {
+                cell.soundDate.text = "\(count) Sounds"
+            }
              
             cell.soundTitle.text = playlist.title
         }
@@ -283,25 +291,30 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func loadPlaylists(profileUserId: String) {
-        let singlesPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil)
-        self.artistPlaylists.append(singlesPlaylist)
         let query = PFQuery(className: "Playlist")
         query.whereKey("userId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.whereKey("isRemoved", equalTo: false)
+        query.whereKey("objectId", notContainedIn: self.artistPlaylists.map {$0.objectId})
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             if let objects = objects {
                 for object in objects {
-                    let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil)
+                    let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil, type: nil, count: nil)
                     let artist = Artist(objectId: object["userId"] as? String, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
                     playlist.artist = artist
                     playlist.title = object["title"] as? String
                     playlist.image = object["image"] as? PFFileObject
+                    playlist.type = object["type"] as? String
+                    playlist.count = object["count"] as? Int
                     self.artistPlaylists.append(playlist)
                 }
             }
+            let uploadsPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil, type: nil, count: nil)
+            self.artistPlaylists.append(uploadsPlaylist)
+            let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
+            self.artistPlaylists.append(likesPlaylist)
             self.setUpTableView()
         }
     }
@@ -422,9 +435,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //mark: button actions
     @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
         if sender.tag == 0 {
-            let modal = EditBioViewController()
+           // let modal = EditBioViewController()
+           // modal.playlistDelegate = self
+            //modal.totalAllowedTextLength = 50
+            let modal = NewPlaylistViewController()
             modal.playlistDelegate = self
-            modal.totalAllowedTextLength = 50
+            let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)
+            modal.newPlaylist = newPlaylist
             self.present(modal, animated: true, completion: nil)
         } else {
             //TODO: show info about subscribing to user

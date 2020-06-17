@@ -44,23 +44,42 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if soundType == "playlist", let playlist = self.playlist, let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
             let menuButton = UIBarButtonItem(image: UIImage(named: "more"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressPlaylistMenuButton(_:)))
             self.navigationItem.rightBarButtonItem = menuButton
-            
         }
         setUpTableView()
         setupNotificationCenter()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        self.tabBarController?.delegate = self
+        setMiniPlayer()
+        if self.tableView != nil {
+            if soundType == "playlist" {
+                //Check for newly added Sounds 
+                showSoundList()
+            } else {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
     @objc func didPressPlaylistMenuButton(_ sender: UIBarButtonItem) {
+        //TODO: if playlist type == playlist: give option to add SOunds and Edit Playlist. If playlisttype == collection: give option to edit p
         let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
         
         let addSoundsAction = UIAlertAction(title: "Add Sounds", style: .default) { (_) -> Void in
-            
+            self.performSegue(withIdentifier: "showSearch", sender: self)
         }
         alertController.addAction(addSoundsAction)
         
-        let editNameAction = UIAlertAction(title: "Edit Name", style: .default) { (_) -> Void in
+        let editNameAction = UIAlertAction(title: "Edit Playlist", style: .default) { (_) -> Void in
+            //TODO: Edit Playlist
         }
         alertController.addAction(editNameAction)
+        
+        let deletePlaylistAction = UIAlertAction(title: "Delete Playlist", style: .default) { (_) -> Void in
+            //TODO: Delete Playlist
+        }
+        alertController.addAction(deletePlaylistAction)
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
@@ -84,14 +103,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.performSegue(withIdentifier: "showProfile", sender: self)
         } else if self.uiElement.getUserDefault("receivedUsername") != nil {
             self.performSegue(withIdentifier: "showProfile", sender: self)
-        }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        self.tabBarController?.delegate = self
-        setMiniPlayer()
-        if self.tableView != nil {
-            self.tableView.reloadData()
         }
     }
     
@@ -139,6 +150,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
+            
+            let viewController = segue.destination as! SearchViewController
+            viewController.playlist = playlist
             break
             
         default:
@@ -256,6 +270,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if selectedTagForFiltering != nil {
             let localizedNoResultsFor = NSLocalizedString("noResultsFor", comment: "")
             cell.headerTitle.text = "\(localizedNoResultsFor) \(selectedTagForFiltering.name!)"
+            cell.artistButton.isHidden = true
+        } else if soundType == "playlist" {
+            cell.headerTitle.text = "Tap the menu button at the top right corner to add sounds to this playlist!"
             cell.artistButton.isHidden = true
         }
         

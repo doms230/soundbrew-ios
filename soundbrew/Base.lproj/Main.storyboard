@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="1du-u4-rT6" customClass="AddFundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="e8b-dp-1c2">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -111,7 +111,7 @@
             <objects>
                 <viewController id="Btf-EX-uKz" customClass="PeopleViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ONF-wQ-sh0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -124,7 +124,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBd-RA-vUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3139" y="119"/>
+            <point key="canvasLocation" x="942" y="940"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="eQs-sU-9Dp">
@@ -269,7 +269,7 @@
             <objects>
                 <viewController title="Home" id="PaH-jC-wog" customClass="SoundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vNu-jc-DsV">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -280,6 +280,7 @@
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ate-Yt-ICi"/>
                         <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="0mA-lO-wOD"/>
                         <segue destination="SHp-2x-uhh" kind="show" identifier="showSounds" id="KO1-9I-QDL"/>
+                        <segue destination="Vkq-eO-lz7" kind="show" identifier="showSearch" id="V2C-Er-n78"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hYW-4L-qjU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -291,7 +292,7 @@
             <objects>
                 <viewController id="z2Z-3H-bjC" customClass="SoundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="inD-v4-DU1">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -382,7 +383,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lXc-VM-ztg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2781" y="-2489"/>
+            <point key="canvasLocation" x="-2768" y="-2644"/>
         </scene>
         <!--New Playlist View Controller-->
         <scene sceneID="17J-TT-gMb">
@@ -539,7 +540,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="bAT-ZF-yxn"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="9JE-oB-28R">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -564,13 +565,14 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="DRe-nT-YVJ"/>
-        <segue reference="QFf-vL-w9n"/>
-        <segue reference="KtZ-Sp-Nxi"/>
+        <segue reference="KO1-9I-QDL"/>
+        <segue reference="Pro-Wr-Tmr"/>
+        <segue reference="V2C-Er-n78"/>
+        <segue reference="pAG-ho-da9"/>
         <segue reference="YJM-4e-UbW"/>
         <segue reference="CdJ-ew-HPh"/>
-        <segue reference="Nhf-bc-kRf"/>
-        <segue reference="jCE-No-XFc"/>
+        <segue reference="QFU-4R-7zu"/>
+        <segue reference="kc7-DO-K18"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="heart_filled_nav" width="25" height="25"/>

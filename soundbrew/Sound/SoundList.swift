@@ -328,11 +328,6 @@ class SoundList: NSObject, PlayerDelegate {
         case "playlist":
             if let playlistId = self.playlistId {
                 self.loadPlaylistSounds(playlistId)
-               /* if playlistId == "single" {
-                    loadSounds(descendingOrder, postIds: nil, userId: profileUserId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
-                } else {
-                    self.loadPlaylistSounds(playlistId)
-                }*/
             }
             break
             
