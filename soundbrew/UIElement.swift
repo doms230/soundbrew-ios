@@ -192,19 +192,20 @@ class UIElement {
         return nil
     }
     
-    func createDynamicLink(_ linkType: String, sound: Sound?, artist: Artist?, target: UIViewController) {
+    func createDynamicLink(_ sound: Sound?, artist: Artist?, playlist: Playlist?, target: UIViewController) {
         var url: URL?
         
         if let sound = sound {
             url = self.getSoundbrewURL(sound.objectId!, path: "s")
         } else if let artist = artist {
             url = URL(string: "https://www.soundbrew.app/\(artist.username!)")
+        } else if let playlist = playlist {
+            url = self.getSoundbrewURL("\(playlist.objectId ?? "")", path: "p")
         }
                 
         if let url = url {
             let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = target.view
-            
             target.present(activityViewController, animated: true, completion: { () -> Void in
             })
         }
@@ -270,7 +271,7 @@ class UIElement {
             
             let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
             let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in
-                self.createDynamicLink("sound", sound: sound, artist: nil, target: target)
+                self.createDynamicLink(sound, artist: nil, playlist: nil, target: target)
                 MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
             }
             alertController.addAction(moreAction)
@@ -468,6 +469,27 @@ class UIElement {
         label.textColor = textColor
         label.isOpaque = true
         return label
+    }
+    
+    func soundbrewTextInput(_ keyboardType: UIKeyboardType, isSecureTextEntry: Bool) -> UITextField{
+        let textField = UITextField()
+        textField.borderStyle = .none
+        textField.font = UIFont(name: "\(self.mainFont)", size: 17)
+        textField.textColor = .white
+        textField.clearButtonMode = .whileEditing
+        textField.tintColor = .white
+        textField.keyboardType = keyboardType
+        textField.isSecureTextEntry = isSecureTextEntry
+        return textField
+    }
+    
+    func soundbrewDividerLine() -> UIView {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.borderColor = UIColor.darkGray.cgColor
+        view.layer.borderWidth = 0.5
+        view.clipsToBounds = true
+        return view
     }
         
     func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String) -> UIView {

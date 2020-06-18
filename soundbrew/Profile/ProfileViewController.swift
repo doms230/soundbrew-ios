@@ -14,7 +14,6 @@ import Parse
 import Kingfisher
 import SnapKit
 import SidebarOverlay
-import TwitterKit
 import AppCenterAnalytics
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate {
@@ -86,6 +85,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     if objectId == "uploads" {
                         viewController.soundType = "uploads"
                         viewController.userId = userId
+                    } else if objectId == "likes" {
+                        viewController.soundType = "collection"
+                        viewController.userId = userId
                     } else {
                         viewController.soundType = "playlist"
                         viewController.playlist = self.artistPlaylists[indexPath.row]
@@ -138,14 +140,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //MARK: Tableview
     var tableView: UITableView!
     let profileReuse = "profileReuse"
-    let playlistReuse = "playlistReuse"
+    let soundReuse = "soundReuse"
     let profileTitleReuse = "profileTitleReuse"
     func setUpTableView() {
+        let uploadsPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil, type: nil, count: nil)
+        self.artistPlaylists.append(uploadsPlaylist)
+        let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
+        self.artistPlaylists.append(likesPlaylist)
+        
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: playlistReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileTitleReuse)
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
@@ -186,7 +193,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             return profileInfoReuse()
             
         case 2:
-            return playlistReuse(indexPath)
+            return playlistCell(indexPath)
             
         default:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: profileTitleReuse) as! ProfileTableViewCell
@@ -241,15 +248,47 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //mark: Playlist
     var artistPlaylists = [Playlist]()
-    func receivedPlaylist(_ chosenPlaylist: Playlist?) {
-        if let newPlaylist = chosenPlaylist {
-            print(newPlaylist.objectId)
-            //TODO: show new playlist and give user option of adding songs to playlist
+    func receivedPlaylist(_ playlist: Playlist?) {
+        if let newPlaylist = playlist {
+            var didFindMatchingPlaylist = false
+            for i in 0..<self.artistPlaylists.count {
+                let playlist = self.artistPlaylists[i]
+                if let currentObjectId = playlist.objectId, currentObjectId == newPlaylist.objectId {
+                    self.artistPlaylists[i] = newPlaylist
+                    didFindMatchingPlaylist = true
+                    self.tableView.reloadData()
+                    break
+                }
+            }
+            if !didFindMatchingPlaylist {
+                self.artistPlaylists.insert(newPlaylist, at: 0)
+                self.tableView.reloadData()
+            }
         }
     }
     
-    func playlistReuse(_ indexPath: IndexPath) -> SoundListTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: playlistReuse) as! SoundListTableViewCell
+    func showNewEditPlaylistView(_ playlist: Playlist) {
+        let modal = NewPlaylistViewController()
+        modal.playlistDelegate = self
+        modal.playlist = playlist
+        self.present(modal, animated: true, completion: nil)
+    }
+    
+    func deletePlaylist(_ playlistId: String, row: Int) {
+        self.artistPlaylists.remove(at: row)
+        self.tableView.reloadData()
+        let query = PFQuery(className: "Playlist")
+        query.getObjectInBackground(withId: playlistId) {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                object["isRemoved"] = true
+                object.saveEventually()
+            }
+        }
+    }
+    
+    func playlistCell(_ indexPath: IndexPath) -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
          cell.backgroundColor = color.black()
          cell.selectionStyle = .none
                     
@@ -267,8 +306,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                  artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
              }
              
-            //TODO: didPressArtistButton
-            // cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
+             cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
              cell.artistButton.tag = indexPath.row
              
             if let playlistImageURL = playlist.image?.url  {
@@ -286,8 +324,50 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
              
             cell.soundTitle.text = playlist.title
+            
+            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+            cell.menuButton.tag = indexPath.row
         }
         return cell 
+    }
+    
+    @objc func didPressArtistButton(_ sender: UIButton) {
+        self.selectedArtist = self.artistPlaylists[sender.tag].artist
+        self.performSegue(withIdentifier: "showProfile", sender: self)
+    }
+    
+    @objc func didPressMenuButton(_ sender: UIButton) {
+        let menuAlert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
+        
+        menuAlert.addAction(UIAlertAction(title: "Edit Playlist", style: .default, handler: { action in
+            self.showNewEditPlaylistView(self.artistPlaylists[sender.tag])
+        }))
+
+        menuAlert.addAction(UIAlertAction(title: "Delete Playlist", style: .default, handler: { action in
+            let playlist = self.artistPlaylists[sender.tag]
+            self.showDeletePlaylistAlert(playlist, row: sender.tag)
+        }))
+        
+        menuAlert.addAction(UIAlertAction(title: "Share Playlist", style: .default, handler: { action in
+            self.uiElement.createDynamicLink(nil, artist: nil, playlist: self.artistPlaylists[sender.tag], target: self)
+        }))
+            
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
+            
+        self.present(menuAlert, animated: true, completion: nil)
+    }
+    
+    func showDeletePlaylistAlert(_ playlist: Playlist, row: Int) {
+        let menuAlert = UIAlertController(title: "Delete \(playlist.title ?? "this playlist")?", message: nil, preferredStyle: .alert)
+        
+        menuAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+            self.deletePlaylist(playlist.objectId ?? "", row: row)
+        }))
+            
+        menuAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+            
+        self.present(menuAlert, animated: true, completion: nil)
     }
     
     func loadPlaylists(profileUserId: String) {
@@ -295,7 +375,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("userId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.whereKey("isRemoved", equalTo: false)
-        query.whereKey("objectId", notContainedIn: self.artistPlaylists.map {$0.objectId})
+        query.whereKey("objectId", notContainedIn: self.artistPlaylists.map {$0.objectId!})
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -311,11 +391,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.artistPlaylists.append(playlist)
                 }
             }
-            let uploadsPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil, type: nil, count: nil)
-            self.artistPlaylists.append(uploadsPlaylist)
-            let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
-            self.artistPlaylists.append(likesPlaylist)
-            self.setUpTableView()
+            if self.tableView != nil {
+                self.tableView.reloadData()
+            } else {
+                self.setUpTableView()
+            }
         }
     }
     
@@ -435,14 +515,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     //mark: button actions
     @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
         if sender.tag == 0 {
-           // let modal = EditBioViewController()
-           // modal.playlistDelegate = self
-            //modal.totalAllowedTextLength = 50
-            let modal = NewPlaylistViewController()
-            modal.playlistDelegate = self
             let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)
-            modal.newPlaylist = newPlaylist
-            self.present(modal, animated: true, completion: nil)
+            self.showNewEditPlaylistView(newPlaylist)
         } else {
             //TODO: show info about subscribing to user
         }
@@ -526,7 +600,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
         if let artist = profileArtist {
-            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+            self.uiElement.createDynamicLink(nil, artist: artist, playlist: nil, target: self)
         }
     }
     

@@ -10,7 +10,6 @@ import UIKit
 import Parse
 import SnapKit
 import NVActivityIndicatorView
-import TwitterKit
 import Kingfisher
 import SwiftyJSON
 
@@ -24,33 +23,14 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
     
     var emailString: String!
     
-    //twitter
-    var twitterAuthToken: String?
-    var twitterAuthTokenSecret: String?
-    var twitterUsername: String?
-    var twitterID: String?
-    var twitterBio: String?
-    var twitterImage: PFFileObject?
-    
     //apple
     var appleID: String?
     var appleName: String? 
     var appleToken: String?
     
-    lazy var usernameText: UITextField = {
-        let localizedUsername = NSLocalizedString("username", comment: "")
-        let textField = UITextField()
-        textField.font = UIFont(name: uiElement.mainFont, size: 17)
-        textField.backgroundColor = .white
-        textField.borderStyle = .roundedRect
-        textField.clearButtonMode = .whileEditing
-        textField.keyboardType = .emailAddress
-        textField.tintColor = color.black()
-        textField.textColor = color.black()
-        textField.attributedPlaceholder = NSAttributedString(string: localizedUsername,
-        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        return textField
-    }()
+    var usernameText: UITextField!
+    var usernameLabel: UILabel!
+    var usernameDividerLine: UIView!
     
     lazy var nextButton: UIButton = {
         let localizedNext = NSLocalizedString("next", comment: "")
@@ -73,25 +53,37 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        self.view.addSubview(usernameText)
         self.view.addSubview(nextButton)
-        
         nextButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
-          //  make.top.equalTo(usernameText.snp.bottom).offset(10)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.centerY.equalTo(self.view)
         }
-        
-        if let username = twitterUsername {
-            usernameText.text = username
+
+        self.usernameLabel = self.uiElement.soundbrewLabel("Username", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+        self.view.addSubview(self.usernameLabel)
+        self.usernameLabel.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(100)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.bottom.equalTo(self.nextButton.snp.top).offset(self.uiElement.bottomOffset * 2)
         }
-        usernameText.snp.makeConstraints { (make) -> Void in
-          //  make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 2)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(nextButton.snp.top).offset(uiElement.bottomOffset)
+        
+        self.usernameText = self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: false)
+        self.view.addSubview(self.usernameText)
+        self.usernameText.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.usernameLabel)
+            make.left.equalTo(self.usernameLabel.snp.right)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+        }
+        
+        self.usernameDividerLine = self.uiElement.soundbrewDividerLine()
+        self.view.addSubview(self.usernameDividerLine)
+        self.usernameDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(self.usernameText.snp.bottom)
+            make.left.equalTo(self.usernameText)
+            make.right.equalTo(self.usernameText)
         }
         
         usernameText.becomeFirstResponder()
@@ -139,10 +131,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameAlreadyInUse)
                 
             } else {
-                if let twitterId = self.twitterID {
-                    self.authenticateWith("twitter", userId: twitterId, auth_token: self.twitterAuthToken, auth_token_secret: self.twitterAuthTokenSecret!, username: self.usernameText.text!)
-                    
-                } else if let appleID = self.appleID {
+                if let appleID = self.appleID {
                     self.authenticateWith("apple", userId: appleID, auth_token: self.appleToken, auth_token_secret: nil, username: self.usernameText.text!)
                 } else {
                     self.performSegue(withIdentifier: "showPassword", sender: self)
@@ -154,12 +143,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
     func authenticateWith(_ loginService: String, userId: String, auth_token: String?, auth_token_secret: String?, username: String) {
                         
         var authData: [String:String]
-        if loginService == "twitter" {
-            authData = ["id": userId, "auth_token": auth_token!, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
-        } else {
-            print("apple userId: \(userId) | auth token: \(auth_token!) | login service: \(loginService)")
-            authData = ["token": auth_token!, "id": userId]
-        }
+        authData = ["token": auth_token!, "id": userId]
         
         PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
             (ignored: BFTask!) -> AnyObject? in
@@ -169,66 +153,9 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
             installation?["userId"] = parseUser?.objectId
             installation?.saveEventually()
             
-            if loginService == "twitter" {
-                self.getTwitterImageAndBio()
-            } else {
-                self.updateUserInfo()
-            }
+            self.updateUserInfo()
             return AnyObject.self as AnyObject
         })
-    }
-    
-    func getTwitterImageAndBio() {
-        if let userID = self.twitterID {
-            let client = TWTRAPIClient(userID: userID)
-            let statusesShowEndpoint = "https://api.twitter.com/1.1/users/show.json"
-            let params = ["user_id": userID]
-            var clientError : NSError?
-            let request = client.urlRequest(withMethod: "GET", urlString: statusesShowEndpoint, parameters: params, error: &clientError)
-            client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
-                if let connectionError = connectionError {
-                    print("Error: \(connectionError)")
-                }
-                do {
-                    if let data = data {
-                        let jsonData = try JSONSerialization.jsonObject(with: data, options: [])
-                        let json = JSON(jsonData)
-                        
-                        if let description = json["description"].string {
-                            self.twitterBio = description
-                        }
-                                                
-                        if let twitterImageURL = json["profile_image_url_https"].string {
-                            self.getTwitterImageAndUpdateUserInfo(twitterImageURL)
-                        } else {
-                            self.updateUserInfo()
-                        }
-                    }
-                } catch let jsonError {
-                    print("json error: \(jsonError.localizedDescription)")
-                }
-            }
-        }
-    }
-    
-    func getTwitterImageAndUpdateUserInfo(_ twitterImageURL: String) {
-        let imageView = UIImageView()
-        imageView.kf.setImage(with: URL(string: twitterImageURL)) { result in
-            switch result {
-            case .success(let value):
-                let chosenProfileImage = value.image.jpegData(compressionQuality: 0.5)
-                let newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: chosenProfileImage!)
-                newProfileImageFile?.saveInBackground {
-                    (success: Bool, error: Error?) in
-                    if (success) {
-                        self.twitterImage = newProfileImageFile
-                    }
-                    self.updateUserInfo()
-                }
-            case .failure(let error):
-                print("Error: \(error)")
-            }
-        }
     }
     
     func updateUserInfo() {
@@ -258,22 +185,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                         if let appleID = self.appleID {
                             user["appleID"] = appleID
                         }
-                        
-                        if let twitterID = self.twitterID {
-                            user["twitterID"] = twitterID
-                        }
-                        
-                        if let twitterBio = self.twitterBio {
-                            user["bio"] = twitterBio
-                        }
-                        
-                        if let twitterImage = self.twitterImage {
-                              user["userImage"] = twitterImage
-                        }
-                        
-                        if let twitterUsername = self.twitterUsername {
-                            user["website"] = "https://www.twitter.com/\(twitterUsername)"
-                        }
+            
                         user.saveEventually {
                             (success: Bool, error: Error?) in
                             self.stopAnimating()

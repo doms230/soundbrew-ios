@@ -12,7 +12,6 @@ import SnapKit
 import AppCenterAnalytics
 
 class WelcomeViewController: UIViewController {
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         signupView()
@@ -22,14 +21,12 @@ class WelcomeViewController: UIViewController {
         if segue.identifier == "showSignup" {
             let navi = segue.destination as! UINavigationController
             let viewController = navi.topViewController as! NewEmailViewController
-            viewController.isLoggingInWithTwitter = isLoggingInWithTwitter
             viewController.isLoggingInWithApple = isLoggingInWithApple
         }
     }
     
     let color = Color()
     let uiElement = UIElement()
-    var isLoggingInWithTwitter = false
     var isLoggingInWithApple = false
     
     lazy var backgroundView: UIImageView = {
@@ -150,17 +147,6 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let twitterButton = signInWithButton("Sign in with Twitter", titleColor: .white, backgroundColor: color.uicolorFromHex(0x1DA1F2), imageName: "twitter", tag: 1, shouldShowBorderColor: false)
-        twitterButton.titleLabel?.textAlignment = .left
-        self.view.addSubview(twitterButton)
-        twitterButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.width.equalTo((Int(viewWidth) / 2) - 20)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
-        }
-        
         let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
         appleButton.titleLabel?.textAlignment = .left
         self.view.addSubview(appleButton)
@@ -169,7 +155,7 @@ class WelcomeViewController: UIViewController {
             make.width.equalTo((Int(viewWidth) / 2) - 20)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.bottom.equalTo(twitterButton.snp.top).offset(uiElement.bottomOffset)
+            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: true)
@@ -191,7 +177,6 @@ class WelcomeViewController: UIViewController {
     @objc func didPressButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
-            isLoggingInWithTwitter = false
             isLoggingInWithApple = false
             self.performSegue(withIdentifier: "showSignup", sender: self)
             MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign Up", "description": "user pressed sign up button"])
@@ -199,15 +184,12 @@ class WelcomeViewController: UIViewController {
             
         case 1:
             isLoggingInWithApple = false
-            isLoggingInWithTwitter = true
-            self.performSegue(withIdentifier: "showSignup", sender: self)
-            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Twitter Button"])
+            //TODO: logging in with Google
             break
             
         case 2:
             if #available(iOS 13.0, *) {
                 isLoggingInWithApple = true
-                isLoggingInWithTwitter = false
                 self.performSegue(withIdentifier: "showSignup", sender: self)
                 
             } else {

@@ -18,20 +18,9 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     var emailString: String!
     var usernameString: String!
     
-    lazy var passwordText: UITextField = {
-        let localizedPassword = NSLocalizedString("password", comment: "")
-        let textField = UITextField()
-        textField.font = UIFont(name: uiElement.mainFont, size: 17)
-        textField.backgroundColor = .white
-        textField.borderStyle = .roundedRect
-        textField.clearButtonMode = .whileEditing
-        textField.isSecureTextEntry = true
-        textField.tintColor = color.black()
-        textField.textColor = color.black()
-        textField.attributedPlaceholder = NSAttributedString(string: localizedPassword,
-        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        return textField
-    }()
+    var passwordText: UITextField!
+    var passwordLabel: UILabel!
+    var passwordDividerLine: UIView!
     
     lazy var finishButton: UIButton = {
         let localizedFinish = NSLocalizedString("finish", comment: "")
@@ -54,9 +43,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
         
-        self.view.addSubview(passwordText)
         self.view.addSubview(finishButton)
-        
         finishButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(uiElement.buttonHeight)
             make.centerY.equalTo(self.view)
@@ -64,10 +51,29 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        passwordText.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(finishButton.snp.top).offset(uiElement.bottomOffset)
+        self.passwordLabel = self.uiElement.soundbrewLabel("Password", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+        self.view.addSubview(self.passwordLabel)
+        self.passwordLabel.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(100)
+            make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+            make.bottom.equalTo(self.finishButton.snp.top).offset(self.uiElement.bottomOffset * 2)
+        }
+        
+        self.passwordText = self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: true)
+        self.view.addSubview(self.passwordText)
+        self.passwordText.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.passwordLabel)
+            make.left.equalTo(self.passwordLabel.snp.right)
+            make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+        }
+        
+        self.passwordDividerLine = self.uiElement.soundbrewDividerLine()
+        self.view.addSubview(self.passwordDividerLine)
+        self.passwordDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(self.passwordText.snp.bottom)
+            make.left.equalTo(self.passwordText)
+            make.right.equalTo(self.passwordText)
         }
         
         passwordText.becomeFirstResponder()

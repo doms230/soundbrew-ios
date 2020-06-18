@@ -20,7 +20,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     let color = Color()
         
     var playlistTitle: UITextField!
-    var newPlaylist: Playlist!
+    var playlist: Playlist!
     var playlistDelegate: PlaylistDelegate?
     
     var soundList: SoundList!
@@ -34,9 +34,9 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         
         if let userId = PFUser.current()?.objectId {
             let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
-            newPlaylist.artist = artist
+            playlist.artist = artist
             
-            if newPlaylist.type == "collection" {
+            if playlist.type == "collection" {
                 for i in 0..<playlistSounds.count {
                     playlistSounds[i].artFile = nil
                 }
@@ -44,12 +44,16 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 let doneButton = UIBarButtonItem(title: "Release", style: .plain, target: self, action: #selector(didPressCollectionDoneButton(_:)))
                 self.navigationItem.rightBarButtonItem = doneButton
                 setUpTableView(nil)
-                soundList = SoundList(target: self, tableView: tableView, soundType: "", userId: nil, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+                soundList = SoundList(target: self, tableView: tableView, soundType: "", userId: nil, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlist: nil)
                 soundList.sounds = playlistSounds
                 soundList.updateTableView()
                 
             } else {
-                let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: "Create Playlist")
+                var doneButtonTitle = "Create Playlist"
+                if playlist.objectId != nil {
+                    doneButtonTitle = "Update Playlist"
+                }
+                let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle)
                 setUpTableView(dividerLine)
             }
             
@@ -62,21 +66,23 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         } else {
-            if newPlaylist.title == nil {
+            if playlist.title == nil {
                 self.uiElement.showAlert("Title Required", message: "", target: self)
-            } else {
-                createNewPlaylist(self.newPlaylist)
+            } else if playlist.objectId == nil {
+                createNewPlaylist(self.playlist)
+            } else if playlist.objectId != nil {
+                updatePlaylist(self.playlist)
             }
         }
     }
     
     @objc func didPressCollectionDoneButton(_ sender: UIBarButtonItem) {
-        if newPlaylist.title == nil {
+        if playlist.title == nil {
             self.uiElement.showAlert("Title Required", message: "", target: self)
-        } else if newPlaylist.image == nil {
+        } else if playlist.image == nil {
             self.uiElement.showAlert("Collection Image Required", message: "", target: self)
         } else {
-            createNewPlaylist(self.newPlaylist)
+            createNewPlaylist(self.playlist)
         }
     }
     
@@ -119,7 +125,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if self.newPlaylist.type == "collection" {
+        if self.playlist.type == "collection" {
             return 3
         }
         return 2
@@ -154,7 +160,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
             let modal = EditBioViewController()
-            if let title = self.newPlaylist.title {
+            if let title = self.playlist.title {
                 modal.bio = title
             }
             modal.totalAllowedTextLength = 50
@@ -166,7 +172,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     //MARK: image title
     func changeBio(_ value: String?) {
         if let newPlaylistTitle = value {
-            self.newPlaylist.title = newPlaylistTitle
+            self.playlist.title = newPlaylistTitle
             self.tableView.reloadData()
         }
     }
@@ -179,13 +185,13 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
 
         cell.audioProgress.isHidden = true 
         
-        if let playlist = self.newPlaylist.title {
+        if let playlist = self.playlist.title {
             cell.inputTitle.text = playlist
         } else {
             cell.inputTitle.text = "Add Title/Description"
         }
                                 
-        if let imageURL = self.newPlaylist.image?.url {
+        if let imageURL = self.playlist.image?.url {
             cell.soundArtImageButton.kf.setImage(with: URL(string: imageURL), for: .normal)
         }
                 
@@ -242,8 +248,8 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         self.dismiss(animated: true, completion: nil)
         self.startAnimating()
         let proPic = image.jpegData(compressionQuality: 0.5)
-        self.newPlaylist.image = PFFileObject(name: "playlistArt.jpeg", data: proPic!)
-        self.newPlaylist.image?.saveInBackground({
+        self.playlist.image = PFFileObject(name: "playlistArt.jpeg", data: proPic!)
+        self.playlist.image?.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             self.stopAnimating()
             if succeeded {
@@ -254,7 +260,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 
             } else if let error = error {
-                self.newPlaylist.image = nil
+                self.playlist.image = nil
                 if self.soundList != nil {
                     self.updateSoundImages()
                 }
@@ -273,7 +279,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func updateSoundImages() {
-        if let playlistImage = self.newPlaylist.image {
+        if let playlistImage = self.playlist.image {
             for i in 0..<soundList.sounds.count {
                 soundList.sounds[i].artFile = playlistImage
             }
@@ -295,7 +301,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
             (success: Bool, error: Error?) in
             self.stopAnimating()
             if (success) {
-                self.newPlaylist.objectId = newPlaylist.objectId
+                self.playlist.objectId = newPlaylist.objectId
                 if playlist.type == "collection" {
                     for sound in self.soundList.sounds {
                         if let soundObjectId = sound.objectId, let playlistObjectId = newPlaylist.objectId {
@@ -307,13 +313,34 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                     
                 } else if let playlistDelegate = self.playlistDelegate {
                     self.dismiss(animated: true, completion: {() in
-                        playlistDelegate.receivedPlaylist(self.newPlaylist)
+                        playlistDelegate.receivedPlaylist(playlist)
                     })
                 }
                 
             } else if let error = error {
                 self.uiElement.showAlert("Error", message: error.localizedDescription, target: self)
                 self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func updatePlaylist(_ playlist: Playlist) {
+        let query = PFQuery(className: "Playlist")
+        query.getObjectInBackground(withId: playlist.objectId ?? "") {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                object["title"] = playlist.title ?? ""
+                object["image"] = playlist.image
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if (success) {
+                        if let playlistDelegate = self.playlistDelegate {
+                            self.dismiss(animated: true, completion: {() in
+                                playlistDelegate.receivedPlaylist(playlist)
+                            })
+                        }
+                    }
+                }
             }
         }
     }

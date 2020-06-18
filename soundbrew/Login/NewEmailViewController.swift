@@ -2,7 +2,6 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
-import TwitterKit
 import AuthenticationServices
 
 
@@ -10,8 +9,8 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     let color = Color()
     let uiElement = UIElement()
     
-    var isLoggingInWithTwitter = false
     var isLoggingInWithApple = false
+    var authToken: String!
     
     override func viewDidLoad(){
         super.viewDidLoad()
@@ -19,9 +18,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
 
-        if isLoggingInWithTwitter {
-            loginWithTwitter()
-        } else if isLoggingInWithApple {
+        if isLoggingInWithApple {
             loginWithApple()
         } else {
             setupNewEmailView()
@@ -31,11 +28,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController = segue.destination as! NewUsernameViewController
         viewController.emailString = emailText.text!
-        if self.twitterID != nil {
-            prepareTwitterVariables(viewController)
-        } else {
-            prepareAppleVariables(viewController)
-        }
+        prepareAppleVariables(viewController)
 
         var nextTitle: String!
         let localizedUsername = NSLocalizedString("username", comment: "")
@@ -50,20 +43,9 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         navigationItem.backBarButtonItem = backItem
     }
     
-    lazy var emailText: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Email"
-        textField.font = UIFont(name: uiElement.mainFont, size: 17)
-        textField.backgroundColor = .white
-        textField.borderStyle = .roundedRect
-        textField.clearButtonMode = .whileEditing
-        textField.keyboardType = .emailAddress
-        textField.tintColor = color.black()
-        textField.textColor = color.black()
-        textField.attributedPlaceholder = NSAttributedString(string: "Email",
-        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        return textField
-    }()
+    var emailText: UITextField!
+    var emailLabel: UILabel!
+    var emailDividerLine: UIView!
     
     lazy var nextButton: UIButton = {
         let localizedNext = NSLocalizedString("next", comment: "")
@@ -95,9 +77,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 self.title = "Email | 1/3"
             }
             
-            self.view.addSubview(self.emailText)
             self.view.addSubview(self.nextButton)
-            
             self.nextButton.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(self.uiElement.buttonHeight)
                 make.centerY.equalTo(self.view)
@@ -105,10 +85,29 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
             }
             
-            self.emailText.snp.makeConstraints { (make) -> Void in
+            self.emailLabel = self.uiElement.soundbrewLabel("Email", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+            self.view.addSubview(self.emailLabel)
+            self.emailLabel.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(50)
                 make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
+                make.bottom.equalTo(self.nextButton.snp.top).offset(self.uiElement.bottomOffset * 2)
+            }
+            
+            self.emailText = self.uiElement.soundbrewTextInput(.emailAddress, isSecureTextEntry: false)
+            self.view.addSubview(self.emailText)
+            self.emailText.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self.emailLabel)
+                make.left.equalTo(self.emailLabel.snp.right)
                 make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
-                make.bottom.equalTo(self.nextButton.snp.top).offset(self.uiElement.bottomOffset)
+            }
+            
+            self.emailDividerLine = self.uiElement.soundbrewDividerLine()
+            self.view.addSubview(self.emailDividerLine)
+            self.emailDividerLine.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(0.5)
+                make.top.equalTo(self.emailText.snp.bottom)
+                make.left.equalTo(self.emailText)
+                make.right.equalTo(self.emailText)
             }
             
             self.emailText.becomeFirstResponder()
@@ -160,16 +159,11 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     //login with logic
     func checkIfUserExists(_ loginInService: String, userID: String, authToken: String, authTokenSecret: String?, username: String?) {
         let query = PFQuery(className: "_User")
-        if loginInService == "twitter" {
-            query.whereKey("twitterID", equalTo: userID)
-        } else {
-            query.whereKey("appleID", equalTo: userID)
-        }
+        query.whereKey("appleID", equalTo: userID)
         
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
-               // print("twitter userId: \(userID)")
                 self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken, auth_token_secret: authTokenSecret, username: username)
                 
             } else {
@@ -183,11 +177,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         
         var authData: [String: String]
 
-        if loginService == "twitter" {
-            authData = ["id": userId, "auth_token": auth_token, "consumer_key": "shY1N1YKquAcxJF9YtdFzm6N3", "consumer_secret": "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1", "auth_token_secret": auth_token_secret!]
-        } else {
-            authData = ["id": userId, "token": auth_token]
-        }
+        authData = ["id": userId, "token": auth_token]
          
         PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
             (ignored: BFTask!) -> AnyObject? in
@@ -203,42 +193,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 self.uiElement.newRootView("Main", withIdentifier: "tabBar")
             }
             return AnyObject.self as AnyObject
-        })
-    }
-    
-    //MARK: TWITTER
-    var authTokenSecret: String?
-    var twitterUsername: String?
-    var twitterID: String?
-    var authToken: String?
-    
-    func prepareTwitterVariables(_ viewController: NewUsernameViewController) {
-        viewController.twitterAuthToken = self.authToken
-        viewController.twitterAuthTokenSecret = self.authTokenSecret
-        viewController.twitterID = self.twitterID
-        viewController.twitterUsername = self.twitterUsername
-    }
-    
-    func loginWithTwitter() {
-        self.startAnimating()
-        let store = TWTRTwitter.sharedInstance().sessionStore
-        if let session = store.session() {
-            store.logOutUserID(session.userID)
-        }
-        
-        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
-            if let session = session {
-                self.twitterID = session.userID
-                self.authToken = session.authToken
-                self.authTokenSecret = session.authTokenSecret
-                self.twitterUsername = session.userName
-                self.checkIfUserExists("twitter", userID: session.userID, authToken: session.authToken, authTokenSecret: session.authTokenSecret, username: session.userName)
-                
-            } else if let error = error {
-                print("error: \(error.localizedDescription)");
-                self.stopAnimating()
-                self.dismiss(animated: true, completion: nil)
-            }
         })
     }
     

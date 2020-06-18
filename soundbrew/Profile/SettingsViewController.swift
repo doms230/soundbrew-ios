@@ -300,7 +300,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @objc func didPressShareProfileButton(_ sender: UIButton) {
         if let artist = Customer.shared.artist {
-            self.uiElement.createDynamicLink("profile", sound: nil, artist: artist, target: self)
+            self.uiElement.createDynamicLink(nil, artist: artist, playlist: nil, target: self)
             
             MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
         }

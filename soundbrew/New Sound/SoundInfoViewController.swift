@@ -36,7 +36,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        createUploaderCredit()
         getSelectedTags()
         setUpViews()
         setUpTableView()
@@ -60,35 +59,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func getAllowedTwitterMessageLength() -> Int {
-        let twitterCharacters = 280
-        //all objectIds are 10 characters
-        let urlLength = "https://wwww.soundbrew.app/s/qqqqqqqqqq".count
-        let soundbrewCharacterCount = self.uiElement.soundbrewSocialHandle.count + 1
-        let totalPreTweetLength = urlLength + soundbrewCharacterCount
-        return twitterCharacters - totalPreTweetLength
-    }
-    
     //mark: views
     var uploadButton: UIBarButtonItem!
     var backButton: UIBarButtonItem!
     func setUpViews() {
-        var localizedGoback = NSLocalizedString("cancel", comment: "")
         var shouldUploadButtonBeEnabled = false
         if soundThatIsBeingEdited?.objectId != nil {
             shouldUploadButtonBeEnabled = true
-            localizedGoback = NSLocalizedString("back", comment: "")
-        } else {
-            localizedGoback = NSLocalizedString("cancel", comment: "")
         }
         
         uploadButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
         uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
-        
-        self.navigationItem.hidesBackButton = true
-        backButton = UIBarButtonItem(title: localizedGoback, style: .plain, target: self, action: #selector(didPressGoBackButton(_:)))
-        self.navigationItem.leftBarButtonItem = backButton
     }
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
@@ -226,16 +208,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var credits = [Credit]()
     func creditCell(_ indexPath: IndexPath) -> SoundInfoTableViewCell {
         var cell: SoundInfoTableViewCell!
-            cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
+        cell = (self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell)
             
-            cell.soundTagLabel.text = "Features"
+        cell.soundTagLabel.text = "Features"
                     
-            cell.chosenSoundTagLabel.textColor = .white
-            if credits.count == 1 {
-                cell.chosenSoundTagLabel.text = "\(credits.count) Feature"
-            } else {
-                cell.chosenSoundTagLabel.text = "\(credits.count) Features"
-            }
+        cell.chosenSoundTagLabel.textColor = .white
+        
+        if credits.count == 0 {
+            cell.chosenSoundTagLabel.text = "Add Features"
+            cell.chosenSoundTagLabel.textColor = color.blue()
+        } else if credits.count == 1 {
+            cell.chosenSoundTagLabel.text = "\(credits.count) Feature"
+        } else {
+            cell.chosenSoundTagLabel.text = "\(credits.count) Features"
+        }
         return cell
     }
     
@@ -244,14 +230,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.credits = credits
             self.tableView.reloadData()
         }
-    }
-    
-    func createUploaderCredit() {
-        let credit = Credit(objectId: nil, artist: nil, title: "Artist")
-        if let artist = Customer.shared.artist {
-            credit.artist = artist
-        }
-        self.credits.append(credit)
     }
     
     func saveCredits(_ sound: Sound) {

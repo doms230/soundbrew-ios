@@ -118,10 +118,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
                 let viewController = segue.destination as! NewPlaylistViewController
                 viewController.playlistSounds = selectedSoundsForPlaylist
                 let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "collection", count: selectedSoundsForPlaylist.count)
-                viewController.newPlaylist = newPlaylist
+                viewController.playlist = newPlaylist
             break
             
             case "showEditSoundInfo":
+                let backItem = UIBarButtonItem()
+                backItem.title = "Edit Sound Info"
+                navigationItem.backBarButtonItem = backItem
+                
                 var soundToBeEdited: Sound!
                 if let selectedSound = soundList.selectedSound {
                     selectedSound.isDraft = true
@@ -163,7 +167,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func showSounds() {
-        soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+        soundList = SoundList(target: self, tableView: tableView, soundType: "drafts", userId: PFUser.current()?.objectId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlist: nil)
     }
     
     //mark: tableview
@@ -339,7 +343,6 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         let player = Player.sharedInstance
         if player.player != nil {
             let modal = PlayerViewController()
-            //modal.player = player
             modal.playerDelegate = self
             modal.tagDelegate = self
             self.present(modal, animated: true, completion: nil)

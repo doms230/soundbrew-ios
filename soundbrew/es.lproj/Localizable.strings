@@ -11,7 +11,6 @@
 "signupRequired" = "Registrarse requerido.";
 "signupRequiredMessage" = "¡Sigue a otros artistas para estar al día con sus últimos lanzamientos!";
 "signout" = "Desconectar";
-"twitter" = "CONTINUAR CON TWITTER";
 "terms" = "Al continuar, acepta nuestros términos y política de privacidad.";
 "skip" = "OMITIR";
 "resetPassword" = "Restablecer la contraseña";
@@ -177,7 +176,6 @@
 "addFundsMessage" = "Los artistas suben música a Soundbrew para que la disfrutes gratis sin anuncios. ¡Darles propina a los artistas con tus fondos de Soundbrew les ayuda a que te paguen por su música!";
 "whyAddFundsTitle" = "¿Por qué agregar fondos?";
 "play" = "Jugar";
-"twitterMessage" = "Mensaje";
 "SoundProcessingFailed" = "Procesamiento de sonido fallido.";
 "cannottipyourself" = "Ámate a ti mismo, pero no puedes dar propina";
 "wallet" = "Billetera";

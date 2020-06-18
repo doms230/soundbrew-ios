@@ -14,7 +14,6 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
     let uiElement = UIElement()
     let color = Color()
     var artistDelegate: ArtistDelegate?
-    var playlistDelegate: PlaylistDelegate?
     var totalAllowedTextLength = 150
     
     override func viewDidLoad() {
@@ -28,13 +27,8 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
-        
-        var buttonTitle = "Done"
-        if playlistDelegate != nil {
-            buttonTitle = "Create Playlist"
-        }
-        
-         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: buttonTitle)
+                
+         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
         setupBioView(dividerLine)
     }
     
@@ -44,45 +38,15 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
             self.dismiss(animated: true, completion: nil)
         } else {
             if let artistDelegate = self.artistDelegate {
-                if inputBio.text == "" {
-                    artistDelegate.changeBio(nil)
-                } else {
-                    let newCreditTitleWithNoSpaces = inputBio.text.trimmingCharacters(
+                var newCreditTitle: String?
+                if !inputBio.text.isEmpty {
+                    newCreditTitle = inputBio.text.trimmingCharacters(
                         in: NSCharacterSet.whitespacesAndNewlines
                     )
-                    artistDelegate.changeBio(newCreditTitleWithNoSpaces)
                 }
-                self.dismiss(animated: true, completion: nil)
-
-            } else if let playlistDelegate = self.playlistDelegate, let userId = PFUser.current()?.objectId {
-                if inputBio.text.isEmpty {
-                    self.uiElement.showAlert("Playlist Title Required", message: "", target: self)
-                } else {
-                    self.createNewPlaylist(playlistDelegate, userId: userId)
-                }
-            }
-        }
-    }
-    
-    func createNewPlaylist(_ playlistDelegate: PlaylistDelegate, userId: String) {
-        startAnimating()
-        let newPlaylist = PFObject(className: "Playlist")
-        newPlaylist["userId"] = userId
-        newPlaylist["title"] = inputBio.text
-        newPlaylist["isRemoved"] = false
-        newPlaylist.saveEventually {
-            (success: Bool, error: Error?) in
-            self.stopAnimating()
-            if (success) {
-                let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
-                let newPlaylist = Playlist(objectId: newPlaylist.objectId, artist: artist, title: self.inputBio.text, image: nil, type: "playlist", count: nil)
                 self.dismiss(animated: true, completion: {() in
-                    playlistDelegate.receivedPlaylist(newPlaylist)
+                    artistDelegate.changeBio(newCreditTitle)
                 })
-                
-            } else if let error = error {
-                self.uiElement.showAlert("Error", message: error.localizedDescription, target: self)
-                self.dismiss(animated: true, completion: nil)
             }
         }
     }

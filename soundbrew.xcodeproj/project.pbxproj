@@ -15,7 +15,6 @@
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
-		E445FC5E24980984000A082A /* PlaylistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
 		E44A665224913707004672DC /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665124913706004672DC /* Playlist.swift */; };
@@ -158,7 +157,6 @@
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
-		E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewCell.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
 		E44A665124913706004672DC /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
@@ -282,7 +280,6 @@
 		E445FC5924980857000A082A /* Playlist */ = {
 			isa = PBXGroup;
 			children = (
-				E445FC5D24980984000A082A /* PlaylistTableViewCell.swift */,
 				E44A665324916B4E004672DC /* NewPlaylistViewController.swift */,
 			);
 			path = Playlist;
@@ -497,7 +494,6 @@
 				F2689864215AEF8F00C21663 /* Resources */,
 				B082AF0E245F1D3F45DAB765 /* [CP] Embed Pods Frameworks */,
 				F246998322A829240020497E /* Embed Frameworks */,
-				051F9B7E75EAA6F1BB62E98D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -698,23 +694,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		051F9B7E75EAA6F1BB62E98D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-soundbrew/Pods-soundbrew-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-soundbrew/Pods-soundbrew-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-soundbrew/Pods-soundbrew-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		71A1E71225FD0EAB53CFBE63 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -834,7 +813,6 @@
 				F26898A6215B527900C21663 /* Sound.swift in Sources */,
 				E4C9DCF123E11018003835E5 /* CommentViewController.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
-				E445FC5E24980984000A082A /* PlaylistTableViewCell.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
 				E425D7C723C2836A0031DB0B /* Credit.swift in Sources */,
 				E43AB28F241D7181003263C9 /* Follow.swift in Sources */,

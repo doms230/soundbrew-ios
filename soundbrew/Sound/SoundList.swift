@@ -30,9 +30,9 @@ class SoundList: NSObject, PlayerDelegate {
     var searchText: String?
     var domSmithUserId = "AWKPPDI4CB"
     var linkObjectId: String?
-    var playlistId: String?
+    var playlist: Playlist?
     
-    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?, linkObjectId: String?, playlistId: String?) {
+    init(target: UIViewController, tableView: UITableView?, soundType: String, userId: String?, tags: Tag?, searchText: String?, descendingOrder: String?, linkObjectId: String?, playlist: Playlist?) {
         super.init()
         self.target = target
         self.tableView = tableView
@@ -41,7 +41,7 @@ class SoundList: NSObject, PlayerDelegate {
         self.selectedTagForFiltering = tags
         self.searchText = searchText
         self.linkObjectId = linkObjectId
-        self.playlistId = playlistId
+        self.playlist = playlist
         if let descendingOrder = descendingOrder {
             self.descendingOrder = descendingOrder
         }
@@ -212,10 +212,58 @@ class SoundList: NSObject, PlayerDelegate {
             }))
         }
         
+        if let playlist = playlist, let playlistUserId = playlist.artist?.objectId, let currentUserObjectId = PFUser.current()?.objectId, playlistUserId == currentUserObjectId {
+            alert.addAction(UIAlertAction(title: "Remove from Playlist", style: .default, handler: { action in
+                self.removeFromPlaylistAlert(playlist, sound: sound, row: row)
+            }))
+        }
+        
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         alert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
 
         target.present(alert, animated: true, completion: nil)
+    }
+    
+    func removeFromPlaylistAlert(_ playlist: Playlist, sound: Sound, row: Int) {
+        let alert = UIAlertController(title: "", message: "Remove \(sound.title ?? "this sound") from \(playlist.title ?? "this playlist")?" , preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+            self.sounds.remove(at: row)
+            self.updateTableView()
+            self.removeSoundFromPlaylist(playlist.objectId ?? "", soundId: sound.objectId ?? "")
+        }))
+        
+        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+
+        target.present(alert, animated: true, completion: nil)
+    }
+    
+    func removeSoundFromPlaylist(_ playlistId: String, soundId: String) {
+        let query = PFQuery(className: "PlaylistSound")
+        query.whereKey("playlistId", equalTo: playlistId)
+        query.whereKey("soundId", equalTo: soundId)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                object["isRemoved"] = true
+                object.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if (success) {
+                        self.updatePlaylistCount(playlistId)
+                    }
+                }
+             }
+        }
+    }
+    
+    func updatePlaylistCount(_ playlistId: String) {
+        let query = PFQuery(className: "Playlist")
+        query.getObjectInBackground(withId: playlistId) {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                object.incrementKey("count", byAmount: -1)
+                object.saveEventually()
+            }
+        }
     }
     
     func showAddRemoveSongFromFeaturedPage(_ sound: Sound, shouldAddToFeaturedList: Bool, row: Int) {
@@ -326,7 +374,7 @@ class SoundList: NSObject, PlayerDelegate {
         self.isUpdatingData = true
         switch soundType {
         case "playlist":
-            if let playlistId = self.playlistId {
+            if let playlistId = self.playlist?.objectId {
                 self.loadPlaylistSounds(playlistId)
             }
             break

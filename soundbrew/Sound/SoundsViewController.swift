@@ -41,9 +41,15 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             createTopView()
             
-        } else if soundType == "playlist", let playlist = self.playlist, let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
-            let menuButton = UIBarButtonItem(image: UIImage(named: "more"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressPlaylistMenuButton(_:)))
-            self.navigationItem.rightBarButtonItem = menuButton
+        } else if soundType == "playlist", let playlist = self.playlist, playlist.objectId != nil {
+            let sharePlaylistButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSharePlaylistButton(_:)))
+            if  let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
+                let menuButton = UIBarButtonItem(image: UIImage(named: "new_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddSoundsToPlaylistButton(_:)))
+                self.navigationItem.rightBarButtonItems = [sharePlaylistButton, menuButton]
+                
+            } else {
+                self.navigationItem.rightBarButtonItem = sharePlaylistButton
+            }
         }
         setUpTableView()
         setupNotificationCenter()
@@ -62,30 +68,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    @objc func didPressPlaylistMenuButton(_ sender: UIBarButtonItem) {
-        //TODO: if playlist type == playlist: give option to add SOunds and Edit Playlist. If playlisttype == collection: give option to edit p
-        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
-        
-        let addSoundsAction = UIAlertAction(title: "Add Sounds", style: .default) { (_) -> Void in
-            self.performSegue(withIdentifier: "showSearch", sender: self)
-        }
-        alertController.addAction(addSoundsAction)
-        
-        let editNameAction = UIAlertAction(title: "Edit Playlist", style: .default) { (_) -> Void in
-            //TODO: Edit Playlist
-        }
-        alertController.addAction(editNameAction)
-        
-        let deletePlaylistAction = UIAlertAction(title: "Delete Playlist", style: .default) { (_) -> Void in
-            //TODO: Delete Playlist
-        }
-        alertController.addAction(deletePlaylistAction)
-        
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
+    @objc func didPressSharePlaylistButton(_ sender: UIBarButtonItem) {
+        self.uiElement.createDynamicLink(nil, artist: nil, playlist: self.playlist, target: self)
+    }
+    
+    @objc func didPressAddSoundsToPlaylistButton(_ sender: UIBarButtonItem) {
+        self.performSegue(withIdentifier: "showSearch", sender: self)
     }
     
     func checkForDefaultValue() {
@@ -161,7 +149,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func showSoundList() {
-        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil, playlistId: playlist?.objectId)
+        soundList = SoundList(target: self, tableView: tableView, soundType: soundType, userId: userId, tags: selectedTagForFiltering, searchText: nil, descendingOrder: "createdAt", linkObjectId: nil, playlist: playlist)
     }
     
     //mark: Page Title
@@ -237,7 +225,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func cellForRowAtSoundList(_ indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
         if soundList.sounds.count == 0 {
             return noSoundCell()
-            
         } else {
             return soundList.soundCell(indexPath, tableView: tableView, reuse: soundReuse)
         }

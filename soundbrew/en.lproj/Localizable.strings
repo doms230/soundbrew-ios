@@ -11,7 +11,6 @@
 "signupRequired" = "Sign up Required.";
 "signupRequiredMessage" = "Follow other artists to keep up with their latests releases!";
 "signout" = "Sign Out";
-"twitter" = "CONTINUE WITH TWITTER";
 "terms" = "By continuing, you agree to our terms and privacy policy";
 "skip" = "SKIP";
 "resetPassword" = "Reset Password";
@@ -177,7 +176,6 @@
 "addFundsMessage" = "Artists upload music to Soundbrew for you to enjoy for free without ads. Tipping artists with your Soundbrew funds helps them get paid for their music!";
 "whyAddFundsTitle" = "Why Add Funds?";
 "play" = "Play";
-"twitterMessage" = "Message";
 "SoundProcessingFailed" = "Sound Processing Failed.";
 "cannottipyourself" = "Love yourself, but you can't tip yourself!";
 "wallet" = "Wallet";

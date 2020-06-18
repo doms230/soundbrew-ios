@@ -67,7 +67,7 @@ class SoundInfoTableViewCell: UITableViewCell {
             audioProgress.outerRingColor = color.black()
             self.addSubview(audioProgress)
             audioProgress.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(100)
+                make.height.width.equalTo(150)
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
@@ -76,18 +76,9 @@ class SoundInfoTableViewCell: UITableViewCell {
             soundArtImageButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: UIImage(named: "add_image"), titleFont: nil, titleColor: .white, cornerRadius: 5)
             self.addSubview(soundArtImageButton)
             soundArtImageButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
+                make.height.width.equalTo(75)
                 make.centerX.centerY.equalTo(audioProgress)
             }
-            
-            /*self.addSubview(dividerLine)
-            dividerLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(audioProgress.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }*/
             
             inputTitle = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
             self.addSubview(inputTitle)

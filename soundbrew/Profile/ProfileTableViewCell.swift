@@ -398,7 +398,7 @@ class ProfileTableViewCell: UITableViewCell {
             }
             break
             
-        case "editProfileInfoReuse":
+        case "editProfileInfoReuse": 
             self.addSubview(editProfileTitle)
             editProfileTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)

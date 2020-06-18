@@ -111,9 +111,6 @@ PODS:
   - SnapSDK/SCSDKStoryKit (1.4.4)
   - Stripe (19.2.0)
   - SwiftyJSON (5.0.0)
-  - TwitterCore (3.2.0)
-  - TwitterKit (3.4.2):
-    - TwitterCore (>= 3.2.0)
   - UICircularProgressRing (6.5.0)
 
 DEPENDENCIES:
@@ -134,7 +131,6 @@ DEPENDENCIES:
   - SnapSDK
   - Stripe
   - SwiftyJSON
-  - TwitterKit
   - UICircularProgressRing
 
 SPEC REPOS:
@@ -171,8 +167,6 @@ SPEC REPOS:
     - SnapSDK
     - Stripe
     - SwiftyJSON
-    - TwitterCore
-    - TwitterKit
     - UICircularProgressRing
 
 SPEC CHECKSUMS:
@@ -208,10 +202,8 @@ SPEC CHECKSUMS:
   SnapSDK: 9ea8d26ca876b7f1d85fad2f2ec09852f3b156d0
   Stripe: d481c2dab9a892fd923f097f854661217f70dc7f
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
-  TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
-  TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
   UICircularProgressRing: e6852e8f88e296cbbbe2720cccb55241acda6708
 
-PODFILE CHECKSUM: 084ddc03a4de34b618bb334e0ce3bd02e106ede5
+PODFILE CHECKSUM: 8d1abcf22c6882c333d414cd0a361168602a4b32
 
 COCOAPODS: 1.9.1

@@ -157,7 +157,7 @@ class SoundListTableViewCell: UITableViewCell {
             }
             break
             
-        case "playlistReuse":
+        /*case "playlistReuse":
             self.addSubview(artistButton)
             self.artistButton.addSubview(artistImage)
             self.artistButton.addSubview(artistLabel)
@@ -212,7 +212,7 @@ class SoundListTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(soundArtImage)
             }
-            break
+            break*/
             
         case "soundReuse":
             self.addSubview(menuButton)

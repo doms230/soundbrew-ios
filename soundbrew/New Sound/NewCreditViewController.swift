@@ -79,7 +79,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
             if indexPath.row == 0 {
                 shouldEnableSlider = false
             }
-            return creditRow(credits[indexPath.row], shouldEnableSlider: shouldEnableSlider, indexPath: indexPath)
+            return creditCell(credits[indexPath.row], shouldEnableSlider: shouldEnableSlider, indexPath: indexPath)
             
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: newCreditReuse) as! SoundInfoTableViewCell
@@ -121,7 +121,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func creditRow(_ credit: Credit, shouldEnableSlider: Bool, indexPath: IndexPath) -> SoundInfoTableViewCell {
+    func creditCell(_ credit: Credit, shouldEnableSlider: Bool, indexPath: IndexPath) -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: creditReuse) as! SoundInfoTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
@@ -145,15 +145,9 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.artistTypeButton.setTitle("Add Feature Title", for: .normal)
             }
             
-            if indexPath.row == 0 {
-                cell.artistTypeButton.setTitleColor(color.blue(), for: .normal)
-                cell.artistTypeButton.setTitleColor(.darkGray, for: .normal)
-                
-            } else {
-                cell.artistTypeButton.setTitleColor(color.blue(), for: .normal)
-                cell.artistTypeButton.addTarget(self, action: #selector(didPressChangeCreditTitle(_:)), for: .touchUpInside)
-                cell.artistTypeButton.tag = indexPath.row
-            }
+            cell.artistTypeButton.setTitleColor(color.blue(), for: .normal)
+            cell.artistTypeButton.addTarget(self, action: #selector(didPressChangeCreditTitle(_:)), for: .touchUpInside)
+            cell.artistTypeButton.tag = indexPath.row
         }
         
         return cell

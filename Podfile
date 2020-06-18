@@ -34,7 +34,7 @@ target 'soundbrew' do
   #pod 'Firebase/DynamicLinks'
   #pod 'Google-Mobile-Ads-SDK'
   #pod 'Firebase/AdMob'
-  pod 'TwitterKit'
+  #pod 'TwitterKit'
   pod 'ActiveLabel'
   pod 'CropViewController'
   #pod 'FacebookCore', '~> 0.5.0'

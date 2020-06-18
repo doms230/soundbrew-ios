@@ -32,7 +32,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else {
             handleTableViewLogic()
             if let currentUserId = PFUser.current()?.objectId {
-                soundList = SoundList(target: self, tableView: tableView, soundType: "collection", userId: currentUserId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+                soundList = SoundList(target: self, tableView: tableView, soundType: "collection", userId: currentUserId, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlist: nil)
             }
         }
     }
@@ -387,11 +387,11 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func search() {
         isLoadingResults = true
         if playlist != nil {
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlist: nil)
         } else {
             loadTags("", searchText: searchBar.text!)
             searchUsers(searchBar.text!)
-            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlistId: nil)
+            soundList = SoundList(target: self, tableView: tableView, soundType: "search", userId: nil, tags: nil, searchText: searchBar.text!, descendingOrder: nil, linkObjectId: nil, playlist: nil)
         }
         handleTableViewLogic()
     }

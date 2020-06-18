@@ -14,7 +14,6 @@ import AppCenterCrashes
 import AppCenterAnalytics
 import StoreKit
 import Firebase
-import TwitterKit
 import Stripe
 
 @UIApplicationMain
@@ -32,9 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         UITabBar.appearance().backgroundColor = .black
                         
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
-        
-        TWTRTwitter.sharedInstance().start(withConsumerKey: "shY1N1YKquAcxJF9YtdFzm6N3", consumerSecret: "dFzxXdA0IM9A7NsY3JzuPeWZhrIVnQXiWFoTgUoPVm0A2d1lU1")
-        
+                
         FirebaseApp.configure()
 
         //usrname: testaccount
@@ -56,7 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         }
         Parse.initialize(with: configuration)
         
-        PFUser.register(self, forAuthType: "twitter")
         PFUser.register(self, forAuthType: "apple")
         
         NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
@@ -90,6 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
 
                     } else if pathComponents.contains("u") {
                         self.receivedUserId(url.lastPathComponent)
+                    } else if pathComponents.contains("p") {
+                        self.receivedPlaylistId(url.lastPathComponent)
                     } else {
                         self.receivedUsername(url.lastPathComponent)
                     }
@@ -99,10 +97,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         }
         
         return false
-    }
-    
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-        return TWTRTwitter.sharedInstance().application(app, open: url, options: options)
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -148,6 +142,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     func receivedPostId(_ soundId: String) {
         self.uiElement.setUserDefault(soundId, key: "receivedSoundId")
+        showMainViewController(1)
+    }
+    
+    func receivedPlaylistId(_ playlistId: String) {
+        self.uiElement.setUserDefault(playlistId, key: "receivedPlaylistId")
         showMainViewController(1)
     }
     

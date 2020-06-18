@@ -25,34 +25,13 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     var signupHidden = true
     
-    lazy var usernameText: UITextField = {
-        let label = UITextField()
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.backgroundColor = .white
-        label.borderStyle = .roundedRect
-        label.clearButtonMode = .whileEditing
-        label.keyboardType = .emailAddress
-        label.tintColor = color.black()
-        label.textColor = color.black()
-        label.attributedPlaceholder = NSAttributedString(string: "Username",
-        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        return label
-    }()
+    var usernameText: UITextField!
+    var usernameLabel: UILabel!
+    var usernameDividerLine: UIView!
     
-    lazy var passwordText: UITextField = {
-        let label = UITextField()
-        let localizedString = NSLocalizedString("password", comment: "")
-        label.font = UIFont(name: uiElement.mainFont, size: 17)
-        label.backgroundColor = .white
-        label.borderStyle = .roundedRect
-        label.clearButtonMode = .whileEditing
-        label.isSecureTextEntry = true
-        label.tintColor = color.black()
-        label.textColor = color.black()
-        label.attributedPlaceholder = NSAttributedString(string: localizedString,
-        attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        return label
-    }()
+    var passwordText: UITextField!
+    var passwordLabel: UILabel!
+    var passwordDividerLine: UIView!
     
     lazy var signButton: UIButton = {
         let localizedSignin = NSLocalizedString("signin", comment: "")
@@ -83,10 +62,7 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         let cancelButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
         self.navigationItem.leftBarButtonItem = cancelButton
         
-        self.view.addSubview(usernameText)
-        self.view.addSubview(passwordText)
         self.view.addSubview(signButton)
-        
         signButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
            // make.top.equalTo(passwordText.snp.bottom).offset(10)
@@ -95,21 +71,56 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        passwordLabel = self.uiElement.soundbrewLabel("Password", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+        self.view.addSubview(passwordLabel)
+        passwordLabel.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(100)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.bottom.equalTo(signButton.snp.top).offset(uiElement.bottomOffset * 2)
+        }
+        
+        passwordText = self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: true)
+        self.view.addSubview(passwordText)
         passwordText.snp.makeConstraints { (make) -> Void in
-           // make.top.equalTo(usernameText.snp.bottom).offset(10)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.top.equalTo(passwordLabel)
+            make.left.equalTo(passwordLabel.snp.right)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(signButton.snp.top).offset(uiElement.bottomOffset)
         }
         
+        passwordDividerLine = self.uiElement.soundbrewDividerLine()
+        self.view.addSubview(passwordDividerLine)
+        passwordDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(passwordText.snp.bottom)
+            make.left.equalTo(passwordText)
+            make.right.equalTo(passwordText)
+        }
+        
+        usernameLabel = self.uiElement.soundbrewLabel("Username", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+        self.view.addSubview(usernameLabel)
+        usernameLabel.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(100)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.bottom.equalTo(passwordLabel.snp.top).offset(uiElement.bottomOffset * 2)
+        }
+        
+        usernameText = self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: false)
+        self.view.addSubview(usernameText)
         usernameText.snp.makeConstraints { (make) -> Void in
-           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.top.equalTo(usernameLabel)
+            make.left.equalTo(usernameLabel.snp.right)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(passwordText.snp.top).offset(-(uiElement.elementOffset))
         }
-        
         usernameText.becomeFirstResponder()
+        
+        usernameDividerLine = self.uiElement.soundbrewDividerLine()
+        self.view.addSubview(usernameDividerLine)
+        usernameDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(usernameText.snp.bottom)
+            make.left.equalTo(usernameText)
+            make.right.equalTo(usernameText)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -120,12 +131,11 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     @objc func loginAction(_ sender: UIButton) {
-        
         usernameText.resignFirstResponder()
         passwordText.resignFirstResponder()
-        let emailString = usernameText.text?.lowercased()
+        let usernameString = usernameText.text?.lowercased()
         if validateUsername() && validatePassword() {
-            returningUser( password: passwordText.text!, username: emailString!)
+            loginUser(usernameString!, password: passwordText.text!)
         }
     }
     
@@ -157,14 +167,14 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         return valPassword
     }
     
-    func returningUser(password: String, username: String) {
+    func loginUser(_ username: String, password: String) {
         startAnimating()
         
-        let userJaunt = username.trimmingCharacters(
+        let trimmedUsername = username.trimmingCharacters(
             in: NSCharacterSet.whitespacesAndNewlines
         )
         
-        PFUser.logInWithUsername(inBackground: userJaunt, password:password) {
+        PFUser.logInWithUsername(inBackground: trimmedUsername, password: password) {
             (user: PFUser?, error: Error?) -> Void in
             self.stopAnimating()
             if let user = user  {

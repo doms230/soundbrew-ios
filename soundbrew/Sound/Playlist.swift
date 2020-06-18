@@ -50,5 +50,5 @@ class Playlist {
 }
 
 protocol PlaylistDelegate {
-    func receivedPlaylist(_ chosenPlaylist: Playlist?)
+    func receivedPlaylist(_ playlist: Playlist?)
 }
