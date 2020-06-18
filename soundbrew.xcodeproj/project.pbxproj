@@ -15,6 +15,8 @@
 		E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E425D7C823C289630031DB0B /* NewCreditViewController.swift */; };
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
+		E445FC64249BCB84000A082A /* PlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC63249BCB84000A082A /* PlayerTableViewCell.swift */; };
+		E445FC66249BCF23000A082A /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC65249BCF23000A082A /* PlayerV2ViewController.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
 		E44A665224913707004672DC /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665124913706004672DC /* Playlist.swift */; };
@@ -157,6 +159,8 @@
 		E425D7C823C289630031DB0B /* NewCreditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCreditViewController.swift; sourceTree = "<group>"; };
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
+		E445FC63249BCB84000A082A /* PlayerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTableViewCell.swift; sourceTree = "<group>"; };
+		E445FC65249BCF23000A082A /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
 		E44A665124913706004672DC /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
@@ -414,7 +418,9 @@
 			isa = PBXGroup;
 			children = (
 				F2EA6F4D220B630B007FA614 /* Player.swift */,
+				E445FC63249BCB84000A082A /* PlayerTableViewCell.swift */,
 				F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */,
+				E445FC65249BCF23000A082A /* PlayerV2ViewController.swift */,
 				F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */,
 			);
 			path = Player;
@@ -804,8 +810,10 @@
 				E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */,
 				E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */,
 				F268986A215AEF8F00C21663 /* AppDelegate.swift in Sources */,
+				E445FC64249BCB84000A082A /* PlayerTableViewCell.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */,
+				E445FC66249BCF23000A082A /* PlayerV2ViewController.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */,

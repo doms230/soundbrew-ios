@@ -25,9 +25,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
     
     var playerDelegate: PlayerDelegate?
     var tagDelegate: TagDelegate?
-    
-    var skipCount = 0
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Soundbrew"
@@ -480,7 +478,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
         return button
     }()
     
-    lazy var loadingSoundbrewSpinner: UIActivityIndicatorView = {
+  /*  lazy var loadingSoundbrewSpinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
         spinner.color = .white
         spinner.startAnimating()
@@ -497,7 +495,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
         label.textAlignment = .center
         label.isOpaque = true
         return label
-    }()
+    }()*/
     
     lazy var loadSoundSpinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
@@ -534,13 +532,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
     }()
     @objc func didPressSkipButton(_ sender: UIButton) {
         self.resetPlayView()
-        
-        if let balance = customer.artist?.balance {
-            if balance > 10 {
-                skipCount = 0
-            }
-        }
-        
         MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Skip", "Description": "User Skipped Song."])
     }
     
