@@ -135,7 +135,8 @@ class MiniPlayerView: UIButton {
     
     func showPlayerViewController() {
         if let playerDelegate = self.playerDelegate, let tagDelegate = self.tagDelegate {
-            let modal = PlayerViewController()
+           // let modal = PlayerViewController()
+            let modal = PlayerV2ViewController()
             modal.playerDelegate = playerDelegate
             modal.tagDelegate = tagDelegate
             superViewController.present(modal, animated: true, completion: nil)
@@ -230,7 +231,8 @@ class MiniPlayerView: UIButton {
             
             if let likeSound = like.sound {
                 if sound.objectId != likeSound.objectId {
-                    like.loadCredits(sound)
+                    like.checkIfUserLikedSong(sound)
+                   // like.loadCredits(sound)
                 } else if likeSound.currentUserTipDate != nil {
                     self.likeSoundButton.isEnabled = false
                     self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
@@ -240,7 +242,8 @@ class MiniPlayerView: UIButton {
                 }
                 
             } else {
-                like.loadCredits(sound)
+                like.checkIfUserLikedSong(sound)
+               // like.loadCredits(sound)
             }
             
             like.sound = sound

@@ -62,7 +62,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
             
             if let likeSound = like.sound {
                 if sound.objectId != likeSound.objectId {
-                    like.loadCredits(sound)
+                    //like.loadCredits(sound)
                     
                 } else if likeSound.currentUserTipDate != nil {
                     self.likeSoundButton.isEnabled = false
@@ -73,7 +73,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
                 }
                  
             } else {
-                like.loadCredits(sound)
+               // like.loadCredits(sound)
             }
             
             like.sound = sound
@@ -391,7 +391,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
         let button = UIButton()
         button.setImage(UIImage(named: "sendTip"), for: .normal)
         button.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
-        //button.isEnabled = false
         button.isOpaque = true
         return button
     }()
@@ -513,7 +512,6 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
                 timer.invalidate()
                 self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
                 MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Pause", "Description": "User Pressed Pause."])
-                
             } else {
                 player.play()
                 startTimer()

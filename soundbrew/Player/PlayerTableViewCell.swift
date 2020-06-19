@@ -12,9 +12,8 @@ import SnapKit
 class PlayerTableViewCell: UITableViewCell {
     let color = Color()
     let uiElement = UIElement()
-    var songArtHeightWidth: Int!
-    var frameWidth: Double!
     
+    //player reuse
     lazy var soundArt: UIImageView = {
         return self.uiElement.soundbrewImageView(nil, cornerRadius: 3, backgroundColor: .black)
     }()
@@ -65,6 +64,7 @@ class PlayerTableViewCell: UITableViewCell {
         return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "goBack"), titleFont: nil, titleColor: .black, cornerRadius: nil)
     }()
     
+    //sound stats reuse
     lazy var playCountButton: UIButton = {
         return self.uiElement.soundbrewButton("0 plays", shouldShowBorder: false, backgroundColor: .black, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 10)!, titleColor: .darkGray, cornerRadius: nil)
     }()
@@ -75,72 +75,78 @@ class PlayerTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.addSubview(soundArt)
-        soundArt.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(songArtHeightWidth)
-            make.top.equalTo(self).offset(uiElement.topOffset)
-            make.centerX.equalTo(self)
-        }
-        
-        self.addSubview(playBackCurrentTime)
-        playBackCurrentTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(soundArt.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self).offset(uiElement.leftOffset)
-        }
-        
-        self.addSubview(playBackTotalTime)
-        playBackTotalTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playBackCurrentTime)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
-        }
-        
-        self.addSubview(playBackSlider)
-        playBackSlider.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(playBackTotalTime.snp.bottom)
-            make.left.equalTo(self).offset(uiElement.leftOffset)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
-        }
-        
-        self.addSubview(playBackButton)
-        playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(60)
-            make.top.equalTo(playBackSlider.snp.bottom).offset(uiElement.topOffset)
-            make.centerX.equalTo(self)
-        }
-        
-        self.addSubview(loadSoundSpinner)
-        loadSoundSpinner.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(60)
-            make.top.equalTo(playBackButton)
-            make.centerX.equalTo(self)
-        }
-        
-        self.addSubview(goBackButton)
-        goBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.centerY.equalTo(playBackButton)
-            make.left.equalTo(self).offset(frameWidth * 0.25)
-        }
-        
-        self.addSubview(skipButton)
-        skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.centerY.equalTo(playBackButton)
-            make.centerX.equalTo(self).offset(-(frameWidth * 0.25))
-        }
-        
-        self.addSubview(likeSoundButton)
-        likeSoundButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.centerY.equalTo(self.skipButton)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
-        }
-        
-        self.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.centerY.equalTo(self.skipButton)
-            make.left.equalTo(self).offset(uiElement.leftOffset)
+        if reuseIdentifier == "playerReuse" {
+            self.addSubview(soundArt)
+            soundArt.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.centerX.equalTo(self)
+            }
+
+            self.addSubview(playBackCurrentTime)
+            playBackCurrentTime.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(soundArt.snp.bottom).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            self.addSubview(playBackTotalTime)
+            playBackTotalTime.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(playBackCurrentTime)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            self.addSubview(playBackSlider)
+            playBackSlider.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(playBackTotalTime.snp.bottom)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            self.addSubview(playBackButton)
+            playBackButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(60)
+                make.top.equalTo(playBackSlider.snp.bottom).offset(uiElement.topOffset)
+                make.centerX.equalTo(self)
+            }
+            
+            self.addSubview(loadSoundSpinner)
+            loadSoundSpinner.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(60)
+                make.top.equalTo(playBackButton)
+                make.centerX.equalTo(self)
+            }
+            
+            self.addSubview(goBackButton)
+            
+            self.addSubview(skipButton)
+            
+            self.addSubview(likeSoundButton)
+            likeSoundButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(30)
+                make.centerY.equalTo(self.playBackButton)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            self.addSubview(shareButton)
+            shareButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(30)
+                make.centerY.equalTo(self.playBackButton)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+        } else {
+            self.addSubview(playCountButton)
+            playCountButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            self.addSubview(likesCountButton)
+            likesCountButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(playCountButton.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(playCountButton)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
         }
     }
     

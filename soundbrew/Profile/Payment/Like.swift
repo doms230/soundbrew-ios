@@ -51,7 +51,7 @@ class Like: NSObject {
         }
     }
     
-    func loadCredits(_ sound: Sound) {
+   /* func loadCredits(_ sound: Sound) {
         let query = PFQuery(className: "Credit")
         query.whereKey("postId", equalTo: sound.objectId!)
         query.cachePolicy = .networkElseCache
@@ -73,7 +73,7 @@ class Like: NSObject {
             
             self.checkIfUserLikedSong(sound)
         }
-    }
+    }*/
     
     func checkIfUserLikedSong(_ sound: Sound) {
         if let userId = PFUser.current()?.objectId {
