@@ -136,7 +136,8 @@ class MiniPlayerView: UIButton {
     func showPlayerViewController() {
         if let playerDelegate = self.playerDelegate, let tagDelegate = self.tagDelegate {
            // let modal = PlayerViewController()
-            let modal = PlayerV2ViewController()
+            //let modal = PlayerV2ViewController()
+            let modal = CommentViewController()
             modal.playerDelegate = playerDelegate
             modal.tagDelegate = tagDelegate
             superViewController.present(modal, animated: true, completion: nil)

@@ -300,7 +300,7 @@ class PlayerViewController: UIViewController, PlayerDelegate, TagDelegate {
         let commentModal = CommentViewController()
         if let sound = self.player.currentSound  {
             commentModal.playerDelegate = self
-            commentModal.sound = sound
+           // commentModal.sound = sound
         }
         self.present(commentModal, animated: true, completion: nil)
     }

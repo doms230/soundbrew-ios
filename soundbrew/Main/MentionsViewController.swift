@@ -152,7 +152,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 let commentModal = CommentViewController()
                 if let mentionSound = mention.sound {
                     commentModal.playerDelegate = self
-                    commentModal.sound = mentionSound
+                   // commentModal.sound = mentionSound
                     if let commentId = mention.comment?.objectId {
                        commentModal.selectedCommentFromMentions = commentId
                     }

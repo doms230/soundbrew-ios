@@ -64,14 +64,22 @@ class PlayerTableViewCell: UITableViewCell {
         return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "goBack"), titleFont: nil, titleColor: .black, cornerRadius: nil)
     }()
     
+    lazy var shuffleButton: UIButton = {
+        return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "shuffle"), titleFont: nil, titleColor: .black, cornerRadius: nil)
+    }()
+    
+    lazy var repeatButton: UIButton = {
+        return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "repeat"), titleFont: nil, titleColor: .black, cornerRadius: nil)
+    }()
+    
     //sound stats reuse
-    lazy var playCountButton: UIButton = {
+  /*  lazy var playCountButton: UIButton = {
         return self.uiElement.soundbrewButton("0 plays", shouldShowBorder: false, backgroundColor: .black, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 10)!, titleColor: .darkGray, cornerRadius: nil)
     }()
     
     lazy var likesCountButton: UIButton = {
         return self.uiElement.soundbrewButton("0 likes", shouldShowBorder: false, backgroundColor: .black, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 10)!, titleColor: .white, cornerRadius: nil)
-    }()
+    }()*/
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -106,6 +114,7 @@ class PlayerTableViewCell: UITableViewCell {
                 make.height.width.equalTo(60)
                 make.top.equalTo(playBackSlider.snp.bottom).offset(uiElement.topOffset)
                 make.centerX.equalTo(self)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             
             self.addSubview(loadSoundSpinner)
@@ -116,8 +125,18 @@ class PlayerTableViewCell: UITableViewCell {
             }
             
             self.addSubview(goBackButton)
+            goBackButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(45)
+                make.centerY.equalTo(playBackButton)
+                make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
+            }
             
             self.addSubview(skipButton)
+            skipButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(45)
+                make.centerY.equalTo(playBackButton)
+                make.left.equalTo(playBackButton.snp.right).offset(uiElement.leftOffset)
+            }
             
             self.addSubview(likeSoundButton)
             likeSoundButton.snp.makeConstraints { (make) -> Void in
@@ -131,11 +150,25 @@ class PlayerTableViewCell: UITableViewCell {
                 make.height.width.equalTo(30)
                 make.centerY.equalTo(self.playBackButton)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            
+            self.addSubview(repeatButton)
+            repeatButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(30)
+                make.centerY.equalTo(self.playBackButton)
+                make.left.equalTo(shareButton.snp.right).offset(uiElement.leftOffset + 5)
+                //make.right.equalTo(goBackButton.snp.left).offset(uiElement.rightOffset)
+            }
+            
+            self.addSubview(shuffleButton)
+            shuffleButton.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(30)
+                make.centerY.equalTo(self.playBackButton)
+                make.right.equalTo(likeSoundButton.snp.left).offset(uiElement.rightOffset - 5)
             }
             
         } else {
-            self.addSubview(playCountButton)
+           /* self.addSubview(playCountButton)
             playCountButton.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
@@ -146,7 +179,7 @@ class PlayerTableViewCell: UITableViewCell {
                 make.top.equalTo(playCountButton.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(playCountButton)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
+            }*/
         }
     }
     

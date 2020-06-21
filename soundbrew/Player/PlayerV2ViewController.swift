@@ -84,11 +84,6 @@ class PlayerV2ViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         self.tableView.register(PlayerTableViewCell.self, forCellReuseIdentifier: self.playerReuse)
         self.tableView.register(PlayerTableViewCell.self, forCellReuseIdentifier: self.soundStatsReuse)
-        
-        self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.searchProfileReuse)
-        self.tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: self.commentReuse)
-        self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.noSoundsReuse)
-        self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.searchProfileReuse)
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
         tableView.frame = self.view.bounds
@@ -116,11 +111,12 @@ class PlayerV2ViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
+        return playerCell()
+      /*  if indexPath.section == 0 {
             return playerCell()
         } else {
-            return soundStatsCell()
-        }
+           // return soundStatsCell()
+        }*/
         /*switch indexPath.section {
         case 0:
             return playerCell()
@@ -154,17 +150,8 @@ class PlayerV2ViewController: UIViewController, UITableViewDelegate, UITableView
     var playBackButton: UIButton!
     var likeSoundButton: UIButton!
     var shareSoundButton: UIButton!
-    
     var timer = Timer()
-    func startTimer() {
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
-    }
-    @objc func UpdateTimer(_ timer: Timer) {
-        if let currentTime = player.player?.currentTime {
-            playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(currentTime)))"
-            playBackSlider.value = Float(currentTime)
-        }
-    }
+
     func playerCell() -> PlayerTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: playerReuse) as! PlayerTableViewCell
         cell.backgroundColor = .black
@@ -181,6 +168,7 @@ class PlayerV2ViewController: UIViewController, UITableViewDelegate, UITableView
                     
             playBackCurrentTime = cell.playBackCurrentTime
             playBackTotalTime = cell.playBackTotalTime
+            cell.playBackSlider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
             playBackSlider = cell.playBackSlider
             if let duration = self.player.player?.duration {
                 self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
@@ -282,8 +270,26 @@ class PlayerV2ViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
+    @objc func sliderValueDidChange(_ sender: UISlider) {
+        if let soundPlayer = player.player {
+            playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
+            soundPlayer.currentTime = TimeInterval(sender.value)
+            player.setBackgroundAudioNowPlaying()
+        }
+    }
+    
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
+    }
+    @objc func UpdateTimer(_ timer: Timer) {
+        if let currentTime = player.player?.currentTime {
+            playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(currentTime)))"
+            playBackSlider.value = Float(currentTime)
+        }
+    }
+    
     //Sound Stats
-    func soundStatsCell() -> PlayerTableViewCell {
+    /*func soundStatsCell() -> PlayerTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundStatsReuse) as! PlayerTableViewCell
         cell.backgroundColor = .black
         cell.selectionStyle = .none
@@ -293,5 +299,5 @@ class PlayerV2ViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         return cell
-    }
+    }*/
 }

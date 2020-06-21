@@ -20,7 +20,7 @@ class CommentTableViewCell: UITableViewCell {
     
     lazy var comment: ActiveLabel = {
         let label = ActiveLabel()
-        label.enabledTypes = [.mention]
+        label.enabledTypes = [.mention, .hashtag]
         label.textColor = .white
         label.numberOfLines = 0
         label.isOpaque = true
@@ -54,6 +54,7 @@ class CommentTableViewCell: UITableViewCell {
         comment.font = UIFont(name: uiElement.mainFont, size: 15)
         comment.textColor = .white
         comment.mentionColor = color.blue()
+        comment.hashtagColor = color.blue()
         comment.mentionSelectedColor = .darkGray
         comment.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(username.snp.bottom)
