@@ -184,8 +184,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func fanClubExclusiveCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
         if Customer.shared.artist?.priceId != nil {
-            cell.socialSwitch.isOn = true
-            self.soundThatIsBeingEdited?.isExclusive = true 
+            if let isExclusive = self.soundThatIsBeingEdited?.isExclusive {
+                cell.socialSwitch.isOn = isExclusive
+            } else {
+                cell.socialSwitch.isOn = false 
+            }
         } else {
             cell.socialSwitch.isOn = false
         }

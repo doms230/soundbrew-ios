@@ -118,6 +118,16 @@ class SoundList: NSObject, PlayerDelegate {
                 cell.soundArtImage.image = UIImage(named: "sound")
             }
             
+            if let isExclusive = sound.isExclusive {
+                if isExclusive {
+                    cell.exclusiveImage.isHidden = false
+                } else {
+                    cell.exclusiveImage.isHidden = true
+                }
+            } else {
+                cell.exclusiveImage.isHidden = true
+            }
+            
             cell.soundTitle.text = sound.title
 
             if let currentUser = PFUser.current()?.objectId, currentUser == self.domSmithUserId, let createdAt = sound.createdAt {
