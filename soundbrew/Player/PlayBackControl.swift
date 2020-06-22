@@ -89,55 +89,37 @@ class PlayBackControl {
     }()
     
     func setupPlaybackControls() {
-        if let sound = player.currentSound {
-            if let duration = self.player.player?.duration {
-                self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
-                playBackSlider.maximumValue = Float(duration)
-                self.startTimer()
-            }
-            
-            if player.player != nil, player.player!.isPlaying  {
-                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        if let duration = self.player.player?.duration {
+            self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
+            playBackSlider.maximumValue = Float(duration)
+            self.startTimer()
+        }
+        
+        if player.player != nil, player.player!.isPlaying  {
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        } else {
+            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+        }
+        
+        let like = Like.shared
+        like.likeSoundButton = self.likeSoundButton
+        like.target = self.viewController
+        if let currentUserDidLikeSong = self.player.currentSound?.currentUserDidLikeSong {
+            if currentUserDidLikeSong {
+                self.likeSoundButton.isEnabled = false
+                self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
             } else {
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+                self.likeSoundButton.isEnabled = true
+                self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
             }
-            
-            let like = Like.shared
-            like.likeSoundButton = self.likeSoundButton
-            like.target = self.viewController
-            
-            if let likeSound = like.sound {
-                if sound.objectId != likeSound.objectId {
-                    like.checkIfUserLikedSong(sound)
-                    
-                } else if likeSound.currentUserTipDate != nil {
-                    self.likeSoundButton.isEnabled = false
-                    self.likeSoundButton.setImage(UIImage(named: "sendTipColored"), for: .normal)
-                } else {
-                    self.likeSoundButton.isEnabled = true
-                    self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-                }
-                 
-            } else {
-                like.checkIfUserLikedSong(sound)
-            }
-            
-            like.sound = sound
+        } else {
+            self.likeSoundButton.isEnabled = true
+            self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
+            like.checkIfUserLikedSong()
         }
     }
     
     func attachPlaybackControlsToView() {
-        var bottomOffsetValue: Int!
-        switch UIDevice.modelName {
-        case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
-            bottomOffsetValue = uiElement.bottomOffset * 3
-            break
-            
-        default:
-            bottomOffsetValue = uiElement.bottomOffset * 2
-            break
-        }
-        
         playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
         self.viewController.view.addSubview(playBackButton)
         playBackButton.snp.makeConstraints { (make) -> Void in
@@ -253,7 +235,7 @@ class PlayBackControl {
         sender.isEnabled = false
         let like = Like.shared
         like.target = self.viewController
-        like.sound = self.player.currentSound
+       // like.sound = self.player.currentSound
         like.likeSoundButton = sender
         like.newLike()
     }

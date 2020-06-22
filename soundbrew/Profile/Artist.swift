@@ -60,8 +60,7 @@ class Artist {
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
             if let error = error {
-                print(error)
-                
+              print("loadUserInfoFromCloud- Artist.swift \(error)")
             } else if let user = user {
                 let username = user["username"] as? String
                 if !username!.contains("@") {
@@ -206,7 +205,7 @@ class Artist {
                         priceInput.text = amountAsString
                     }
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    print("Get Account PRice- Artist.swift \(error)")
                 }
         }
     }

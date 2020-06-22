@@ -17,7 +17,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     let uiElement = UIElement()
     let color = Color()
     var sound: Sound?
-    var isViewTagsFromSound = false
+   // var isViewTagsFromSound = false
             
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,9 +26,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         navigationController?.navigationBar.barTintColor = color.black()
         setUpNavigationBar()
         if let tagType = self.tagType, tagType != "more" {
-            if isViewTagsFromSound {
+            /*if isViewTagsFromSound {
                 loadTags(nil, searchText: nil, tags: sound?.tags)
-            } else if tagType == "country" || tagType == "price" {
+            } else*/ if tagType == "country" || tagType == "price" {
                 setUpTableView()
             } else {
                 loadTags(tagType, searchText: nil, tags: sound?.tags)
@@ -224,27 +224,25 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     //MARK: Tableview
     var tableView: UITableView!
     let searchTagViewReuse = "searchTagViewReuse"
-    let tagsReuse = "tagsReuse"
     let newPlaylistReuse = "newCreditReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: newPlaylistReuse)
-        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: tagsReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
         tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         tableView.backgroundColor = color.black()
         view.addSubview(tableView)
-        if isViewTagsFromSound {
+        /*if isViewTagsFromSound {
             tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.exitButton.snp.bottom)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.view)
             }
-        } else if tagType == "more" {
+        } else*/ if tagType == "more" {
             tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.chosenTagsScrollview.snp.bottom)
                 make.left.equalTo(self.view)
@@ -633,11 +631,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             DispatchQueue.main.async {
                 if self.tableView == nil {
-                    if self.isViewTagsFromSound {
+                    self.setupChooseTagsView()
+                    /*if self.isViewTagsFromSound {
                         self.setupTopView()
                     } else {
                         self.setupChooseTagsView()
-                    }
+                    }*/
                     
                 } else {
                     self.tableView.reloadData()

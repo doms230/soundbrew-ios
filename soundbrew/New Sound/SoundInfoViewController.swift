@@ -779,6 +779,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let tags = combineSelectedTags()
         let newSound = PFObject(className: "Post")
         newSound["userId"] = sound.artist!.objectId
+        newSound["user"] = PFUser.current()
         newSound["audioFile"] = sound.audio!
         if let title = sound.title {
             newSound["title"] = title

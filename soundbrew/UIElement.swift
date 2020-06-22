@@ -269,6 +269,13 @@ class UIElement {
             }
             alertController.addAction(instagramAction)
             
+            let addToPlaylistAction = UIAlertAction(title: "Add To Playlist", style: .default) { (_) -> Void in
+                let modal = PlaylistViewController()
+                modal.sound = sound
+                target.present(modal, animated: true, completion: nil)
+            }
+            alertController.addAction(addToPlaylistAction)
+            
             let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
             let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in
                 self.createDynamicLink(sound, artist: nil, playlist: nil, target: target)
@@ -347,7 +354,7 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserTipDate: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil)
+        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil)
         
         if let createdAt = object.createdAt {
             sound.createdAt = createdAt

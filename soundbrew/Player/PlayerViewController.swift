@@ -135,9 +135,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         
         textView.backgroundColor = color.black()
         textView.delegate = self
-        //textView.layer.cornerRadius = 15
-        //textView.layer.borderColor = UIColor.darkGray.cgColor
-       // textView.layer.borderWidth = 1
         textView.maxLength = 200
         textView.maxHeight = 70
         textView.trimWhiteSpaceWhenEndEditing = true
@@ -178,7 +175,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             inputToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             inputToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             inputToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            //inputToolBar.bottomAnchor.constraint(equalTo: playBackControl!.playBackButton.topAnchor),
             topConstraint
         ])
         
@@ -299,11 +295,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.playBackControl!.playBackCurrentTime.snp.top).offset(self.uiElement.bottomOffset)
-               // make.bottom.equalTo(self.inputToolBar.snp.top)
             }
         }
         loadComments()
-       // self.loadCredits()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -344,7 +338,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 if let sound = player.currentSound {
                     player.target = self
                     cell.soundArt.kf.setImage(with: URL(string: sound.artFile?.url  ?? ""), placeholder: UIImage(named: "sound"))
-                    //making constraints here to get view frame
                 }
                 return cell
             } else {
@@ -524,6 +517,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         let newComment = PFObject(className: "Comment")
         newComment["postId"] = postId
         newComment["userId"] = PFUser.current()!.objectId
+        newComment["user"] = PFUser.current()
         newComment["text"] = text
         newComment["atTime"] = atTime
         newComment["isRemoved"] = false

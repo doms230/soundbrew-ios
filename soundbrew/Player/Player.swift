@@ -78,7 +78,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
         } catch let error {
-            print(error)
+            print("prepare Audio- Player.swift \(error)")
+
             soundPlayable = false
         }
         
@@ -273,6 +274,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func newArtistPaymentRow(_ artistObjectId: String) {
         let newPaymentRow = PFObject(className: "Payment")
         newPaymentRow["userId"] = artistObjectId
+        newPaymentRow["user"] = PFUser.current()
         newPaymentRow["streamsSinceLastPayout"] = 1
         newPaymentRow["streams"] = 1
         newPaymentRow.saveEventually{
@@ -317,8 +319,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
-                print(error)
-                
+                print("incrementPlayCount- Player.swift \(error)")
             } else if let object = object {
                 if let plays = object["plays"] as? Double {
                     //We want to notify artists every time their song hits a milestone like 10, 20, 100, 110, etc. Best way to determine if "plays" equally divids by 10
@@ -445,8 +446,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let artFile = sound.artFile {
             artFile.getDataInBackground { (imageData: Data?, error: Error?) in
                 if let error = error {
-                    print(error.localizedDescription)
-                    
+                    print("loadArtFileImageData-Player.swift: \(error.localizedDescription)")
                 } else if let imageData = imageData {
                     let image = UIImage(data:imageData)
                     sound.artImage = image
@@ -463,6 +463,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: userId) {
             (user: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print("load user info from cloud - Player.swift: \(error)")
+            }
             if let user = user {
                 self.sounds[i].artist = UIElement().newArtistObject(user)
                 self.setBackgroundAudioNowPlaying()

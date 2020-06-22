@@ -54,12 +54,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case "showProfile":
-            if soundList == nil {
+            if let selectedArtist = self.selectedArtist {
                 let viewController = segue.destination as! ProfileViewController
                 viewController.profileArtist = selectedArtist
+                self.selectedArtist = nil
                 
             } else {
-               soundList.prepareToShowSelectedArtist(segue)
+                soundList.prepareToShowSelectedArtist(segue)
             }
             
             let backItem = UIBarButtonItem()
@@ -100,7 +101,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //mark: tableview
     var tableView: UITableView!
-    let reuse = "reuse"
     let soundReuse = "soundReuse"
     let searchProfileReuse = "searchProfileReuse"
     let searchTagViewReuse = "searchTagViewReuse"
@@ -110,7 +110,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: reuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchTagViewReuse)
@@ -213,6 +212,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let newPlaylistSound = PFObject(className: "PlaylistSound")
         newPlaylistSound["playlistId"] = playlistId
         newPlaylistSound["soundId"] = soundId
+        newPlaylistSound["isRemoved"] = false
         newPlaylistSound.saveEventually()
         updatePlaylistCount(playlistId)
     }
@@ -419,9 +419,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let nameQuery = PFQuery(className: "_User")
         nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
         nameQuery.whereKey("artistName", matchesRegex: text)
+        //nameQuery.whereKey("artistName", matchesRegex: text.uppercased())
+        //nameQuery.whereKey("artistName", matchesRegex: text.capitalized)
         
         let usernameQuery = PFQuery(className: "_User")
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
+        usernameQuery.whereKey("username", matchesRegex: text)
+        //usernameQuery.whereKey("username", matchesRegex: text.uppercased())
+        //usernameQuery.whereKey("username", matchesRegex: text.capitalized)
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.limit = 5
@@ -435,11 +440,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         self.searchUsers.append(artist)
                     }
                 }
-            }
-            
-            self.isLoadingResults = false
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
+                self.isLoadingResults = false
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
             }
         }
     }

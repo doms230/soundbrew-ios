@@ -66,6 +66,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.tableView.reloadData()
             }
         }
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -329,6 +330,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
+                if let error = error {
+                    print("load last listen - Sounds View Controller: \(error)")
+                }
                 var objectId: String?
                 if let object = object {
                     if let soundId = object["postId"] as? String {
@@ -352,6 +356,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print("load Dynamic Link sounds - SoundsViewController: \(error)")
+            }
             if let object = object {
                 let sound = self.uiElement.newSoundObject(object)
                 if shouldShowShareSoundView {

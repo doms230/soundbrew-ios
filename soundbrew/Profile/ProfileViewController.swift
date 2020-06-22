@@ -75,22 +75,25 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 break
                 
             case "showSounds":
-                if let indexPath = tableView.indexPathForSelectedRow, let title = self.artistPlaylists[indexPath.row].title, let objectId = self.artistPlaylists[indexPath.row].objectId, let userId = self.artistPlaylists[indexPath.row].artist?.objectId {
+                if let indexPath = tableView.indexPathForSelectedRow, let title = self.artistPlaylists[indexPath.row].title, let userId = profileArtist?.objectId {
                     
                     let backItem = UIBarButtonItem()
                     backItem.title = title
                     navigationItem.backBarButtonItem = backItem
                     
                     let viewController = segue.destination as! SoundsViewController
-                    if objectId == "uploads" {
-                        viewController.soundType = "uploads"
-                        viewController.userId = userId
-                    } else if objectId == "likes" {
-                        viewController.soundType = "collection"
-                        viewController.userId = userId
-                    } else {
+                    
+                    if indexPath.section == 2 {
                         viewController.soundType = "playlist"
                         viewController.playlist = self.artistPlaylists[indexPath.row]
+                    } else if indexPath.section == 3 {
+                        if indexPath.row == 0 {
+                            viewController.soundType = "uploads"
+                            viewController.userId = userId
+                        } else {
+                            viewController.soundType = "collection"
+                            viewController.userId = userId
+                        }
                     }
                 }
                 break
@@ -143,11 +146,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let soundReuse = "soundReuse"
     let profileTitleReuse = "profileTitleReuse"
     func setUpTableView() {
-        let uploadsPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil, type: nil, count: nil)
-        self.artistPlaylists.append(uploadsPlaylist)
-        let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
-        self.artistPlaylists.append(likesPlaylist)
-        
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
@@ -176,12 +174,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 2 {
             return artistPlaylists.count
+        }
+        
+        if section == 3 {
+            return 2
         }
         
         return 1
@@ -195,6 +197,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         case 2:
             return playlistCell(indexPath)
             
+        case 3:
+            return uploadsAndLikesPlaylistCell(indexPath)
+            
         default:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: profileTitleReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
@@ -204,7 +209,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 2 {
+        if indexPath.section == 2 || indexPath.section == 3 {
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
@@ -285,6 +290,55 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 object.saveEventually()
             }
         }
+    }
+    
+    func uploadsAndLikesPlaylistCell(_ indexPath: IndexPath) -> SoundListTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundReuse) as! SoundListTableViewCell
+         cell.backgroundColor = color.black()
+         cell.selectionStyle = .none
+        
+        var playlist: Playlist!
+        if indexPath.row == 0 {
+            let uploadsPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil, type: nil, count: nil)
+            playlist = uploadsPlaylist
+        } else {
+            let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
+            playlist = likesPlaylist
+        }
+                
+        cell.artistImage.image = UIImage(named: "profile_icon")
+        cell.artistLabel.text = "loading..."
+        if let name = playlist.artist?.name {
+            cell.artistLabel.text = name
+            if let image = playlist.artist?.image {
+                cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+             }
+         } else if let artist = playlist.artist {
+             artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+         }
+         
+         cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
+         cell.artistButton.tag = indexPath.row
+         
+        if let playlistImageURL = playlist.image?.url  {
+             cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "sound"))
+        } else if playlist.objectId == "uploads" {
+            cell.soundArtImage.image = UIImage(named: "upload")
+        } else if playlist.objectId == "likes" {
+            cell.soundArtImage.image = UIImage(named: "like")
+        } else {
+            cell.soundArtImage.image = UIImage(named: "sound")
+        }
+        
+        if let count = playlist.count {
+            cell.soundDate.text = "\(count) Sounds"
+        }
+         
+        cell.soundTitle.text = playlist.title
+        
+        cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+        cell.menuButton.tag = indexPath.row
+        return cell 
     }
     
     func playlistCell(_ indexPath: IndexPath) -> SoundListTableViewCell {

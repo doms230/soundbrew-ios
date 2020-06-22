@@ -292,8 +292,11 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         startAnimating()
         let newPlaylist = PFObject(className: "Playlist")
         newPlaylist["userId"] = playlist.artist?.objectId
+        newPlaylist["user"] = PFUser.current()
         newPlaylist["title"] = playlist.title
-        newPlaylist["image"] = playlist.image
+        if let image = playlist.image {
+            newPlaylist["image"] = image
+        }
         newPlaylist["count"] = playlist.count
         newPlaylist["type"] = playlist.type
         newPlaylist["isRemoved"] = false

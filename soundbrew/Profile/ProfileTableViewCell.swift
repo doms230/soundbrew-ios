@@ -276,6 +276,7 @@ class ProfileTableViewCell: UITableViewCell {
             
             self.addSubview(displayNameLabel)
             displayNameLabel.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)
+            displayNameLabel.numberOfLines = 1 
             displayNameLabel.snp.makeConstraints { (make) -> Void in
                 make.centerY.equalTo(profileImage)
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)

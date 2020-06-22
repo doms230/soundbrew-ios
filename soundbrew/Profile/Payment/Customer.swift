@@ -107,6 +107,9 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print("get Cusomter - Customer.swift: \(error)")
+            }
              if let user = object {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
@@ -160,6 +163,9 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             query.cachePolicy = .networkElseCache
             query.findObjectsInBackground {
                 (objects: [PFObject]?, error: Error?) -> Void in
+                if let error = error {
+                    print("get friends - Customer.swift: \(error)")
+                }
                 if let objects = objects {
                     var friendObjectIds = [String]()
                     for object in objects {

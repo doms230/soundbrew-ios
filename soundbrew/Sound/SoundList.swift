@@ -216,6 +216,12 @@ class SoundList: NSObject, PlayerDelegate {
             alert.addAction(UIAlertAction(title: "Remove from Playlist", style: .default, handler: { action in
                 self.removeFromPlaylistAlert(playlist, sound: sound, row: row)
             }))
+        } else {
+            alert.addAction(UIAlertAction(title: "Add To Playlist", style: .default, handler: { action in
+                let modal = PlaylistViewController()
+                modal.sound = sound
+                self.target.present(modal, animated: true, completion: nil)
+            }))
         }
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
@@ -348,6 +354,7 @@ class SoundList: NSObject, PlayerDelegate {
             menuAlert.addAction(UIAlertAction(title: localizedReport, style: .default, handler: { action in
                 let newReport = PFObject(className: "Report")
                 newReport["userId"] = currentUserId
+                newReport["user"] = PFUser.current()
                 newReport["soundId"] = soundId
                 newReport.saveEventually {
                     (success: Bool, error: Error?) in
@@ -460,6 +467,7 @@ class SoundList: NSObject, PlayerDelegate {
         query.whereKey("playlistId", equalTo: playlistId)
         query.limit = 50
         query.addDescendingOrder("createdAt")
+        query.whereKey("isRemoved", equalTo: false)
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
@@ -474,7 +482,7 @@ class SoundList: NSObject, PlayerDelegate {
                 self.loadSounds(self.descendingOrder, postIds: self.playlistIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
                 
             } else {
-                print("Error: \(error!)")
+                print("Load Playlist Sounds- Soundlist.swift \(error)")
             }
         }
     }
@@ -485,7 +493,7 @@ class SoundList: NSObject, PlayerDelegate {
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
             if let error = error {
-                print(error)
+                print("loadSOund- SoundList.swift \(error)")
                 
             } else if let object = object {
                 if isForYouPage {
@@ -516,6 +524,9 @@ class SoundList: NSObject, PlayerDelegate {
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
+            if let error = error {
+                print("load last like - Sound list: \(error)")
+            }
              if let object = object {
                 let soundId = object["soundId"] as! String
                 self.loadSound(soundId, isForYouPage: true, isForLastSoundUserListenedTo: false)
@@ -570,6 +581,8 @@ class SoundList: NSObject, PlayerDelegate {
         }
         
         if let searchText = searchText {
+            query.whereKey("title", matchesRegex: searchText.capitalized)
+            query.whereKey("title", matchesRegex: searchText.uppercased(with: nil))
             query.whereKey("title", matchesRegex: searchText)
             query.whereKey("title", matchesRegex: searchText.lowercased())
         }
@@ -586,6 +599,9 @@ class SoundList: NSObject, PlayerDelegate {
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
+            if let error = error {
+                print("load sounds - Sound list: \(error)")
+            }
             if error == nil {
                 if let objects = objects {
                     for object in objects {
@@ -631,7 +647,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
             } else {
-                print("Error: \(error!)")
+                print("Load Collection- Soundlist.swift \(error)")
             }
         }
     }
@@ -646,6 +662,9 @@ class SoundList: NSObject, PlayerDelegate {
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadCollection = true
+            if let error = error {
+                print("load credit - Sound list: \(error)")
+            }
             if error == nil {
                 if let objects = objects {
                     for object in objects {

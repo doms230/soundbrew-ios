@@ -26,13 +26,14 @@ class Sound {
     var createdAt: Date?
     var artist: Artist?
     var tmpFile: TemporaryFile?
-    var currentUserTipDate: Date?
+   // var currentUserTipDate: Date?
+    var currentUserDidLikeSong: Bool?
     var tipCount: Int?
     var isDraft: Bool?
     var isFeatured: Bool?
     var isExclusive: Bool?
     
-    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserTipDate: Date?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?) {
+    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -46,7 +47,7 @@ class Sound {
         self.artist = artist
         self.tmpFile = tmpFile
         self.tipCount = tipCount
-        self.currentUserTipDate = currentUserTipDate
+        self.currentUserDidLikeSong = currentUserDidLikeSong
         self.isDraft = isDraft
         self.isNextUpToPlay = isNextUpToPlay
         self.creditCount = creditCount
@@ -60,7 +61,7 @@ class Sound {
             audio.getDataInBackground {
                 (audioData: Data?, error: Error?) -> Void in
                 if let error = error?.localizedDescription {
-                    print(error)
+                    print("Fetch Audio Data- Player.swift \(error)")
                     
                 } else if let audioData = audioData {
                     self.audioData = audioData
