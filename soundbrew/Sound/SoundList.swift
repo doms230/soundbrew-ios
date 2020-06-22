@@ -176,6 +176,8 @@ class SoundList: NSObject, PlayerDelegate {
                 menuAlert.addAction(UIAlertAction(title: localizedDeleteSound, style: .default, handler: { action in
                     self.deleteSong(sound.objectId!, row: row)
                     }))
+                
+                self.addToPlaylistAlert(menuAlert, sound: sound)
                     
                 let localizedCancel = NSLocalizedString("cancel", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -217,17 +219,21 @@ class SoundList: NSObject, PlayerDelegate {
                 self.removeFromPlaylistAlert(playlist, sound: sound, row: row)
             }))
         } else {
-            alert.addAction(UIAlertAction(title: "Add To Playlist", style: .default, handler: { action in
-                let modal = PlaylistViewController()
-                modal.sound = sound
-                self.target.present(modal, animated: true, completion: nil)
-            }))
+            self.addToPlaylistAlert(alert, sound: sound)
         }
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         alert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
 
         target.present(alert, animated: true, completion: nil)
+    }
+    
+    func addToPlaylistAlert(_ alert: UIAlertController, sound: Sound) {
+        alert.addAction(UIAlertAction(title: "Add To Playlist", style: .default, handler: { action in
+            let modal = PlaylistViewController()
+            modal.sound = sound
+            self.target.present(modal, animated: true, completion: nil)
+        }))
     }
     
     func removeFromPlaylistAlert(_ playlist: Playlist, sound: Sound, row: Int) {
@@ -480,9 +486,6 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 self.loadSounds(self.descendingOrder, postIds: self.playlistIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
-                
-            } else {
-                print("Load Playlist Sounds- Soundlist.swift \(error)")
             }
         }
     }
@@ -645,9 +648,6 @@ class SoundList: NSObject, PlayerDelegate {
                 if self.soundType == "collection" {
                     self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
                 }
-                
-            } else {
-                print("Load Collection- Soundlist.swift \(error)")
             }
         }
     }

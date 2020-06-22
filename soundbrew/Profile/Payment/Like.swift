@@ -27,7 +27,7 @@ class Like: NSObject {
                 (success: Bool, error: Error?) in
                   if success {
                     self.player.currentSound?.currentUserDidLikeSong = true
-                    self.likeButtonUI()
+                    self.updateLikeButton()
                     self.newMention(sound, fromUserId: fromUserId, toUserId: toUserId)
                   }
               }
@@ -64,13 +64,13 @@ class Like: NSObject {
                  } else {
                     self.player.currentSound?.currentUserDidLikeSong = false
                 }
-                self.likeButtonUI()
+                self.updateLikeButton()
                 self.player.fetchAudioFromNextSound()
             }
         }
     }
     
-    func likeButtonUI() {
+    func updateLikeButton() {
         var shouldEnableLikeSoundButton = false
         var uiImageName = "sendTip"
         if let currentUserTipDate = self.player.currentSound?.currentUserDidLikeSong {

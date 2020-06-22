@@ -47,6 +47,7 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
     let newPlaylistReuse = "newCreditReuse"
     func setUpTableView(_ dividerLine: UIView) {
         self.tableView = UITableView()
+        tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier:
@@ -98,14 +99,9 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         if indexPath.section == 0 {
             let banner = StatusBarNotificationBanner(title: "\(sound.title ?? "Selected Sound has been") added to \(playlists[indexPath.row].title ?? "selected playlist").", style: .success)
             banner.show()
+            self.checkIfUserLikedSong()
             attachSoundToPlaylist(sound.objectId ?? "", playlistId: playlists[indexPath.row].objectId ?? "")
-            //TODO: check to see if user liked song
-            /*if let currentUserDidLikeSong = self.sound.currentUserDidLikeSong {
-                if !currentUserDidLikeSong {
-                    let like = Like.shared
-                    like.newLike()
-                }
-            }*/
+            
         } else {
             let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)
             let modal = NewPlaylistViewController()
@@ -217,6 +213,54 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
                 object.saveEventually()
                 self.stopAnimating()
                 self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func checkIfUserLikedSong() {
+        if let soundId = self.sound.objectId, let userId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "Tip")
+            query.whereKey("fromUserId", equalTo: userId)
+            query.whereKey("soundId", equalTo: soundId)
+            query.cachePolicy = .networkElseCache
+            query.getFirstObjectInBackground {
+                (object: PFObject?, error: Error?) -> Void in
+                if let error = error {
+                    print("check if user liked soung - Like.swift: \(error)")
+                }
+                if object == nil {
+                    if let currentSoundId = Player.sharedInstance.currentSound?.objectId, currentSoundId == soundId {
+                        Player.sharedInstance.currentSound?.currentUserDidLikeSong = true
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+
+                    }
+                    self.newLike()
+                }
+            }
+        }
+    }
+    
+    func newLike() {
+        if let soundId = self.sound.objectId, let fromUserId = PFUser.current()?.objectId, let toUserId = sound.artist?.objectId {
+            let newPayment = PFObject(className: "Tip")
+            newPayment["fromUserId"] = fromUserId
+            newPayment["toUserId"] = toUserId
+            newPayment["soundId"] = soundId
+            newPayment.saveEventually()
+            newMention(soundId, fromUserId: fromUserId, toUserId: toUserId)
+        }
+    }
+    
+    func newMention(_ soundId: String, fromUserId: String, toUserId: String) {
+        let newMention = PFObject(className: "Mention")
+        newMention["type"] = "like"
+        newMention["fromUserId"] = fromUserId
+        newMention["toUserId"] = toUserId
+        newMention["postId"] = soundId
+        newMention.saveEventually {
+            (success: Bool, error: Error?) in
+            if success && error == nil {
+                self.uiElement.sendAlert("liked \(self.sound.title ?? "your sound")!", toUserId: toUserId, shouldIncludeName: true)
             }
         }
     }
