@@ -342,7 +342,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     func showPlayerViewController() {
         let player = Player.sharedInstance
         if player.player != nil {
-            let modal = PlayerViewController()
+            let modal = CommentViewController()
             modal.playerDelegate = self
             modal.tagDelegate = self
             self.present(modal, animated: true, completion: nil)

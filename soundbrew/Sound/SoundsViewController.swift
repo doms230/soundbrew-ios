@@ -44,8 +44,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if soundType == "playlist", let playlist = self.playlist, playlist.objectId != nil {
             let sharePlaylistButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSharePlaylistButton(_:)))
             if  let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
-                let menuButton = UIBarButtonItem(image: UIImage(named: "new_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddSoundsToPlaylistButton(_:)))
-                self.navigationItem.rightBarButtonItems = [sharePlaylistButton, menuButton]
+                let addSoundsToPlaylistButton = UIBarButtonItem(image: UIImage(named: "new_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddSoundsToPlaylistButton(_:)))
+                self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, sharePlaylistButton]
                 
             } else {
                 self.navigationItem.rightBarButtonItem = sharePlaylistButton

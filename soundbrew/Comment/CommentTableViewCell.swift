@@ -12,6 +12,7 @@ import ActiveLabel
 
 class CommentTableViewCell: UITableViewCell {
     
+    let uiElement = UIElement()
     var userImage: UIButton!
     var username: UIButton!
     var atTime: UIButton!
@@ -26,15 +27,17 @@ class CommentTableViewCell: UITableViewCell {
         label.isOpaque = true
         return label
     }()
+    
+    lazy var soundArt: UIImageView = {
+        return self.uiElement.soundbrewImageView(nil, cornerRadius: 3, backgroundColor: .black)
+    }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         let color = Color()
-        let uiElement = UIElement()
         
         let profileImageHeightWidth = 35
-
+        
         userImage = uiElement.soundbrewButton(nil, shouldShowBorder: true, backgroundColor: .white, image: UIImage(named: "profile_icon"), titleFont: nil, titleColor: .white, cornerRadius: CGFloat(profileImageHeightWidth / 2))
         self.addSubview(userImage)
         userImage.snp.makeConstraints { (make) -> Void in
@@ -42,7 +45,7 @@ class CommentTableViewCell: UITableViewCell {
             make.top.equalTo(self).offset(uiElement.topOffset)
             make.left.equalTo(self).offset(uiElement.leftOffset)
         }
-        
+
         username = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)-bold", size: 15), titleColor: .white, cornerRadius: nil)
         self.addSubview(username)
         username.snp.makeConstraints { (make) -> Void in
@@ -56,6 +59,7 @@ class CommentTableViewCell: UITableViewCell {
         comment.mentionColor = color.blue()
         comment.hashtagColor = color.blue()
         comment.mentionSelectedColor = .darkGray
+        
         comment.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(username.snp.bottom)
             make.left.equalTo(username)

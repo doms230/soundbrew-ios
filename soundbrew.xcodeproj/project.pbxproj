@@ -16,7 +16,7 @@
 		E4262A5423FC3E3200107A1D /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4262A5323FC3E3200107A1D /* MentionsViewController.swift */; };
 		E43AB28F241D7181003263C9 /* Follow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43AB28E241D7181003263C9 /* Follow.swift */; };
 		E445FC64249BCB84000A082A /* PlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC63249BCB84000A082A /* PlayerTableViewCell.swift */; };
-		E445FC66249BCF23000A082A /* PlayerV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC65249BCF23000A082A /* PlayerV2ViewController.swift */; };
+		E445FC6A249FEC70000A082A /* PlayBackControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E445FC69249FEC70000A082A /* PlayBackControl.swift */; };
 		E44A664C248C4BE1004672DC /* AccountWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664B248C4BE1004672DC /* AccountWebViewController.swift */; };
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
 		E44A665224913707004672DC /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665124913706004672DC /* Playlist.swift */; };
@@ -53,7 +53,6 @@
 		F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */; };
 		F2E6E4F422A591FE00B4537D /* TemporaryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */; };
 		F2EA6F4E220B630B007FA614 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4D220B630B007FA614 /* Player.swift */; };
-		F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */; };
 		F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */; };
 		F2EA85752244110B005D6153 /* SoundList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EA85742244110B005D6153 /* SoundList.swift */; };
 		F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F122D822FBCA50002DA196 /* SearchViewController.swift */; };
@@ -160,7 +159,7 @@
 		E4262A5323FC3E3200107A1D /* MentionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		E43AB28E241D7181003263C9 /* Follow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follow.swift; sourceTree = "<group>"; };
 		E445FC63249BCB84000A082A /* PlayerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTableViewCell.swift; sourceTree = "<group>"; };
-		E445FC65249BCF23000A082A /* PlayerV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerV2ViewController.swift; sourceTree = "<group>"; };
+		E445FC69249FEC70000A082A /* PlayBackControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBackControl.swift; sourceTree = "<group>"; };
 		E44A664B248C4BE1004672DC /* AccountWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountWebViewController.swift; sourceTree = "<group>"; };
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
 		E44A665124913706004672DC /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
@@ -205,7 +204,6 @@
 		F2E5081B21FFC5A200985E34 /* SoundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundsViewController.swift; sourceTree = "<group>"; };
 		F2E6E4F322A591FE00B4537D /* TemporaryFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemporaryFile.swift; sourceTree = "<group>"; };
 		F2EA6F4D220B630B007FA614 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		F2EA85742244110B005D6153 /* SoundList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundList.swift; sourceTree = "<group>"; };
 		F2F122D822FBCA50002DA196 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -418,9 +416,8 @@
 			isa = PBXGroup;
 			children = (
 				F2EA6F4D220B630B007FA614 /* Player.swift */,
+				E445FC69249FEC70000A082A /* PlayBackControl.swift */,
 				E445FC63249BCB84000A082A /* PlayerTableViewCell.swift */,
-				F2EA6F4F220B6411007FA614 /* PlayerViewController.swift */,
-				E445FC65249BCF23000A082A /* PlayerV2ViewController.swift */,
 				F2EA6F52220BEAF4007FA614 /* MiniPlayerView.swift */,
 			);
 			path = Player;
@@ -785,7 +782,6 @@
 				E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */,
 				E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
-				F2EA6F50220B6411007FA614 /* PlayerViewController.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */,
 				E4C9DCEF23E10FE6003835E5 /* CommentTableViewCell.swift in Sources */,
@@ -813,7 +809,6 @@
 				E445FC64249BCB84000A082A /* PlayerTableViewCell.swift in Sources */,
 				F2F8B99121DBEF140024AFB6 /* SoundListTableViewCell.swift in Sources */,
 				E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */,
-				E445FC66249BCF23000A082A /* PlayerV2ViewController.swift in Sources */,
 				F2F8B9A021DBEF640024AFB6 /* ProfileTableViewCell.swift in Sources */,
 				F268992B21753A3B00C21663 /* Tag.swift in Sources */,
 				F2FB14CA22CBFB0700ED157E /* SettingsViewController.swift in Sources */,
@@ -822,6 +817,7 @@
 				E4C9DCF123E11018003835E5 /* CommentViewController.swift in Sources */,
 				F26898A2215B2C9100C21663 /* ChooseTagsViewController.swift in Sources */,
 				F28A9862222FA5F200C96EED /* EditBioViewController.swift in Sources */,
+				E445FC6A249FEC70000A082A /* PlayBackControl.swift in Sources */,
 				E425D7C723C2836A0031DB0B /* Credit.swift in Sources */,
 				E43AB28F241D7181003263C9 /* Follow.swift in Sources */,
 				F2F122D922FBCA50002DA196 /* SearchViewController.swift in Sources */,
