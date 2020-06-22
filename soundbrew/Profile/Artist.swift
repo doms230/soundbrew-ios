@@ -54,7 +54,7 @@ class Artist {
         self.priceId = priceId
     }
     
-    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: CommentTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
+    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: PlayerTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
         let query = PFQuery(className: "_User")
        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: self.objectId) {

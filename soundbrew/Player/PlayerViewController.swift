@@ -34,7 +34,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         if player.currentSound != nil {
-            playBackControl = PlayBackControl(self, textView: textView)
             setupTopView()
             setupNotificationCenter()
         } else {
@@ -51,6 +50,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     }
     @objc func didReceiveSoundUpdate() {
         self.tableView.reloadData()
+        //self.loadCredits()
         loadComments()
         
         if let player = self.player.player, let atTime = self.didPressAtTime {
@@ -67,7 +67,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                     keyboardHeight = keyboardHeight - view.safeAreaInsets.bottom
                 }
             }
-            textViewBottomConstraint.constant = -keyboardHeight - 20
+            textViewBottomConstraint.constant = -keyboardHeight - 8
             view.layoutIfNeeded()
         } else {
             print("dismissed")
@@ -115,7 +115,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     //mark: textview
     var isSearchingForUserToMention = false
     var searchUsers = [Artist]()
-    private var inputToolbar: UIView!
+    private var inputToolBar: UIView!
     private var textView = GrowingTextView()
     var isTextViewEditing = false
     private var textViewBottomConstraint: NSLayoutConstraint!
@@ -128,16 +128,16 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
         let formattedCurrentTime = self.uiElement.formatTime(Double(self.atTime))
 
-        inputToolbar = UIView()
-        inputToolbar.backgroundColor = color.black()
-        inputToolbar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(inputToolbar)
+        inputToolBar = UIView()
+        inputToolBar.backgroundColor = color.black()
+        inputToolBar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(inputToolBar)
         
         textView.backgroundColor = color.black()
         textView.delegate = self
-        textView.layer.cornerRadius = 15
-        textView.layer.borderColor = UIColor.darkGray.cgColor
-        textView.layer.borderWidth = 1
+        //textView.layer.cornerRadius = 15
+        //textView.layer.borderColor = UIColor.darkGray.cgColor
+       // textView.layer.borderWidth = 1
         textView.maxLength = 200
         textView.maxHeight = 70
         textView.trimWhiteSpaceWhenEndEditing = true
@@ -147,7 +147,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.keyboardType = .twitter
         textView.textColor = .white
-        inputToolbar.addSubview(textView)
+        inputToolBar.addSubview(textView)
 
         let buttonWidthHeight = 35
         sendButton = UIButton(frame: CGRect(x: Int(view.frame.width) + uiElement.rightOffset - buttonWidthHeight, y: uiElement.topOffset, width: buttonWidthHeight, height: buttonWidthHeight))
@@ -158,7 +158,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         sendButton.setImage(UIImage(named: "send"), for: .normal)
         sendButton.isHidden = true
         sendButton.isEnabled = false
-        inputToolbar.addSubview(sendButton)
+        inputToolBar.addSubview(sendButton)
         
         let imageHeightWidth = 35
         let userImageView = UIImageView(frame: CGRect(x: uiElement.leftOffset, y: uiElement.topOffset, width: imageHeightWidth, height: imageHeightWidth))
@@ -169,25 +169,27 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         } else {
             userImageView.image = UIImage(named: "profile_icon")
         }
-        inputToolbar.addSubview(userImageView)
+        inputToolBar.addSubview(userImageView)
         
         // *** Autolayout ***/
-        let topConstraint = textView.topAnchor.constraint(equalTo: inputToolbar.topAnchor, constant: 8)
+        let topConstraint = textView.topAnchor.constraint(equalTo: inputToolBar.topAnchor, constant: 8)
         topConstraint.priority = UILayoutPriority(999)
         NSLayoutConstraint.activate([
-            inputToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            inputToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            inputToolbar.bottomAnchor.constraint(equalTo: playBackControl!.playBackButton.topAnchor),
+            inputToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            inputToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            inputToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            //inputToolBar.bottomAnchor.constraint(equalTo: playBackControl!.playBackButton.topAnchor),
             topConstraint
         ])
         
-        textViewBottomConstraint = textView.bottomAnchor.constraint(equalTo: inputToolbar.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        textViewBottomConstraint = textView.bottomAnchor.constraint(equalTo: inputToolBar.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         NSLayoutConstraint.activate([
             textView.leadingAnchor.constraint(equalTo: userImageView.safeAreaLayoutGuide.trailingAnchor, constant: 15),
             textView.trailingAnchor.constraint(equalTo: sendButton.safeAreaLayoutGuide.leadingAnchor, constant: -15),
             textViewBottomConstraint
             ])
         
+        playBackControl = PlayBackControl(self, textView: textView, inputToolBar: inputToolBar)
         setUpTableView()
     }
     
@@ -285,7 +287,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             //player view
             self.tableView.register(PlayerTableViewCell.self, forCellReuseIdentifier: self.playerReuse)
             //comment view
-            self.tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: self.commentReuse)
+            self.tableView.register(PlayerTableViewCell.self, forCellReuseIdentifier: self.commentReuse)
             self.tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: self.noSoundsReuse)
             self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.searchProfileReuse)
             self.tableView.backgroundColor = self.color.black()
@@ -296,10 +298,12 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 make.top.equalTo(self.dismissButton.snp.bottom)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
-                make.bottom.equalTo(self.inputToolbar.snp.top)
+                make.bottom.equalTo(self.playBackControl!.playBackCurrentTime.snp.top).offset(self.uiElement.bottomOffset)
+               // make.bottom.equalTo(self.inputToolBar.snp.top)
             }
         }
         loadComments()
+       // self.loadCredits()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -404,8 +408,8 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
-    func commentCell(_ indexPath: IndexPath) -> CommentTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: commentReuse) as! CommentTableViewCell
+    func commentCell(_ indexPath: IndexPath) -> PlayerTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: commentReuse) as! PlayerTableViewCell
 
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
@@ -433,6 +437,16 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             cell.comment.handleMentionTap {userHandle in
                 self.loadArtistFromUsername(userHandle, commentId: nil)
             }
+            cell.comment.handleHashtagTap { hashtag in
+                if let tagDelegate = self.tagDelegate {
+                    let tagObject = Tag(objectId: nil, name: hashtag, count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+                    var chosenTags = [Tag]()
+                    chosenTags.append(tagObject)
+                    self.dismiss(animated: true, completion: {() in
+                        tagDelegate.receivedTags(chosenTags)
+                    })
+                }
+            }
             
             let atTime = self.uiElement.formatTime(Double(comment.atTime))
             cell.atTime.setTitle("\(atTime)", for: .normal)
@@ -457,7 +471,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     
     func handleDismissal(_ artist: Artist) {
         if let playerDelegate = self.playerDelegate {
-            self.dismiss(animated: false, completion: {() in
+            self.dismiss(animated: true, completion: {() in
                 playerDelegate.selectedArtist(artist)
             })
         }
@@ -606,6 +620,35 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    var soundCredits = [Credit]()
+    func loadCredits() {
+        if let sound = player.currentSound {
+            self.soundCredits.removeAll()
+
+            let query = PFQuery(className: "Credit")
+            query.whereKey("postId", equalTo: sound.objectId!)
+            query.cachePolicy = .networkElseCache
+            query.findObjectsInBackground {
+                (objects: [PFObject]?, error: Error?) -> Void in
+                if let objects = objects {
+                    for object in objects {
+                        let userId = object["userId"] as? String
+                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                        artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                        let credit = Credit(objectId: object.objectId, artist: artist, title: nil)
+                        if let title = object["title"] as? String {
+                            credit.title = title
+                        }
+                        
+                        self.soundCredits.append(credit)
+                    }
+                }
+                
+                self.loadComments()
+            }
+        }
+    }
+    
     var didLoadComments = false
     func loadComments() {
         if let sound = player.currentSound {
@@ -623,9 +666,16 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                     }
                 }
                 
-                let features = "@d_innovator (producer)"
+               /* var features = ""
 
-                let text = "\(sound.title ?? "")\n\nfeaturing \(features)\n\n\(hashtagsAsString)"
+                for credit in self.soundCredits {
+                    if features.isEmpty {
+                        features = "Featuring: "
+                    }
+                    features = "\(features), @\(credit.artist?.username ?? "unknown")(\(credit.title?.capitalized ?? "Featured")"
+                }*/
+                
+                let text = "\(sound.title ?? "")\n\(hashtagsAsString)"
                 let comment = Comment(objectId: nil, artist: soundArtist, text: text, atTime: 0, createdAt: sound.createdAt)
                 self.comments.append(comment)
             }
@@ -661,8 +711,8 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 if self.selectedCommentFromMentions != nil && !self.didLoadComments {
                      DispatchQueue.main.async {
                         self.tableView.reloadData()
-                        let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
-                        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                        //let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
+                        //self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                         self.didLoadComments = true
                     }
                 }

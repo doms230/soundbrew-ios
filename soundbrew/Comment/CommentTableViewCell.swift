@@ -1,5 +1,5 @@
 //
-//  CommentTableViewCell.swift
+//  PlayerTableViewCell.swift
 //  soundbrew
 //
 //  Created by Dominic Smith on 1/28/20.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import ActiveLabel
 
-class CommentTableViewCell: UITableViewCell {
+class PlayerTableViewCell: UITableViewCell {
     
     let uiElement = UIElement()
     var userImage: UIButton!
@@ -36,58 +36,70 @@ class CommentTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let color = Color()
         
-        let profileImageHeightWidth = 35
-        
-        userImage = uiElement.soundbrewButton(nil, shouldShowBorder: true, backgroundColor: .white, image: UIImage(named: "profile_icon"), titleFont: nil, titleColor: .white, cornerRadius: CGFloat(profileImageHeightWidth / 2))
-        self.addSubview(userImage)
-        userImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(profileImageHeightWidth)
-            make.top.equalTo(self).offset(uiElement.topOffset)
-            make.left.equalTo(self).offset(uiElement.leftOffset)
-        }
+        if reuseIdentifier == "playerReuse" {
+            self.addSubview(soundArt)
+            soundArt.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                make.height.equalTo(soundArt.snp.width)
+            }
+            
+        } else {
+            let profileImageHeightWidth = 35
+            
+            userImage = uiElement.soundbrewButton(nil, shouldShowBorder: true, backgroundColor: .white, image: UIImage(named: "profile_icon"), titleFont: nil, titleColor: .white, cornerRadius: CGFloat(profileImageHeightWidth / 2))
+            self.addSubview(userImage)
+            userImage.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(profileImageHeightWidth)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
 
-        username = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)-bold", size: 15), titleColor: .white, cornerRadius: nil)
-        self.addSubview(username)
-        username.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(userImage)
-            make.left.equalTo(userImage.snp.right).offset(uiElement.leftOffset)
-        }
-        
-        self.addSubview(comment)
-        comment.font = UIFont(name: uiElement.mainFont, size: 15)
-        comment.textColor = .white
-        comment.mentionColor = color.blue()
-        comment.hashtagColor = color.blue()
-        comment.mentionSelectedColor = .darkGray
-        
-        comment.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(username.snp.bottom)
-            make.left.equalTo(username)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
-        }
-        
-        date = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
-        self.addSubview(date)
-        date.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(comment.snp.bottom).offset(uiElement.elementOffset)
-            make.left.equalTo(comment)
-            make.bottom.equalTo(self)
-        }
-        
-        replyButton = uiElement.soundbrewButton("Reply", shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 15), titleColor: .darkGray, cornerRadius: nil)
-        self.addSubview(replyButton)
-        replyButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(date)
-            make.left.equalTo(date.snp.right).offset(uiElement.leftOffset)
-            make.bottom.equalTo(date)
-        }
+            username = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)-bold", size: 15), titleColor: .white, cornerRadius: nil)
+            self.addSubview(username)
+            username.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(userImage)
+                make.left.equalTo(userImage.snp.right).offset(uiElement.leftOffset)
+            }
+            
+            self.addSubview(comment)
+            comment.font = UIFont(name: uiElement.mainFont, size: 15)
+            comment.textColor = .white
+            comment.mentionColor = color.blue()
+            comment.hashtagColor = color.blue()
+            comment.mentionSelectedColor = .darkGray
+            
+            comment.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(username.snp.bottom)
+                make.left.equalTo(username)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+            }
+            
+            date = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
+            self.addSubview(date)
+            date.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(comment.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(comment)
+                make.bottom.equalTo(self)
+            }
+            
+            replyButton = uiElement.soundbrewButton("Reply", shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 15), titleColor: .darkGray, cornerRadius: nil)
+            self.addSubview(replyButton)
+            replyButton.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(date)
+                make.left.equalTo(date.snp.right).offset(uiElement.leftOffset)
+                make.bottom.equalTo(date)
+            }
 
-        atTime = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 15), titleColor: color.blue(), cornerRadius: nil)
-        self.addSubview(atTime)
-        atTime.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(date)
-            make.right.equalTo(self).offset(uiElement.rightOffset)
-            make.bottom.equalTo(date)
+            atTime = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 15), titleColor: color.blue(), cornerRadius: nil)
+            self.addSubview(atTime)
+            atTime.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(date)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(date)
+            }
         }
     }
     

@@ -15,10 +15,12 @@ class PlayBackControl {
     var isTextViewEditing = false 
     var atTime: Float!
     var textView: GrowingTextView?
+    var inputToolBar: UIView!
     
-    init(_ viewController: UIViewController, textView: GrowingTextView) {
+    init(_ viewController: UIViewController, textView: GrowingTextView, inputToolBar: UIView) {
         self.viewController = viewController
         self.textView = textView
+        self.inputToolBar = inputToolBar
         attachPlaybackControlsToView()
         setupPlaybackControls()
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
@@ -136,13 +138,76 @@ class PlayBackControl {
             break
         }
         
+        playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(playBackButton)
+        playBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.centerX.equalTo(self.viewController.view)
+            make.bottom.equalTo(self.inputToolBar.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        self.viewController.view.addSubview(loadSoundSpinner)
+        loadSoundSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            make.top.equalTo(playBackButton)
+            make.centerX.equalTo(self.viewController.view)
+        }
+        
+        goBackButton.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(goBackButton)
+        goBackButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(35)
+            make.centerY.equalTo(playBackButton)
+            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
+        }
+        
+        skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(skipButton)
+        skipButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(35)
+            make.centerY.equalTo(playBackButton)
+            make.left.equalTo(playBackButton.snp.right).offset(uiElement.leftOffset)
+        }
+        
+        likeSoundButton.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(likeSoundButton)
+        likeSoundButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.centerY.equalTo(self.playBackButton)
+            make.right.equalTo(self.viewController.view).offset(uiElement.rightOffset)
+        }
+        
+        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(shareButton)
+        shareButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(25)
+            make.centerY.equalTo(self.playBackButton)
+            make.left.equalTo(self.viewController.view).offset(uiElement.leftOffset)
+        }
+        
+        repeatButton.addTarget(self, action: #selector(self.didPressRepeatButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(repeatButton)
+        repeatButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(20)
+            make.centerY.equalTo(self.playBackButton)
+            make.left.equalTo(shareButton.snp.right).offset(uiElement.leftOffset + 20)
+        }
+        
+        shuffleButton.addTarget(self, action: #selector(self.didPressShuffleButton(_:)), for: .touchUpInside)
+        self.viewController.view.addSubview(shuffleButton)
+        shuffleButton.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(20)
+            make.centerY.equalTo(self.playBackButton)
+            make.right.equalTo(likeSoundButton.snp.left).offset(uiElement.rightOffset - 20)
+        }
+        
         //
         playBackSlider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
         self.viewController.view.addSubview(playBackSlider)
         playBackSlider.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.viewController.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.viewController.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.viewController.view).offset(bottomOffsetValue)
+            make.bottom.equalTo(self.playBackButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         self.viewController.view.addSubview(playBackCurrentTime)
@@ -155,69 +220,6 @@ class PlayBackControl {
         playBackTotalTime.snp.makeConstraints { (make) -> Void in
             make.right.equalTo(self.viewController.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(playBackCurrentTime)
-        }
-        
-        playBackButton.addTarget(self, action: #selector(self.didPressPlayBackButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(playBackButton)
-        playBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(60)
-            make.centerX.equalTo(self.viewController.view)
-            make.bottom.equalTo(self.playBackCurrentTime.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        self.viewController.view.addSubview(loadSoundSpinner)
-        loadSoundSpinner.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(60)
-            make.top.equalTo(playBackButton)
-            make.centerX.equalTo(self.viewController.view)
-        }
-        
-        goBackButton.addTarget(self, action: #selector(didPressGoBackButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(goBackButton)
-        goBackButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.centerY.equalTo(playBackButton)
-            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
-        }
-        
-        skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(skipButton)
-        skipButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(45)
-            make.centerY.equalTo(playBackButton)
-            make.left.equalTo(playBackButton.snp.right).offset(uiElement.leftOffset)
-        }
-        
-        likeSoundButton.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(likeSoundButton)
-        likeSoundButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.centerY.equalTo(self.playBackButton)
-            make.right.equalTo(self.viewController.view).offset(uiElement.rightOffset)
-        }
-        
-        shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(shareButton)
-        shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(30)
-            make.centerY.equalTo(self.playBackButton)
-            make.left.equalTo(self.viewController.view).offset(uiElement.leftOffset)
-        }
-        
-        repeatButton.addTarget(self, action: #selector(self.didPressRepeatButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(repeatButton)
-        repeatButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.centerY.equalTo(self.playBackButton)
-            make.left.equalTo(shareButton.snp.right).offset(uiElement.leftOffset + 5)
-        }
-        
-        shuffleButton.addTarget(self, action: #selector(self.didPressShuffleButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(shuffleButton)
-        shuffleButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.centerY.equalTo(self.playBackButton)
-            make.right.equalTo(likeSoundButton.snp.left).offset(uiElement.rightOffset - 5)
         }
     }
     

@@ -149,7 +149,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case "comment":
-                let commentModal = CommentViewController()
+                let commentModal = PlayerViewController()
                 if let mentionSound = mention.sound {
                     commentModal.playerDelegate = self
                    // commentModal.sound = mentionSound
@@ -160,6 +160,9 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     let player = Player.sharedInstance
                     if let currentSound = player.currentSound, currentSound.objectId! != mentionSound.objectId! {
                         player.pause()
+                        player.currentSound = mentionSound
+                        player.sendSoundUpdateToUI()
+                        player.prepareToPlaySound(mentionSound, shouldPlay: true)
                     }
                 }
                 self.present(commentModal, animated: true, completion: nil)

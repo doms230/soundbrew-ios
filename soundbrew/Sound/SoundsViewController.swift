@@ -68,6 +68,39 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "showProfile":
+            soundList.prepareToShowSelectedArtist(segue)
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        case "showSounds":
+            let viewController = segue.destination as! SoundsViewController
+            viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
+            viewController.soundType = "discover"
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = self.selectedTagFromPlayerView.name
+            navigationItem.backBarButtonItem = backItem
+            break
+            
+        case "showSearch":
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+            
+            let viewController = segue.destination as! SearchViewController
+            viewController.playlist = playlist
+            break
+            
+        default:
+            break
+        }
+    }
+    
     @objc func didPressSharePlaylistButton(_ sender: UIBarButtonItem) {
         self.uiElement.createDynamicLink(nil, artist: nil, playlist: self.playlist, target: self)
     }
@@ -113,39 +146,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func didReceiveFriendsLoaded() {
         showSoundList()
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case "showProfile":
-            soundList.prepareToShowSelectedArtist(segue)
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showSounds":
-            let viewController = segue.destination as! SoundsViewController
-            viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
-            viewController.soundType = "discover"
-            
-            let backItem = UIBarButtonItem()
-            backItem.title = self.selectedTagFromPlayerView.name
-            navigationItem.backBarButtonItem = backItem
-            break
-            
-        case "showSearch":
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-            
-            let viewController = segue.destination as! SearchViewController
-            viewController.playlist = playlist
-            break
-            
-        default:
-            break 
-        }
     }
     
     func showSoundList() {
@@ -376,6 +376,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var selectedTagFromPlayerView: Tag!
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tags = chosenTags {
+            print(tags)
             self.selectedTagFromPlayerView = tags[0]
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
