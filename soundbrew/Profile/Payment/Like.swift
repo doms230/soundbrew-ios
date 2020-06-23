@@ -35,15 +35,17 @@ class Like: NSObject {
     }
     
     func newMention(_  sound: Sound, fromUserId: String, toUserId: String) {
-        let newMention = PFObject(className: "Mention")
-        newMention["type"] = "like"
-        newMention["fromUserId"] = fromUserId
-        newMention["toUserId"] = toUserId
-        newMention["postId"] = sound.objectId
-        newMention.saveEventually {
-            (success: Bool, error: Error?) in
-            if success && error == nil {
-                self.uiElement.sendAlert("liked \(sound.title ?? "your sound")!", toUserId: toUserId, shouldIncludeName: true)
+        if fromUserId != toUserId {
+            let newMention = PFObject(className: "Mention")
+            newMention["type"] = "like"
+            newMention["fromUserId"] = fromUserId
+            newMention["toUserId"] = toUserId
+            newMention["postId"] = sound.objectId
+            newMention.saveEventually {
+                (success: Bool, error: Error?) in
+                if success && error == nil {
+                    self.uiElement.sendAlert("liked \(sound.title ?? "your sound")!", toUserId: toUserId, shouldIncludeName: true)
+                }
             }
         }
     }

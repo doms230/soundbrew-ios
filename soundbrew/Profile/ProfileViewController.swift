@@ -75,27 +75,28 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 break
                 
             case "showSounds":
-                if let indexPath = tableView.indexPathForSelectedRow, let title = self.artistPlaylists[indexPath.row].title, let userId = profileArtist?.objectId {
-                    
-                    let backItem = UIBarButtonItem()
-                    backItem.title = title
-                    navigationItem.backBarButtonItem = backItem
-                    
-                    let viewController = segue.destination as! SoundsViewController
-                    
-                    if indexPath.section == 2 {
+                let backItem = UIBarButtonItem()
+                                
+                let viewController = segue.destination as! SoundsViewController
+                
+                if let indexPath = tableView.indexPathForSelectedRow {
+                    if indexPath.section == 2, let title = self.artistPlaylists[indexPath.row].title {
+                        backItem.title = title
                         viewController.soundType = "playlist"
                         viewController.playlist = self.artistPlaylists[indexPath.row]
-                    } else if indexPath.section == 3 {
+                    } else if indexPath.section == 3, let userId = profileArtist?.objectId, let username = profileArtist?.username {
                         if indexPath.row == 0 {
+                            backItem.title = "\(username)'s Uploads"
                             viewController.soundType = "uploads"
                             viewController.userId = userId
                         } else {
+                            backItem.title = "\(username)'s Likes"
                             viewController.soundType = "collection"
                             viewController.userId = userId
                         }
                     }
                 }
+                navigationItem.backBarButtonItem = backItem
                 break
                 
             case "showFollowerFollowing":

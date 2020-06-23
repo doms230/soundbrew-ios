@@ -235,7 +235,6 @@ class PlayBackControl {
         sender.isEnabled = false
         let like = Like.shared
         like.target = self.viewController
-       // like.sound = self.player.currentSound
         like.likeSoundButton = sender
         like.newLike()
     }

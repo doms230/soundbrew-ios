@@ -252,15 +252,17 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func newMention(_ soundId: String, fromUserId: String, toUserId: String) {
-        let newMention = PFObject(className: "Mention")
-        newMention["type"] = "like"
-        newMention["fromUserId"] = fromUserId
-        newMention["toUserId"] = toUserId
-        newMention["postId"] = soundId
-        newMention.saveEventually {
-            (success: Bool, error: Error?) in
-            if success && error == nil {
-                self.uiElement.sendAlert("liked \(self.sound.title ?? "your sound")!", toUserId: toUserId, shouldIncludeName: true)
+        if fromUserId != toUserId {
+            let newMention = PFObject(className: "Mention")
+            newMention["type"] = "like"
+            newMention["fromUserId"] = fromUserId
+            newMention["toUserId"] = toUserId
+            newMention["postId"] = soundId
+            newMention.saveEventually {
+                (success: Bool, error: Error?) in
+                if success && error == nil {
+                    self.uiElement.sendAlert("liked \(self.sound.title ?? "your sound")!", toUserId: toUserId, shouldIncludeName: true)
+                }
             }
         }
     }
