@@ -143,7 +143,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             tableView.cellForRow(at: indexPath)?.isSelected = false
             let mention = self.mentions[indexPath.row]
             switch mention.type {
-            case "like", "follow":
+            case "like", "follow", "gift":
                 selectedArtist = mentions[indexPath.row].artist
                 self.performSegue(withIdentifier: "showProfile", sender: self)
                 break
@@ -166,10 +166,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     }
                 }
                 self.present(commentModal, animated: true, completion: nil)
-                break
-                
-            case "gift":
-                //TODO: show option to reply to message
                 break
                 
             default:
@@ -211,15 +207,24 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         case "comment":
             var comment = ""
             if let commentText = mention.comment?.text {
-                comment = commentText
+                comment = "'\(commentText)'"
             }
-            cell.displayNameLabel.text = "\(name) commented '\(comment)'"
+            cell.displayNameLabel.text = "\(name) commented \(comment)"
             cell.displayNameLabel.numberOfLines = 2
             break
             
         case "gift":
-            //if let message = mentio
+            var amountAsString = ""
+            if let amount = mention.amount {
+                amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(amount, currency: "$")
+            }
+                        
+            var message = ""
+            if let messageText = mention.message {
+                message = "'\(messageText)'"
+            }
             
+            cell.displayNameLabel.text = "\(name) gifted you \(amountAsString): \(message)"
             break
             
         default:
