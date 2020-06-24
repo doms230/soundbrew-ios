@@ -8,7 +8,6 @@
 
 import UIKit
 import Parse
-import AppCenterAnalytics
 
 class PeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
@@ -73,7 +72,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     @objc func didPressExitButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
-            MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "Exit Button", "Description": "User Exited PlayerViewController."])
         }
     }
     
@@ -277,7 +275,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             } else if loadType == "following" || loadType == "followers" {
                 selectedArtist = artist
                 self.performSegue(withIdentifier: "showProfile", sender: self)
-                MSAnalytics.trackEvent("People View Controller", withProperties: ["Button" : "Did Select Person"])
             } else if let playerDelegate = self.playerDelegate {
                     self.dismiss(animated: false, completion: {() in
                         playerDelegate.selectedArtist(artist)

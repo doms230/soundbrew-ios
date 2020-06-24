@@ -12,7 +12,6 @@ import AVFoundation
 import Parse
 import MediaPlayer
 import Kingfisher
-import AppCenterAnalytics
 import Alamofire
 
 class Player: NSObject, AVAudioPlayerDelegate {
@@ -159,8 +158,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func didSelectSoundAt(_ i: Int) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: i, shouldPlay: true)
-        
-        MSAnalytics.trackEvent("Player", withProperties: ["Button" : "Did Select Sound", "description": "User selected sound to play."])
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

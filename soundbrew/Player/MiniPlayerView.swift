@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import SnapKit
 import Parse
-import AppCenterAnalytics
 
 class MiniPlayerView: UIButton {
     static let sharedInstance = MiniPlayerView()
@@ -70,12 +69,10 @@ class MiniPlayerView: UIButton {
                 player.pause()
                 timer.invalidate()
                 self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-                MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Pause", "description": "User pressed pause."])
             } else {
                 player.play()
                 startTimer()
                 self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-                MSAnalytics.trackEvent("Mini Player", withProperties: ["Button" : "Play", "description": "User pressed play."])
             }
         }
         
@@ -96,7 +93,6 @@ class MiniPlayerView: UIButton {
         like.target = self.superViewController
         like.likeSoundButton = sender
         like.newLike()
-        MSAnalytics.trackEvent("PlayerViewController", withProperties: ["Button" : "TipButton", "Description": "Current User attempted to tip artist"])
     }
     
     lazy var playBackSlider: UISlider = {

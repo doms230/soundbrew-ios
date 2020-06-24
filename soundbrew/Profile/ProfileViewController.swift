@@ -14,7 +14,6 @@ import Parse
 import Kingfisher
 import SnapKit
 import SidebarOverlay
-import AppCenterAnalytics
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate {
     
@@ -32,7 +31,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     lazy var profileImage: UIImageView = {
         let image = uiElement.soundbrewImageView(nil, cornerRadius: nil, backgroundColor: nil)
-      //  image.contentMode = .scaleAspectFit
         return image
     }()
     
@@ -54,20 +52,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
-            case "showEditProfile":
-                let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
-                let backItem = UIBarButtonItem()
-                backItem.title = localizedEditProfile
-                navigationItem.backBarButtonItem = backItem
-                
-                let editProfileController = segue.destination as! EditProfileViewController
-                editProfileController.artistDelegate = self
-                break
-                
-            case "showEditSoundInfo":
-                soundList.prepareToShowSoundInfo(segue)
-                break
-                
             case "showProfile":
                 let backItem = UIBarButtonItem()
                 backItem.title = ""
@@ -75,13 +59,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 
                 let viewController = segue.destination as! ProfileViewController
                 viewController.profileArtist = selectedArtist
-                break
-                
-            case "showAddFunds":
-                let localizedAddFunds = NSLocalizedString("", comment: "")
-                let backItem = UIBarButtonItem()
-                backItem.title = localizedAddFunds
-                navigationItem.backBarButtonItem = backItem
                 break
                 
             case "showSounds":
@@ -542,11 +519,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.bio.text = bio
             }
             
-           /*if let website = artist.website {
-                cell.website.text = website 
-                cell.websiteView.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
-            }*/
-            
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
             
             cell.subscribeUserCreatePlaylistButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
@@ -621,7 +593,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc func didPressFollowUserEditProfileButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
-            self.performSegue(withIdentifier: "showEditProfile", sender: self)
+            let modal = EditProfileViewController()
+            modal.artistDelegate = self
+            self.present(modal, animated: true, completion: nil)
             break
             
         case 1:
@@ -769,8 +743,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tags = chosenTags {
             self.selectedTagFromPlayerView = tags[0]
-           // self.selectedSoundType = "discover"
-         //   self.showSoundsTitle = tags[0].name
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }

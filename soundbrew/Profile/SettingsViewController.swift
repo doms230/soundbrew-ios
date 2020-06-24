@@ -9,7 +9,6 @@
 import UIKit
 import Parse
 import SidebarOverlay
-import AppCenterAnalytics
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
@@ -172,7 +171,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 4
+            return 3
         }
         
         return 1
@@ -207,21 +206,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 2:
-                if #available(iOS 13.0, *) {
-                    if let container = self.so_containerViewController {
-                        container.isSideViewControllerPresented = false
-                            if let topView = container.topViewController as? UINavigationController {
-                                if let view = topView.topViewController as? ProfileViewController {
-                                view.performSegue(withIdentifier: "showAddFunds", sender: self)
-                                }
-                            }
-                        }
-                } else {
-                    self.uiElement.showAlert("Un-Available", message: "Adding funds to your account on iOS 12 is currently un-available. Email support@soundbrew.app for more info.", target: self)
-                }
-                break
-                
-            case 3:
                 cashout()
                 break
                 
@@ -273,15 +257,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 2:
-                if let funds = self.artist?.balance {
-                    cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(funds, currency: "$")
-                } else {
-                    cell.displayNameLabel.text = "$0.00"
-                }
-                cell.username.text = "Wallet"
-                break
-                
-            case 3:
                 if let earnings = self.artist?.earnings {
                     cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
                 } else {
@@ -301,33 +276,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     @objc func didPressShareProfileButton(_ sender: UIButton) {
         if let artist = Customer.shared.artist {
             self.uiElement.createDynamicLink(nil, artist: artist, playlist: nil, target: self)
-            
-            MSAnalytics.trackEvent("Profile View Controller", withProperties: ["Button" : "Share Profile", "description": "User pressed share profile"])
         }
     }
         
     func cashout() {
-        var currentUserEarnings = 0
-        if let earnings = self.artist?.earnings {
-            currentUserEarnings = earnings
-        }
-        
-        let oneHundredDollarsInCents = 2000
-        if currentUserEarnings >= oneHundredDollarsInCents {
-                    let alertView = UIAlertController(
-                title: "Email payment@soundbrew.app",
-                message: "We're currently handling payouts manually. Email us so we can get you paid!",
-                preferredStyle: .alert)
-            
-            let localizedCancel = NSLocalizedString("okay", comment: "")
-            let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-            alertView.addAction(cancelAction)
-            present(alertView, animated: true, completion: nil)
-            
-        } else {
-            let earningsInDollars = self.uiElement.convertCentsToDollarsAndReturnString(currentUserEarnings, currency: "$")
-            self.uiElement.showAlert("Earnings: \(earningsInDollars)", message: "Cash out is available when your earnings reach $20. There is a 15% Soundbrew fee to cash out.", target: self)
-        }
+        //TODO: show Earnings page
     }
     
     //data

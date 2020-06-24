@@ -9,7 +9,6 @@
 import UIKit
 import Stripe
 import Parse
-import AppCenterAnalytics
 import NVActivityIndicatorView
 import NotificationBannerSwift
 

@@ -11,7 +11,6 @@ import Parse
 import MobileCoreServices
 import SnapKit
 import NVActivityIndicatorView
-import AppCenterAnalytics
 
 class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate, TagDelegate {
     

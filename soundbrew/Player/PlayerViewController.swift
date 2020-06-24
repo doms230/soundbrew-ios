@@ -9,7 +9,6 @@
 import UIKit
 import Parse
 import Kingfisher
-import AppCenterAnalytics
 import SnapKit
 import GrowingTextView
 import NVActivityIndicatorView
@@ -258,8 +257,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             sendButton.isEnabled = false
             self.tableView.reloadData()
         }
-        
-        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressSendButton"])
     }
     
     //mark: sound
@@ -480,8 +477,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 didPressAtTime = comment.atTime
             }
         }
-        
-        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressAtTimeButton"])
     }
     func jumpToTime(_ player: AVAudioPlayer, atTime: Float) {
         player.currentTime = TimeInterval(atTime)
@@ -495,8 +490,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         if let artist = self.comments[sender.tag]?.artist {
             handleDismissal(artist)
         }
-        
-        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressProfileButton"])
     }
     
     @objc func didPressReplyButton(_ sender: UIButton) {
@@ -508,8 +501,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             textView.text = "@\(username) "
             textView.becomeFirstResponder()
         }
-        
-        MSAnalytics.trackEvent("Comment View Controller", withProperties: ["Button" : "didPressReplyButton"])
     }
     
     //mark: Data
@@ -528,7 +519,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 self.updateCommentCount(postId, byAmount: 1)
                 self.newMention(self.player.currentSound!.artist!.objectId, commentId: newComment.objectId!)
                 self.checkForMentions(text, commentId: newComment.objectId!)
-                MSAnalytics.trackEvent("comment added")
                 
             } else {
                 self.comments.removeLast()

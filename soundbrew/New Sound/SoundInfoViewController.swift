@@ -11,7 +11,6 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
-import AppCenterAnalytics
 import UICircularProgressRing
 import CropViewController
 
@@ -808,7 +807,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     sound.objectId = newSound.objectId
                     self.saveCredits(sound)
                     self.finishUp(true, object: newSound)
-                    MSAnalytics.trackEvent("SoundInfoViewController", withProperties: ["Button" : "New Upload"])
                 }
             } else if let error = error {
                 DispatchQueue.main.async {

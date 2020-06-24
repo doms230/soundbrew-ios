@@ -17,7 +17,7 @@
 "checkInboxTitle" = "Check Your Inbox (& Spam too)";
 "titleRequired" = "Title Required";
 "checkInboxMessage" = "Click on the link from noreply@soundbrew.app";
-"oops" = "Oops";
+"oops" = "Error";
 "resetEmailErrorMessage" = "Couldn't find an account associated with";
 "usernameOrEmail" = "Username or Email";
 "password" = "Password";

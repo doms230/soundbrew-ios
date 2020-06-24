@@ -39,77 +39,49 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationViews()
-        setupView()
-        
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let navigationController = segue.destination as? UINavigationController {
-            if segue.identifier == "showTags" {
-                let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
-                viewController.tagDelegate = self
-                viewController.tagType = tagType
-                if tagType == "price" {
-                    viewController.prices = self.availablePrices
-                }
-            }
-            
-        } else {
-            let backItem = UIBarButtonItem()
-            backItem.title = ""
-            navigationItem.backBarButtonItem = backItem
-        }
-    }
-    
-    func setupNavigationViews() {
-        let localizedDone = NSLocalizedString("done", comment: "")
-        let doneButton = UIBarButtonItem(title: localizedDone, style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-        self.navigationItem.rightBarButtonItem = doneButton
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-    }
-    
-    func setupView() {
+        
         if let currentArtist = Customer.shared.artist {
             self.artist = currentArtist
-             self.setUpTableView()
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done")
+            self.setUpTableView(topView.2)
+            
             if let accountId = currentArtist.accountId {
                 self.retreiveAccountIfo(accountId)
             }
             
         } else {
-            self.uiElement.goBackToPreviousViewController(self)
+            self.dismiss(animated: true, completion: nil)
         }
-    }
-    
-    //MARK: Button Actions
-    @objc func didPressCancelButton(_ sender: UIButton){
-        self.dismiss(animated: true, completion: nil)
+        
     }
     
     var didPressDoneButton = false
-    @objc func didPressDoneButton(_ sender: Any) {
-        self.startAnimating()
-        
-        usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
-        emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
-        websiteText.text = self.uiElement.cleanUpText(websiteText.text!, shouldLowercaseText: true)
-        
-        if emailText.text != self.artist?.email {
-            shouldUpdateEmail = true
-        }
-        
-        if validateEmail() && validateUsername() && validateWebsite() {
-            didPressDoneButton = true
-            if didFinishProcessingImage {
-                updateUserInfo()
+    @objc func didPressTopViewButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            self.startAnimating()
+            
+            usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
+            emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
+            websiteText.text = self.uiElement.cleanUpText(websiteText.text!, shouldLowercaseText: true)
+            
+            if emailText.text != self.artist?.email {
+                shouldUpdateEmail = true
             }
             
-        } else {
-            self.stopAnimating()
+            if validateEmail() && validateUsername() && validateWebsite() {
+                didPressDoneButton = true
+                if didFinishProcessingImage {
+                    updateUserInfo()
+                }
+                
+            } else {
+                self.stopAnimating()
+            }
         }
     }
     
@@ -121,7 +93,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     let privateInfoTitleReuse = "privateInfoTitleReuse"
     let editBioReuse = "editBioReuse"
     let spaceReuse = "spaceReuse"
-    func setUpTableView() {
+    func setUpTableView(_ dividerLine: UIView) {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileImageReuse)
@@ -133,8 +105,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
-        tableView.frame = view.bounds
         self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -645,21 +622,21 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         
                         customer.update()
                         
-                        //used to let give profileViewController updated profile
-                        if let artistDelegate = self.artistDelegate {
-                            artistDelegate.receivedArtist(customer.artist)
-                        }
-                        
                         DispatchQueue.main.async {
                             if self.isOnboarding {
                                 self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                             } else {
-                                self.uiElement.goBackToPreviousViewController(self)
+                                //used to let give profileViewController updated profile
+                                self.dismiss(animated: true, completion: {() in
+                                    if let artistDelegate = self.artistDelegate {
+                                        artistDelegate.receivedArtist(customer.artist)
+                                    }
+                                })
                             }
                         }
                         
                     } else if let error = error {
-                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
+                        UIElement().showAlert("Error", message: error.localizedDescription, target: self)
                     }
                 }
             }

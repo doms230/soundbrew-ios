@@ -13,7 +13,6 @@ import SCSDKCreativeKit
 import ShareInstagram
 import Alamofire
 import Kingfisher
-import AppCenterAnalytics
 import LinkPresentation
 
 class UIElement {
@@ -259,13 +258,11 @@ class UIElement {
             
             let snapchatAction = UIAlertAction(title: "Snapchat", style: .default) { (_) -> Void in
                 self.shareToSnapchat(sound)
-                MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Snapchat", "Description": "User Pressed Share to Snapchat."])
             }
             alertController.addAction(snapchatAction)
             
             let instagramAction = UIAlertAction(title: "Instagram Stories", style: .default) { (_) -> Void in
                 self.shareToInstagram(sound)
-                MSAnalytics.trackEvent("Share", withProperties: ["Button" : "Instagram Stories", "Description": "User Pressed Share to Instagram."])
             }
             alertController.addAction(instagramAction)
             
@@ -279,7 +276,6 @@ class UIElement {
             let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
             let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in
                 self.createDynamicLink(sound, artist: nil, playlist: nil, target: target)
-                MSAnalytics.trackEvent("Share", withProperties: ["Button" : "More", "Description": "User Pressed More."])
             }
             alertController.addAction(moreAction)
             

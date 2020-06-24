@@ -8,7 +8,6 @@
 
 import UIKit
 import Parse
-import AppCenterAnalytics
 
 class ForgotPasswordViewController: UIViewController {
 
@@ -94,7 +93,5 @@ class ForgotPasswordViewController: UIViewController {
                 UIElement().showAlert(localizedStringOops, message: "\(localizedStringMessage) \(emailText!)", target: self)
             }
         }
-        
-        MSAnalytics.trackEvent("Forgot Password View Controller", withProperties: ["Button" : "didPressDoneButton"])
     }
 }

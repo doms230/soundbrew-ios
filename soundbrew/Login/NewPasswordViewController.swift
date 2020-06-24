@@ -10,7 +10,6 @@ import UIKit
 import Parse
 import NVActivityIndicatorView
 import SnapKit
-import AppCenterAnalytics
 
 class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     let color = Color()

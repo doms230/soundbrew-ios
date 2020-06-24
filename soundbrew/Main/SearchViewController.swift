@@ -10,7 +10,6 @@ import UIKit
 import Parse
 import SnapKit
 import Kingfisher
-import AppCenterAnalytics
 import NotificationBannerSwift
 
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, PlayerDelegate, TagDelegate {
@@ -181,7 +180,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             } else if indexPath.section == 1 {
                 let tag = searchTags[indexPath.row]
                 showSounds(tag, soundType: "discover")
-                MSAnalytics.trackEvent("Selected Tag", withProperties: ["Tag" : "\(tag.name ?? "")"])
             } else {
                 didSelectSoundAt(row: indexPath.row)
             }
@@ -399,7 +397,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isSearchActive = true
         handleTableViewLogic()
-        MSAnalytics.trackEvent("SearchViewController", withProperties: ["Button" : "Search", "description": "User did start Searching."])
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

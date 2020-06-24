@@ -9,7 +9,6 @@
 import Parse
 import UIKit
 import SnapKit
-import AppCenterAnalytics
 
 class WelcomeViewController: UIViewController {
     override func viewDidLoad() {
@@ -179,7 +178,6 @@ class WelcomeViewController: UIViewController {
         case 0:
             isLoggingInWithApple = false
             self.performSegue(withIdentifier: "showSignup", sender: self)
-            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign Up", "description": "user pressed sign up button"])
             break
             
         case 1:
@@ -199,7 +197,6 @@ class WelcomeViewController: UIViewController {
             
         case 3:
             self.performSegue(withIdentifier: "showSignin", sender: self)
-            MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Sign In Button"])
             break
             
         default:
@@ -209,6 +206,5 @@ class WelcomeViewController: UIViewController {
     
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
-        MSAnalytics.trackEvent("Welcome View Controller", withProperties: ["Button" : "Terms Button"])
     }
 }
