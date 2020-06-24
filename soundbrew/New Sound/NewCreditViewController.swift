@@ -25,8 +25,8 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
-        setUpTableView(dividerLine)
+        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        setUpTableView(topView.2)
     }
     
     @objc func didPressDoneButton(_ sender: UIBarButtonItem) {

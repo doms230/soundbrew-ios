@@ -28,7 +28,8 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationController?.navigationBar.tintColor = .white
         
         if let currentUserId = PFUser.current()?.objectId {
-            dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressDoneButton(_:)), doneButtonTitle: "")
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressDoneButton(_:)), doneButtonTitle: "")
+            dividerLine = topView.2
             loadPlaylists(currentUserId)
         } else {
             self.dismiss(animated: true, completion: nil)

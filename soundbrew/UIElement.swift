@@ -499,7 +499,7 @@ class UIElement {
         return view
     }
         
-    func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String) -> UIView {
+    func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String) -> (UIButton, UIButton, UIView) {
         let cancelButton = UIButton()
         cancelButton.setTitle("Cancel", for: .normal)
         cancelButton.addTarget(target, action: action, for: .touchUpInside)
@@ -534,7 +534,7 @@ class UIElement {
         }
         
         //return view so that the next view can set constraints 
-        return dividerLine
+        return (cancelButton, doneButton, dividerLine)
     }
 }
 

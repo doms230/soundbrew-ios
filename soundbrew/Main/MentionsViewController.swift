@@ -114,7 +114,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.headerTitle.text = ""
                 cell.artistButton.isHidden = true
             } else {
-                cell.headerTitle.text = "People who like your music, follow you, or mention you in a comment will appear here!"
+                cell.headerTitle.text = "Any mentions such as likes or follows will appear here!"
                 cell.artistButton.setTitle("Upload Sounds", for: .normal)
                 cell.artistButton.addTarget(self, action: #selector(self.didPressDiscoverButton(_:)), for: .touchUpInside)
                 cell.artistButton.isHidden = false
@@ -168,6 +168,10 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.present(commentModal, animated: true, completion: nil)
                 break
                 
+            case "gift":
+                //TODO: show option to reply to message
+                break
+                
             default:
                 break
             }
@@ -213,6 +217,11 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             cell.displayNameLabel.numberOfLines = 2
             break
             
+        case "gift":
+            //if let message = mentio
+            
+            break
+            
         default:
             break
         }
@@ -249,18 +258,40 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             if let objects = objects {
                 for object in objects {
                     let fromUserId = object["fromUserId"] as! String
-                    let mention = Mention(object.createdAt!, artist: nil, comment: nil, sound: nil, type: nil, fromUserId: fromUserId, objectId: object.objectId!)
+                    let mention = Mention(object.objectId, createdAt: object.createdAt!, type: nil, fromUserId: fromUserId, artist: nil, sound: nil, comment: nil, message: nil, amount: nil)
                     
-                    if let commentId = object["commentId"] as? String {
-                        mention.type = "comment"
-                        self.loadComment(commentId, mention: mention)
-                    } else if let postId = object["postId"] as? String {
-                        mention.type = "like"
-                        self.loadPost(postId, mention: mention)
-                        
-                    } else {
-                        mention.type = "follow"
-                        self.loadArtist(mention)
+                    if let type = object["type"] as? String {
+                        mention.type = type
+                        switch type {
+                            case "comment":
+                                if let commentId = object["commentId"] as? String {
+                                    self.loadComment(commentId, mention: mention)
+                                }
+                                break
+                                
+                            case "like":
+                                if let postId = object["postId"] as? String {
+                                    self.loadPost(postId, mention: mention)
+                                }
+                                break
+                                
+                            case "follow":
+                                self.loadArtist(mention)
+                                break
+                                
+                            case "gift":
+                                if let amount = object["amount"] as? Int {
+                                    mention.amount = amount
+                                }
+                                if let message = object["message"] as? String {
+                                    mention.message = message
+                                }
+                                self.loadArtist(mention)
+                                break
+                            
+                        default:
+                            break
+                        }
                     }
                 }
                 
@@ -369,19 +400,23 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
 class Mention {
     var objectId: String!
     var createdAt: Date!
-    var artist: Artist?
-    var comment: Comment?
-    var sound: Sound?
     var type: String?
     var fromUserId: String!
+    var artist: Artist?
+    var sound: Sound?
+    var comment: Comment?
+    var message: String?
+    var amount: Int?
     
-    init(_ createdAt: Date, artist: Artist?, comment: Comment?, sound: Sound?, type: String?, fromUserId: String!, objectId: String) {
+    init(_ objectId: String!, createdAt: Date!, type: String?, fromUserId: String!, artist: Artist?, sound: Sound?, comment: Comment?, message: String?, amount: Int?) {
+        self.objectId = objectId
         self.createdAt = createdAt
-        self.artist = artist
-        self.comment = comment
-        self.sound = sound
         self.type = type
         self.fromUserId = fromUserId
-        self.objectId = objectId
+        self.artist = artist
+        self.sound = sound
+        self.comment = comment
+        self.message = message
+        self.amount = amount
     }
 }

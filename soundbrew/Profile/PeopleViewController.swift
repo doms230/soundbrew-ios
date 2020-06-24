@@ -95,7 +95,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         navigationController?.navigationBar.tintColor = .white
         
         if isAddingNewCredit || sound != nil {
-            dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressExitButton(_:)), doneButtonTitle: "")
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressExitButton(_:)), doneButtonTitle: "")
+            dividerLine = topView.2
         }
     }
     

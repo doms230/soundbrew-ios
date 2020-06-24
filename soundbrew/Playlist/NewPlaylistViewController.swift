@@ -53,8 +53,8 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 if playlist.objectId != nil {
                     doneButtonTitle = "Update Playlist"
                 }
-                let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle)
-                setUpTableView(dividerLine)
+                let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle)
+                setUpTableView(topView.2)
             }
             
         } else {

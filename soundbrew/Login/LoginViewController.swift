@@ -25,13 +25,29 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
     
     var signupHidden = true
     
-    var usernameText: UITextField!
-    var usernameLabel: UILabel!
-    var usernameDividerLine: UIView!
+    lazy var usernameText: UITextField = {
+        return self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: false)
+    }()
     
-    var passwordText: UITextField!
-    var passwordLabel: UILabel!
-    var passwordDividerLine: UIView!
+    lazy var usernameLabel: UILabel = {
+        return self.uiElement.soundbrewLabel("Username", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+    }()
+    
+    lazy var usernameDividerLine: UIView = {
+        return self.uiElement.soundbrewDividerLine()
+    }()
+    
+    lazy var passwordText: UITextField = {
+        return self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: true)
+    }()
+    
+    lazy var passwordLabel: UILabel = {
+       return self.uiElement.soundbrewLabel("Password", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+    }()
+    
+    lazy var passwordDividerLine: UIView = {
+       return self.uiElement.soundbrewDividerLine()
+    }()
     
     lazy var signButton: UIButton = {
         let localizedSignin = NSLocalizedString("signin", comment: "")
@@ -71,7 +87,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        passwordLabel = self.uiElement.soundbrewLabel("Password", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
         self.view.addSubview(passwordLabel)
         passwordLabel.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(100)
@@ -79,7 +94,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
             make.bottom.equalTo(signButton.snp.top).offset(uiElement.bottomOffset * 2)
         }
         
-        passwordText = self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: true)
         self.view.addSubview(passwordText)
         passwordText.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(passwordLabel)
@@ -87,7 +101,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        passwordDividerLine = self.uiElement.soundbrewDividerLine()
         self.view.addSubview(passwordDividerLine)
         passwordDividerLine.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(0.5)
@@ -96,7 +109,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
             make.right.equalTo(passwordText)
         }
         
-        usernameLabel = self.uiElement.soundbrewLabel("Username", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
         self.view.addSubview(usernameLabel)
         usernameLabel.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(100)
@@ -104,7 +116,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
             make.bottom.equalTo(passwordLabel.snp.top).offset(uiElement.bottomOffset * 2)
         }
         
-        usernameText = self.uiElement.soundbrewTextInput(.default, isSecureTextEntry: false)
         self.view.addSubview(usernameText)
         usernameText.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(usernameLabel)
@@ -113,7 +124,6 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         }
         usernameText.becomeFirstResponder()
         
-        usernameDividerLine = self.uiElement.soundbrewDividerLine()
         self.view.addSubview(usernameDividerLine)
         usernameDividerLine.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(0.5)

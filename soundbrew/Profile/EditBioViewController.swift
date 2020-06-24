@@ -28,8 +28,8 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
             object: nil
         )
                 
-         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
-        setupBioView(dividerLine)
+         let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        setupBioView(topView.2)
     }
     
     //done
