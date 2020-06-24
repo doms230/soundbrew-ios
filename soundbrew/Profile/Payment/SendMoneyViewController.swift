@@ -12,8 +12,9 @@ import Stripe
 import Parse
 import AppCenterAnalytics
 import NVActivityIndicatorView
+import NotificationBannerSwift
 
-class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVActivityIndicatorViewable, ArtistDelegate {
+class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVActivityIndicatorViewable, UIPickerViewDataSource, UIPickerViewDelegate {
     
     let color = Color()
     let uiElement = UIElement()
@@ -26,26 +27,6 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
         setupPaymentContext()
     }
     
-    //mark: UI
-    /*lazy var exitButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "dismiss"), for: .normal)
-        button.addTarget(self, action: #selector(self.didPressExitButton(_:)), for: .touchUpInside)
-        return button
-    }()
-    @objc func didPressExitButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    lazy var addFundsTitle: UILabel = {
-        let label = UILabel()
-        label.text = "Add Funds"
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
-        label.textAlignment = .center
-        return label
-    }()*/
-    
     //description
     lazy var addFundsDescription: UILabel = {
         let label = UILabel()
@@ -53,7 +34,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Support \(self.artist?.name ?? "this artist") by sending them money."
+        label.text = "Support \(self.artist?.name ?? "this artist") by sending them money.\n"
         return label
     }()
     
@@ -93,54 +74,44 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     
     lazy var totalButton: UIButton = {
         let button = UIButton()
-        button.addTarget(self, action: #selector(self.didPressChangeAddFundsAmount(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(self.didChangeSendAmount(_:)), for: .touchUpInside)
         return button
     }()
-    @objc func didPressChangeAddFundsAmount(_ sender: UIBarButtonItem) {
-        //TODO: show edit bio
-        let modal = EditBioViewController()
-        modal.totalAllowedTextLength = 4
-        modal.inputBio.keyboardType = .numberPad
-        modal.inputBio.font = UIFont(name: "\(self.uiElement.mainFont)-bold", size: 30)
-        self.present(modal, animated: true, completion: nil)
-         /*let alertController = UIAlertController (title: "How much would you like to add?", message: nil, preferredStyle: .actionSheet)
-        let threeDollarAction = UIAlertAction(title: "$3", style: .default) { (_) -> Void in
-            self.paymentContext.paymentAmount = 300
-            self.paymentContextDidChange(self.paymentContext)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$3.00"])
-         }
-         alertController.addAction(threeDollarAction)
-        
-        let tenDollarAction = UIAlertAction(title: "$10", style: .default) { (_) -> Void in
-            self.paymentContext.paymentAmount = 1000
-            self.paymentContextDidChange(self.paymentContext)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$10.00"])
-        }
-        alertController.addAction(tenDollarAction)
-        
-        let oneHundredDollarAction = UIAlertAction(title: "$100", style: .default) { (_) -> Void in
-            self.paymentContext.paymentAmount = 10000
-            self.paymentContextDidChange(self.paymentContext)
-            MSAnalytics.trackEvent("Add Funds View Controller", withProperties: ["Button" : "didPressChangeAddFundsAmount", "Amount": "$100.00"])
-        }
-        alertController.addAction(oneHundredDollarAction)
-         
-         let localizedCancel = NSLocalizedString("cancel", comment: "")
-         let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-         alertController.addAction(cancelAction)
-         
-         self.present(alertController, animated: true, completion: nil)*/
-    }
-    
-    func changeBio(_ value: String?) {
-        if let amount = value {
-            let amountInCents = Int(amount)! * 100
+    @objc func didChangeSendAmount(_ sender: UIBarButtonItem) {
+        let pickerView = UIPickerView(frame: CGRect(x: 10, y: 50, width: 150, height: 150))
+        pickerView.delegate = self
+        pickerView.dataSource = self
+
+        let ac = UIAlertController(title: "How Much Would You Like Send?", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .alert)
+        ac.view.addSubview(pickerView)
+        ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            let amount = self.pickerNumbers[pickerView.selectedRow(inComponent: 1)]
+            let amountInCents = amount * 100
             self.paymentContext.paymentAmount = amountInCents
             self.paymentContextDidChange(self.paymentContext)
-        }
+        }))
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(ac, animated: true)
     }
     
-    func receivedArtist(_ value: Artist?) {
+    let pickerNumbers = Array(stride(from: 5, to: 999, by: 1))
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        2
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if component == 1 {
+            return pickerNumbers.count
+        }
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if component == 0 {
+            return "$"
+        } else {
+            return "\(pickerNumbers[row])"
+        }
     }
     
     lazy var total: UILabel = {
@@ -232,50 +203,16 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     }
     
     func setupView() {
-        //self.title = "Add Funds"
         self.view.backgroundColor = color.black()
         
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
-        //var topOffset: CGFloat!
-        
-        /*if shouldShowExitButton {
-            self.view.addSubview(exitButton)
-            exitButton.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(self.view).offset(uiElement.topOffset)
-                make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            }
-            
-            self.view.addSubview(addFundsTitle)
-            addFundsTitle.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(exitButton)
-                make.centerX.equalTo(self.view)
-            }
-            
-        } else {
-            topOffset = uiElement.uiViewTopOffset(self) + 15
-            switch UIDevice.modelName {
-            case "iPhone X", "iPhone XS", "iPhone XR", "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone XS Max", "Simulator iPhone 11 Pro Max":
-                topOffset = uiElement.uiViewTopOffset(self) * 2
-                break
-                
-            default:
-                break
-            }
-        }*/
         
         let dividerLine = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressCancelButton(_:)), doneButtonTitle: "")
         
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(dividerLine.snp.bottom).offset(uiElement.topOffset)
-           /* if shouldShowExitButton {
-                make.top.equalTo(addFundsTitle.snp.bottom).offset(uiElement.topOffset)
-            } else {
-              make.top.equalTo(self.view).offset(topOffset)
-            }*/
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -419,11 +356,10 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
-        if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email {
+        if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email, let username = self.artist?.username, let accountId = self.artist?.accountId, let customerId = Customer.shared.artist?.customerId {
                 let payment = Payment.shared
                 let paymentAmount = paymentContext.paymentAmount
-                payment.createPaymentIntent(objectId, email: email, name: currentUser.username!, amount: paymentAmount, currency: paymentContext.paymentCurrency, description: "") { [weak self] (result) in
-                            
+            payment.createPaymentIntent(objectId, email: email, name: username, amount: paymentAmount, currency: paymentContext.paymentCurrency, account_id: accountId, customerId: customerId) { [weak self] (result) in
                     guard self != nil else {
                         // View controller was deallocated
                         return
@@ -470,19 +406,17 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
                 errorString = reError
                 print(errorString)
             }
-            let localizedPaymentDeclined = NSLocalizedString("paymentDeclined", comment: "")
-            self.uiElement.showAlert(localizedPaymentDeclined, message: "", target: self)
-            
+            //let localizedPaymentDeclined = NSLocalizedString("paymentDeclined", comment: "")
+            //self.uiElement.showAlert(localizedPaymentDeclined, message: "", target: self)
+            let banner = StatusBarNotificationBanner(title: "Declined: \(errorString)", style: .danger)
+            banner.show()
         case .success:
            // if PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                 SKStoreReviewController.requestReview()
             //}
-            
-            if shouldShowExitButton {
-                self.dismiss(animated: true, completion: nil)
-            } else {
-               self.uiElement.goBackToPreviousViewController(self)
-            }
+            let banner = StatusBarNotificationBanner(title: "Success", style: .success)
+            banner.show()
+            self.dismiss(animated: true, completion: nil)
             
         case .userCancellation:
             return

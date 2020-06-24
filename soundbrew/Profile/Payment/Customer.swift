@@ -17,28 +17,30 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     static let shared = Customer()
 
     let baseURL = URL(string: "https://www.soundbrew.app/customers/")
+    //let baseURL = URL(string: "http://192.168.200.8:3000/customers/")
     var artist: Artist?
     let uiElement = UIElement()
     var hasUsedReferralCode = false
     var referralCode: String?
-    //let baseURL = URL(string: "http://192.168.1.68:3000/customers/")
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
-        let url = self.baseURL!.appendingPathComponent("ephemeral_keys")
-        AF.request(url, method: .post, parameters: [
-            "api_version": apiVersion,
-            "customerId": self.artist!.customerId!
-            ], encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                switch responseJSON.result {
-                case .success(let json):
-                    completion(json as? [String: AnyObject], nil)
-                    print(json)
-                case .failure(let error):
-                    completion(nil, error)
-                    print(error)
-                }
+        if let customerId = self.artist?.customerId {
+            let url = self.baseURL!.appendingPathComponent("ephemeral_keys")
+            AF.request(url, method: .post, parameters: [
+                "api_version": apiVersion,
+                "customerId": customerId
+                ], encoding: URLEncoding(destination: .queryString))
+                .validate(statusCode: 200..<300)
+                .responseJSON { responseJSON in
+                    switch responseJSON.result {
+                    case .success(let json):
+                        completion(json as? [String: AnyObject], nil)
+                        print(json)
+                    case .failure(let error):
+                        completion(nil, error)
+                        print(error)
+                    }
+            }
         }
     }
     

@@ -8,23 +8,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Add Funds View Controller-->
-        <scene sceneID="yMB-m9-2Wb">
-            <objects>
-                <viewController id="1du-u4-rT6" customClass="AddFundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="e8b-dp-1c2">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="OXq-VS-SbB"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="KK6-Na-7Us"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="pyG-2h-fp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1448" y="1661"/>
-        </scene>
         <!--New Sound View Controller-->
         <scene sceneID="54r-NH-38P">
             <objects>
@@ -39,7 +22,6 @@
                     <navigationItem key="navigationItem" id="M5X-po-2VR"/>
                     <connections>
                         <segue destination="dwr-Yl-wEr" kind="show" identifier="showEditSoundInfo" id="LnM-xP-wsl"/>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="jCE-No-XFc"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="8ie-Jd-veP"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="KtZ-Sp-Nxi"/>
                         <segue destination="6ks-2z-xfA" kind="show" identifier="showNewPlaylist" id="a5S-JL-GAi"/>
@@ -143,7 +125,6 @@
                         <segue destination="rEM-qb-roe" kind="show" identifier="showEditProfile" id="CdJ-ew-HPh"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hQD-bY-Uhw"/>
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showFollowerFollowing" id="Ejz-iv-iC5"/>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="5zx-sZ-k8y"/>
                         <segue destination="CXo-oV-yRo" kind="show" identifier="showProfile" id="GTm-zV-Pbn"/>
                     </connections>
                 </viewController>
@@ -278,7 +259,6 @@
                     <navigationItem key="navigationItem" id="DQE-st-WjY"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="ate-Yt-ICi"/>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="0mA-lO-wOD"/>
                         <segue destination="SHp-2x-uhh" kind="show" identifier="showSounds" id="KO1-9I-QDL"/>
                         <segue destination="Vkq-eO-lz7" kind="show" identifier="showSearch" id="V2C-Er-n78"/>
                     </connections>
@@ -300,7 +280,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="MZI-40-vJZ"/>
                     <connections>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="OeQ-P7-uu8"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="rYx-PH-Ejd"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="Hp0-yc-gkV"/>
                     </connections>
@@ -356,7 +335,6 @@
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="AaU-Nw-Vla"/>
                         <segue destination="Wod-6r-vBx" kind="show" identifier="showTags" id="ny7-0k-lik"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="qF7-cv-MYn"/>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Swv-5W-jhe"/>
                         <segue destination="Vkq-eO-lz7" kind="show" identifier="showSearch" id="vpX-lS-d7A"/>
                     </connections>
                 </viewController>
@@ -377,7 +355,6 @@
                     <navigationItem key="navigationItem" id="TH6-l1-k2J"/>
                     <connections>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="pAG-ho-da9"/>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="kc7-DO-K18"/>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="QFU-4R-7zu"/>
                     </connections>
                 </viewController>
@@ -495,7 +472,6 @@
                     <navigationItem key="navigationItem" id="c4F-aX-L3Q"/>
                     <connections>
                         <segue destination="DjR-ES-ZhZ" kind="show" identifier="showProfile" id="gLy-U4-3xr"/>
-                        <segue destination="1du-u4-rT6" kind="show" identifier="showAddFunds" id="Lov-Rl-RRq"/>
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hdu-6d-8MQ"/>
                     </connections>
                 </viewController>
@@ -572,7 +548,6 @@
         <segue reference="YJM-4e-UbW"/>
         <segue reference="CdJ-ew-HPh"/>
         <segue reference="QFU-4R-7zu"/>
-        <segue reference="kc7-DO-K18"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="heart_filled_nav" width="25" height="25"/>

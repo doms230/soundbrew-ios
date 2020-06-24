@@ -36,12 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
 
         //usrname: testaccount
         //password: asdf
-        //let testStripeKey = "pk_test_cD418dWcbEdrWlmXEGvSyrU200NEOsClw8"
-        let liveStripeKey = "pk_live_qNq88F3PLns3QrngzCvNVeLF008cOQyiiX"
+        let testStripeKey = "pk_test_0wWjINHvhtgzckFeNxkN7jA400SRMuoO6r"
+        //let liveStripeKey = "pk_live_ZD56KwV1HfBk9kwDUOzdjjEc00u0dPBHk6"
         
-        Stripe.setDefaultPublishableKey(liveStripeKey)
+        Stripe.setDefaultPublishableKey(testStripeKey)
         let config = STPPaymentConfiguration.shared()
-       // config.publishableKey = liveStripeKey
+      //  config.publishableKey = testStripeKey
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
         config.companyName = "Soundbrew, Inc."
         
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
             $0.applicationId = "A839D96FA14FCC48772EB62B99FA1"
             $0.clientKey = "2D4CFA43539F89EF57F4FA589BDCE"
             $0.server = "https://www.soundbrew.app/parse"
-            //$0.server = "http://192.168.1.68:3000/parse"
+           // $0.server = "http://192.168.200.8:3000/parse"
         }
         Parse.initialize(with: configuration)
         

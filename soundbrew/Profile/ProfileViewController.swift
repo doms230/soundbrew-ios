@@ -30,10 +30,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let player = Player.sharedInstance
     var followerOrFollowing: String!
     
+    lazy var profileImage: UIImageView = {
+        let image = uiElement.soundbrewImageView(nil, cornerRadius: nil, backgroundColor: nil)
+      //  image.contentMode = .scaleAspectFit
+        return image
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
+       self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.view.backgroundColor = .clear
         navigationController?.navigationBar.tintColor = .white
         determineTypeOfProfile()
     }
@@ -113,6 +123,19 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func setProfilePhoto() {
+        if let image = profileArtist?.image {
+            profileImage.kf.setImage(with: URL(string: image))
+            self.view.addSubview(profileImage)
+            profileImage.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(self.view.frame.height * (1/2))
+                make.top.equalTo(self.view)
+                make.left.equalTo(self.view)
+                make.right.equalTo(self.view)
+            }
+        }
+    }
+    
     func changeBio(_ value: String?) {
     }
     
@@ -131,6 +154,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         self.navigationItem.title = username
                     }
                 }
+                self.setProfilePhoto()
                 checkFollowStatus()
             }
 
@@ -145,16 +169,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var tableView: UITableView!
     let profileReuse = "profileReuse"
     let soundReuse = "soundReuse"
-    let profileTitleReuse = "profileTitleReuse"
+    let spaceReuse = "spaceReuse"
+    let dividerReuse = "dividerReuse"
     func setUpTableView() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: soundReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: profileTitleReuse)
+        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: spaceReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.separatorStyle = .none
-        tableView.backgroundColor = color.black()
+        tableView.backgroundColor = .clear
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh(_:)), for: UIControl.Event.valueChanged)
         tableView.refreshControl = refreshControl
@@ -175,34 +201,41 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 {
+        switch section {
+        case 0:
+            return 8
+        case 3:
             return artistPlaylists.count
-        }
-        
-        if section == 3 {
+        case 4:
             return 2
+        default:
+            return 1
         }
-        
-        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
+            cell.backgroundColor = .clear
+            return cell
+        case 1:
             return profileInfoReuse()
-            
         case 2:
-            return playlistCell(indexPath)
-            
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell
+            cell.backgroundColor = color.black()
+            cell.selectionStyle = .none
+            return cell
         case 3:
+            return playlistCell(indexPath)
+        case 4:
             return uploadsAndLikesPlaylistCell(indexPath)
-            
         default:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: profileTitleReuse) as! ProfileTableViewCell
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
             cell.selectionStyle = .none
             return cell
@@ -477,6 +510,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }  else if let currentArtist = Customer.shared.artist {
             isFromNavigationStack = false
             self.profileArtist = currentArtist
+            self.setProfilePhoto()
             self.loadPlaylists(profileUserId: currentArtist.objectId)
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
@@ -508,14 +542,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.bio.text = bio
             }
             
-            if let website = artist.website {
+           /*if let website = artist.website {
                 cell.website.text = website 
                 cell.websiteView.addTarget(self, action: #selector(didPressWebsiteButton(_:)), for: .touchUpInside)
-            }
+            }*/
             
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
             
             cell.subscribeUserCreatePlaylistButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
+            
+            cell.sendArtistMoneybutton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
             
             let localizedFollow = NSLocalizedString("follow", comment: "")
             let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
@@ -538,7 +574,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.subscribeUserCreatePlaylistButton.layer.borderWidth = 1
                     cell.subscribeUserCreatePlaylistButton.clipsToBounds = true
                     cell.subscribeUserCreatePlaylistButton.tag = 0
-                    
                 } else {
                     if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
@@ -568,6 +603,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: button actions
+    @objc func didPressSendArtistMoneyButton(_ sender: UIButton) {
+        let modal = SendMoneyViewController()
+        modal.artist = self.profileArtist
+        self.present(modal, animated: true, completion: nil)
+    }
+    
     @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
         if sender.tag == 0 {
             let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)

@@ -16,38 +16,17 @@ class Payment: NSObject {
     static let shared = Payment()
 
     let baseURL = URL(string: "https://www.soundbrew.app/payments/")
-    //let baseURL = URL(string: "http://192.168.1.68:3000/payments/")
-    
-    func charge(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, source: String, completion: @escaping (Result<Any, AFError>) -> Void) {
-        let url = self.baseURL!.appendingPathComponent("charge")
-        let customer = Customer.shared
-        let parameters: Parameters = [
-            "amount": amount,
-            "currency": currency,
-            "description": description,
-            "source": source,
-            "metadata": objectId,
-            "customer": "\(customer.artist!.customerId!)",
-            "receipt_email": email
-        ]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                completion(responseJSON.result)
-        }
-    }
-    
-    func createPaymentIntent(_ objectId: String, email: String, name: String, amount: Int, currency: String, description: String, completion: @escaping (Swift.Result<String, Error>?) -> Void) {
+    //let baseURL = URL(string: "http://192.168.200.8:3000/payments/")
+    func createPaymentIntent(_ objectId: String, email: String, name: String, amount: Int, currency: String, account_id: String, customerId: String, completion: @escaping (Swift.Result<String, Error>?) -> Void) {
         let url = self.baseURL!.appendingPathComponent("create-payment-intent")
-        let customer = Customer.shared
         let parameters: Parameters = [
             "amount": amount,
             "currency": currency,
-            "description": description,
+            "name": name,
             "metadata": objectId,
-            "customer": "\(customer.artist!.customerId!)",
-            "receipt_email": email
+            "customer": customerId,
+            "receipt_email": email,
+            "account_id": account_id
         ]
         AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)

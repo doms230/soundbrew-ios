@@ -16,7 +16,9 @@ class ProfileTableViewCell: UITableViewCell {
     
     var isSearchActive = false
     
-    var shareButton: UIButton!
+    lazy var shareButton: UIButton = {
+        return uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: UIImage(named: "share"), titleFont: nil, titleColor: .white, cornerRadius: nil)
+    }()
     
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -42,26 +44,83 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     //credits
-    var creditPercentage: UILabel!
-    var creditTitle: UILabel!
+    lazy var creditTitle: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
+    }()
     
     //profile
-    var profileImage: UIImageView!
-    var displayNameLabel: UILabel!
-    var username: UILabel!
-    var bio: UILabel!
-    var city: UILabel!
-    var website: UILabel!
-    var websiteView: UIButton!
-    var followUserEditProfileButton: UIButton!
-    var subscribeUserCreatePlaylistButton: UIButton!
-    var editProfileLabel: UILabel!
-    var editProfileTitle: UILabel!
-    var rightArrow: UIImageView!
-    var editBioTitle: UILabel!
-    var editBioText: UILabel!
-    var privateInformationLabel: UILabel!
-    var profileTitle: UILabel!
+    lazy var profileImage: UIImageView = {
+        let profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)
+        profileImage.layer.borderWidth = 1
+        profileImage.layer.borderColor = color.purpleBlack().cgColor
+        profileImage.clipsToBounds = true
+        profileImage.backgroundColor = .black
+        return profileImage
+    }()
+    
+    lazy var displayNameLabel: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var username: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var bio: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var city: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 1)
+    }()
+    
+    lazy var website: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: color.blue(), font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 1)
+    }()
+    
+    lazy var websiteView: UIButton = {
+        return uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: color.blue(), cornerRadius: 0)
+    }()
+    
+    lazy var sendArtistMoneybutton: UIButton = {
+        return uiElement.soundbrewButton("Send Money", shouldShowBorder: false, backgroundColor: color.green(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .black, cornerRadius: 3)
+    }()
+    
+    lazy var followUserEditProfileButton: UIButton = {
+        return uiElement.soundbrewButton("loading..", shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+    }()
+    
+    lazy var subscribeUserCreatePlaylistButton: UIButton = {
+        return uiElement.soundbrewButton("loading...", shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+    }()
+    
+    lazy var editProfileLabel: UILabel = {
+        return uiElement.soundbrewLabel("Change Profile Photo", textColor: color.blue(), font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var editProfileTitle: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var rightArrow: UIImageView = {
+        return uiElement.soundbrewImageView(UIImage(named: "dismiss"), cornerRadius: nil, backgroundColor: nil)
+    }()
+    
+    lazy var editBioTitle: UILabel = {
+        return uiElement.soundbrewLabel("Bio", textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var editBioText: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var privateInformationLabel: UILabel = {
+        return uiElement.soundbrewLabel("Private Information", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var profileTitle: UILabel = {
+        return uiElement.soundbrewLabel("Playlists and Collections", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!, numberOfLines: 1)
+    }()
     
     lazy var seperatorLine: UIView = {
         let view = UIView()
@@ -84,23 +143,7 @@ class ProfileTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)
-        profileImage.layer.borderWidth = 1
-        profileImage.layer.borderColor = color.purpleBlack().cgColor
-        profileImage.clipsToBounds = true
-        profileImage.backgroundColor = .black
-        
-        displayNameLabel = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
-        
-        username = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
-        
-        city = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
-        
-        editProfileTitle = uiElement.soundbrewLabel(nil, textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
-        
-        profileTitle = uiElement.soundbrewLabel("Playlists and Collections", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!, numberOfLines: 1)
-        
+                                        
         switch reuseIdentifier {
         case "profileTitleReuse":
             self.addSubview(profileTitle)
@@ -121,106 +164,76 @@ class ProfileTableViewCell: UITableViewCell {
             }
             break
             
-        case "profileReuse":
-            self.addSubview(profileImage)
-            profileImage.layer.cornerRadius = 75/2
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(75)
-                make.top.equalTo(self).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-            }
-            
-            let localizedLoading = NSLocalizedString("loading", comment: "")
-            followUserEditProfileButton = uiElement.soundbrewButton(localizedLoading, shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
-            self.addSubview(followUserEditProfileButton)
-            followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(profileImage)
-                make.width.equalTo(125)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
-            }
-            
-            subscribeUserCreatePlaylistButton = uiElement.soundbrewButton(localizedLoading, shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
-            self.addSubview(subscribeUserCreatePlaylistButton)
-            subscribeUserCreatePlaylistButton.snp.makeConstraints { (make) -> Void in
-                make.centerY.equalTo(profileImage)
-                make.width.equalTo(125)
-                make.left.equalTo(followUserEditProfileButton.snp.right).offset(uiElement.leftOffset)
-            }
-            
-            self.addSubview(displayNameLabel)
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(profileImage)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            self.addSubview(city)
-            city.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            bio = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 0)
-            self.addSubview(bio)
-            bio.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(city.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            websiteView = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: color.blue(), cornerRadius: 0)
-            self.addSubview(websiteView)
-            websiteView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(bio.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            website = uiElement.soundbrewLabel(nil, textColor: color.blue(), font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 1)
-            self.websiteView.addSubview(website)
-            website.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(websiteView)
-                make.left.equalTo(websiteView)
-                make.right.equalTo(websiteView)
-                make.bottom.equalTo(websiteView)
-            }
-            
-            self.addSubview(seperatorLine)
-            seperatorLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(website.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            break
-            
-        case "searchProfileReuse":
-            self.addSubview(profileImage)
-            profileImage.layer.cornerRadius = 25
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(50)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            self.addSubview(displayNameLabel)
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            self.addSubview(username)
-            username.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            break
+            case "profileReuse":
+                self.addSubview(followUserEditProfileButton)
+                followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self).offset(uiElement.topOffset)
+                    make.width.equalTo(125)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                }
+                
+                self.addSubview(subscribeUserCreatePlaylistButton)
+                subscribeUserCreatePlaylistButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followUserEditProfileButton)
+                    make.width.equalTo(125)
+                    make.left.equalTo(followUserEditProfileButton.snp.right).offset(uiElement.leftOffset)
+                }
+                
+                self.addSubview(sendArtistMoneybutton)
+                sendArtistMoneybutton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followUserEditProfileButton)
+                    make.width.equalTo(125)
+                    make.left.equalTo(subscribeUserCreatePlaylistButton.snp.right).offset(uiElement.leftOffset)
+                }
+                
+                self.addSubview(displayNameLabel)
+                displayNameLabel.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followUserEditProfileButton.snp.bottom).offset(uiElement.topOffset)
+                    make.left.equalTo(followUserEditProfileButton)
+                    make.right.equalTo(self).offset(uiElement.rightOffset)
+                }
+                
+                self.addSubview(city)
+                city.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(displayNameLabel.snp.bottom)
+                    make.left.equalTo(displayNameLabel)
+                    make.right.equalTo(displayNameLabel)
+                }
+                
+                self.addSubview(bio)
+                bio.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(city.snp.bottom)
+                    make.left.equalTo(displayNameLabel)
+                    make.right.equalTo(displayNameLabel)
+                    make.bottom.equalTo(self)
+                }
+                break
+                
+            case "searchProfileReuse":
+                self.addSubview(profileImage)
+                profileImage.layer.cornerRadius = 25
+                profileImage.snp.makeConstraints { (make) -> Void in
+                    make.height.width.equalTo(50)
+                    make.top.equalTo(self).offset(uiElement.topOffset)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                    make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                }
+                
+                self.addSubview(displayNameLabel)
+                displayNameLabel.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(profileImage).offset(uiElement.elementOffset)
+                    make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
+                    make.right.equalTo(self).offset(uiElement.rightOffset)
+                }
+                
+                self.addSubview(username)
+                username.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(displayNameLabel.snp.bottom)
+                    make.left.equalTo(displayNameLabel)
+                    make.right.equalTo(displayNameLabel)
+                }
+                
+                break
             
         case "creditProfileReuse":
             let profileImageHeightWidth = 75
@@ -247,18 +260,9 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(displayNameLabel)
             }
             
-            creditTitle = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
             self.addSubview(creditTitle)
             creditTitle.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(username.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            creditPercentage = uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
-            self.addSubview(creditPercentage)
-            creditPercentage.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(creditTitle.snp.bottom)
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(displayNameLabel)
             }
@@ -344,7 +348,6 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "settingsTitleReuse":
-            shareButton = uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: UIImage(named: "share"), titleFont: nil, titleColor: .white, cornerRadius: nil)
             self.addSubview(shareButton)
             shareButton.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(25)
@@ -379,8 +382,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(self).offset(uiElement.topOffset)
             }
             
-            let localizedChangeProfilePhoto = NSLocalizedString("changeProfilePhoto", comment: "")
-            editProfileLabel = uiElement.soundbrewLabel(localizedChangeProfilePhoto, textColor: color.blue(), font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
             editProfileLabel.textAlignment = .center
             self.addSubview(editProfileLabel)
             editProfileLabel.snp.makeConstraints { (make) -> Void in
@@ -426,7 +427,6 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "editBioReuse":
-            editBioTitle = uiElement.soundbrewLabel("Bio", textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
             self.addSubview(editBioTitle)
             editBioTitle.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(100)
@@ -434,7 +434,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(self).offset(uiElement.leftOffset)
             }
             
-            rightArrow = uiElement.soundbrewImageView(UIImage(named: "dismiss"), cornerRadius: nil, backgroundColor: nil)
             self.addSubview(rightArrow)
             rightArrow.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(15)
@@ -442,7 +441,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
-            editBioText = uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 0)
             self.addSubview(editBioText)
             editBioText.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(editBioTitle)
@@ -462,8 +460,6 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
         case "privateInfoTitleReuse":
-            let localizedPrivateInformation = NSLocalizedString("privateInformation", comment: "")
-            privateInformationLabel = uiElement.soundbrewLabel(localizedPrivateInformation, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 17)!, numberOfLines: 0)
             self.addSubview(privateInformationLabel)
             privateInformationLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
