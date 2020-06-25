@@ -36,12 +36,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.view.backgroundColor = color.black()
-        navigationController?.navigationBar.barTintColor = color.black()
-       self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.view.backgroundColor = .clear
+        navigationController?.navigationBar.barTintColor = .black
         navigationController?.navigationBar.tintColor = .white
         determineTypeOfProfile()
     }
@@ -100,19 +97,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func setProfilePhoto() {
-        if let image = profileArtist?.image {
-            profileImage.kf.setImage(with: URL(string: image))
-            self.view.addSubview(profileImage)
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(self.view.frame.height * (1/2))
-                make.top.equalTo(self.view)
-                make.left.equalTo(self.view)
-                make.right.equalTo(self.view)
-            }
-        }
-    }
-    
     func changeBio(_ value: String?) {
     }
     
@@ -131,7 +115,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         self.navigationItem.title = username
                     }
                 }
-                self.setProfilePhoto()
                 checkFollowStatus()
             }
 
@@ -178,16 +161,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0:
-            return 8
-        case 3:
+       // case 0:
+         //   return 8
+        case 2:
             return artistPlaylists.count
-        case 4:
+        case 3:
             return 2
         default:
             return 1
@@ -197,20 +180,20 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
-            cell.backgroundColor = .clear
-            return cell
-        case 1:
             return profileInfoReuse()
-        case 2:
+            /*let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
+            cell.backgroundColor = .clear
+            return cell*/
+        case 1:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell
             cell.backgroundColor = color.black()
             cell.selectionStyle = .none
             return cell
-        case 3:
+        case 2:
             return playlistCell(indexPath)
-        case 4:
+        case 3:
             return uploadsAndLikesPlaylistCell(indexPath)
+            
         default:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
@@ -347,8 +330,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
          
         cell.soundTitle.text = playlist.title
         
-        cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-        cell.menuButton.tag = indexPath.row
+        cell.menuButton.isHidden = true
+       // cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+        //cell.menuButton.tag = indexPath.row
         return cell 
     }
     
@@ -390,8 +374,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
              
             cell.soundTitle.text = playlist.title
             
-            cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-            cell.menuButton.tag = indexPath.row
+            if let currentUserId = PFUser.current()?.objectId, let playlistArtistId = playlist.artist?.objectId, currentUserId == playlistArtistId {
+                cell.menuButton.isHidden = false 
+                cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
+                cell.menuButton.tag = indexPath.row
+            } else {
+                cell.menuButton.isHidden = true
+            }
+
         }
         return cell 
     }
@@ -402,6 +392,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressMenuButton(_ sender: UIButton) {
+        
         let menuAlert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
         
         menuAlert.addAction(UIAlertAction(title: "Edit Playlist", style: .default, handler: { action in
@@ -487,7 +478,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }  else if let currentArtist = Customer.shared.artist {
             isFromNavigationStack = false
             self.profileArtist = currentArtist
-            self.setProfilePhoto()
             self.loadPlaylists(profileUserId: currentArtist.objectId)
             if self.tableView != nil {
                 self.tableView.refreshControl?.endRefreshing()
@@ -658,7 +648,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    @objc func didPressWebsiteButton(_ sender: UIButton) {
+  /*  @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.profileArtist?.website {
             if let websiteURL = URL(string: website) {
                 if UIApplication.shared.canOpenURL(websiteURL) {
@@ -666,7 +656,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
         }
-    }
+    }*/
     
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
         if let artist = profileArtist {

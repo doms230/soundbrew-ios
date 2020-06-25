@@ -31,6 +31,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.tintColor = .white
         if doesMatchSoundType() {
             if let selectedIndex = self.tabBarController?.selectedIndex {
                 if selectedIndex == 1 {

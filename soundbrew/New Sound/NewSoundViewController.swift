@@ -20,13 +20,28 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     var newSound: Sound!
     var wasShownNewUpload = false
     
-    override func viewDidLoad() {        
+    override func viewDidLoad() {
+        setupNavigationBar()
+        self.uiElement.addTitleView("Drafts", target: self)
+        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        view.backgroundColor = color.black()
-        setupNavigationBar()
-        self.uiElement.addTitleView("Drafts", target: self)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        setMiniPlayer()
+        if PFUser.current() != nil {
+            if tableView != nil {
+                showSounds()
+            } else {
+                setUpTableView()
+            }
+            
+        } else {
+            let localizedRegisterToUpload = NSLocalizedString("registerToUpload", comment: "")
+            self.uiElement.welcomeAlert(localizedRegisterToUpload, target: self)
+        }
     }
     
     func setupNavigationBar() {
@@ -90,21 +105,6 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         alertController.addAction(cancelAction)
         
         self.present(alertController, animated: true, completion: nil)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        setMiniPlayer()
-        if PFUser.current() != nil {
-            if tableView != nil {
-                showSounds()
-            } else {
-                setUpTableView()
-            }
-            
-        } else {
-            let localizedRegisterToUpload = NSLocalizedString("registerToUpload", comment: "")
-            self.uiElement.welcomeAlert(localizedRegisterToUpload, target: self)
-        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

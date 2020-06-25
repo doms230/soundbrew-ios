@@ -25,6 +25,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
         navigationController?.navigationBar.tintColor = .white
+        
         setupSearchBar()
         if playlist == nil {
             setupTags()

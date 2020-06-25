@@ -27,17 +27,20 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             setUpTableView()
       }
     
+    override func viewDidAppear(_ animated: Bool) {
+      self.view.backgroundColor = color.black()
+      navigationController?.navigationBar.barTintColor = color.black()
+      navigationController?.navigationBar.tintColor = .white
+      if PFUser.current() != nil {
+          self.setMiniPlayer()
+      }
+    }
+    
     @objc func didReceiveSoundUpdate() {
         if PFUser.current() != nil {
             self.tableView.reloadData()
         }
     }
-      
-      override func viewDidAppear(_ animated: Bool) {
-        if PFUser.current() != nil {
-            self.setMiniPlayer()
-        }
-      }
           
       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
           switch segue.identifier {

@@ -42,7 +42,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
         if let currentArtist = Customer.shared.artist {
             self.artist = currentArtist
             let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done")

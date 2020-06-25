@@ -165,44 +165,55 @@ class ProfileTableViewCell: UITableViewCell {
             break
             
             case "profileReuse":
-                self.addSubview(followUserEditProfileButton)
-                followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
+                self.addSubview(profileImage)
+                profileImage.layer.cornerRadius = 125/2
+                profileImage.snp.makeConstraints { (make) -> Void in
+                    make.height.width.equalTo(125)
                     make.top.equalTo(self).offset(uiElement.topOffset)
-                    make.width.equalTo(125)
-                    make.left.equalTo(self).offset(uiElement.leftOffset)
-                }
-                
-                self.addSubview(subscribeUserCreatePlaylistButton)
-                subscribeUserCreatePlaylistButton.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(followUserEditProfileButton)
-                    make.width.equalTo(125)
-                    make.left.equalTo(followUserEditProfileButton.snp.right).offset(uiElement.leftOffset)
-                }
-                
-                self.addSubview(sendArtistMoneybutton)
-                sendArtistMoneybutton.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(followUserEditProfileButton)
-                    make.width.equalTo(125)
-                    make.left.equalTo(subscribeUserCreatePlaylistButton.snp.right).offset(uiElement.leftOffset)
+                    make.centerX.equalTo(self)
                 }
                 
                 self.addSubview(displayNameLabel)
+                displayNameLabel.textAlignment = .center
                 displayNameLabel.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(followUserEditProfileButton.snp.bottom).offset(uiElement.topOffset)
-                    make.left.equalTo(followUserEditProfileButton)
+                    make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
                     make.right.equalTo(self).offset(uiElement.rightOffset)
                 }
                 
                 self.addSubview(city)
+                city.textAlignment = .center
                 city.snp.makeConstraints { (make) -> Void in
                     make.top.equalTo(displayNameLabel.snp.bottom)
                     make.left.equalTo(displayNameLabel)
                     make.right.equalTo(displayNameLabel)
                 }
                 
+                self.addSubview(followUserEditProfileButton)
+                followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
+                    make.width.equalTo(115)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                }
+                
+                self.addSubview(subscribeUserCreatePlaylistButton)
+                subscribeUserCreatePlaylistButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followUserEditProfileButton)
+                    make.width.equalTo(115)
+                    make.left.equalTo(followUserEditProfileButton.snp.right).offset(uiElement.leftOffset)
+                }
+                
+                self.addSubview(sendArtistMoneybutton)
+                sendArtistMoneybutton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followUserEditProfileButton)
+                    make.width.equalTo(115)
+                    make.left.equalTo(subscribeUserCreatePlaylistButton.snp.right).offset(uiElement.leftOffset)
+                }
+                
                 self.addSubview(bio)
+                bio.textAlignment = .center
                 bio.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(city.snp.bottom)
+                    make.top.equalTo(sendArtistMoneybutton.snp.bottom).offset(uiElement.topOffset)
                     make.left.equalTo(displayNameLabel)
                     make.right.equalTo(displayNameLabel)
                     make.bottom.equalTo(self)
