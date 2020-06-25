@@ -15,6 +15,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
     let color = Color()
     var artistDelegate: ArtistDelegate?
     var totalAllowedTextLength = 150
+    var bioTitle: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +29,7 @@ class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityInd
             object: nil
         )
                 
-         let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done", title: bioTitle)
         setupBioView(topView.2)
     }
     

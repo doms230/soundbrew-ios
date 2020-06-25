@@ -32,7 +32,7 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add Bank")
+        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
         setUpTableView(topView.2)
     }
     

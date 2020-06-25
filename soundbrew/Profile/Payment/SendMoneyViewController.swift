@@ -33,7 +33,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     var topViewDividerLine: UIView!
         
     func addFundsDescriptionView() {
-        (cancelButton, sendMoneyButton, topViewDividerLine) = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Gift Money")
+        (cancelButton, sendMoneyButton, topViewDividerLine) = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Send", title: "Gift Money")
         
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
@@ -143,6 +143,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     }()
     @objc func didPressAddMessageButton(_ sender: UIButton) {
         let modal = EditBioViewController()
+        modal.bioTitle = "Gift Message"
         modal.artistDelegate = self
         self.present(modal, animated: true, completion: nil)
     }

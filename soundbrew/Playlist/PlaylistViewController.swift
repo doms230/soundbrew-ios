@@ -28,7 +28,7 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationController?.navigationBar.tintColor = .white
         
         if let currentUserId = PFUser.current()?.objectId {
-            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressDoneButton(_:)), doneButtonTitle: "")
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressDoneButton(_:)), doneButtonTitle: "", title: "Select Playlist")
             dividerLine = topView.2
             loadPlaylists(currentUserId)
         } else {
@@ -159,6 +159,8 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
             cell.soundTitle.text = playlist.title
             
             cell.circleImage.text = "⨁"
+            
+            cell.menuButton.isHidden = true
             
         }
         return cell

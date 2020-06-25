@@ -517,7 +517,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             if success && error == nil {
                 self.comments[self.comments.count - 1]?.objectId = newComment.objectId
                 self.updateCommentCount(postId, byAmount: 1)
-                self.newMention(self.player.currentSound!.artist!.objectId, commentId: newComment.objectId!)
+                if let fromUserId = PFUser.current()?.objectId {
+                    self.newMention(self.player.currentSound!.artist!.objectId, fromUserId: fromUserId, commentId: newComment.objectId!)
+                }
                 self.checkForMentions(text, commentId: newComment.objectId!)
                 
             } else {
@@ -577,8 +579,8 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             (object: PFObject?, error: Error?) -> Void in
             self.stopAnimating()
             if let object = object {
-                if let commentId = commentId {
-                    self.newMention(object.objectId!, commentId: commentId)
+                if let commentId = commentId, let fromUserId = PFUser.current()?.objectId {
+                    self.newMention(object.objectId!, fromUserId: fromUserId, commentId: commentId)
                 } else {
                     let artist = self.uiElement.newArtistObject(object)
                     self.handleDismissal(artist)
@@ -590,16 +592,18 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    func newMention(_ userId: String, commentId: String) {
-        let newMention = PFObject(className: "Mention")
-        newMention["type"] = "comment"
-        newMention["commentId"] = commentId
-        newMention["fromUserId"] = PFUser.current()!.objectId
-        newMention["toUserId"] = userId
-        newMention.saveEventually {
-            (success: Bool, error: Error?) in
-            if success && error == nil {
-                self.uiElement.sendAlert("mentioned you in a comment", toUserId: userId, shouldIncludeName: true)
+    func newMention(_ toUserId: String, fromUserId: String, commentId: String) {
+        if fromUserId != toUserId {
+            let newMention = PFObject(className: "Mention")
+            newMention["type"] = "comment"
+            newMention["commentId"] = commentId
+            newMention["fromUserId"] = fromUserId
+            newMention["toUserId"] = toUserId
+            newMention.saveEventually {
+                (success: Bool, error: Error?) in
+                if success && error == nil {
+                    self.uiElement.sendAlert("mentioned you in a comment", toUserId: toUserId, shouldIncludeName: true)
+                }
             }
         }
     }

@@ -53,7 +53,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 if playlist.objectId != nil {
                     doneButtonTitle = "Update Playlist"
                 }
-                let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle)
+                let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle, title: "New Playlist")
                 setUpTableView(topView.2)
             }
             
@@ -160,6 +160,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
             let modal = EditBioViewController()
+            modal.bioTitle = "Playlist Title"
             if let title = self.playlist.title {
                 modal.bio = title
             }

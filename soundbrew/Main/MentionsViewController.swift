@@ -257,6 +257,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         isLoadingMentions = true
         let query = PFQuery(className: "Mention")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+        query.whereKey("fromUserId", notEqualTo: PFUser.current()!.objectId!)
         query.whereKey("objectId", notContainedIn: mentions.map {$0.objectId!})
         query.limit = 50
         query.addDescendingOrder("createdAt")

@@ -535,6 +535,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //mark: Title
     func showEditTitleView() {
         let modal = EditBioViewController()
+        modal.bioTitle = "Sound Title"
         if let title = self.soundThatIsBeingEdited?.title {
             modal.bio = title
         }

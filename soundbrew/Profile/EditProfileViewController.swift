@@ -44,7 +44,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         navigationController?.navigationBar.tintColor = .white
         if let currentArtist = Customer.shared.artist {
             self.artist = currentArtist
-            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done")
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done", title: "Edit Profile")
             self.setUpTableView(topView.2)
             
             if let accountId = currentArtist.accountId {
@@ -198,6 +198,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         case 3:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             let modal = EditBioViewController()
+            modal.bioTitle = "Bio"
             modal.artistDelegate = self
             modal.bio = self.artist!.bio
             self.present(modal, animated: true, completion: nil)

@@ -25,7 +25,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done")
+        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Done", title: "New Feature")
         setUpTableView(topView.2)
     }
     
@@ -156,6 +156,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func didPressChangeCreditTitle(_ sender: UIButton) {
         creditTitleCurrentlyBeingEdited = sender.tag
         let modal = EditBioViewController()
+        modal.bioTitle = "Feature Title"
         modal.totalAllowedTextLength = 25
         modal.artistDelegate = self
         if let title = self.credits[creditTitleCurrentlyBeingEdited].title {
