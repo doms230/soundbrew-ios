@@ -25,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>twitterkit-shY1N1YKquAcxJF9YtdFzm6N3</string>
+				<string>com.googleusercontent.apps.510041293074-8agh8fcqoiqjh3f35glov6b16s5lvcl9</string>
 			</array>
 		</dict>
 	</array>
@@ -42,8 +42,6 @@
 		<string>itms-apps</string>
 		<string>instagram-stories</string>
 		<string>instagram</string>
-		<string>twitter</string>
-		<string>twitterauth</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

@@ -36,6 +36,23 @@ typedef void(^SCOAuth2GetResourcesFailureCompletionBlock)(NSError * _Nullable er
 typedef void(^SCOAuth2RefreshAccessTokenCompletionBlock)(NSString *_Nullable accessToken, NSError *_Nullable error);
 
 /**
+ * The completion handler which SCFetchCodeVerifierBlock must invoke to report its result,
+ * either a code verifier or an error.
+ * @param codeVerifier The code verifier
+ * @param error  The error returned when the code verifier could not be fetched
+ */
+typedef void(^SCFetchCodeVerifierCompletionBlock)(NSString *_Nullable codeVerifier, NSError *_Nullable error);
+
+/**
+ * A block which uses the state to fetch a code verifier and communicates this result via the completion block.
+*
+ * @param state  The oAuth2 state which is needed to fetch the code verifier
+ * @param completionBlock A block to be used to communicate the result of fetching the code verifier,
+ * whether it is the code verifier or an error.
+ */
+typedef void(^SCFetchCodeVerifierBlock)(NSString *state, SCFetchCodeVerifierCompletionBlock completionBlock);
+
+/**
  * Protocol for observing all changes that occur for a user's login status. Notifications will always occur
  * on the main queue.
  */
@@ -89,6 +106,33 @@ typedef void(^SCOAuth2RefreshAccessTokenCompletionBlock)(NSString *_Nullable acc
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *_Nullable)options;
+
+/**
+* Finish auth with Snapchat.
+*
+* @param application for singleton app object of calling app
+* @param url created by Snapchat.
+* @param options for the url to handle
+* @param completion a block on which the result of the auth is returned
+* @return YES if Snapchat can open the the url, NO if it cannot
+*/
++ (BOOL)application:(UIApplication *)application
+   openURL:(NSURL *)url
+   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+completion:(void (^)(BOOL success, NSError *error))completion;
+
+/**
+ * Handle Connect From Snapchat deeplink.
+ *
+ * @param url created by Snapchat.
+ * @param fetchCodeVerifierBlock a block which is responsible for fetching the code verifier
+ * given the state, and notifying the SDK of the result via the SCFetchCodeVerifierCompletionBlock
+ * @param completion a block on which the result of the auth is returned, this handler will be invoked if this function returns YES
+ * @return YES if this is a Connect From Snapchat deeplink and is handled, NO otherwise
+ */
++ (BOOL)handleConnectFromSnapchatURL:(NSURL *)url
+              fetchCodeVerifierBlock:(SCFetchCodeVerifierBlock)fetchCodeVerifierBlock
+                          completion:(nullable void (^)(BOOL success, NSError * _Nullable error))completion;
 
 /**
  * Clears the local access token and refresh token if they exist.

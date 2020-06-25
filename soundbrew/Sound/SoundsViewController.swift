@@ -19,6 +19,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let color = Color()
     var soundType = "follow"
     var playlist: Playlist?
+    var onBoardingArtist: Artist?
     
     func doesMatchSoundType() -> Bool {
         if soundType == "follow" || soundType ==  "forYou" {
@@ -39,6 +40,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     self.soundType = "forYou"
                 } else {
                     setUpMiniPlayer()
+                    if let artist = self.onBoardingArtist {
+                        let modal = EditProfileViewController()
+                        modal.artist = artist
+                        self.present(modal, animated: true, completion: nil)
+                        self.onBoardingArtist = nil 
+                    }
                 }
             }
             createTopView()

@@ -9,10 +9,14 @@
 import Parse
 import UIKit
 import SnapKit
+import GoogleSignIn
+import AuthenticationServices
 
-class WelcomeViewController: UIViewController {
+class WelcomeViewController: UIViewController, GIDSignInDelegate {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        GIDSignIn.sharedInstance()?.presentingViewController = self
         signupView()
     }
     
@@ -48,43 +52,39 @@ class WelcomeViewController: UIViewController {
     }()
     
     lazy var appLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 30)
-        label.text = "Soundbrew"
+        let label = self.uiElement.soundbrewLabel("Soundbrew", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 30)!, numberOfLines: 0)
         label.textAlignment = .center
-        label.textColor = .white
-        label.numberOfLines = 0
         return label
     }()
     
     lazy var appDescription: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
-        label.text = "Discover, Support, and Connect with Independent Artists"
+        let label = self.uiElement.soundbrewLabel("Where Creators Get Paid", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 15)!, numberOfLines: 0)
         label.textAlignment = .center
-        label.textColor = .white
-        label.numberOfLines = 0
         return label
     }()
     
     lazy var termsButton: UIButton = {
-        let button = UIButton()
         let localizedTerms = NSLocalizedString("terms", comment: "")
-        button.setTitle(localizedTerms, for: .normal)
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 11)
-        button.titleLabel?.numberOfLines = 0
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 3
-        button.clipsToBounds = true
+        let button = self.uiElement.soundbrewButton(localizedTerms, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 11), titleColor: .white, cornerRadius: nil)
         button.addTarget(self, action: #selector(didPressTermsButton(_:)), for: .touchUpInside)
         return button
     }()
     
     func signInWithButton(_ title: String, titleColor: UIColor, backgroundColor: UIColor, imageName: String?, tag: Int, shouldShowBorderColor: Bool) -> UIButton {
         let button = UIButton()
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
-        button.setTitleColor(titleColor, for: .normal)
+        
+        if let imageName = imageName {
+            let image = UIImageView(frame: CGRect(x: 10, y: 5, width: 40, height: 40))
+            image.image = UIImage(named: imageName)
+            button.addSubview(image)
+        }
+        
+        let label = UILabel(frame: CGRect(x: 55, y: 5, width: 200, height: 40))
+        label.text = title
+        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.textColor = titleColor
+        button.addSubview(label)
+
         button.backgroundColor = backgroundColor
         if shouldShowBorderColor {
             button.layer.borderWidth = 1
@@ -95,19 +95,10 @@ class WelcomeViewController: UIViewController {
         button.tag = tag
         button.addTarget(self, action: #selector(self.didPressButton(_:)), for: .touchUpInside)
         
-        if let imageName = imageName {
-            let image = UIImageView()
-            image.frame = CGRect(x: 10, y: 10, width: 35, height: 35)
-            image.image = UIImage(named: imageName)
-            button.addSubview(image)
-        }
-        
         return button
     }
     
     func signupView() {
-        let viewWidth = self.view.frame.width
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
@@ -137,7 +128,13 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(appLabel.snp.top)
         }
         
-        let signupButton = signInWithButton("Sign Up", titleColor: .black, backgroundColor: .white, imageName: nil, tag: 0, shouldShowBorderColor: false)
+        termsButton.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset)
+        }
+        
+        let signupButton = signInWithButton("Sign in with Email", titleColor: .black, backgroundColor: .white, imageName: "email", tag: 0, shouldShowBorderColor: false)
         self.view.addSubview(signupButton)
         signupButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
@@ -146,46 +143,33 @@ class WelcomeViewController: UIViewController {
             make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 2, shouldShowBorderColor: false)
-        appleButton.titleLabel?.textAlignment = .left
-        self.view.addSubview(appleButton)
-        appleButton.snp.makeConstraints { (make) -> Void in
+        let googleButton = signInWithButton("Sign in with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
+        self.view.addSubview(googleButton)
+        googleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.width.equalTo((Int(viewWidth) / 2) - 20)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
         }
         
-        let signInButton = signInWithButton("Sign In", titleColor: .white, backgroundColor: .clear, imageName: nil, tag: 3, shouldShowBorderColor: true)
-        self.view.addSubview(signInButton)
-        signInButton.snp.makeConstraints { (make) -> Void in
+        let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 1, shouldShowBorderColor: false)
+        appleButton.titleLabel?.textAlignment = .left
+        self.view.addSubview(appleButton)
+        appleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(appleButton.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        termsButton.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(self.view).offset(uiElement.bottomOffset)
+            make.bottom.equalTo(googleButton.snp.top).offset(uiElement.bottomOffset)
         }
     }
     
     @objc func didPressButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
-            isLoggingInWithApple = false
-            self.performSegue(withIdentifier: "showSignup", sender: self)
+            showSignInWithEmailOption()
             break
             
         case 1:
-            isLoggingInWithApple = false
-            //TODO: logging in with Google
-            break
-            
-        case 2:
             if #available(iOS 13.0, *) {
                 isLoggingInWithApple = true
                 self.performSegue(withIdentifier: "showSignup", sender: self)
@@ -196,7 +180,8 @@ class WelcomeViewController: UIViewController {
             break
             
         case 3:
-            self.performSegue(withIdentifier: "showSignin", sender: self)
+            GIDSignIn.sharedInstance().delegate = self
+            GIDSignIn.sharedInstance().signIn()
             break
             
         default:
@@ -204,7 +189,34 @@ class WelcomeViewController: UIViewController {
         }
     }
     
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        //Implemented in AppDelegate
+    }
+    
+    func showSignInWithEmailOption() {
+        let alertController = UIAlertController (title: "I am" , message: "", preferredStyle: .actionSheet)
+        
+        let newToSoundbrewAction = UIAlertAction(title: "New to Soundbrew", style: .default) { (_) -> Void in
+            self.isLoggingInWithApple = false
+            self.performSegue(withIdentifier: "showSignup", sender: self)
+        }
+        alertController.addAction(newToSoundbrewAction)
+        
+        let returningToSoundbrewAction = UIAlertAction(title: "Returning to Soundbrew", style: .default) { (_) -> Void in
+            self.performSegue(withIdentifier: "showSignin", sender: self)
+        }
+        alertController.addAction(returningToSoundbrewAction)
+        
+        let localizedCancel = NSLocalizedString("cancel", comment: "")
+        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
     }
+    
+    //Apple login logic
 }

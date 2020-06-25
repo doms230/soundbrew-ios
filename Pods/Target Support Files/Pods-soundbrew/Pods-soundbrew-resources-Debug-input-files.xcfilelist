@@ -1,2 +1,2 @@
 ${PODS_ROOT}/Target Support Files/Pods-soundbrew/Pods-soundbrew-resources.sh
-${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle
+${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle

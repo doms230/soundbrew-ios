@@ -11,8 +11,6 @@
 
 @class SCSDKSnapPhoto;
 
-//@protocol SCSDKSnapContent;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCSDKPhotoSnapContent : NSObject<SCSDKSnapContent>
