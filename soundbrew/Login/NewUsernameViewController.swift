@@ -189,27 +189,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                         user.saveEventually {
                             (success: Bool, error: Error?) in
                             self.stopAnimating()
-                            if (success) {
-                                Customer.shared.getCustomer(user.objectId!)
-                                if self.appleID != nil {
-                                    let storyboard = UIStoryboard(name: "NewUser", bundle: nil)
-                                    if let navi = storyboard.instantiateViewController(withIdentifier: "editProfile") as? UINavigationController, let editProfile = navi.topViewController as? EditProfileViewController {
-                                        editProfile.artist = self.uiElement.newArtistObject(user)
-                                        editProfile.title = "Complete Profile"
-                                        editProfile.isOnboarding = true
-                                        let appdelegate = UIApplication.shared.delegate as! AppDelegate
-                                        appdelegate.window?.rootViewController = navi
-                                    } else {
-                                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                                    }
-                                    
-                                 } else {
-                                    self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                                }
-
-                            } else if let error = error {
-                                UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
-                            }
+                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         }
                     }
                 }

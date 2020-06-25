@@ -157,6 +157,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     //login with logic
+    //checking if user exists because apple only gives access to email once *side eyes*, so need to ask for email for 2nd, etc. tries at signing in with apple
     func checkIfUserExists(_ loginInService: String, userID: String, authToken: String, authTokenSecret: String?, username: String?) {
         let query = PFQuery(className: "_User")
         query.whereKey("appleID", equalTo: userID)

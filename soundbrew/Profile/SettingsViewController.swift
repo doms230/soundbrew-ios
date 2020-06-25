@@ -50,18 +50,17 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
             
-            if let tabBar = self.tabBarController?.tabBar {
+            /*if let tabBar = self.tabBarController?.tabBar {
                 let miniPlayer = MiniPlayerView.sharedInstance
                 miniPlayer.removeFromSuperview()
                 for subview in tabBar.subviews{
-                    print("remove: \(subview)")
                     subview.removeFromSuperview()
                     /*if subview == miniPlayer {
                         print("remove mini Player")
                         subview.removeFromSuperview()
                     }*/
                 }
-            }
+            }*/
             
            let player = Player.sharedInstance
             player.pause()

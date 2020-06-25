@@ -113,6 +113,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 print("get Cusomter - Customer.swift: \(error)")
             }
              if let user = object {
+                print(objectId)
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 

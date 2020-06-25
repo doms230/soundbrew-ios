@@ -10,9 +10,11 @@ import Parse
 import UIKit
 import SnapKit
 import GoogleSignIn
-import AuthenticationServices
 
-class WelcomeViewController: UIViewController, GIDSignInDelegate {
+class WelcomeViewController: UIViewController {
+    func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
+        return true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +36,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
     
     lazy var backgroundView: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "background")
+        image.image = UIImage(named: "welcomeImage")
         return image
     }()
     
@@ -52,7 +54,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
     }()
     
     lazy var appLabel: UILabel = {
-        let label = self.uiElement.soundbrewLabel("Soundbrew", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 30)!, numberOfLines: 0)
+        let label = self.uiElement.soundbrewLabel("Soundbrew", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-bold", size: 20)!, numberOfLines: 0)
         label.textAlignment = .center
         return label
     }()
@@ -107,27 +109,28 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
         backgroundView.frame = view.bounds
         
         self.view.addSubview(appImage)
+        appImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(50)
+            //make.centerY.equalTo(self.view)
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 5)
+        }
+        
         self.view.addSubview(appLabel)
-        self.view.addSubview(termsButton)
+        appLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(appImage.snp.bottom)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
         self.view.addSubview(appDescription)
         appDescription.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(self.view).offset(uiElement.bottomOffset)
+            make.top.equalTo(appLabel.snp.bottom)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        appLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(appDescription.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        appImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(150)
-            make.centerX.equalTo(self.view)
-            make.bottom.equalTo(appLabel.snp.top)
-        }
-        
+        self.view.addSubview(termsButton)
         termsButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -180,17 +183,12 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
             break
             
         case 3:
-            GIDSignIn.sharedInstance().delegate = self
             GIDSignIn.sharedInstance().signIn()
             break
             
         default:
             break
         }
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        //Implemented in AppDelegate
     }
     
     func showSignInWithEmailOption() {
@@ -217,6 +215,4 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
     }
-    
-    //Apple login logic
 }

@@ -191,7 +191,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                 
                 if let isNew = parseUser?.isNew, isNew, let givenName = user.profile.givenName, let email = user.profile.email {
                     if let imageURL = user.profile.imageURL(withDimension: 500) {
-                        print("image url: \(imageURL)")
                         self.downloadImageAndUpdateUserInfo(givenName, email: email, imageURL: imageURL)
                     } else {
                         self.updateUserInfo(givenName, email: email, image: nil)
@@ -236,18 +235,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                 } else if let user = user {
                     user["artistName"] = name
                     user["email"] = email
+                    if let image = image {
+                        user["userImage"] = image
+                    }
                     user.saveEventually {
                         (success: Bool, error: Error?) in
-                        if (success) {
-                            Customer.shared.getCustomer(user.objectId!)
-                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            if let navi = storyboard.instantiateViewController(withIdentifier: "tabBar") as? UINavigationController, let soundView = navi.topViewController as? SoundsViewController {
-                                soundView.onBoardingArtist = self.uiElement.newArtistObject(user)
-                                self.window?.rootViewController = navi
-                            } else {
-                                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                            }
-                        }
+                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                     }
                 }
             }

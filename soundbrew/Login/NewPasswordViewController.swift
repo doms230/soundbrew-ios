@@ -105,27 +105,25 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
             self.stopAnimating()
             if let error = error {
                 UIElement().showAlert(self.uiElement.localizedOops, message: error.localizedDescription, target: self)
-                
             } else {
                 let installation = PFInstallation.current()
                 installation?["user"] = PFUser.current()
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
-                
-                Customer.shared.getCustomer(user.objectId!)
-                DispatchQueue.main.async {
-                    let storyboard = UIStoryboard(name: "NewUser", bundle: nil)
-                    if let navi = storyboard.instantiateViewController(withIdentifier: "editProfile") as? UINavigationController, let editProfile = navi.topViewController as? EditProfileViewController {
-                        editProfile.artist = self.uiElement.newArtistObject(user)
-                        editProfile.title = "Complete Profile"
-                        editProfile.isOnboarding = true
-                        let appdelegate = UIApplication.shared.delegate as! AppDelegate
-                        appdelegate.window?.rootViewController = navi
-                    } else {
-                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                    }
-                }
+                PFUser.logOut()
+                self.showAlertThenDismiss()
             }
         }
+    }
+    
+    func showAlertThenDismiss() {
+        let alertController = UIAlertController (title: "Email Verification Required" , message: "Your account has been created, but we need to verify that the email you provided is real and belongs to you. Check your email and tap the link from noreply@soundbrew.app. Check your spam folder too!", preferredStyle: .alert)
+        
+        let okayAction = UIAlertAction(title: "Okay", style: .default) { (_) -> Void in
+            self.dismiss(animated: true, completion: nil)
+        }
+        alertController.addAction(okayAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
 }

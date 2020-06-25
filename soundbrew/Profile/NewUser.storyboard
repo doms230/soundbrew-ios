@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -11,7 +11,7 @@
         <!--Welcome View Controller-->
         <scene sceneID="bj6-93-tB9">
             <objects>
-                <viewController storyboardIdentifier="welcome" id="S0m-up-akw" customClass="WelcomeViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="welcome" id="S0m-up-akw" customClass="WelcomeViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="9R5-zA-hx4">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -31,7 +31,7 @@
         <!--Login View Controller-->
         <scene sceneID="Z7F-Yx-QY7">
             <objects>
-                <viewController id="G2s-yF-xCP" customClass="LoginViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="G2s-yF-xCP" customClass="LoginViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cIb-lD-5HK">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -51,7 +51,7 @@
         <!--Forgot Password View Controller-->
         <scene sceneID="3dK-vd-hUL">
             <objects>
-                <viewController id="ig9-V0-YEy" customClass="ForgotPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="ig9-V0-YEy" customClass="ForgotPasswordViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="FYp-0d-f9h">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -67,7 +67,7 @@
         <!--New Email View Controller-->
         <scene sceneID="Gel-5O-es7">
             <objects>
-                <viewController id="DEl-3Q-2rH" customClass="NewEmailViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="DEl-3Q-2rH" customClass="NewEmailViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qEv-Dj-dOM">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -87,7 +87,7 @@
         <!--New Username View Controller-->
         <scene sceneID="pXf-aL-FeI">
             <objects>
-                <viewController id="hO9-PM-HaQ" customClass="NewUsernameViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="hO9-PM-HaQ" customClass="NewUsernameViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Jpk-eJ-yem">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -106,7 +106,7 @@
         <!--New Password View Controller-->
         <scene sceneID="Ri6-xw-DIe">
             <objects>
-                <viewController id="aq1-pw-Kmz" customClass="NewPasswordViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="aq1-pw-Kmz" customClass="NewPasswordViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="AB9-h3-0cY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -176,114 +176,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N1e-T1-vDt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1621.7391304347827" y="-532.36607142857144"/>
-        </scene>
-        <!--Edit Profile View Controller-->
-        <scene sceneID="1n3-Q3-Hyn">
-            <objects>
-                <viewController id="HCJ-xa-BEU" customClass="EditProfileViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="EiT-EO-Mp0">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="ssP-o4-CDp"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="RVV-eq-KOU"/>
-                    <connections>
-                        <segue destination="eRQ-qS-QVl" kind="show" identifier="showEditBio" id="ISA-yd-iIa"/>
-                        <segue destination="woU-jE-LDx" kind="show" identifier="showTags" id="psR-DT-tui"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="S4j-dK-NC3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2568" y="583"/>
-        </scene>
-        <!--Edit Bio View Controller-->
-        <scene sceneID="vFT-nP-mvL">
-            <objects>
-                <viewController id="1Yd-g3-g0k" customClass="EditBioViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5XM-zu-s5h">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="IU3-8c-PoS"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="5nC-t2-Igw"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Y4r-Sn-7eo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4647.826086956522" y="199.55357142857142"/>
-        </scene>
-        <!--Choose Tags View Controller-->
-        <scene sceneID="GRf-aP-lHY">
-            <objects>
-                <viewController id="Irz-e6-E5a" customClass="ChooseTagsViewController" customModule="soundbrew" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Jp0-hf-YwI">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="wRO-zM-gDa"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="Dck-4R-yhL"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="knQ-Fw-PB1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4648" y="907"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="ZS7-J8-ux9">
-            <objects>
-                <navigationController storyboardIdentifier="editProfile" automaticallyAdjustsScrollViewInsets="NO" id="h19-Ug-KHU" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="4j8-nf-ven">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="HCJ-xa-BEU" kind="relationship" relationship="rootViewController" id="l1M-3Z-Dfa"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iXA-z4-imp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1622" y="583"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="yuQ-3M-Sr4">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eRQ-qS-QVl" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="UPr-6d-tbn"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="crD-i5-TAv">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="1Yd-g3-g0k" kind="relationship" relationship="rootViewController" id="2hT-z7-TW4"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="j8R-6x-Uwn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3737.68115942029" y="199.55357142857142"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="h8y-7f-AiF">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="woU-jE-LDx" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="3va-YL-AGu"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="fB1-0S-drs">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Irz-e6-E5a" kind="relationship" relationship="rootViewController" id="hIC-ji-U51"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="w8t-Ec-Boo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3738" y="907"/>
         </scene>
     </scenes>
 </document>

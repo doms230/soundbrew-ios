@@ -195,10 +195,9 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
                 
                 Customer.shared.getCustomer(user.objectId!)
                 self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-            } else {
+            } else if let error = error?.localizedDescription {
                 let localizedStringOops = NSLocalizedString("oops", comment: "")
-                let localizedStringIncorrectLogin = NSLocalizedString("incorrectLogin", comment: "")
-                UIElement().showAlert(localizedStringOops, message: localizedStringIncorrectLogin, target: self)
+                UIElement().showAlert(localizedStringOops, message: "\(error) Email support@soundbrew.app for more info.", target: self)
             }
         }
     }
