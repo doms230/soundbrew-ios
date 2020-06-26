@@ -26,7 +26,6 @@ class ProfileTableViewCell: UITableViewCell {
         searchBar.backgroundColor = color.black()
         searchBar.tintColor = .darkGray
         searchBar.backgroundImage = UIImage()
-        //searchBar.delegate = self
         if #available(iOS 13.0, *) {
             let searchTextField = searchBar.searchTextField
             searchTextField.backgroundColor = color.black()
@@ -59,7 +58,7 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var displayNameLabel: UILabel = {
-        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 17)!, numberOfLines: 0)
+        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)!, numberOfLines: 0)
     }()
     
     lazy var username: UILabel = {
@@ -71,7 +70,7 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var city: UILabel = {
-        return uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 17)!, numberOfLines: 1)
+        return uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 20)!, numberOfLines: 1)
     }()
     
     lazy var website: UILabel = {
@@ -82,16 +81,16 @@ class ProfileTableViewCell: UITableViewCell {
         return uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: color.blue(), cornerRadius: 0)
     }()
     
-    lazy var sendArtistMoneybutton: UIButton = {
-        return uiElement.soundbrewButton("Send Money", shouldShowBorder: false, backgroundColor: color.green(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .black, cornerRadius: 3)
+    lazy var sendGiftButton: UIButton = {
+        return uiElement.soundbrewButton("Send Gift", shouldShowBorder: false, backgroundColor: color.green(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
     }()
     
     lazy var followUserEditProfileButton: UIButton = {
         return uiElement.soundbrewButton("loading..", shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
     }()
     
-    lazy var subscribeUserCreatePlaylistButton: UIButton = {
-        return uiElement.soundbrewButton("loading...", shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+    lazy var joinFanClubButton: UIButton = {
+        return uiElement.soundbrewButton("Join Fan Club", shouldShowBorder: false, backgroundColor: color.red(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
     }()
     
     lazy var editProfileLabel: UILabel = {
@@ -166,57 +165,54 @@ class ProfileTableViewCell: UITableViewCell {
             
             case "profileReuse":
                 self.addSubview(profileImage)
-                profileImage.layer.cornerRadius = 125/2
+                profileImage.layer.cornerRadius = 100/2
                 profileImage.snp.makeConstraints { (make) -> Void in
-                    make.height.width.equalTo(125)
+                    make.height.width.equalTo(100)
                     make.top.equalTo(self).offset(uiElement.topOffset)
-                    make.centerX.equalTo(self)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
                 }
                 
                 self.addSubview(displayNameLabel)
-                displayNameLabel.textAlignment = .center
                 displayNameLabel.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
-                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                    make.top.equalTo(profileImage).offset(30)
+                    make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                     make.right.equalTo(self).offset(uiElement.rightOffset)
                 }
                 
                 self.addSubview(city)
-                city.textAlignment = .center
                 city.snp.makeConstraints { (make) -> Void in
                     make.top.equalTo(displayNameLabel.snp.bottom)
                     make.left.equalTo(displayNameLabel)
                     make.right.equalTo(displayNameLabel)
                 }
                 
-                self.addSubview(followUserEditProfileButton)
-                followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
-                    make.width.equalTo(115)
-                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                self.addSubview(bio)
+                bio.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                    make.left.equalTo(profileImage)
+                    make.right.equalTo(displayNameLabel)
                 }
                 
-                self.addSubview(subscribeUserCreatePlaylistButton)
-                subscribeUserCreatePlaylistButton.snp.makeConstraints { (make) -> Void in
+                self.addSubview(followUserEditProfileButton)
+                followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(bio.snp.bottom).offset(uiElement.topOffset)
+                    make.width.equalTo(115)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                    make.bottom.equalTo(self)
+                }
+                
+                self.addSubview(joinFanClubButton)
+                joinFanClubButton.snp.makeConstraints { (make) -> Void in
                     make.top.equalTo(followUserEditProfileButton)
                     make.width.equalTo(115)
                     make.left.equalTo(followUserEditProfileButton.snp.right).offset(uiElement.leftOffset)
                 }
                 
-                self.addSubview(sendArtistMoneybutton)
-                sendArtistMoneybutton.snp.makeConstraints { (make) -> Void in
+                self.addSubview(sendGiftButton)
+                sendGiftButton.snp.makeConstraints { (make) -> Void in
                     make.top.equalTo(followUserEditProfileButton)
                     make.width.equalTo(115)
-                    make.left.equalTo(subscribeUserCreatePlaylistButton.snp.right).offset(uiElement.leftOffset)
-                }
-                
-                self.addSubview(bio)
-                bio.textAlignment = .center
-                bio.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(sendArtistMoneybutton.snp.bottom).offset(uiElement.topOffset)
-                    make.left.equalTo(displayNameLabel)
-                    make.right.equalTo(displayNameLabel)
-                    make.bottom.equalTo(self)
+                    make.left.equalTo(joinFanClubButton.snp.right).offset(uiElement.leftOffset)
                 }
                 break
                 

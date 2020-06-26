@@ -181,9 +181,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch indexPath.section {
         case 0:
             return profileInfoReuse()
-            /*let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
-            cell.backgroundColor = .clear
-            return cell*/
         case 1:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: dividerReuse) as! SoundInfoTableViewCell
             cell.backgroundColor = color.black()
@@ -511,9 +508,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
             
-            cell.subscribeUserCreatePlaylistButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
-            
-            cell.sendArtistMoneybutton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
+            if artist.accountId != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
+                cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
+                
+                cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
+            } else {
+                cell.joinFanClubButton.isHidden = true
+                cell.sendGiftButton.isHidden = true
+            }
             
             let localizedFollow = NSLocalizedString("follow", comment: "")
             let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
@@ -529,13 +531,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.followUserEditProfileButton.clipsToBounds = true
                     cell.followUserEditProfileButton.tag = 0
                     
-                    cell.subscribeUserCreatePlaylistButton.setTitle("Create Playlist", for: .normal)
+                   /* cell.subscribeUserCreatePlaylistButton.setTitle("Create Playlist", for: .normal)
                     cell.subscribeUserCreatePlaylistButton.backgroundColor = color.black()
                     cell.subscribeUserCreatePlaylistButton.setTitleColor(.white, for: .normal)
                     cell.subscribeUserCreatePlaylistButton.layer.borderColor = color.lightGray().cgColor
                     cell.subscribeUserCreatePlaylistButton.layer.borderWidth = 1
                     cell.subscribeUserCreatePlaylistButton.clipsToBounds = true
-                    cell.subscribeUserCreatePlaylistButton.tag = 0
+                    cell.subscribeUserCreatePlaylistButton.tag = 0*/
                 } else {
                     if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
@@ -559,6 +561,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
                 cell.followUserEditProfileButton.tag = 3
             }
+            
+            cell.joinFanClubButton.setTitle("Join Fan Club", for: .normal)
+            cell.joinFanClubButton.backgroundColor = color.red()
+            cell.joinFanClubButton.setTitleColor(.white, for: .normal)
+            
         }
         
         return cell

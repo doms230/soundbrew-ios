@@ -26,6 +26,7 @@
 		E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6422234E57470055E65A /* NewPasswordViewController.swift */; };
 		E4880D6924A1185500362B54 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6824A1185500362B54 /* PlaylistViewController.swift */; };
 		E4880D6D24A54D4B00362B54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */; };
+		E4880D6F24A670F600362B54 /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6E24A670F500362B54 /* EarningsViewController.swift */; };
 		E4C9DCEF23E10FE6003835E5 /* PlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */; };
 		E4C9DCF123E11018003835E5 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCF023E11018003835E5 /* PlayerViewController.swift */; };
 		E4EB686D2384B67000FB1D71 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4EB686C2384B67000FB1D71 /* CloudKit.framework */; };
@@ -168,6 +169,7 @@
 		E46A6422234E57470055E65A /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasswordViewController.swift; sourceTree = "<group>"; };
 		E4880D6824A1185500362B54 /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E4880D6E24A670F500362B54 /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
 		E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTableViewCell.swift; sourceTree = "<group>"; };
 		E4C9DCF023E11018003835E5 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		E4EB686C2384B67000FB1D71 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -430,15 +432,13 @@
 				E43AB28E241D7181003263C9 /* Follow.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
-				F2FB14CD22CC106100ED157E /* Payment */,
 				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
 				F2F8B99E21DBEF610024AFB6 /* ProfileViewController.swift */,
 				F2F8B99F21DBEF640024AFB6 /* EditProfileViewController.swift */,
 				F28A9861222FA5F200C96EED /* EditBioViewController.swift */,
 				F2860643232823DF00399F2A /* PeopleViewController.swift */,
-				E44A664B248C4BE1004672DC /* AccountWebViewController.swift */,
-				E44A664D248D835A004672DC /* NewBankViewController.swift */,
+				F2FB14CD22CC106100ED157E /* Payment */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -460,6 +460,9 @@
 				F2FB14D322CD1A1900ED157E /* Customer.swift */,
 				F2BE03EC22CAD610009A5760 /* Payment.swift */,
 				F2FB14D122CC328D00ED157E /* SendMoneyViewController.swift */,
+				E4880D6E24A670F500362B54 /* EarningsViewController.swift */,
+				E44A664D248D835A004672DC /* NewBankViewController.swift */,
+				E44A664B248C4BE1004672DC /* AccountWebViewController.swift */,
 			);
 			path = Payment;
 			sourceTree = "<group>";
@@ -783,6 +786,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */,
+				E4880D6F24A670F600362B54 /* EarningsViewController.swift in Sources */,
 				F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
 				F2F8B99B21DBEF4A0024AFB6 /* SoundInfoTableViewCell.swift in Sources */,

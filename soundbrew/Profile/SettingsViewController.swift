@@ -52,18 +52,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
             
-            /*if let tabBar = self.tabBarController?.tabBar {
-                let miniPlayer = MiniPlayerView.sharedInstance
-                miniPlayer.removeFromSuperview()
-                for subview in tabBar.subviews{
-                    subview.removeFromSuperview()
-                    /*if subview == miniPlayer {
-                        print("remove mini Player")
-                        subview.removeFromSuperview()
-                    }*/
-                }
-            }*/
-            
            let player = Player.sharedInstance
             player.pause()
             player.player = nil
@@ -172,7 +160,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            return 3
+            if self.artist?.accountId != nil {
+                return 4
+            } else {
+                return 2
+            }
         }
         
         return 1
@@ -207,7 +199,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 2:
-                cashout()
+                //show fans
+                break
+                
+            case 3:
+                //show earnings page
                 break
                 
             default:
@@ -258,6 +254,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 2:
+                cell.displayNameLabel.text = "100"
+                cell.username.text = "Fans"
+                break
+                
+            case 3:
+                //TODO: change this to earnings based off Stripe data
                 if let earnings = self.artist?.earnings {
                     cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
                 } else {

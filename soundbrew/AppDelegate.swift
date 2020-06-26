@@ -35,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
         
         GIDSignIn.sharedInstance().clientID = "510041293074-8agh8fcqoiqjh3f35glov6b16s5lvcl9.apps.googleusercontent.com"
-        //GIDSignIn.sharedInstance().delegate = self
                 
         FirebaseApp.configure()
 
@@ -46,7 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         Stripe.setDefaultPublishableKey(testStripeKey)
         let config = STPPaymentConfiguration.shared()
-      //  config.publishableKey = testStripeKey
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
         config.companyName = "Soundbrew, Inc."
         
@@ -169,86 +167,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         //implemented in NewEmailViewController 
     }
-    
-    /*func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
-              withError error: Error!) {
-      if let error = error {
-        if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
-          print("The user has not signed in before or they have since signed out.")
-        } else {
-          print("\(error.localizedDescription)")
-        }
-        return
-      }
-        
-        if let userId = user.userID, let idToken = user.authentication.idToken {
-            PFUser.logInWithAuthType(inBackground: "google", authData: ["id": "\(userId)", "id_token": "\(idToken)"]).continueOnSuccessWith(block: {
-                (ignored: BFTask!) -> AnyObject? in
-               
-                let parseUser = PFUser.current()
-                let installation = PFInstallation.current()
-                installation?["user"] = parseUser
-                installation?["userId"] = parseUser?.objectId
-                installation?.saveEventually()
-                
-                if let isNew = parseUser?.isNew, isNew, let givenName = user.profile.givenName, let email = user.profile.email {
-                    if let imageURL = user.profile.imageURL(withDimension: 500) {
-                        self.downloadImageAndUpdateUserInfo(givenName, email: email, imageURL: imageURL)
-                    } else {
-                        self.updateUserInfo(givenName, email: email, image: nil)
-                    }
-                } else {
-                    if let userId = PFUser.current()?.objectId {
-                        Customer.shared.getCustomer(userId)
-                    }
-                     self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                }
-                return AnyObject.self as AnyObject
-            })
-        }
-    }
-    
-    func downloadImageAndUpdateUserInfo(_ givenName: String, email: String, imageURL: URL) {
-        AF.download(imageURL).responseData { response in
-            if let data = response.value, let newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: data) {
-                newProfileImageFile.saveInBackground {
-                  (success: Bool, error: Error?) in
-                    if let error = error?.localizedDescription {
-                        print("dowloading Image error: \(error)")
-                    }
-                    if success {
-                        self.updateUserInfo(givenName, email: email, image: newProfileImageFile)
-                    } else {
-                        self.updateUserInfo(givenName, email: email, image: nil)
-                    }
-                }
-            }
-        }
-    }
-    
-    func updateUserInfo(_ name: String, email: String, image: PFFileObject?) {
-        if let currentUserId = PFUser.current()?.objectId {
-            let query = PFQuery(className: "_User")
-            query.getObjectInBackground(withId: currentUserId) {
-                (user: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print(error)
-                    
-                } else if let user = user {
-                    user["artistName"] = name
-                    user["email"] = email
-                    if let image = image {
-                        user["userImage"] = image
-                    }
-                    user.saveEventually {
-                        (success: Bool, error: Error?) in
-                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                    }
-                }
-            }
-        }
-    }*/
-    
 }
 
 extension FileManager {
