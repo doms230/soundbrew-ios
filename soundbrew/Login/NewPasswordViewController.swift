@@ -117,7 +117,7 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     }
     
     func showAlertThenDismiss() {
-        let alertController = UIAlertController (title: "Email Verification Required" , message: "Your account has been created, but we need to verify that the email you provided is real and belongs to you. Check your email and tap the link from noreply@soundbrew.app. Check your spam folder too!", preferredStyle: .alert)
+        let alertController = UIAlertController (title: "Email Verification Required" , message: "Your account has been created, but we need to verify your email is real and belongs to you. Check your email and tap the link from noreply@soundbrew.app. Check your spam folder too!", preferredStyle: .alert)
         
         let okayAction = UIAlertAction(title: "Okay", style: .default) { (_) -> Void in
             self.dismiss(animated: true, completion: nil)

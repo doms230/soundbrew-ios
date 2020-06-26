@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 import SidebarOverlay
+import GoogleSignIn
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
@@ -45,6 +46,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         menuAlert.addAction(UIAlertAction(title: localizedSignout, style: .default, handler: { action in
             self.tableView.removeFromSuperview()
             PFUser.logOut()
+            GIDSignIn.sharedInstance().signOut()
             Customer.shared.artist = nil
             if self.uiElement.getUserDefault("friends") != nil {
                 self.uiElement.setUserDefault(nil, key: "friends")

@@ -11,14 +11,12 @@ import UIKit
 import SnapKit
 import GoogleSignIn
 
-class WelcomeViewController: UIViewController {
-    func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
-        return true
-    }
+class WelcomeViewController: UIViewController, GIDSignInDelegate {
+    
+    var loginType: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        GIDSignIn.sharedInstance()?.presentingViewController = self
         signupView()
     }
     
@@ -26,13 +24,16 @@ class WelcomeViewController: UIViewController {
         if segue.identifier == "showSignup" {
             let navi = segue.destination as! UINavigationController
             let viewController = navi.topViewController as! NewEmailViewController
-            viewController.isLoggingInWithApple = isLoggingInWithApple
+            viewController.loginType = self.loginType
+            viewController.googleEmail = self.googleEmail
+            viewController.googleName = self.googleName
+            viewController.googleImage = self.googleImage
+            viewController.googleAuthData = self.googleAuthData
         }
     }
     
     let color = Color()
     let uiElement = UIElement()
-    var isLoggingInWithApple = false
     
     lazy var backgroundView: UIImageView = {
         let image = UIImageView()
@@ -174,7 +175,7 @@ class WelcomeViewController: UIViewController {
             
         case 1:
             if #available(iOS 13.0, *) {
-                isLoggingInWithApple = true
+                self.loginType = "apple"
                 self.performSegue(withIdentifier: "showSignup", sender: self)
                 
             } else {
@@ -183,6 +184,9 @@ class WelcomeViewController: UIViewController {
             break
             
         case 3:
+            self.loginType = "google"
+            GIDSignIn.sharedInstance()?.presentingViewController = self
+            GIDSignIn.sharedInstance().delegate = self
             GIDSignIn.sharedInstance().signIn()
             break
             
@@ -195,7 +199,7 @@ class WelcomeViewController: UIViewController {
         let alertController = UIAlertController (title: "I am" , message: "", preferredStyle: .actionSheet)
         
         let newToSoundbrewAction = UIAlertAction(title: "New to Soundbrew", style: .default) { (_) -> Void in
-            self.isLoggingInWithApple = false
+            self.loginType = "email"
             self.performSegue(withIdentifier: "showSignup", sender: self)
         }
         alertController.addAction(newToSoundbrewAction)
@@ -214,5 +218,33 @@ class WelcomeViewController: UIViewController {
     
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
+    }
+    
+    //Mark: Google
+    var googleEmail: String!
+    var googleName: String?
+    var googleImage: URL?
+    var googleAuthData: [String: String]!
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
+              withError error: Error!) {
+      if let error = error {
+       // self.dismiss(animated: true, completion: nil)
+        if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
+          print("The user has not signed in before or they have since signed out.")
+        } else {
+          print("\(error.localizedDescription)")
+        }
+        return
+      }
+        if let userId = user.userID, let idToken = user.authentication.idToken {
+            let authData = ["id": "\(userId)", "id_token": "\(idToken)"]
+            self.googleAuthData = authData
+            self.googleName = user.profile.givenName
+            self.googleEmail = user.profile.email
+            self.googleImage = user.profile.imageURL(withDimension: 500)
+            self.dismiss(animated: true, completion: {() in
+                self.performSegue(withIdentifier: "showSignup", sender: self)
+            })
+        }
     }
 }

@@ -3,14 +3,14 @@ import Parse
 import NVActivityIndicatorView
 import SnapKit
 import AuthenticationServices
-
+import Alamofire
+import GoogleSignIn
 
 class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate, ASAuthorizationControllerDelegate {
     let color = Color()
     let uiElement = UIElement()
     
-    var isLoggingInWithApple = false
-    var authToken: String!
+    var loginType: String!
     
     override func viewDidLoad(){
         super.viewDidLoad()
@@ -18,10 +18,18 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
 
-        if isLoggingInWithApple {
+        switch loginType {
+        case "apple":
             loginWithApple()
-        } else {
+            break
+            
+        case "google":
+            self.checkIfEmailExistsThenMoveForward(self.googleEmail, authData: self.googleAuthData)
+            break
+            
+        default:
             setupNewEmailView()
+            break
         }
     }
     
@@ -32,7 +40,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
 
         var nextTitle: String!
         let localizedUsername = NSLocalizedString("username", comment: "")
-        if authToken != nil {
+        if self.loginType != "email" {
             nextTitle = "\(localizedUsername) | 2/2"
         } else {
             nextTitle = "\(localizedUsername) | 2/3"
@@ -43,9 +51,17 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         navigationItem.backBarButtonItem = backItem
     }
     
-    var emailText: UITextField!
-    var emailLabel: UILabel!
-    var emailDividerLine: UIView!
+    lazy var emailText: UITextField = {
+        return self.uiElement.soundbrewTextInput(.emailAddress, isSecureTextEntry: false)
+    }()
+    
+    lazy var emailLabel: UILabel = {
+        return self.uiElement.soundbrewLabel("Email", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+    }()
+    
+    lazy var emailDividerLine: UIView = {
+        return self.uiElement.soundbrewDividerLine()
+    }()
     
     lazy var nextButton: UIButton = {
         let localizedNext = NSLocalizedString("next", comment: "")
@@ -71,7 +87,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
             let cancelButton = UIBarButtonItem(title: localizedCancel, style: .plain, target: self, action: #selector(self.didPressCancelButton(_:)))
             self.navigationItem.leftBarButtonItem = cancelButton
             
-            if self.authToken != nil {
+            if self.loginType != "email" {
                 self.title = "Email | 1/2"
             } else {
                 self.title = "Email | 1/3"
@@ -85,7 +101,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
             }
             
-            self.emailLabel = self.uiElement.soundbrewLabel("Email", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
             self.view.addSubview(self.emailLabel)
             self.emailLabel.snp.makeConstraints { (make) -> Void in
                 make.width.equalTo(50)
@@ -93,7 +108,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 make.bottom.equalTo(self.nextButton.snp.top).offset(self.uiElement.bottomOffset * 2)
             }
             
-            self.emailText = self.uiElement.soundbrewTextInput(.emailAddress, isSecureTextEntry: false)
             self.view.addSubview(self.emailText)
             self.emailText.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.emailLabel)
@@ -101,7 +115,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
             }
             
-            self.emailDividerLine = self.uiElement.soundbrewDividerLine()
             self.view.addSubview(self.emailDividerLine)
             self.emailDividerLine.snp.makeConstraints { (make) -> Void in
                 make.height.equalTo(0.5)
@@ -115,86 +128,14 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     }
     
     @objc func next(_ sender: UIButton){
-        emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
-        if validateEmail() {
-            checkIfEmailExistsThenMoveForward()
-        }
-    }
-    
-    //MARK: Validate jaunts
-    func validateEmail() -> Bool {
-        let localizedValidEmailRequired = NSLocalizedString("validEmailRequired", comment: "")
-        let emailString : NSString = emailText.text! as NSString
-        if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
-            self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedValidEmailRequired)
-            return false
-        }
-        
-        return true
-    }
-    
-    func checkIfEmailExistsThenMoveForward() {
-        let localizedEmailAlreadyInUse = NSLocalizedString("emailAlreadyInUse", comment: "")
-        startAnimating()
-        let query = PFQuery(className: "_User")
-        query.whereKey("email", equalTo: emailText.text!)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            self.stopAnimating()
-            if object != nil && error == nil {
-                self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedEmailAlreadyInUse)
-            
-            } else if object == nil {
-                DispatchQueue.main.async {
-                    self.performSegue(withIdentifier: "showUsername", sender: self)
-                }
-            }
+        if validateEmail(), let email = self.emailText.text {
+           let cleanEmail = self.uiElement.cleanUpText(email, shouldLowercaseText: true)
+            checkIfEmailExistsThenMoveForward(cleanEmail, authData: nil)
         }
     }
     
     @objc func didPressCancelButton(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
-    }
-    
-    //login with logic
-    //checking if user exists because apple only gives access to email once *side eyes*, so need to ask for email for 2nd, etc. tries at signing in with apple
-    func checkIfUserExists(_ loginInService: String, userID: String, authToken: String, authTokenSecret: String?, username: String?) {
-        let query = PFQuery(className: "_User")
-        query.whereKey("appleID", equalTo: userID)
-        
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if object != nil && error == nil {
-                self.PFauthenticateWith(loginInService, userId: userID, auth_token: authToken, auth_token_secret: authTokenSecret, username: username)
-                
-            } else {
-                self.stopAnimating()
-                self.setupNewEmailView()
-            }
-        }
-    }
-    
-    func PFauthenticateWith(_ loginService: String, userId: String, auth_token: String, auth_token_secret: String?, username: String?) {
-        
-        var authData: [String: String]
-
-        authData = ["id": userId, "token": auth_token]
-         
-        PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
-            (ignored: BFTask!) -> AnyObject? in
-            
-            let parseUser = PFUser.current()
-            let installation = PFInstallation.current()
-            installation?["user"] = parseUser
-            installation?["userId"] = parseUser?.objectId
-            installation?.saveEventually()
-            
-            Customer.shared.getCustomer(parseUser!.objectId!)
-            DispatchQueue.main.async {
-                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-            }
-            return AnyObject.self as AnyObject
-        })
     }
     
     //apple
@@ -237,7 +178,7 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 self.emailText.text = email
             }
             
-            self.checkIfUserExists("apple", userID: appleID, authToken: self.appleToken!, authTokenSecret: nil, username: nil)
+            self.checkIfUserExists(appleID, authToken: self.appleToken!)
             
             break
         default:
@@ -250,4 +191,157 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
         print(error)
         self.dismiss(animated: true, completion: nil)
     }
+    
+    //MARK: Google
+    var googleName: String?
+    var googleEmail: String!
+    var googleImage: URL?
+    var googleAuthData: [String: String]!
+    
+    //Validations
+    //checking if user exists because apple only gives access to email once *side eyes*, so need to ask for email for 2nd, etc. tries at signing in with apple
+    func checkIfUserExists(_ userID: String, authToken: String) {
+        let query = PFQuery(className: "_User")
+        query.whereKey("appleID", equalTo: userID)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object != nil && error == nil {
+                let authData = ["id": userID, "token": authToken]
+                self.PFauthenticateWith(authData)
+            } else {
+                self.stopAnimating()
+                self.setupNewEmailView()
+            }
+        }
+    }
+    
+    func checkIfEmailExistsThenMoveForward(_ email: String, authData: [String: String]?) {
+        let localizedEmailAlreadyInUse = NSLocalizedString("emailAlreadyInUse", comment: "")
+        startAnimating()
+        let query = PFQuery(className: "_User")
+        query.whereKey("email", equalTo: email)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            self.stopAnimating()
+            if object != nil && error == nil {
+                if let authData = authData {
+                    if object?["googleId"] == nil {
+                        GIDSignIn.sharedInstance().signOut()
+                        self.showErrorMessageAndDismiss()
+                    } else {
+                        self.PFauthenticateWith(authData)
+                    }
+                    
+                } else {
+                    self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedEmailAlreadyInUse)
+                }
+                
+            } else if object == nil {
+                if let authData = authData {
+                    self.PFauthenticateWith(authData)
+                } else {
+                    DispatchQueue.main.async {
+                        self.performSegue(withIdentifier: "showUsername", sender: self)
+                    }
+                }
+            }
+        }
+    }
+    
+    func showErrorMessageAndDismiss() {
+        let alertController = UIAlertController (title: "Error" , message: "An account exists with email provided: \(self.googleEmail ?? "email")", preferredStyle: .alert)
+        
+        let okayAction = UIAlertAction(title: "Okay", style: .default) { (_) -> Void in
+            self.dismiss(animated: true, completion: nil)
+        }
+        alertController.addAction(okayAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func validateEmail() -> Bool {
+        let localizedValidEmailRequired = NSLocalizedString("validEmailRequired", comment: "")
+        let emailString : NSString = emailText.text! as NSString
+        if emailText.text!.isEmpty || !emailString.contains("@") || !emailString.contains(".") {
+            self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedValidEmailRequired)
+            return false
+        }
+        
+        return true
+    }
+    
+    //PF authenticate
+    func PFauthenticateWith(_ authData:  [String: String]) {
+        PFUser.logInWithAuthType(inBackground: self.loginType, authData: authData).continueOnSuccessWith(block: {
+            (ignored: BFTask!) -> AnyObject? in
+            
+            let parseUser = PFUser.current()
+            let installation = PFInstallation.current()
+            installation?["user"] = parseUser
+            installation?["userId"] = parseUser?.objectId
+            installation?.saveEventually()
+            
+            if self.loginType == "google", let isNew = parseUser?.isNew, isNew {
+                if let image = self.googleImage {
+                    self.downloadImageAndUpdateUserInfo(image)
+                } else {
+                    self.updateUserInfo(nil)
+                }
+            } else {
+                Customer.shared.getCustomer(parseUser!.objectId!)
+                DispatchQueue.main.async {
+                    self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                }
+            }
+            return AnyObject.self as AnyObject
+        })
+    }
+    
+    func downloadImageAndUpdateUserInfo(_ imageURL: URL) {
+        AF.download(imageURL).responseData { response in
+            if let data = response.value, let newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: data) {
+                newProfileImageFile.saveInBackground {
+                  (success: Bool, error: Error?) in
+                    if let error = error?.localizedDescription {
+                        print("dowloading Image error: \(error)")
+                    }
+                    if success {
+                        self.updateUserInfo(newProfileImageFile)
+                    } else {
+                        self.updateUserInfo(nil)
+                    }
+                }
+            }
+        }
+    }
+    
+    func updateUserInfo(_ image: PFFileObject?) {
+        if let currentUserId = PFUser.current()?.objectId {
+            let query = PFQuery(className: "_User")
+            query.getObjectInBackground(withId: currentUserId) {
+                (user: PFObject?, error: Error?) -> Void in
+                if let error = error {
+                    print(error)
+                    
+                } else if let user = user {
+                    user["email"] = self.googleEmail
+                    if let name = self.googleName {
+                        user["artistName"] = name
+                    }
+                    if let image = image {
+                        user["userImage"] = image
+                    }
+                    user["googleId"] = self.googleAuthData["id"]
+                    user.saveEventually {
+                        (success: Bool, error: Error?) in
+                        Customer.shared.getCustomer(currentUserId)
+                        DispatchQueue.main.async {
+                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }

@@ -16,10 +16,10 @@ import StoreKit
 import Firebase
 import Stripe
 import GoogleSignIn
-import Alamofire
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDelegate, GIDSignInDelegate {
+    
     func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
         return true 
     }
@@ -35,8 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
         
         GIDSignIn.sharedInstance().clientID = "510041293074-8agh8fcqoiqjh3f35glov6b16s5lvcl9.apps.googleusercontent.com"
-        GIDSignIn.sharedInstance().delegate = self
-
+        //GIDSignIn.sharedInstance().delegate = self
                 
         FirebaseApp.configure()
 
@@ -167,8 +166,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
       return GIDSignIn.sharedInstance().handle(url)
     }
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        //implemented in NewEmailViewController 
+    }
     
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
+    /*func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
       if let error = error {
         if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
@@ -245,7 +247,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
                 }
             }
         }
-    }
+    }*/
     
 }
 

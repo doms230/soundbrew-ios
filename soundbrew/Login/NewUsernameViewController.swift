@@ -189,6 +189,7 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                         user.saveEventually {
                             (success: Bool, error: Error?) in
                             self.stopAnimating()
+                            Customer.shared.getCustomer(user.objectId!)
                             self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         }
                     }
