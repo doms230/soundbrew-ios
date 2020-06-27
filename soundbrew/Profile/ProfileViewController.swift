@@ -28,6 +28,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var currentUser: PFUser?
     let player = Player.sharedInstance
     var followerOrFollowing: String!
+    var earnings = 0
     
     lazy var profileImage: UIImageView = {
         let image = uiElement.soundbrewImageView(nil, cornerRadius: nil, backgroundColor: nil)
@@ -91,6 +92,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let viewController = segue.destination as! PeopleViewController
                 viewController.loadType = followerOrFollowing
                 break
+            
+        case "showEarnings":
+            let backItem = UIBarButtonItem()
+            backItem.title = "Earnings"
+            navigationItem.backBarButtonItem = backItem
+            let viewController = segue.destination as! EarningsViewController
+            viewController.earnings = self.earnings
+            break
                 
             default:
                 break

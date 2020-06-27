@@ -27,6 +27,7 @@
 		E4880D6924A1185500362B54 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6824A1185500362B54 /* PlaylistViewController.swift */; };
 		E4880D6D24A54D4B00362B54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */; };
 		E4880D6F24A670F600362B54 /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6E24A670F500362B54 /* EarningsViewController.swift */; };
+		E4880D7224A7D92100362B54 /* EarningsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */; };
 		E4C9DCEF23E10FE6003835E5 /* PlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */; };
 		E4C9DCF123E11018003835E5 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCF023E11018003835E5 /* PlayerViewController.swift */; };
 		E4EB686D2384B67000FB1D71 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4EB686C2384B67000FB1D71 /* CloudKit.framework */; };
@@ -170,6 +171,7 @@
 		E4880D6824A1185500362B54 /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E4880D6E24A670F500362B54 /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
+		E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsTableViewCell.swift; sourceTree = "<group>"; };
 		E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTableViewCell.swift; sourceTree = "<group>"; };
 		E4C9DCF023E11018003835E5 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		E4EB686C2384B67000FB1D71 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -461,6 +463,7 @@
 				F2BE03EC22CAD610009A5760 /* Payment.swift */,
 				F2FB14D122CC328D00ED157E /* SendMoneyViewController.swift */,
 				E4880D6E24A670F500362B54 /* EarningsViewController.swift */,
+				E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */,
 				E44A664D248D835A004672DC /* NewBankViewController.swift */,
 				E44A664B248C4BE1004672DC /* AccountWebViewController.swift */,
 			);
@@ -793,6 +796,7 @@
 				E425D7C923C289630031DB0B /* NewCreditViewController.swift in Sources */,
 				E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */,
 				F268989C215AF88200C21663 /* Color.swift in Sources */,
+				E4880D7224A7D92100362B54 /* EarningsTableViewCell.swift in Sources */,
 				F2EA6F4E220B630B007FA614 /* Player.swift in Sources */,
 				F2860644232823DF00399F2A /* PeopleViewController.swift in Sources */,
 				E4C9DCEF23E10FE6003835E5 /* PlayerTableViewCell.swift in Sources */,

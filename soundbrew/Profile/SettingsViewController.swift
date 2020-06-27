@@ -10,6 +10,8 @@ import UIKit
 import Parse
 import SidebarOverlay
 import GoogleSignIn
+import Alamofire
+import SwiftyJSON
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
@@ -203,7 +205,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 3:
-                //show earnings page
+                if let container = self.so_containerViewController {
+                    container.isSideViewControllerPresented = false
+                    if let topView = container.topViewController as? UINavigationController {
+                        if let view = topView.topViewController as? ProfileViewController {
+                            view.earnings = self.earnings
+                            view.performSegue(withIdentifier: "showEarnings", sender: self)
+                        }
+                    }
+                }
                 break
                 
             default:
@@ -259,12 +269,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 3:
-                //TODO: change this to earnings based off Stripe data
-                if let earnings = self.artist?.earnings {
-                    cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(earnings, currency: "$")
-                } else {
-                    cell.displayNameLabel.text = "$0.00"
-                }
+                let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
+                cell.displayNameLabel.text = balanceString
                 cell.username.text = "Earnings"
                 break
                 
@@ -280,10 +286,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if let artist = Customer.shared.artist {
             self.uiElement.createDynamicLink(nil, artist: artist, playlist: nil, target: self)
         }
-    }
-        
-    func cashout() {
-        //TODO: show Earnings page
     }
     
     //data
@@ -303,26 +305,32 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                         self.artist?.followingCount = following
                     }
                 }
-               self.loadEarnings()
+                self.loadEarnings()
             }
         }
     }
     
+    let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
+    var earnings = 0
     func loadEarnings() {
-        if let currentUserID = PFUser.current()?.objectId {
-            let query = PFQuery(className: "Payment")
-            query.whereKey("userId", equalTo: currentUserID)
-            query.cachePolicy = .networkElseCache
-            query.getFirstObjectInBackground {
-                (object: PFObject?, error: Error?) -> Void in
-                if  let object = object {
-                    if let earnings = object["tipsSinceLastPayout"] as? Int {
-                        self.artist?.earnings = earnings
-                    } else {
-                        self.artist?.earnings = 0
+        if let accountId = self.artist?.accountId {
+            let url = baseURL!.appendingPathComponent("retrieveBalance")
+            let parameters: Parameters = [
+                "account": accountId]
+            AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+                .validate(statusCode: 200..<300)
+                .responseJSON { responseJSON in
+                    switch responseJSON.result {
+                    case .success(let json):
+                        let json = JSON(json)
+                        if let balance = json["instant_available"][0]["amount"].int {
+                            self.earnings =  balance
+                        }
+                        
+                    case .failure(let error):
+                        print(error)
                     }
-                }
-                self.setupBottomButtons()
+                    self.setupBottomButtons()
             }
         }
     }
