@@ -118,9 +118,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             return 3
         }
         
-        if section == 6 && self.artist?.account != nil {
+       /* if section == 6 && self.artist?.account != nil {
             return 3
-        }
+        }*/
         
         if section == 7 {
             return 9
@@ -200,7 +200,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             self.present(modal, animated: true, completion: nil)
             break
             
-        case 4:
+        /*case 4:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             if let artist = self.artist, let accountId = artist.account?.id, !accountId.isEmpty {
                 if artist.account?.priceId == nil {
@@ -225,15 +225,15 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 
                 present(alertController, animated: true, completion: nil)
             }
-            break
+            break*/
             
-        case 6:
+     /*   case 6:
             if indexPath.row == 1 {
                 self.showBankAlert()
             } else if indexPath.row == 2{
                 showRequireAccountAttention()
             }
-            break
+            break*/
             
         default:
             break
@@ -314,7 +314,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             }
             break
             
-        case 1:
+       /* case 1:
             indexTitle = "Payout Bank"
             cell.editProfileInput.textColor = .white
             cell.editProfileInput.isEnabled = false
@@ -325,9 +325,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 cell.editProfileInput.text = "Add Bank"
                 cell.editProfileInput.textColor = color.red()
             }
-            break
+            break*/
             
-        case 2:
+       /* case 2:
             indexTitle = "Account"
             cell.editProfileInput.isEnabled = false
             if let requiresAttentionItems = self.requiresAttentionItems {
@@ -345,7 +345,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 cell.editProfileInput.text = ""
                 cell.editProfileInput.textColor = .darkGray
             }
-            break
+            break*/
             
         default:
             break
@@ -694,11 +694,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: Account
     let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
-    var requiresAttentionItems: Int?
-    var bankTitle: String?
-    var bankAccountId: String?
-    var accountCountry: String!
-    var accountCurrency: String!
+    //var requiresAttentionItems: Int?
+    //var bankTitle: String?
+    //var bankAccountId: String?
+    //var accountCountry: String!
+    //var accountCurrency: String!
     var availablePrices = [Price]()
     
     /*func createNewAccount(_ countryCode: String, email: String) {
@@ -769,7 +769,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }*/
     
     func getAvailablePrices() {
-        if let currency = self.accountCurrency {
+        if let currency = self.artist?.account?.currency {
             let url = self.baseURL!.appendingPathComponent("listPrices")
             let parameters: Parameters = [
                 "currency": currency]
@@ -798,12 +798,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func shouldSubstractRequiresAttentionNumber(_ due: [String]) {
+    /*func shouldSubstractRequiresAttentionNumber(_ due: [String]) {
         //Don't want user going to Stripe Account Link if they don't have to.
         if due.contains("external_account") {
             self.requiresAttentionItems = self.requiresAttentionItems! - 1
         }
-    }
+    }*/
     
     /*func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?, priceId: String?) {
         let query = PFQuery(className: "_User")
@@ -836,7 +836,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }*/
     
-    func showRequireAccountAttention() {
+   /* func showRequireAccountAttention() {
         if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.account?.id {
             let modal = AccountWebViewController()
             modal.accountId = accountId
@@ -844,9 +844,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         } else {
             self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
         }
-    }
+    }*/
     
-    func showBankAlert() {
+    /*func showBankAlert() {
         if let banktitle = self.bankTitle, let bankAccountId =  self.bankAccountId {
             let alertController = UIAlertController (title: "Replace current Bank Account?", message: "\(banktitle)", preferredStyle: .actionSheet)
             
@@ -863,16 +863,16 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         } else {
             self.showAddBankView(nil)
         }
-    }
+    }*/
     
-    func showAddBankView(_ bankAccountId: String?) {
+   /* func showAddBankView(_ bankAccountId: String?) {
         let modal = NewBankViewController()
         modal.currentBankAccountId = bankAccountId
         modal.currency = self.accountCurrency
         modal.country = self.accountCountry
         modal.accountId = self.artist!.account?.id
         self.present(modal, animated: true, completion: nil)
-    }
+    }*/
     
     func showPriceAlert() {
         let alertController = UIAlertController (title: "Change your Subscription Price?", message: "Doing so will notify your subscribers of the change.", preferredStyle: .actionSheet)

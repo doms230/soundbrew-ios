@@ -47,7 +47,13 @@ class EarningsTableViewCell: UITableViewCell {
             }
             
             self.addSubview(titleLabel)
-            titleLabel.font = UIFont(name: "\(self.uiElement.mainFont)-bold", size: 25)
+            var titleSize: CGFloat!
+            if reuseIdentifier == "earningsReuse" {
+                titleSize = 25
+            } else {
+                titleSize = 17
+            }
+            titleLabel.font = UIFont(name: "\(self.uiElement.mainFont)-bold", size: titleSize)
             titleLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
