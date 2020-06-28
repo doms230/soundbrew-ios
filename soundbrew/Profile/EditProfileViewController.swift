@@ -47,10 +47,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done", title: "Edit Profile")
             self.setUpTableView(topView.2)
             
-            if let accountId = currentArtist.accountId {
-                self.retreiveAccountIfo(accountId)
-            }
-            
         } else {
             self.dismiss(animated: true, completion: nil)
         }
@@ -122,7 +118,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             return 3
         }
         
-        if section == 6 && self.artist?.accountId != nil {
+        if section == 6 && self.artist?.account != nil {
             return 3
         }
         
@@ -206,8 +202,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             
         case 4:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            if let artist = self.artist, let accountId = artist.accountId, !accountId.isEmpty {
-                if artist.priceId == nil {
+            if let artist = self.artist, let accountId = artist.account?.id, !accountId.isEmpty {
+                if artist.account?.priceId == nil {
                     self.getAvailablePrices()
                 } else {
                     self.showPriceAlert()
@@ -492,9 +488,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         if let tagArray = chosenTags {
             let tag = tagArray[0]
             if tag.type == "country",  let countryCode = tag.objectId, let email = artist?.email {
-                self.createNewAccount(countryCode, email: email)
+                //self.createNewAccount(countryCode, email: email)
             } else if tag.type == "price", let priceId = tag.objectId {
-                self.updateUserInfoWithAccountNumberOrPrice(nil, priceId: priceId)
+               // self.updateUserInfoWithAccountNumberOrPrice(nil, priceId: priceId)
             } else if tag.type == "city" {
                artist?.city = tag.name
                 self.tableView.reloadData()
@@ -541,9 +537,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.separatorInset = .zero
         cell.editBioTitle.text = "Fan Club"
         
-        if artist?.accountId == nil || artist?.priceId == nil {
+        if artist?.account == nil || artist?.account?.priceId == nil {
             cell.editBioText.text = "NONE"
-        } else if let priceId = artist?.priceId {
+        } else if let priceId = artist?.account?.priceId {
             cell.editBioText.text = "loading..."
             artist?.getAccountPrice(priceId, priceInput: cell.editBioText)
         }
@@ -616,9 +612,17 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                             customer.artist?.image = profileImage.url
                         }
                         
-                        if let accountId = user["accountId"] as? String {
-                            customer.artist?.accountId = accountId
+                        var account: Account?
+                        
+                        if let accountId = user["accountId"] as? String, !accountId.isEmpty {
+                            account = Account(id: accountId, priceId: nil)
                         }
+                        
+                        if let priceId = user["priceId"] as? String, !priceId.isEmpty {
+                            account?.priceId = priceId
+                        }
+                        
+                        customer.artist?.account = account
                         
                         customer.update()
                         
@@ -697,7 +701,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var accountCurrency: String!
     var availablePrices = [Price]()
     
-    func createNewAccount(_ countryCode: String, email: String) {
+    /*func createNewAccount(_ countryCode: String, email: String) {
         self.startAnimating()
         let url = self.baseURL!.appendingPathComponent("create")
         let parameters: Parameters = [
@@ -715,9 +719,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
                 }
         }
-    }
+    }*/
     
-    func retreiveAccountIfo(_ accountId: String) {
+    /*func retreiveAccountIfo(_ accountId: String) {
         let url = self.baseURL!.appendingPathComponent("retrieve")
         let parameters: Parameters = [
             "accountId": accountId]
@@ -762,7 +766,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     print(error)
                 }
         }
-    }
+    }*/
     
     func getAvailablePrices() {
         if let currency = self.accountCurrency {
@@ -801,7 +805,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?, priceId: String?) {
+    /*func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?, priceId: String?) {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
@@ -830,10 +834,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             }
         }
-    }
+    }*/
     
     func showRequireAccountAttention() {
-        if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.accountId {
+        if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.account?.id {
             let modal = AccountWebViewController()
             modal.accountId = accountId
             self.present(modal, animated: true, completion: nil)
@@ -866,7 +870,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         modal.currentBankAccountId = bankAccountId
         modal.currency = self.accountCurrency
         modal.country = self.accountCountry
-        modal.accountId = self.artist!.accountId!
+        modal.accountId = self.artist!.account?.id
         self.present(modal, animated: true, completion: nil)
     }
     

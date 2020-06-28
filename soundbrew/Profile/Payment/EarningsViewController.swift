@@ -19,10 +19,10 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let accountId = Customer.shared.artist?.accountId {
+        if Customer.shared.artist?.account != nil {
             setUpTableView()
         } else {
-            self.uiElement.goBackToPreviousViewController(self)
+           self.uiElement.goBackToPreviousViewController(self)
         }
     }
     
@@ -57,7 +57,14 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: earningsReuse) as! EarningsTableViewCell
+        cell.backgroundColor = color.black()
+        cell.selectionStyle = .none
+        let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
+        cell.titleLabel.text = earningsString
+        cell.dateLabel.text = "Next Payout: Monday, June 29th"
+        return cell
+       /*switch indexPath.section {
         case 0:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: earningsReuse) as! EarningsTableViewCell
             cell.backgroundColor = color.black()
@@ -65,7 +72,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
             let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
             cell.titleLabel.text = earningsString
             cell.dateLabel.text = "Next Payout: Monday, June 29th"
-            break
+            return cell
             
         case 1:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: earningsReuse) as! EarningsTableViewCell
@@ -74,19 +81,16 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
             let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
             cell.titleLabel.text = earningsString
             cell.dateLabel.text = "Next Payout: Monday, June 29th"
-            break
+            return cell
             
         case 2:
             break
             
         default:
             break
-        }
-        
-        return cell
+        }       */
     }
     
-        
     func loadPayouts() {
         
     }

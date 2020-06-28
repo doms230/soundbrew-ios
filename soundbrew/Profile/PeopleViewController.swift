@@ -304,7 +304,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     } else if loadType == "following" {
                         userId = object["toUserId"] as? String
                     }
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     self.artists.append(artist)
                 }
             }
@@ -323,7 +323,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     let userId = object["fromUserId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
@@ -346,7 +346,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
@@ -369,7 +369,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
@@ -448,7 +448,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                         }
                     }
                     
-                    let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     if let followerCount = user["followerCount"] as? Int {
                         artist.followerCount = followerCount
@@ -488,12 +488,14 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                         artist.website = website
                     }
                     
-                    if let accountId = user["accountId"] as? String {
-                        artist.accountId = accountId
+                    var account: Account?
+                    
+                    if let accountId = user["accountId"] as? String, !accountId.isEmpty {
+                        account = Account(id: accountId, priceId: nil)
                     }
                     
-                    if let priceId = user["priceId"] as? String {
-                        artist.priceId = priceId
+                    if let priceId = user["priceId"] as? String, !priceId.isEmpty {
+                        account?.priceId = priceId
                     }
                     
                     self.filteredArtists.append(artist)

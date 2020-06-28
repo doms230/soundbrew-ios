@@ -162,8 +162,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            if self.artist?.accountId != nil {
-                return 4
+            if self.artist?.account != nil {
+                return 5
             } else {
                 return 2
             }
@@ -203,17 +203,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             case 2:
                 //show fans
                 break
-                
             case 3:
                 if let container = self.so_containerViewController {
                     container.isSideViewControllerPresented = false
-                    if let topView = container.topViewController as? UINavigationController {
-                        if let view = topView.topViewController as? ProfileViewController {
-                            view.earnings = self.earnings
-                            view.performSegue(withIdentifier: "showEarnings", sender: self)
-                        }
+                    if let topView = container.topViewController as? UINavigationController,
+                        let view = topView.topViewController as? ProfileViewController{
+                        view.earnings = self.artist?.account?.weeklyEarnings
+                        view.performSegue(withIdentifier: "showEarnings", sender: self)
                     }
                 }
+                break
+                
+            case 4:
+                //show account links stuff
                 break
                 
             default:
@@ -269,10 +271,23 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 break
                 
             case 3:
-                let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
+                let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.artist?.account?.weeklyEarnings ?? 0, currency: "$")
                 cell.displayNameLabel.text = balanceString
-                cell.username.text = "Earnings"
+                cell.username.text = "Weekly Earnings"
                 break
+                
+            case 4:
+                cell.username.text = "Account"
+                if let requiresAttentionItems = self.artist?.account?.requiresAttentionItems, requiresAttentionItems > 0 {
+                    var itemTitle = "1 item"
+                    itemTitle = "\(requiresAttentionItems) items"
+                    cell.displayNameLabel.text = "Requires Attention: \(itemTitle)"
+                    cell.displayNameLabel.textColor = color.red()
+                } else {
+                    cell.displayNameLabel.text = "In Good Standing"
+                    cell.displayNameLabel.textColor = self.color.green()
+                }
+                    break
                 
             default:
                 break
@@ -305,33 +320,58 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                         self.artist?.followingCount = following
                     }
                 }
-                self.loadEarnings()
+                self.setupBottomButtons()
             }
         }
     }
     
+    //Account
     let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
-    var earnings = 0
-    func loadEarnings() {
-        if let accountId = self.artist?.accountId {
-            let url = baseURL!.appendingPathComponent("retrieveBalance")
-            let parameters: Parameters = [
-                "account": accountId]
-            AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-                .validate(statusCode: 200..<300)
-                .responseJSON { responseJSON in
-                    switch responseJSON.result {
-                    case .success(let json):
-                        let json = JSON(json)
-                        if let balance = json["instant_available"][0]["amount"].int {
-                            self.earnings =  balance
+    //var earnings = 0
+    func createNewAccount(_ countryCode: String, email: String) {
+        //self.startAnimating()
+        let url = self.baseURL!.appendingPathComponent("create")
+        let parameters: Parameters = [
+            "country": countryCode,
+            "email": email]
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    self.updateUserInfoWithAccountNumberOrPrice(json["id"].stringValue)
+                case .failure(let error):
+                    self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
+                }
+        }
+    }
+    
+    func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?) {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let user = user {
+                if let accountId = accountId {
+                    user["accountId"] = accountId
+                }
+                user.saveEventually {
+                    (success: Bool, error: Error?) in
+                    if (success) {
+                        if let accountId = accountId {
+                            let account = Account(id: accountId, priceId: nil)
+                            self.artist?.account = account
+                            Customer.shared.artist?.account = account
                         }
-                        
-                    case .failure(let error):
-                        print(error)
+                        self.tableView.reloadData()
+                    } else if let error = error {
+                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
                     }
-                    self.setupBottomButtons()
+                }
             }
         }
     }
+    
+    
 }

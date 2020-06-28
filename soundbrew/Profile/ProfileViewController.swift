@@ -28,7 +28,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var currentUser: PFUser?
     let player = Player.sharedInstance
     var followerOrFollowing: String!
-    var earnings = 0
+    var earnings: Int! 
     
     lazy var profileImage: UIImageView = {
         let image = uiElement.soundbrewImageView(nil, cornerRadius: nil, backgroundColor: nil)
@@ -444,7 +444,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if let objects = objects {
                 for object in objects {
                     let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil, type: nil, count: nil)
-                    let artist = Artist(objectId: object["userId"] as? String, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                    let artist = Artist(objectId: object["userId"] as? String, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     playlist.artist = artist
                     playlist.title = object["title"] as? String
                     playlist.image = object["image"] as? PFFileObject
@@ -517,7 +517,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
             
-            if artist.accountId != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
+            if artist.account != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
                 cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
                 
                 cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)

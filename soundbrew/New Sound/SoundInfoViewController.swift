@@ -182,7 +182,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //mark: Fan Club Exclusive
     func fanClubExclusiveCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
-        if Customer.shared.artist?.priceId != nil {
+        if Customer.shared.artist?.account?.priceId != nil {
             if let isExclusive = self.soundThatIsBeingEdited?.isExclusive {
                 cell.socialSwitch.isOn = isExclusive
             } else {
@@ -198,9 +198,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func didPressFanClubExclusiveSwitch(_ sender: UISwitch) {
-        if Customer.shared.artist?.priceId == nil {
+        if Customer.shared.artist?.account?.id == nil {
             sender.isOn = false
-            self.uiElement.showAlert("Fan Club Required", message: "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive! Create your fan club on edit profile.", target: self)
+            self.uiElement.showAlert("Fan Club Required", message: "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive! Create your fan club on the settings panel.", target: self)
         } else {
             self.soundThatIsBeingEdited?.isExclusive = sender.isOn
         }

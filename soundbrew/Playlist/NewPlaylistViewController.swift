@@ -33,7 +33,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         navigationController?.navigationBar.tintColor = .white
         
         if let userId = PFUser.current()?.objectId {
-            let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+            let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
             playlist.artist = artist
             
             if playlist.type == "collection" {

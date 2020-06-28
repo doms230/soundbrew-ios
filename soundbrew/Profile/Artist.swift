@@ -30,10 +30,9 @@ class Artist {
     var customerId: String?
     var balance: Int?
     var friendObjectIds: [String]?
-    var accountId: String?
-    var priceId: String?
+    var account: Account?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, accountId: String?, priceId: String?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, account: Account?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -50,8 +49,7 @@ class Artist {
         self.balance = balance
         self.earnings = earnings
         self.friendObjectIds = friendObjectIds
-        self.accountId = accountId
-        self.priceId = priceId
+        self.account = account
     }
     
     func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: PlayerTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
@@ -59,8 +57,8 @@ class Artist {
        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: self.objectId) {
             (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-              print("loadUserInfoFromCloud- Artist.swift \(error)")
+            if let _ = error {
+              
             } else if let user = user {
                 let username = user["username"] as? String
                 if !username!.contains("@") {
@@ -95,9 +93,17 @@ class Artist {
                     self.website = website
                 }
                 
-                if let accountId = user["accountId"] as? String, !accountId.isEmpty  {
-                    self.accountId = accountId
+                var account: Account?
+                
+                if let accountId = user["accountId"] as? String, !accountId.isEmpty {
+                    account = Account(id: accountId, priceId: nil)
                 }
+                
+                if let priceId = user["priceId"] as? String, !priceId.isEmpty {
+                    account?.priceId = priceId
+                }
+                
+                self.account = account
                 
                 if let cell = profileCell {
                     if let name = self.name {

@@ -357,7 +357,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
-        if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email, let username = self.artist?.username, let accountId = self.artist?.accountId, let customerId = Customer.shared.artist?.customerId {
+        if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email, let username = self.artist?.username, let accountId = self.artist?.account?.id, let customerId = Customer.shared.artist?.customerId {
                 let payment = Payment.shared
                 let paymentAmount = paymentContext.paymentAmount
             payment.createPaymentIntent(objectId, email: email, name: username, amount: paymentAmount, currency: paymentContext.paymentCurrency, account_id: accountId, customerId: customerId) { [weak self] (result) in

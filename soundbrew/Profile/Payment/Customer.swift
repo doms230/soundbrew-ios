@@ -117,7 +117,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: 0, earnings: nil, friendObjectIds: nil, accountId: nil, priceId: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: 0, earnings: nil, friendObjectIds: nil, account: nil)
                 
                 if let customerId = user["customerId"] as? String {
                     if customerId.isEmpty {
@@ -136,12 +136,22 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 artist.bio = user["bio"] as? String
                 artist.isVerified = user["artistVerification"] as? Bool
                 artist.website = user["website"] as? String
+                
+                var account: Account?
                 if let accountId = user["accountId"] as? String, !accountId.isEmpty {
-                    artist.accountId = accountId
+                    account = Account(id: accountId, priceId: nil)
                 }
+                
                 if let priceId = user["priceId"] as? String, !priceId.isEmpty {
-                    artist.priceId = priceId
+                    account?.priceId = priceId
                 }
+                
+                artist.account = account
+                if artist.account != nil {
+                    artist.account?.loadEarnings()
+                    artist.account?.retreiveAccountIfo()
+                }
+                
                 if let balance = user["balance"] as? Int {
                     artist.balance = balance
                 }

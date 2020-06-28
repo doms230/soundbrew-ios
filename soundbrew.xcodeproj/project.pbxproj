@@ -28,6 +28,7 @@
 		E4880D6D24A54D4B00362B54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */; };
 		E4880D6F24A670F600362B54 /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6E24A670F500362B54 /* EarningsViewController.swift */; };
 		E4880D7224A7D92100362B54 /* EarningsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */; };
+		E4880D7424A80F2700362B54 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D7324A80F2600362B54 /* Account.swift */; };
 		E4C9DCEF23E10FE6003835E5 /* PlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */; };
 		E4C9DCF123E11018003835E5 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCF023E11018003835E5 /* PlayerViewController.swift */; };
 		E4EB686D2384B67000FB1D71 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4EB686C2384B67000FB1D71 /* CloudKit.framework */; };
@@ -172,6 +173,7 @@
 		E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E4880D6E24A670F500362B54 /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
 		E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsTableViewCell.swift; sourceTree = "<group>"; };
+		E4880D7324A80F2600362B54 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTableViewCell.swift; sourceTree = "<group>"; };
 		E4C9DCF023E11018003835E5 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		E4EB686C2384B67000FB1D71 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -431,8 +433,9 @@
 		F2F8B9A321DBEF690024AFB6 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				E43AB28E241D7181003263C9 /* Follow.swift */,
 				F2F8B9A621DBFBE30024AFB6 /* Artist.swift */,
+				E4880D7324A80F2600362B54 /* Account.swift */,
+				E43AB28E241D7181003263C9 /* Follow.swift */,
 				F2F8B99D21DBEF5E0024AFB6 /* ProfileTableViewCell.swift */,
 				F2FB14C722CBF99600ED157E /* ContainerViewController.swift */,
 				F2FB14C922CBFB0700ED157E /* SettingsViewController.swift */,
@@ -789,6 +792,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */,
+				E4880D7424A80F2700362B54 /* Account.swift in Sources */,
 				E4880D6F24A670F600362B54 /* EarningsViewController.swift in Sources */,
 				F226B5CD2329AFC200C3E951 /* WelcomeViewController.swift in Sources */,
 				F2F8B99921DBEF4A0024AFB6 /* SoundInfoViewController.swift in Sources */,
