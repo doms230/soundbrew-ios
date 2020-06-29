@@ -113,7 +113,7 @@
             <objects>
                 <viewController id="DjR-ES-ZhZ" customClass="ProfileViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gtO-iq-VKq">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -125,6 +125,7 @@
                         <segue destination="PaH-jC-wog" kind="show" identifier="showSounds" id="hQD-bY-Uhw"/>
                         <segue destination="Btf-EX-uKz" kind="show" identifier="showFollowerFollowing" id="Ejz-iv-iC5"/>
                         <segue destination="CXo-oV-yRo" kind="show" identifier="showProfile" id="GTm-zV-Pbn"/>
+                        <segue destination="2no-6O-1Uc" kind="show" identifier="showAccountWebView" id="YJ4-DA-JuC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lCg-Kf-ivc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -250,7 +251,7 @@
             <objects>
                 <viewController id="z2Z-3H-bjC" customClass="SoundsViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="inD-v4-DU1">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -371,7 +372,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C20-sp-m9d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2875" y="1739"/>
+            <point key="canvasLocation" x="-3475" y="1735"/>
+        </scene>
+        <!--Account Web View Controller-->
+        <scene sceneID="g19-tR-S2f">
+            <objects>
+                <viewController id="2no-6O-1Uc" customClass="AccountWebViewController" customModule="Soundbrew" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="sqS-8W-QfS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="Lbd-A1-gp8"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="NbV-Id-by6"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Fpa-db-r6M" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2478" y="1734"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="rcF-xS-UMx">
@@ -521,7 +538,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="KO1-9I-QDL"/>
         <segue reference="vpX-lS-d7A"/>
-        <segue reference="rYx-PH-Ejd"/>
+        <segue reference="hQD-bY-Uhw"/>
         <segue reference="ny7-0k-lik"/>
         <segue reference="Hp0-yc-gkV"/>
     </inferredMetricsTieBreakers>

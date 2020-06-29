@@ -12,16 +12,19 @@ import SnapKit
 import Alamofire
 import SwiftyJSON
 
-class EarningsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class EarningsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ArtistDelegate {
+    
     let uiElement = UIElement()
     let color = Color()
     var earnings = 0
     let artist = Customer.shared.artist
+    var lastPayoutDate: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if self.artist?.account != nil {
+        if let accountId = self.artist?.account?.id {
             setUpTableView()
+            loadPayouts(accountId)
         } else {
            self.uiElement.goBackToPreviousViewController(self)
         }
@@ -50,10 +53,13 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 2 {
+            return payouts.count
+        }
         return 1
     }
     
@@ -65,7 +71,8 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
             let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
             cell.titleLabel.text = earningsString
             cell.dateLabel.text = "Next Payout: Monday, June 29th"
-        } else {
+            
+        } else if indexPath.section == 1 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: payoutBankReuse) as? EarningsTableViewCell
             cell.dateLabel.text = "Payout Bank"
             if let bankTitle = self.artist?.account?.bankTitle {
@@ -74,6 +81,15 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
                 cell.titleLabel.text = "Add"
                 cell.titleLabel.textColor = color.red()
             }
+            
+        } else {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: payoutReuse) as? EarningsTableViewCell
+            let payout = self.payouts[indexPath.row]
+            let amountString = self.uiElement.convertCentsToDollarsAndReturnString(payout.amount!, currency: "$")
+            cell.titleLabel.text = "\(amountString)"
+            cell.subTitleLabel.text = "\(payout.bankTitle ?? "payout bank")"
+            let payoutDateString = convertDateFromUnix(payout.arrivalDate!)
+            cell.dateLabel.text = "\(payoutDateString)"
         }
         
         cell.backgroundColor = color.black()
@@ -81,9 +97,130 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
         return cell
     }
     
-    func loadPayouts() {
-        
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let modal = TransfersViewController()
+            modal.lastPayoutDate = self.lastPayoutDate
+            self.present(modal, animated: true, completion: nil)
+        } else if indexPath.section == 1 {
+            showBankAlert()
+        }
     }
     
+    func convertDateFromUnix(_ unixDate: Int) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(unixDate))
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = DateFormatter.Style.short //Set time style
+        dateFormatter.dateStyle = DateFormatter.Style.medium //Set date style
+        dateFormatter.timeZone = .current
+        return dateFormatter.string(from: date)
+    }
+    
+    //MARK: Payouts
+    private var payouts = [Payout]()
+    
+    func loadPayouts(_ accountId: String) {
+        let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
+        let url = baseURL!.appendingPathComponent("listPayouts")
+        let parameters: Parameters = ["destination": accountId]
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    print(json)
+                    if let payoutObjects = json["data"].array {
+                        for i in 0..<payoutObjects.count {
+                            let payoutObject = payoutObjects[i]
+                            
+                            if i == 0 {
+                                self.lastPayoutDate = payoutObject["created"].int
+                            }
+                            
+                            let payout = Payout(payoutObject["arrival_date"].int, amount: payoutObject["amount"].int, status: payoutObject["status"].string, bankTitle: nil)
+                            
+                            var isLastIndex = false
+                            if !payoutObjects.indices.contains(i + 1) {
+                                isLastIndex = true
+                            }
+                            
+                            self.getBank(accountId, bankId: payoutObject["destination"].stringValue, payout: payout, isLastIndex: isLastIndex)
+                        }
+                    }
+                    self.tableView.reloadData()
+                case .failure(let error):
+                    print(error)
+                }
+        }
+    }
+    
+    private func getBank(_ accountId: String, bankId: String, payout: Payout, isLastIndex: Bool) {
+        let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
+        let url = baseURL!.appendingPathComponent("retrieveBank")
+        let parameters: Parameters = ["accountId": accountId, "bankId": bankId]
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString)).validate(statusCode: 200..<300).responseJSON { responseJSON in
+            switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    if let bankName = json["bank_name"].string, let last4 = json["last4"].string {
+                        payout.bankTitle = "\(bankName) \(last4)"
+                    }
+                    self.payouts.append(payout)
+                case .failure(let error):
+                    print(error)
+            }
+            if isLastIndex {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+     func showBankAlert() {
+        if let banktitle = self.artist?.account?.bankTitle, self.artist?.account?.bankAccountId != nil {
+             let alertController = UIAlertController (title: "Replace Payout Bank?", message: "\(banktitle)", preferredStyle: .actionSheet)
+             
+             let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
+                 self.showAddBankView()
+             }
+             alertController.addAction(getStartedAction)
+             
+             let cancelAction = UIAlertAction(title: "No", style: .cancel) { (_) -> Void in
+             }
+             alertController.addAction(cancelAction)
+             
+             present(alertController, animated: true, completion: nil)
+         } else {
+             self.showAddBankView()
+         }
+     }
+     
+     func showAddBankView() {
+        let modal = NewBankViewController()
+        modal.artistDelegate = self
+        self.present(modal, animated: true, completion: nil)
+     }
+    
+    func receivedArtist(_ value: Artist?) {
+        //new artist bank details are attached to Customer.shared so only need to reload tableview
+        self.tableView.reloadData()
+    }
+    
+    func changeBio(_ value: String?) {
+    }
+    
+}
 
+private class Payout {
+    var arrivalDate: Int?
+    var amount: Int?
+    var status: String?
+    var bankTitle: String?
+    
+    init(_ arrivalDate: Int?, amount: Int?, status: String?, bankTitle: String?) {
+        self.arrivalDate = arrivalDate
+        self.amount = amount
+        self.status = status
+        self.bankTitle = bankTitle
+    }
 }

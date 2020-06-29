@@ -149,12 +149,12 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 artist.account = account
                 if artist.account != nil {
                     artist.account?.loadEarnings()
-                    artist.account?.retreiveAccountIfo()
+                    artist.account?.retreiveAccount()
                 }
                 
-                if let balance = user["balance"] as? Int {
+                /*if let balance = user["balance"] as? Int {
                     artist.balance = balance
-                }
+                }*/
                 self.artist = artist
                 if let userId = user.objectId {
                     self.getFriends(userId)

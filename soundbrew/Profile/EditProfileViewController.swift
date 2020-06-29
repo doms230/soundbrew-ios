@@ -118,10 +118,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             return 3
         }
         
-       /* if section == 6 && self.artist?.account != nil {
-            return 3
-        }*/
-        
         if section == 7 {
             return 9
         }
@@ -200,7 +196,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             self.present(modal, animated: true, completion: nil)
             break
             
-        /*case 4:
+        case 4:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             if let artist = self.artist, let accountId = artist.account?.id, !accountId.isEmpty {
                 if artist.account?.priceId == nil {
@@ -209,23 +205,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                     self.showPriceAlert()
                 }
             } else {
-                let alertController = UIAlertController (title: "Earn From Your Followers", message:
-                    "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
-                
-                let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
-                    self.tagType = "country"
-                    self.performSegue(withIdentifier: "showTags", sender: self)
-                }
-                alertController.addAction(getStartedAction)
-                
-                let cancelAction = UIAlertAction(title: "Later", style: .default) { (_) -> Void in
-                    self.didFinishProcessingImage = true
-                }
-                alertController.addAction(cancelAction)
-                
-                present(alertController, animated: true, completion: nil)
+                self.newFanClubAlert()
             }
-            break*/
+            break
             
      /*   case 6:
             if indexPath.row == 1 {
@@ -313,39 +295,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 artist?.email = PFUser.current()?.email
             }
             break
-            
-       /* case 1:
-            indexTitle = "Payout Bank"
-            cell.editProfileInput.textColor = .white
-            cell.editProfileInput.isEnabled = false
-            if let bankTitle = self.bankTitle {
-                cell.editProfileInput.text = bankTitle
-                cell.editProfileInput.textColor = .white
-            } else {
-                cell.editProfileInput.text = "Add Bank"
-                cell.editProfileInput.textColor = color.red()
-            }
-            break*/
-            
-       /* case 2:
-            indexTitle = "Account"
-            cell.editProfileInput.isEnabled = false
-            if let requiresAttentionItems = self.requiresAttentionItems {
-                if requiresAttentionItems > 0 {
-                    var itemTitle = "1 item"
-                    itemTitle = "\(self.requiresAttentionItems ?? 2) items"
-                    cell.editProfileInput.text = "Requires Attention: \(itemTitle)"
-                    cell.editProfileInput.textColor = color.red()
-                } else {
-                    cell.editProfileInput.text = "In Good Standing"
-                    cell.editProfileInput.textColor = color.green()
-                }
-
-            } else {
-                cell.editProfileInput.text = ""
-                cell.editProfileInput.textColor = .darkGray
-            }
-            break*/
             
         default:
             break
@@ -535,8 +484,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         cell.backgroundColor = .white
         cell.selectionStyle = .gray
         tableView.separatorInset = .zero
-        cell.editBioTitle.text = "Fan Club"
-        
+        cell.editBioTitle.text = "Fan Club Price"
+        cell.editBioTitle.numberOfLines = 0
         if artist?.account == nil || artist?.account?.priceId == nil {
             cell.editBioText.text = "NONE"
         } else if let priceId = artist?.account?.priceId {
@@ -694,79 +643,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: Account
     let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
-    //var requiresAttentionItems: Int?
-    //var bankTitle: String?
-    //var bankAccountId: String?
-    //var accountCountry: String!
-    //var accountCurrency: String!
     var availablePrices = [Price]()
-    
-    /*func createNewAccount(_ countryCode: String, email: String) {
-        self.startAnimating()
-        let url = self.baseURL!.appendingPathComponent("create")
-        let parameters: Parameters = [
-            "country": countryCode,
-            "email": email]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                switch responseJSON.result {
-                case .success(let json):
-                    let json = JSON(json)
-                    self.updateUserInfoWithAccountNumberOrPrice(json["id"].stringValue, priceId: nil)
-                case .failure(let error):
-                    self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
-                }
-        }
-    }*/
-    
-    /*func retreiveAccountIfo(_ accountId: String) {
-        let url = self.baseURL!.appendingPathComponent("retrieve")
-        let parameters: Parameters = [
-            "accountId": accountId]
-        
-        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                switch responseJSON.result {
-                case .success(let json):
-                    let json = JSON(json)
-                  //  print(json)
-                    if let currentlyDue = json["requirements"]["currently_due"].arrayObject as? [String], let eventuallyDue = json["requirements"]["eventually_due"].arrayObject as? [String], let pastDue = json["requirements"]["past_due"].arrayObject as? [String] {
-                        if !currentlyDue.isEmpty  && !eventuallyDue.isEmpty && !pastDue.isEmpty {
-                            self.requiresAttentionItems = currentlyDue.count + eventuallyDue.count + pastDue.count
-                            self.shouldSubstractRequiresAttentionNumber(currentlyDue)
-                            self.shouldSubstractRequiresAttentionNumber(eventuallyDue)
-                            self.shouldSubstractRequiresAttentionNumber(pastDue)
-                        } else {
-                            self.requiresAttentionItems = 0
-                        }
-                    }
-                    
-                    if let bankName = json["external_accounts"]["data"][0]["bank_name"].string, let last4 = json["external_accounts"]["data"][0]["last4"].string {
-                        self.bankTitle = "\(bankName) \(last4)"
-                    }
-                    
-                    if let bankAccountId = json["external_accounts"]["data"][0]["id"].string {
-                        self.bankAccountId = bankAccountId
-                        print("current bank id: \(bankAccountId)")
-                    }
-                    
-                    if let country = json["country"].string {
-                        self.accountCountry = country
-                    }
-                    
-                    if let currency = json["default_currency"].string {
-                        self.accountCurrency = currency
-                    }
-                    
-                    self.tableView.reloadData()
-                case .failure(let error):
-                    print(error)
-                }
-        }
-    }*/
     
     func getAvailablePrices() {
         if let currency = self.artist?.account?.currency {
@@ -798,81 +675,26 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    /*func shouldSubstractRequiresAttentionNumber(_ due: [String]) {
-        //Don't want user going to Stripe Account Link if they don't have to.
-        if due.contains("external_account") {
-            self.requiresAttentionItems = self.requiresAttentionItems! - 1
-        }
-    }*/
-    
-    /*func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?, priceId: String?) {
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let user = user {
-                if let accountId = accountId {
-                    user["accountId"] = accountId
-                } else if let priceId = priceId {
-                    user["priceId"] = priceId
-                }
-                user.saveEventually {
-                    (success: Bool, error: Error?) in
-                    self.stopAnimating()
-                    if (success) {
-                        if let accountId = accountId {
-                            self.artist?.accountId = accountId
-                            Customer.shared.artist?.accountId = accountId
-                        } else if let priceId = priceId {
-                            self.artist?.priceId = priceId
-                            Customer.shared.artist?.priceId = priceId
-                        }
-
-                        self.tableView.reloadData()
-                    } else if let error = error {
-                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
-                    }
-                }
-            }
-        }
-    }*/
-    
-   /* func showRequireAccountAttention() {
-        if let requiresAttentionItems = self.requiresAttentionItems, requiresAttentionItems != 0, let accountId = self.artist?.account?.id {
-            let modal = AccountWebViewController()
-            modal.accountId = accountId
-            self.present(modal, animated: true, completion: nil)
-        } else {
-            self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
-        }
-    }*/
-    
-    /*func showBankAlert() {
-        if let banktitle = self.bankTitle, let bankAccountId =  self.bankAccountId {
-            let alertController = UIAlertController (title: "Replace current Bank Account?", message: "\(banktitle)", preferredStyle: .actionSheet)
+    func newFanClubAlert() {
+        let alertController = UIAlertController (title: "Earn From Your Followers", message:
+            "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
             
-            let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
-                self.showAddBankView(bankAccountId)
-            }
-            alertController.addAction(getStartedAction)
-            
-            let cancelAction = UIAlertAction(title: "No", style: .cancel) { (_) -> Void in
-            }
-            alertController.addAction(cancelAction)
-            
-            present(alertController, animated: true, completion: nil)
-        } else {
-            self.showAddBankView(nil)
+        let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
+            //TODO: dismiss and show Country picker for new fan club
         }
-    }*/
-    
-   /* func showAddBankView(_ bankAccountId: String?) {
-        let modal = NewBankViewController()
-        modal.currentBankAccountId = bankAccountId
-        modal.currency = self.accountCurrency
-        modal.country = self.accountCountry
-        modal.accountId = self.artist!.account?.id
-        self.present(modal, animated: true, completion: nil)
-    }*/
+        alertController.addAction(getStartedAction)
+        
+        let learnMoreAction = UIAlertAction(title: "Learn More", style: .default) { (_) -> Void in
+            //TODO: show webView on the Fan Club thing and how it works
+        }
+        alertController.addAction(learnMoreAction)
+            
+        let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
+        }
+        alertController.addAction(cancelAction)
+            
+        present(alertController, animated: true, completion: nil)
+    }
     
     func showPriceAlert() {
         let alertController = UIAlertController (title: "Change your Subscription Price?", message: "Doing so will notify your subscribers of the change.", preferredStyle: .actionSheet)

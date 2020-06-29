@@ -100,7 +100,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let viewController = segue.destination as! EarningsViewController
             viewController.earnings = self.earnings
             break
-                
+            
+        case "showAccountWebView":
+            let backItem = UIBarButtonItem()
+            backItem.title = "Account"
+            navigationItem.backBarButtonItem = backItem
             default:
                 break
         }

@@ -157,16 +157,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
-            if self.artist?.account != nil {
-                return 5
-            } else {
-                return 2
-            }
+            return 2
+        }
+        
+        if section == 2 && self.artist?.account != nil {
+            return 3
         }
         
         return 1
@@ -174,136 +174,70 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsTitleReuse) as! ProfileTableViewCell
-            cell.backgroundColor = color.black()
-            cell.selectionStyle = .none
-            let localizedSettings = NSLocalizedString("settings", comment: "")
-            cell.displayNameLabel.text = localizedSettings
-            
-            cell.shareButton.addTarget(self, action: #selector(self.didPressShareProfileButton(_:)), for: .touchUpInside)
-            
-            return cell
-            
-        } else {
-            return settingsItemReuse(indexPath)
+            return titleReuse()
+        } else if indexPath.section == 1 {
+            return followerFollowingReuse(indexPath)
+        } else  {
+            return accountReuse(indexPath)
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            switch indexPath.row {
-            case 0:
-                showFollowersOrFollowing("followers")
-                break
-                
-            case 1:
-                showFollowersOrFollowing("following")
-                break
-                
-            case 2:
-                //show fans
-                break
-            case 3:
-                if let container = self.so_containerViewController {
-                    container.isSideViewControllerPresented = false
-                    if let topView = container.topViewController as? UINavigationController,
-                        let view = topView.topViewController as? ProfileViewController{
-                        view.earnings = self.artist?.account?.weeklyEarnings
-                        view.performSegue(withIdentifier: "showEarnings", sender: self)
-                    }
-                }
-                break
-                
-            case 4:
-                //show account links stuff
-                break
-                
-            default:
-                break
-            }
+            self.didSelectFollowerFollowingSection(indexPath)
+        } else if indexPath.section == 2 {
+            self.didSelectAccountSection(indexPath)
         }
     }
     
-    func showFollowersOrFollowing(_ followerOrFollowingType: String) {
-        if let container = self.so_containerViewController {
-            container.isSideViewControllerPresented = false
-            if let topView = container.topViewController as? UINavigationController {
-                if let view = topView.topViewController as? ProfileViewController {
-                    view.followerOrFollowing = followerOrFollowingType
-                    view.performSegue(withIdentifier: "showFollowerFollowing", sender: self)
-                }
-            }
-        }
+    //MARK: Title
+    func titleReuse() -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsTitleReuse) as! ProfileTableViewCell
+        cell.backgroundColor = color.black()
+        cell.selectionStyle = .none
+        let localizedSettings = NSLocalizedString("settings", comment: "")
+        cell.displayNameLabel.text = localizedSettings
+        cell.shareButton.addTarget(self, action: #selector(self.didPressShareProfileButton(_:)), for: .touchUpInside)
+        return cell
     }
     
-    func settingsItemReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
+    //MARK: Follower/Following
+    func followerFollowingReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
         cell.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         cell.profileImage.layer.borderColor = color.black().cgColor
         
-        if indexPath.section == 1 {
-            switch indexPath.row {
-            case 0:
-                var followerCount = 0
-                if let count = self.artist?.followerCount {
-                    followerCount = count
-                }
-                cell.displayNameLabel.text = "\(followerCount)"
-                let localizedFollowing = NSLocalizedString("followers", comment: "")
-                cell.username.text = localizedFollowing
-                break
-                
-            case 1:
-                var followingCount = 0
-                if let count = self.artist?.followingCount {
-                    followingCount = count
-                }
-                cell.displayNameLabel.text = "\(followingCount)"
-                let localizedFollowing = NSLocalizedString("following", comment: "")
-                cell.username.text = localizedFollowing
-                break
-                
-            case 2:
-                cell.displayNameLabel.text = "100"
-                cell.username.text = "Fans"
-                break
-                
-            case 3:
-                let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.artist?.account?.weeklyEarnings ?? 0, currency: "$")
-                cell.displayNameLabel.text = balanceString
-                cell.username.text = "Weekly Earnings"
-                break
-                
-            case 4:
-                cell.username.text = "Account"
-                if let requiresAttentionItems = self.artist?.account?.requiresAttentionItems, requiresAttentionItems > 0 {
-                    var itemTitle = "1 item"
-                    itemTitle = "\(requiresAttentionItems) items"
-                    cell.displayNameLabel.text = "Requires Attention: \(itemTitle)"
-                    cell.displayNameLabel.textColor = color.red()
-                } else {
-                    cell.displayNameLabel.text = "In Good Standing"
-                    cell.displayNameLabel.textColor = self.color.green()
-                }
-                    break
-                
-            default:
-                break
+        if indexPath.row == 0 {
+            var followerCount = 0
+            if let count = self.artist?.followerCount {
+                followerCount = count
             }
+            cell.displayNameLabel.text = "\(followerCount)"
+            let localizedFollowing = NSLocalizedString("followers", comment: "")
+            cell.username.text = localizedFollowing
+        } else {
+            var followingCount = 0
+            if let count = self.artist?.followingCount {
+                followingCount = count
+            }
+            cell.displayNameLabel.text = "\(followingCount)"
+            let localizedFollowing = NSLocalizedString("following", comment: "")
+            cell.username.text = localizedFollowing
         }
         
         return cell
     }
     
-    @objc func didPressShareProfileButton(_ sender: UIButton) {
-        if let artist = Customer.shared.artist {
-            self.uiElement.createDynamicLink(nil, artist: artist, playlist: nil, target: self)
+    func didSelectFollowerFollowingSection(_ indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            showFollowersOrFollowing("followers")
+        } else {
+            showFollowersOrFollowing("following")
         }
     }
     
-    //data
     func loadFollowerFollowingStats() {
         if let currentUserID = PFUser.current()?.objectId {
             let query = PFQuery(className: "Stats")
@@ -325,53 +259,134 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    //Account
-    let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
-    //var earnings = 0
-    func createNewAccount(_ countryCode: String, email: String) {
-        //self.startAnimating()
-        let url = self.baseURL!.appendingPathComponent("create")
-        let parameters: Parameters = [
-            "country": countryCode,
-            "email": email]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                switch responseJSON.result {
-                case .success(let json):
-                    let json = JSON(json)
-                    self.updateUserInfoWithAccountNumberOrPrice(json["id"].stringValue)
-                case .failure(let error):
-                    self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
-                }
-        }
-    }
-    
-    func updateUserInfoWithAccountNumberOrPrice(_ accountId: String?) {
-        let query = PFQuery(className: "_User")
-        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let user = user {
-                if let accountId = accountId {
-                    user["accountId"] = accountId
-                }
-                user.saveEventually {
-                    (success: Bool, error: Error?) in
-                    if (success) {
-                        if let accountId = accountId {
-                            let account = Account(id: accountId, priceId: nil)
-                            self.artist?.account = account
-                            Customer.shared.artist?.account = account
-                        }
-                        self.tableView.reloadData()
-                    } else if let error = error {
-                        UIElement().showAlert("Oops", message: error.localizedDescription, target: self)
-                    }
+    func showFollowersOrFollowing(_ followerOrFollowingType: String) {
+        if let container = self.so_containerViewController {
+            container.isSideViewControllerPresented = false
+            if let topView = container.topViewController as? UINavigationController {
+                if let view = topView.topViewController as? ProfileViewController {
+                    view.followerOrFollowing = followerOrFollowingType
+                    view.performSegue(withIdentifier: "showFollowerFollowing", sender: self)
                 }
             }
         }
     }
     
+    @objc func didPressShareProfileButton(_ sender: UIButton) {
+        if let artist = Customer.shared.artist {
+            self.uiElement.createDynamicLink(nil, artist: artist, playlist: nil, target: self)
+        }
+    }
+        
+    //MARK: Account
+    func accountReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
+        cell.selectionStyle = .none
+        if self.artist?.account == nil {
+            cell.displayNameLabel.text = "Start Fan Club"
+        } else {
+            switch indexPath.row {
+                case 0:
+                    cell.displayNameLabel.text = "100"
+                    cell.username.text = "Fans"
+                    break
+                    
+                case 1:
+                    let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.artist?.account?.weeklyEarnings ?? 0, currency: "$")
+                    cell.displayNameLabel.text = balanceString
+                    cell.username.text = "Weekly Earnings"
+                    break
+                    
+                case 2:
+                    cell.username.text = "Account"
+                    if let requiresAttentionItems = self.artist?.account?.requiresAttentionItems, requiresAttentionItems > 0 {
+                        var itemTitle = "1 item"
+                        itemTitle = "\(requiresAttentionItems) items"
+                        cell.displayNameLabel.text = "Requires Attention: \(itemTitle)"
+                        cell.displayNameLabel.textColor = color.red()
+                    } else {
+                        cell.displayNameLabel.text = "In Good Standing"
+                        cell.displayNameLabel.textColor = self.color.green()
+                    }
+                    break
+                
+            default:
+                break
+            }
+        }
+        
+        return cell
+    }
+    
+    func didSelectAccountSection(_ indexPath: IndexPath) {
+        if self.artist?.account == nil {
+            newFanClubAlert()
+        } else {
+            switch indexPath.row {
+            case 0:
+                //show fans
+                break
+            case 1:
+                if let container = self.so_containerViewController {
+                    container.isSideViewControllerPresented = false
+                    if let topView = container.topViewController as? UINavigationController,
+                        let view = topView.topViewController as? ProfileViewController{
+                        view.earnings = self.artist?.account?.weeklyEarnings
+                        view.performSegue(withIdentifier: "showEarnings", sender: self)
+                    }
+                }
+                break
+                
+            case 2:
+                showRequireAccountAttention()
+                break
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func showRequireAccountAttention() {
+        if let requiresAttentionItems = self.artist?.account?.requiresAttentionItems, requiresAttentionItems != 0 {
+            if let container = self.so_containerViewController {
+                container.isSideViewControllerPresented = false
+                if let topView = container.topViewController as? UINavigationController,
+                    let view = topView.topViewController as? ProfileViewController {
+                    view.performSegue(withIdentifier: "showAccountWebView", sender: self)
+                }
+            }
+        } else {
+            self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
+        }
+    }
+    
+    func newFanClubAlert() {
+        let alertController = UIAlertController (title: "Earn From Your Followers", message:
+            "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
+            
+        let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
+            if let container = self.so_containerViewController {
+                container.isSideViewControllerPresented = false
+                if let topView = container.topViewController as? UINavigationController,
+                    let view = topView.topViewController as? ProfileViewController {
+                    let modal = ChooseTagsViewController()
+                    modal.tagType = "country"
+                    view.present(modal, animated: true, completion: nil)
+                    }
+                }
+            }
+        alertController.addAction(getStartedAction)
+        
+        let learnMoreAction = UIAlertAction(title: "Learn More", style: .default) { (_) -> Void in
+            //TODO: show webView on the Fan Club thing and how it works
+        }
+        alertController.addAction(learnMoreAction)
+            
+        let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
+        }
+        alertController.addAction(cancelAction)
+            
+        present(alertController, animated: true, completion: nil)
+    }
     
 }

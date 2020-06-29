@@ -187,7 +187,7 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         } else if let playlistId = playlist?.objectId, let playlistTitle = playlist?.title, let soundTitle = soundList.sounds[indexPath.row].title, let soundId = soundList.sounds[indexPath.row].objectId {
             attachSoundToPlaylist(soundId, playlistId: playlistId)
-            let banner = StatusBarNotificationBanner(title: "\(soundTitle) added to \(playlistTitle).", style: .success)
+            let banner = StatusBarNotificationBanner(title: "\(soundTitle) added to \(playlistTitle).", style: .info)
             banner.show()
             if soundList.sounds.indices.contains(indexPath.row) {
                 soundList.sounds.remove(at: indexPath.row)

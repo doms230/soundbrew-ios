@@ -12,7 +12,6 @@ import Alamofire
 import SwiftyJSON
 import SnapKit
 class AccountWebViewController: UIViewController, WKUIDelegate {
-    var accountId: String!
     var webView: WKWebView!
     let uiElement = UIElement()
     let color = Color()
@@ -22,29 +21,11 @@ class AccountWebViewController: UIViewController, WKUIDelegate {
         self.view.backgroundColor = .white
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        setupDoneButton()
-        getAccountLink(accountId)
-    }
-    
-    //MARK: done butotn
-    lazy var doneButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Done", for: .normal)
-        button.addTarget(self, action: #selector(self.didPressDoneButton), for: .touchUpInside)
-        button.isOpaque = true
-        return button
-    }()
-    
-    func setupDoneButton() {
-        self.view.addSubview(doneButton)
-        doneButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        if let id = Customer.shared.artist?.account?.id {
+            getAccountLink(id)
+        } else {
+            self.uiElement.goBackToPreviousViewController(self)
         }
-    }
-    
-    @objc func didPressDoneButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: Account
@@ -64,12 +45,12 @@ class AccountWebViewController: UIViewController, WKUIDelegate {
                         print("stripe url: \(url)")
                         self.setupAndShowWebView(url)
                     } else {
-                        self.dismiss(animated: true, completion: nil)
+                        self.uiElement.goBackToPreviousViewController(self)
                     }
                     
                 case .failure(let error):
                     print(error)
-                    self.dismiss(animated: true, completion: nil)
+                    self.uiElement.goBackToPreviousViewController(self)
                     //self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
                 }
         }
@@ -84,7 +65,7 @@ class AccountWebViewController: UIViewController, WKUIDelegate {
         webView.uiDelegate = self
         self.view.addSubview(webView)
         webView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(doneButton.snp.bottom).offset(uiElement.topOffset)
+            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self))
             make.right.equalTo(self.view).offset(uiElement.rightOffset * 2)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.bottom.equalTo(self.view).offset(uiElement.bottomOffset)

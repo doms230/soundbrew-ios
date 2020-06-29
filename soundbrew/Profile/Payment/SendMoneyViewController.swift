@@ -414,7 +414,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
             if let fromUserId = PFUser.current()?.objectId, let toUserId = self.artist?.objectId {
                 self.newMention(fromUserId, toUserId: toUserId)
             }
-            let banner = StatusBarNotificationBanner(title: "Success", style: .success)
+            let banner = StatusBarNotificationBanner(title: "Success", style: .info)
             banner.show()
             self.dismiss(animated: true, completion: nil)
             return

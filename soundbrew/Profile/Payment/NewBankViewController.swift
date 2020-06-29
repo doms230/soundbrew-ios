@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import NVActivityIndicatorView
+import NotificationBannerSwift
 
 class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable {
     let uiElement = UIElement()
@@ -20,27 +21,30 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
     var accountText: UITextField!
     var routingText: UITextField!
     
-    var currentBankAccountId: String?
-    var newBankAccountId: String?
-    var country: String!
-    var currency: String!
-    
-    var accountId: String!
+    var account: Account?
+    var artistDelegate: ArtistDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
-        setUpTableView(topView.2)
+        if let account = Customer.shared.artist?.account {
+            self.account = account
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
+            setUpTableView(topView.2)
+        } else {
+            self.dismiss(animated: true, completion: nil)
+        }
     }
     
     @objc func didPressDoneButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         } else if accountingIsValidated() && routingIsValidated() {
-            createNewBank()
+            if let accountId = self.account?.id, let country = self.account?.country, let currency = self.account?.currency, let routing = self.routingText.text, let accountNumber = self.accountText.text {
+                createNewBank(accountId, country: country, currency: currency, routing: routing, accountNumber: accountNumber)
+            }
         }
     }
     
@@ -55,7 +59,6 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
-        //self.view.addSubview(cancelButton)
         tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(dividerLine.snp.bottom)
             make.left.equalTo(self.view)
@@ -91,52 +94,58 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
-    func createNewBank() {
+    func createNewBank(_ accountId: String, country: String, currency: String, routing: String, accountNumber: String) {
         self.startAnimating()
         let url = self.baseURL!.appendingPathComponent("newBank")
         let parameters: Parameters = [
-            "account": accountId!,
-            "country": country!,
-            "currency": currency!,
-            "routing_number": self.routingText.text!,
-            "account_number": self.accountText.text!]
-        
+            "account": accountId,
+            "country": country,
+            "currency": currency,
+            "routing_number": routing,
+            "account_number": accountNumber]
         AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
-                self.stopAnimating()
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    if let newBankAccountId = json["external_accounts"]["data"][0]["id"].string {
-                        self.newBankAccountId = newBankAccountId
-                    }
-                    if let currentBankAccountId = self.currentBankAccountId {
-                        self.deleteBank(currentBankAccountId)
+                    if let statusCode = json["statusCode"].int {
+                        if statusCode >= 200 && statusCode < 300 {
+                            self.updateAndDismiss(json)
+                        } else if let code = json["raw"]["code"].string, let message = json["raw"]["message"].string  {
+                            self.stopAnimating()
+                            self.uiElement.showAlert(code, message: message, target: self)
+                        }
                     } else {
-                        self.dismiss(animated: true, completion: nil)
-                        //TODO: update Edit Profile with new bank
+                        self.updateAndDismiss(json)
                     }
+                    
                 case .failure(let error):
+                    self.stopAnimating()
                     self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
                 }
         }
     }
     
-    func deleteBank(_ bankId: String) {
-        print("deleting old bank")
-        self.startAnimating()
-        let url = self.baseURL!.appendingPathComponent("deleteBank")
-        let parameters: Parameters = [
-            "account": accountId!,
-            "bank": bankId]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                self.stopAnimating()
-                self.dismiss(animated: true, completion: nil)
+    func updateAndDismiss(_ json: JSON) {
+        if let newBankAccountId = json["external_accounts"]["data"][0]["id"].string {
+            Customer.shared.artist?.account?.bankAccountId = newBankAccountId
         }
+        
+        if let bankName = json["external_accounts"]["data"][0]["bank_name"].string, let last4 = json["external_accounts"]["data"][0]["last4"].string {
+             let newBanktitle = "\(bankName) \(last4)"
+            Customer.shared.artist?.account?.bankTitle = newBanktitle
+         }
+        
+        self.stopAnimating()
+        let newBankTitle = Customer.shared.artist?.account?.bankTitle
+        let banner = StatusBarNotificationBanner(title: "\(newBankTitle ?? "Your Bank") is now your payout bank.", style: .info)
+        banner.show()
+        
+        self.dismiss(animated: true, completion: {() in
+            if let artistDelegate = self.artistDelegate {
+                artistDelegate.receivedArtist(nil)
+            }
+        })
     }
     
     func routingIsValidated() -> Bool {

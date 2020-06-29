@@ -27,7 +27,7 @@ class Account {
         self.priceId = priceId
     }
     
-    func retreiveAccountIfo() {
+    func retreiveAccount() {
         let url = self.baseURL!.appendingPathComponent("retrieve")
         let parameters: Parameters = [
             "accountId": self.id ?? "nil"]
@@ -97,6 +97,47 @@ class Account {
                     self.weeklyEarnings = 0
                     print(error)
                 }
+        }
+    }
+    
+    //new account
+    func createNewAccount(_ countryCode: String, email: String, tableView: UITableView?, target: UIViewController) {
+        //self.startAnimating()
+        let url = self.baseURL!.appendingPathComponent("create")
+        let parameters: Parameters = [
+            "country": countryCode,
+            "email": email]
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    self.id = json["id"].stringValue
+                    Customer.shared.artist?.account = self
+                    if let tableView = tableView {
+                        DispatchQueue.main.async {
+                            tableView.reloadData()
+                        }
+                    }
+                    self.updateUserInfoWithAccountNumberOrPrice()
+                case .failure(let error):
+                    UIElement().showAlert("Un-Successful", message: error.errorDescription ?? "", target: target)
+                }
+        }
+    }
+    
+    func updateUserInfoWithAccountNumberOrPrice() {
+        let query = PFQuery(className: "_User")
+        query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
+            (user: PFObject?, error: Error?) -> Void in
+            if let user = user {
+                if let accountId = self.id {
+                    user["accountId"] = accountId
+                }
+                user.saveEventually()
+            }
         }
     }
 }

@@ -98,7 +98,7 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
-            let banner = StatusBarNotificationBanner(title: "\(sound.title ?? "Selected Sound has been") added to \(playlists[indexPath.row].title ?? "selected playlist").", style: .success)
+            let banner = StatusBarNotificationBanner(title: "\(sound.title ?? "Selected Sound has been") added to \(playlists[indexPath.row].title ?? "selected playlist").", style: .info)
             banner.show()
             self.checkIfUserLikedSong()
             attachSoundToPlaylist(sound.objectId ?? "", playlistId: playlists[indexPath.row].objectId ?? "")

@@ -500,28 +500,6 @@ class UIElement {
     }
         
     func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String, title: String) -> (UIButton, UIButton, UIView) {
-        let cancelButton = UIButton()
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.addTarget(target, action: action, for: .touchUpInside)
-        cancelButton.isOpaque = true
-        cancelButton.tag = 0
-        target.view.addSubview(cancelButton)
-        cancelButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(target.view).offset(self.topOffset)
-            make.left.equalTo(target.view).offset(self.leftOffset)
-        }
-        
-        let titleLabel = UILabel()
-        titleLabel.textColor = .white
-        titleLabel.text = title
-        titleLabel.font = UIFont(name: "\(self.mainFont)-Bold", size: 15)
-        titleLabel.textAlignment = .center
-        titleLabel.isOpaque = true
-        target.view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.centerX.equalTo(target.view)
-            make.centerY.equalTo(cancelButton)
-        }
         
         let doneButton = UIButton()
         doneButton.setTitle(doneButtonTitle, for: .normal)
@@ -532,6 +510,30 @@ class UIElement {
         doneButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(target.view).offset(self.topOffset)
             make.right.equalTo(target.view).offset(self.rightOffset)
+        }
+        
+        
+        let cancelButton = UIButton()
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.addTarget(target, action: action, for: .touchUpInside)
+        cancelButton.isOpaque = true
+        cancelButton.tag = 0
+        target.view.addSubview(cancelButton)
+        cancelButton.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(doneButton)
+            make.right.equalTo(doneButton.snp.left).offset(self.rightOffset)
+        }
+        
+        let titleLabel = UILabel()
+        titleLabel.textColor = .white
+        titleLabel.text = title
+        titleLabel.font = UIFont(name: "\(self.mainFont)-Bold", size: 15)
+        titleLabel.textAlignment = .center
+        titleLabel.isOpaque = true
+        target.view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(target.view).offset(self.leftOffset)
+            make.centerY.equalTo(cancelButton)
         }
         
         let dividerLine = UIView()
