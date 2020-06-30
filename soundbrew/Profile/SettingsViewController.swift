@@ -369,7 +369,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 container.isSideViewControllerPresented = false
                 if let topView = container.topViewController as? UINavigationController,
                     let view = topView.topViewController as? ProfileViewController {
-                    let modal = ChooseTagsV2ViewController()
+                    let modal = ChooseTagsViewController()
                     modal.tagType = "country"
                     modal.tagDelegate = view
                     view.present(modal, animated: true, completion: nil)

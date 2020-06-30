@@ -139,11 +139,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
                 var account: Account?
                 if let accountId = user["accountId"] as? String, !accountId.isEmpty {
-                    account = Account(id: accountId, priceId: nil)
-                }
-                
-                if let priceId = user["priceId"] as? String, !priceId.isEmpty {
-                    account?.priceId = priceId
+                    account = Account(accountId)
                 }
                 
                 artist.account = account

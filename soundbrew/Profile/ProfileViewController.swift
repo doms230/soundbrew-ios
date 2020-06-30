@@ -14,8 +14,10 @@ import Parse
 import Kingfisher
 import SnapKit
 import SidebarOverlay
+import NVActivityIndicatorView
+import NotificationBannerSwift
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate, NVActivityIndicatorViewable {
     
     let uiElement = UIElement()
     let color = Color()
@@ -45,6 +47,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        if let isSettingUpNewAccount = self.isSettingUpNewAccount, isSettingUpNewAccount {
+            let banner = StatusBarNotificationBanner(title: "More info required.", style: .info)
+            banner.show()
+            self.performSegue(withIdentifier: "showAccountWebView", sender: self)
+        }
         setMiniPlayer()
     }
     
@@ -103,7 +110,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         case "showAccountWebView":
             let backItem = UIBarButtonItem()
-            backItem.title = "Account"
+            backItem.title = "Account Info"
             navigationItem.backBarButtonItem = backItem
             default:
                 break
@@ -749,11 +756,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: tags
+    var isSettingUpNewAccount: Bool?
     var selectedTagFromPlayerView: Tag!
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tags = chosenTags {
-            self.selectedTagFromPlayerView = tags[0]
-            self.performSegue(withIdentifier: "showSounds", sender: self)
+            let tag = tags[0]
+            if tag.type == "country" {
+                if let email = PFUser.current()?.email {
+                    //Create new account
+                    let account = Account(nil)
+                    account.createNewAccount(tag.objectId, email: email, tableView: self.tableView, target: self)
+                }
+            } else {
+                self.selectedTagFromPlayerView = tag
+                self.performSegue(withIdentifier: "showSounds", sender: self)
+            }
         }
     }
 }

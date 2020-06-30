@@ -42,7 +42,6 @@ class AccountWebViewController: UIViewController, WKUIDelegate {
                 case .success(let json):
                     let json = JSON(json)
                     if let url = json["url"].string {
-                        print("stripe url: \(url)")
                         self.setupAndShowWebView(url)
                     } else {
                         self.uiElement.goBackToPreviousViewController(self)

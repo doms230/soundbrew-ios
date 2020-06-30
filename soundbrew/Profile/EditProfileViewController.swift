@@ -144,10 +144,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell = bioCell(tableView, indexPath: indexPath)
             break
             
-        /*case 4:
-            cell = subScell(indexPath, tableView: tableView)
-            break*/
-            
         case 4:
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
@@ -183,13 +179,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             break
             
         case 2:
-            let modal = ChooseTagsV2ViewController()
+            let modal = ChooseTagsViewController()
             modal.tagDelegate = self
             modal.tagType = "city"
             self.present(modal, animated: true, completion: nil)
-            //tagType = "city"
-          //  tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            //self.performSegue(withIdentifier: "showTags", sender: self)
             break
             
         case 3:
@@ -199,27 +192,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             modal.bio = self.artist!.bio
             self.present(modal, animated: true, completion: nil)
             break
-            
-       /* case 4:
-            tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            /*if let artist = self.artist, let accountId = artist.account?.id, !accountId.isEmpty {
-                if artist.account?.priceId == nil {
-                    self.getAvailablePrices()
-                } else {
-                    self.showPriceAlert()
-                }
-            } else {
-                self.newFanClubAlert()
-            }*/
-            break*/
-            
-     /*   case 6:
-            if indexPath.row == 1 {
-                self.showBankAlert()
-            } else if indexPath.row == 2{
-                showRequireAccountAttention()
-            }
-            break*/
             
         default:
             break
@@ -440,14 +412,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tagArray = chosenTags {
             let tag = tagArray[0]
-            if tag.type == "country",  let countryCode = tag.objectId, let email = artist?.email {
-                //self.createNewAccount(countryCode, email: email)
-            } else if tag.type == "price", let priceId = tag.objectId {
-               // self.updateUserInfoWithAccountNumberOrPrice(nil, priceId: priceId)
-            } else if tag.type == "city" {
-               artist?.city = tag.name
-                self.tableView.reloadData()
-            }
+            artist?.city = tag.name
+             self.tableView.reloadData()
         }
     }
     
@@ -480,24 +446,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             artist!.bio = nil
         }
         self.tableView.reloadData()
-    }
-    
-    //MARK: Subscription
-    func subScell(_ indexpath: IndexPath, tableView: UITableView) -> ProfileTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: editBioReuse) as! ProfileTableViewCell
-        cell.backgroundColor = .white
-        cell.selectionStyle = .gray
-        tableView.separatorInset = .zero
-        cell.editBioTitle.text = "Fan Club Price"
-        cell.editBioTitle.numberOfLines = 0
-        if artist?.account == nil || artist?.account?.priceId == nil {
-            cell.editBioText.text = "NONE"
-        } else if let priceId = artist?.account?.priceId {
-            cell.editBioText.text = "loading..."
-            artist?.getAccountPrice(priceId, priceInput: cell.editBioText)
-        }
-        
-        return cell
     }
     
     //MARK: Data
@@ -568,11 +516,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         var account: Account?
                         
                         if let accountId = user["accountId"] as? String, !accountId.isEmpty {
-                            account = Account(id: accountId, priceId: nil)
-                        }
-                        
-                        if let priceId = user["priceId"] as? String, !priceId.isEmpty {
-                            account?.priceId = priceId
+                            account = Account(accountId)
                         }
                         
                         customer.artist?.account = account
@@ -644,89 +588,4 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         
         return true
     }
-    
-    //MARK: Account
-   /* let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
-    var availablePrices = [Price]()
-    
-    func getAvailablePrices() {
-        if let currency = self.artist?.account?.currency {
-            let url = self.baseURL!.appendingPathComponent("listPrices")
-            let parameters: Parameters = [
-                "currency": currency]
-            
-            AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-                .validate(statusCode: 200..<300)
-                .responseJSON { responseJSON in
-                    switch responseJSON.result {
-                    case .success(let json):
-                        self.availablePrices.removeAll()
-                        let json = JSON(json)
-                        for (_,subJson):(String, JSON) in json["data"] {
-                            if let objectId = subJson["id"].string, let amount = subJson["unit_amount"].int {
-                                let price = Price(objectId, amount: amount)
-                                self.availablePrices.append(price)
-                            }
-                        }
-                        self.availablePrices.sort(by: {$0.amount < $1.amount})
-                        self.showPricePicker()
-                    case .failure(let error):
-                        self.uiElement.showAlert("Error Loading Prices", message: error.localizedDescription, target: self)
-                    }
-            }
-        } else {
-            self.uiElement.showAlert("No Currency", message: "We were unable to retrieve your account's currency.", target: self)
-        }
-    }*/
-    
-    /*func newFanClubAlert() {
-        let alertController = UIAlertController (title: "Earn From Your Followers", message:
-            "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
-            
-        let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
-            //TODO: dismiss and show Country picker for new fan club
-        }
-        alertController.addAction(getStartedAction)
-        
-        let learnMoreAction = UIAlertAction(title: "Learn More", style: .default) { (_) -> Void in
-            //TODO: show webView on the Fan Club thing and how it works
-        }
-        alertController.addAction(learnMoreAction)
-            
-        let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
-        }
-        alertController.addAction(cancelAction)
-            
-        present(alertController, animated: true, completion: nil)
-    }*/
-    
-  /*  func showPriceAlert() {
-        let alertController = UIAlertController (title: "Change your Subscription Price?", message: "Doing so will notify your subscribers of the change.", preferredStyle: .actionSheet)
-        
-        let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
-            self.getAvailablePrices()
-        }
-        alertController.addAction(getStartedAction)
-        
-        let cancelAction = UIAlertAction(title: "No", style: .cancel) { (_) -> Void in
-        }
-        alertController.addAction(cancelAction)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func showPricePicker() {
-        self.tagType = "price"
-        self.performSegue(withIdentifier: "showTags", sender: self)
-    }*/
 }
-
-/*class Price {
-    var objectId: String!
-    var amount: Int!
-    
-    init(_ objectId: String!, amount: Int!) {
-        self.objectId = objectId
-        self.amount = amount
-    }
-}*/

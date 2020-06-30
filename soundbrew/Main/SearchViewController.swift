@@ -71,7 +71,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         case "showTags":
             let desi = segue.destination as! ChooseTagsViewController
             desi.tagType = selectedTagType
-            desi.isSelectingTagsForPlaylist = true
             
             let backItem = UIBarButtonItem()
             backItem.title = ""

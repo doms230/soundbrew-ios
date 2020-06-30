@@ -180,7 +180,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     //mark: Fan Club Exclusive
     func fanClubExclusiveCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: fanClubExcluseReuse) as! SoundInfoTableViewCell
-        if Customer.shared.artist?.account?.priceId != nil {
+        if Customer.shared.artist?.account?.id != nil {
             if let isExclusive = self.soundThatIsBeingEdited?.isExclusive {
                 cell.socialSwitch.isOn = isExclusive
             } else {
@@ -295,7 +295,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }*/
     
     func showChooseTagsView() {
-        let modal = ChooseTagsV2ViewController()
+        let modal = ChooseTagsViewController()
         modal.tagType = "sound"
         modal.tagDelegate = self 
         if let tags = soundTags {

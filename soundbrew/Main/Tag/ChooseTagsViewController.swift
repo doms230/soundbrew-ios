@@ -11,7 +11,7 @@ import Parse
 import SnapKit
 import FlagKit
 
-class ChooseTagsV2ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     let uiElement = UIElement()
     let color = Color()

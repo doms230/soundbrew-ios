@@ -14,7 +14,6 @@ import Parse
 class Account {
     let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
     var id: String?
-    var priceId: String?
     var country: String!
     var currency: String!
     var requiresAttentionItems: Int?
@@ -22,9 +21,8 @@ class Account {
     var bankTitle: String?
     var weeklyEarnings: Int!
     
-    init(id: String?, priceId: String?) {
+    init(_ id: String?) {
         self.id = id
-        self.priceId = priceId
     }
     
     func retreiveAccount() {
@@ -101,8 +99,8 @@ class Account {
     }
     
     //new account
-    func createNewAccount(_ countryCode: String, email: String, tableView: UITableView?, target: UIViewController) {
-        //self.startAnimating()
+    func createNewAccount(_ countryCode: String, email: String, tableView: UITableView?, target: ProfileViewController) {
+        target.startAnimating()
         let url = self.baseURL!.appendingPathComponent("create")
         let parameters: Parameters = [
             "country": countryCode,
@@ -111,8 +109,11 @@ class Account {
         AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
+                target.stopAnimating()
                 switch responseJSON.result {
                 case .success(let json):
+                    target.isSettingUpNewAccount = true
+                    target.performSegue(withIdentifier: "showAccountWebView", sender: self)
                     let json = JSON(json)
                     self.id = json["id"].stringValue
                     Customer.shared.artist?.account = self
@@ -121,14 +122,14 @@ class Account {
                             tableView.reloadData()
                         }
                     }
-                    self.updateUserInfoWithAccountNumberOrPrice()
+                    self.updateUserInfoWithAccountNumber()
                 case .failure(let error):
                     UIElement().showAlert("Un-Successful", message: error.errorDescription ?? "", target: target)
                 }
         }
     }
     
-    func updateUserInfoWithAccountNumberOrPrice() {
+    func updateUserInfoWithAccountNumber() {
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
