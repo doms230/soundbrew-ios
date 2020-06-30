@@ -25,7 +25,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barTintColor = color.black()
         setUpNavigationBar()
-        if let tagType = self.tagType, tagType != "more" {
+       /* if let tagType = self.tagType, tagType != "more" {
             /*if isViewTagsFromSound {
                 loadTags(nil, searchText: nil, tags: sound?.tags)
             } else*/ if tagType == "country" || tagType == "price" {
@@ -36,7 +36,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             
         } else {
             self.setupChooseTagsView()
-        }
+        }*/
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -97,7 +97,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func setUpNavigationBar() {
         if tagType == "country" || tagType == "price" || tagType == "playlist" {
-            let doneButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
+           /* let doneButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.didPressChooseTagsDoneButton(_:)))
             self.navigationItem.rightBarButtonItem = doneButton
             switch tagType {
             case "price":
@@ -114,7 +114,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 
             default:
                 break
-            }
+            }*/
             
         }  else {
             if let tagType = self.tagType {
@@ -271,8 +271,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         case "country":
             return availableCountries.count
             
-        case "price":
-            return prices.count
+    /*    case "price":
+            return prices.count*/
             
         default:
             break
@@ -286,8 +286,8 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         case "country":
             return countryCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
             
-        case "price":
-            return priceCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)
+      /*  case "price":
+            return priceCell(tableView, reuse: searchTagViewReuse, row: indexPath.row)*/
             
         default:
             break
@@ -310,26 +310,28 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        switch tagType {
+        let tag = Tag(objectId: self.availableCountryCodes[indexPath.row], name: self.availableCountries[indexPath.row], count: 0, isSelected: false, type: "country", imageURL: nil, uiImage: nil)
+        self.chosenTags.append(tag)
+        self.handleTagsForDismissal(true)
+       /* switch tagType {
         case "country":
             let tag = Tag(objectId: self.availableCountryCodes[indexPath.row], name: self.availableCountries[indexPath.row], count: 0, isSelected: false, type: "country", imageURL: nil, uiImage: nil)
             self.chosenTags.append(tag)
             self.handleTagsForDismissal(true)
             break
-        case "price":
+        /*case "price":
             let price = self.prices[indexPath.row]
             let tag = Tag(objectId: price.objectId, name: nil, count: price.amount, isSelected: false, type: "price", imageURL: nil, uiImage: nil)
             self.chosenTags.append(tag)
             self.handleTagsForDismissal(true)
-            break
+            break*/
             
         default:
             if filteredTags.indices.contains(indexPath.row) {
                 didSelectRowAt(indexPath.row)
             }
             break
-        }
+        }*/
     }
     
     func didSelectRowAt(_ row: Int) {
@@ -373,9 +375,9 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: price
-    var prices = [Price]()
+    //var prices = [Price]()
 
-    func priceCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
+   /* func priceCell(_ tableView: UITableView, reuse: String, row: Int) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuse) as! ProfileTableViewCell
         cell.selectionStyle = .gray
         cell.backgroundColor = Color().black()
@@ -384,7 +386,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         cell.profileImage.image = UIImage(named: "dollar_sign")
         cell.displayNameLabel.text = self.uiElement.convertCentsToDollarsAndReturnString(price.amount, currency: "")
         return cell
-    }
+    }*/
     
     //MARK: tags
     var isSelectingTagsForPlaylist = false

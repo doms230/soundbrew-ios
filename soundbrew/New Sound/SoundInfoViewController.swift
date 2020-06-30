@@ -19,12 +19,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func receivedArtist(_ value: Artist?) {
     }
     
+    let color = Color()
     let uiElement = UIElement()
     
-    var currentUserCity: String?
-    var artistName: String?
-    
-    let color = Color()
     var soundArtDidFinishProcessing = true
     var didPressUploadButton = false
     var soundParseFileDidFinishProcessing = false
@@ -45,7 +42,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.reloadData()
     }
         
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+   /* override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let navigationController = segue.destination as! UINavigationController
         
         switch segue.identifier {
@@ -56,7 +53,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         default:
             break
         }
-    }
+    }*/
     
     //mark: views
     var uploadButton: UIBarButtonItem!
@@ -91,7 +88,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let soundInfoReuse = "soundInfoReuse"
     let soundTagReuse = "soundTagReuse"
     let soundProgressReuse = "soundProgressReuse"
-    let soundSocialReuse = "soundSocialReuse"
+    let fanClubExcluseReuse = "soundSocialReuse"
     let dividerReuse = "dividerReuse"
     let audioImageCellSection = 0
     let fanClubExclusiveSection = 2
@@ -102,7 +99,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundTagReuse)
-        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundSocialReuse)
+        tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: fanClubExcluseReuse)
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
@@ -122,9 +119,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         if section == tagCellSection {
+         /*if section == tagCellSection {
             return 5
-        }
+        }*/
         return 1
     }
     
@@ -171,7 +168,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             break
             
         case tagCellSection:
-            didPressTagSection(indexPath)
+           // didPressTagSection(indexPath)
+            self.showChooseTagsView()
             break
             
         default:
@@ -181,7 +179,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
 
     //mark: Fan Club Exclusive
     func fanClubExclusiveCell() -> SoundInfoTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundSocialReuse) as! SoundInfoTableViewCell
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: fanClubExcluseReuse) as! SoundInfoTableViewCell
         if Customer.shared.artist?.account?.priceId != nil {
             if let isExclusive = self.soundThatIsBeingEdited?.isExclusive {
                 cell.socialSwitch.isOn = isExclusive
@@ -258,7 +256,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
 
     //MARK: tags
-    var showTags = "showTags"
+    var soundTags: Array<Tag>?
+  /*  var showTags = "showTags"
     var tagType: String?
     var genreTag: Tag?
     var moodTag: Tag?
@@ -266,24 +265,24 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var moreTags: Array<Tag>?
     var cityTag: Tag?
     var artistTag: Tag?
-    var tagsToUpdateInChooseTagsViewController: Array<Tag>?
+    var tagsToUpdateInChooseTagsViewController: Array<Tag>?*/
     
     func getSelectedTags() {
         if let soundTags = soundThatIsBeingEdited?.tags {
             for tag in soundTags {
-                loadTag(tag, type: nil)
+                loadTag(tag)
             }
         }
         
         if let currentUser = Customer.shared.artist {
             loadCurrentUserCity(currentUser.objectId)
             if let username = currentUser.username {
-                loadTag(username, type: "artist")
+                loadTag(username)
             }
         }
     }
     
-    func prepareTagView(_ navigationController: UINavigationController) {
+    /*func prepareTagView(_ navigationController: UINavigationController) {
         let viewController: ChooseTagsViewController = navigationController.topViewController as! ChooseTagsViewController
         viewController.tagDelegate = self
         
@@ -293,9 +292,19 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 viewController.chosenTags = tags
             }
         }
+    }*/
+    
+    func showChooseTagsView() {
+        let modal = ChooseTagsV2ViewController()
+        modal.tagType = "sound"
+        modal.tagDelegate = self 
+        if let tags = soundTags {
+            modal.chosenTagsForSound = tags
+        }
+        self.present(modal, animated: true, completion: nil)
     }
     
-    func didPressTagSection(_ indexPath: IndexPath) {
+    /*func didPressTagSection(_ indexPath: IndexPath) {
         switch indexPath.row {
         case 0:
             self.tagType = "city"
@@ -328,14 +337,29 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         } else {
             self.performSegue(withIdentifier: showTags, sender: self)
         }
-    }
+    }*/
     
     func tagCell(_ indexPath: IndexPath, tableView: UITableView) -> SoundInfoTableViewCell {
        let cell = self.tableView.dequeueReusableCell(withIdentifier: soundTagReuse) as! SoundInfoTableViewCell
         let localizedTag = NSLocalizedString("tag", comment: "")
         let localizedTags = NSLocalizedString("tags", comment: "")
+        cell.soundTagLabel.text = "Tags"
+       // cell.soundTagLabel.text = "\(self.uiElement.localizedMore.capitalized) \(localizedTags)"
+        if let moreTags = self.soundThatIsBeingEdited?.tags {
+            if moreTags.count == 1 {
+                cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTag)"
+            } else {
+                cell.chosenSoundTagLabel.text = "\(moreTags.count) \(localizedTags)"
+            }
+            
+            cell.chosenSoundTagLabel.textColor = .white
+            
+        } else {
+            cell.chosenSoundTagLabel.text = localizedAdd.capitalized
+            cell.chosenSoundTagLabel.textColor = color.blue()
+        }
         
-        switch indexPath.row {
+       /* switch indexPath.row {
         case 0:
             let localizedCityTag = NSLocalizedString("cityTag", comment: "")
             cell.soundTagLabel.text = localizedCityTag
@@ -379,7 +403,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             
         default:
             break
-        }
+        }*/
         
         return cell
     }
@@ -397,7 +421,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func receivedTags(_ chosenTags: Array<Tag>?) {
-        if let tagType = self.tagType {
+        if let tags = chosenTags {
+            self.soundTags = tags
+            self.soundThatIsBeingEdited?.tags = tags.map {$0.name}
+        } else {
+            self.soundTags?.removeAll()
+            self.soundThatIsBeingEdited?.tags = nil
+            //self.moreTags?.removeAll()
+        }
+        self.tableView.reloadData()
+        /*if let tagType = self.tagType {
             if let tag = chosenTags {
                 switch tagType {
                 case "city":
@@ -420,12 +453,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if tagType == "more" {
                 self.moreTags = nil 
             }
-        }
+        }*/
         
         self.tableView.reloadData()
     }
     
-    func combineSelectedTags() -> Array<Tag> {
+   /* func combineSelectedTags() -> Array<Tag> {
         var tags = [Tag]()
         if let moreTags = self.moreTags {
             tags = moreTags
@@ -454,7 +487,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.soundThatIsBeingEdited?.tags = tags.map {$0.name}
         
         return tags
-    }
+    }*/
     
     func saveTags(_ tags: Array<Tag>) {
         for tag in tags {
@@ -480,15 +513,20 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func loadTag(_ tag: String, type: String?) {
+    func loadTag(_ tag: String) {
         let query = PFQuery(className: "Tag")
         query.whereKey("tag", equalTo: tag)
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            var retreivedTag: Tag!
-            var retreivedType: String?
-            if let object = object {
+            if let object = object{
+                let tag = Tag(objectId: object.objectId, name: object["tag"] as? String, count: 0, isSelected: false, type: object["type"] as? String, imageURL: nil, uiImage: nil)
+                self.soundTags?.append(tag)
+            }
+
+            //var retreivedTag: Tag!
+            //var retreivedType: String?
+            /*if let object = object {
                 if let type = object["type"] as? String {
                     retreivedType = type
                 }
@@ -499,9 +537,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     retreivedType = type
                 }
                 retreivedTag = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: retreivedType, imageURL: nil, uiImage: nil)
-            }
+            }*/
             
-            if let type = retreivedType {
+            /*if let type = retreivedType {
                 switch type {
                 case "genre":
                     self.genreTag = retreivedTag
@@ -527,7 +565,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.moreTags?.append(retreivedTag)
                     break
                 }
-            }
+            }*/
             self.tableView.reloadData()
         }
     }
@@ -779,7 +817,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
 
     //mark: data
     func createSound(_ sound: Sound, isDraft: Bool) {
-        let tags = combineSelectedTags()
+        //let tags = combineSelectedTags()
         let newSound = PFObject(className: "Post")
         newSound["userId"] = sound.artist!.objectId
         newSound["user"] = PFUser.current()
@@ -790,7 +828,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let artFile = sound.artFile {
             newSound["songArt"] = artFile
         }
-        newSound["tags"] = sound.tags
+        if let tags = sound.tags {
+            newSound["tags"] = tags
+        }
+        
         newSound["isDraft"] = isDraft
         newSound["isRemoved"] = isDraft
         newSound["credits"] = credits.count
@@ -804,7 +845,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if isDraft {
                     self.finishUp(false, object: newSound)
                 } else {
-                    self.saveTags(tags)
+                    if let tags = self.soundTags {
+                        self.saveTags(tags)
+                    }
                     sound.objectId = newSound.objectId
                     self.saveCredits(sound)
                     self.finishUp(true, object: newSound)
@@ -820,7 +863,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func updateSound(_ sound: Sound, isDraft: Bool) {
-        let tags = combineSelectedTags()
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
@@ -835,7 +877,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                     object["title"] = title
                 }
                 
-                object["tags"] = tags.map {$0.name}
+                if let tags = sound.tags {
+                    object["tags"] = tags
+                }
+                
                 object["isDraft"] = isDraft
                 object["isRemoved"] = isDraft
                 object["credits"] = self.credits.count
@@ -849,7 +894,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         if isDraft {
                             self.finishUp(false, object: object)
                         } else {
-                            self.saveTags(tags)
+                            if let tags = self.soundTags {
+                                self.saveTags(tags)
+                            }
                             sound.objectId = object.objectId
                             self.saveCredits(sound)
                             self.finishUp(true, object: object)
@@ -878,7 +925,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if let user = user {
                 if let city = user["city"] as? String {
                     if !city.isEmpty {
-                        self.loadTag(city.lowercased(), type: "city")
+                        self.loadTag(city.lowercased())
                     }
                 }
             }

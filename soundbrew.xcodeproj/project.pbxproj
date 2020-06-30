@@ -20,6 +20,7 @@
 		E44A664E248D835A004672DC /* NewBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A664D248D835A004672DC /* NewBankViewController.swift */; };
 		E44A665224913707004672DC /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665124913706004672DC /* Playlist.swift */; };
 		E44A665424916B4F004672DC /* NewPlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44A665324916B4E004672DC /* NewPlaylistViewController.swift */; };
+		E453C22A24AA597A002F82D2 /* ChooseTagsV2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E453C22924AA597A002F82D2 /* ChooseTagsV2ViewController.swift */; };
 		E46A641D234E567C0055E65A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641C234E567C0055E65A /* LoginViewController.swift */; };
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
@@ -166,6 +167,7 @@
 		E44A664D248D835A004672DC /* NewBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBankViewController.swift; sourceTree = "<group>"; };
 		E44A665124913706004672DC /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
 		E44A665324916B4E004672DC /* NewPlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPlaylistViewController.swift; sourceTree = "<group>"; };
+		E453C22924AA597A002F82D2 /* ChooseTagsV2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTagsV2ViewController.swift; sourceTree = "<group>"; };
 		E46A641C234E567C0055E65A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
@@ -481,6 +483,7 @@
 			children = (
 				F268992A21753A3B00C21663 /* Tag.swift */,
 				F26898A1215B2C9100C21663 /* ChooseTagsViewController.swift */,
+				E453C22924AA597A002F82D2 /* ChooseTagsV2ViewController.swift */,
 			);
 			path = Tag;
 			sourceTree = "<group>";
@@ -820,6 +823,7 @@
 				E4EB6870238CBC5000FB1D71 /* AKConverter.swift in Sources */,
 				E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */,
 				F2FB14D422CD1A1900ED157E /* Customer.swift in Sources */,
+				E453C22A24AA597A002F82D2 /* ChooseTagsV2ViewController.swift in Sources */,
 				E44A665424916B4F004672DC /* NewPlaylistViewController.swift in Sources */,
 				F2E5081C21FFC5A200985E34 /* SoundsViewController.swift in Sources */,
 				F2EA6F53220BEAF4007FA614 /* MiniPlayerView.swift in Sources */,

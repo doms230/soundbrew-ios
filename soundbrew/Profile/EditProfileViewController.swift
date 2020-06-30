@@ -118,7 +118,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             return 3
         }
         
-        if section == 7 {
+        if section == 6 {
             return 9
         }
         
@@ -144,20 +144,20 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             cell = bioCell(tableView, indexPath: indexPath)
             break
             
-        case 4:
+        /*case 4:
             cell = subScell(indexPath, tableView: tableView)
-            break
+            break*/
             
-        case 5:
+        case 4:
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             break
             
-        case 6:
+        case 5:
             cell = privateInfoCell(tableView, indexPath: indexPath)
             break
             
-        case 7:
+        case 6:
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             
@@ -173,6 +173,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
         artist?.website = websiteText.text
         artist?.email = emailText.text?.lowercased()
         
@@ -182,13 +183,16 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             break
             
         case 2:
-            tagType = "city"
-            tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            self.performSegue(withIdentifier: "showTags", sender: self)
+            let modal = ChooseTagsV2ViewController()
+            modal.tagDelegate = self
+            modal.tagType = "city"
+            self.present(modal, animated: true, completion: nil)
+            //tagType = "city"
+          //  tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
+            //self.performSegue(withIdentifier: "showTags", sender: self)
             break
             
         case 3:
-            tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
             let modal = EditBioViewController()
             modal.bioTitle = "Bio"
             modal.artistDelegate = self
@@ -196,9 +200,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
             self.present(modal, animated: true, completion: nil)
             break
             
-        case 4:
+       /* case 4:
             tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-            if let artist = self.artist, let accountId = artist.account?.id, !accountId.isEmpty {
+            /*if let artist = self.artist, let accountId = artist.account?.id, !accountId.isEmpty {
                 if artist.account?.priceId == nil {
                     self.getAvailablePrices()
                 } else {
@@ -206,8 +210,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             } else {
                 self.newFanClubAlert()
-            }
-            break
+            }*/
+            break*/
             
      /*   case 6:
             if indexPath.row == 1 {
@@ -642,7 +646,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     //MARK: Account
-    let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
+   /* let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
     var availablePrices = [Price]()
     
     func getAvailablePrices() {
@@ -673,9 +677,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         } else {
             self.uiElement.showAlert("No Currency", message: "We were unable to retrieve your account's currency.", target: self)
         }
-    }
+    }*/
     
-    func newFanClubAlert() {
+    /*func newFanClubAlert() {
         let alertController = UIAlertController (title: "Earn From Your Followers", message:
             "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
             
@@ -694,9 +698,9 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         alertController.addAction(cancelAction)
             
         present(alertController, animated: true, completion: nil)
-    }
+    }*/
     
-    func showPriceAlert() {
+  /*  func showPriceAlert() {
         let alertController = UIAlertController (title: "Change your Subscription Price?", message: "Doing so will notify your subscribers of the change.", preferredStyle: .actionSheet)
         
         let getStartedAction = UIAlertAction(title: "Yes", style: .default) { (_) -> Void in
@@ -714,10 +718,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     func showPricePicker() {
         self.tagType = "price"
         self.performSegue(withIdentifier: "showTags", sender: self)
-    }
+    }*/
 }
 
-class Price {
+/*class Price {
     var objectId: String!
     var amount: Int!
     
@@ -725,4 +729,4 @@ class Price {
         self.objectId = objectId
         self.amount = amount
     }
-}
+}*/
