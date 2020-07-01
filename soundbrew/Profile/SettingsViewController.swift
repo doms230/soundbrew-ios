@@ -362,26 +362,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func newFanClubAlert() {
         let alertController = UIAlertController (title: "Earn From Your Followers", message:
-            "Earn money from your followers by starting a fan club. You can choose how much you charge per month, and which sounds are exclusive!", preferredStyle: .actionSheet)
+            "Earn money from your followers by starting a fan club. You'll earn $11.04 per fan per month, and you can choose which sounds are exclusive to your fan club!", preferredStyle: .actionSheet)
             
         let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
             if let container = self.so_containerViewController {
                 container.isSideViewControllerPresented = false
                 if let topView = container.topViewController as? UINavigationController,
                     let view = topView.topViewController as? ProfileViewController {
-                    let modal = ChooseTagsViewController()
+                    view.showNewAccount("US")
+                   /* let modal = ChooseTagsViewController()
                     modal.tagType = "country"
                     modal.tagDelegate = view
-                    view.present(modal, animated: true, completion: nil)
+                    view.present(modal, animated: true, completion: nil)*/
                     }
                 }
             }
         alertController.addAction(getStartedAction)
-        
-        let learnMoreAction = UIAlertAction(title: "Learn More", style: .default) { (_) -> Void in
-            //TODO: show webView on the Fan Club thing and how it works
-        }
-        alertController.addAction(learnMoreAction)
             
         let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
         }

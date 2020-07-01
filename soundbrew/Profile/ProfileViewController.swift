@@ -17,7 +17,7 @@ import SidebarOverlay
 import NVActivityIndicatorView
 import NotificationBannerSwift
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate, NVActivityIndicatorViewable {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate, AccountDelegate, NVActivityIndicatorViewable {
     
     let uiElement = UIElement()
     let color = Color()
@@ -39,7 +39,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = .black
         navigationController?.navigationBar.tintColor = .white
@@ -47,11 +46,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        if let isSettingUpNewAccount = self.isSettingUpNewAccount, isSettingUpNewAccount {
-            let banner = StatusBarNotificationBanner(title: "More info required.", style: .info)
-            banner.show()
-            self.performSegue(withIdentifier: "showAccountWebView", sender: self)
-        }
         setMiniPlayer()
     }
     
@@ -186,8 +180,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-       // case 0:
-         //   return 8
         case 2:
             return artistPlaylists.count
         case 3:
@@ -348,8 +340,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.soundTitle.text = playlist.title
         
         cell.menuButton.isHidden = true
-       // cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
-        //cell.menuButton.tag = indexPath.row
         return cell 
     }
     
@@ -762,15 +752,26 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let tags = chosenTags {
             let tag = tags[0]
             if tag.type == "country" {
-                if let email = PFUser.current()?.email {
-                    //Create new account
-                    let account = Account(nil)
-                    account.createNewAccount(tag.objectId, email: email, tableView: self.tableView, target: self)
-                }
+                self.showNewAccount(tag.objectId)
             } else {
                 self.selectedTagFromPlayerView = tag
                 self.performSegue(withIdentifier: "showSounds", sender: self)
             }
+        }
+    }
+    
+    //mark: account
+    func showNewAccount(_ country: String) {
+        let account = Account(nil)
+        account.country = country
+        account.currency = "usd"
+        let modal = NewAccountViewController()
+        modal.newAccount = account
+        self.present(modal, animated: true, completion: nil)
+    }
+    func receivedAccount(_ account: Account?) {
+        if let account = account, let artist = Customer.shared.artist  {
+            account.createNewAccount(artist, target: self)
         }
     }
 }

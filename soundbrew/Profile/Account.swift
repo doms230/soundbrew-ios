@@ -21,6 +21,18 @@ class Account {
     var bankTitle: String?
     var weeklyEarnings: Int!
     
+    //New Account Info
+    var firstName: String?
+    var lastName: String?
+    var personalIdNumber: String?
+    var birthDay: String?
+    var birthMonth: String?
+    var birthYear: String?
+    var documentFront: String?
+    var documentBack: String?
+    var bankAccountNumber: String?
+    var routingNumber: String?
+    
     init(_ id: String?) {
         self.id = id
     }
@@ -99,34 +111,56 @@ class Account {
     }
     
     //new account
-    func createNewAccount(_ countryCode: String, email: String, tableView: UITableView?, target: ProfileViewController) {
-        target.startAnimating()
-        let url = self.baseURL!.appendingPathComponent("create")
-        let parameters: Parameters = [
-            "country": countryCode,
-            "email": email]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                target.stopAnimating()
-                switch responseJSON.result {
-                case .success(let json):
-                    target.isSettingUpNewAccount = true
-                    target.performSegue(withIdentifier: "showAccountWebView", sender: self)
-                    let json = JSON(json)
-                    self.id = json["id"].stringValue
-                    Customer.shared.artist?.account = self
-                    if let tableView = tableView {
-                        DispatchQueue.main.async {
-                            tableView.reloadData()
+    func createNewAccount(_ artist: Artist, target: ProfileViewController) {
+        if let customerId = artist.customerId, let userObjectId = artist.objectId, let username = artist.username, let email = artist.email, let country = self.country, let currency = self.currency, let routingNumber = self.routingNumber, let bankAccountNumber = self.bankAccountNumber {
+            target.startAnimating()
+            let url = self.baseURL!.appendingPathComponent("create")
+            let parameters: Parameters = [
+                "customerId": customerId,
+                "userObjectId": userObjectId,
+                "username": username,
+                "email": email,
+                "country": country,
+                "currency": currency,
+                "routing_number": routingNumber,
+                "account_number": bankAccountNumber]
+            
+            AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+                .responseJSON { responseJSON in
+                    target.stopAnimating()
+                    switch responseJSON.result {
+                    case .success(let json):
+                        let json = JSON(json)
+                        if let statusCode = json["statusCode"].int {
+                            if statusCode >= 200 && statusCode < 300 {
+                                self.id = json["id"].stringValue
+                                self.updateAndMoveForward(target)
+                            } else if let code = json["raw"]["code"].string, let message = json["raw"]["message"].string  {
+                                target.stopAnimating()
+                                target.uiElement.showAlert("Error: \(code)", message: message, target: target)
+                            }
+                        } else {
+                            self.id = json["id"].stringValue
+                            self.updateAndMoveForward(target)
                         }
+
+                    case .failure(let error):
+                        UIElement().showAlert("Un-Successful", message: error.errorDescription ?? "", target: target)
                     }
-                    self.updateUserInfoWithAccountNumber()
-                case .failure(let error):
-                    UIElement().showAlert("Un-Successful", message: error.errorDescription ?? "", target: target)
-                }
+            }
+            
+        } else {
+            UIElement().showAlert("Un-Successful", message: "Try Again Later. email support@soundbrew.app or message @sound_brew for more info.", target: target)
         }
+    }
+    
+    func updateAndMoveForward(_ target: ProfileViewController) {
+        target.isSettingUpNewAccount = true
+        target.performSegue(withIdentifier: "showAccountWebView", sender: self)
+        self.bankAccountNumber = nil
+        self.routingNumber = nil
+        Customer.shared.artist?.account = self
+        self.updateUserInfoWithAccountNumber()
     }
     
     func updateUserInfoWithAccountNumber() {
@@ -141,4 +175,8 @@ class Account {
             }
         }
     }
+}
+
+protocol AccountDelegate {
+    func receivedAccount(_ account: Account?)
 }

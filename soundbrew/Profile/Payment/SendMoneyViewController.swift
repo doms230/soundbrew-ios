@@ -218,7 +218,6 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
             }
         }
         
-        
         //payment view
         self.view.addSubview(paymentButton)
         paymentButton.snp.makeConstraints { (make) -> Void in

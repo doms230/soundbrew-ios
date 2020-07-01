@@ -23,13 +23,17 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     var account: Account?
     var artistDelegate: ArtistDelegate?
+    var accountDelegate: AccountDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        if let account = Customer.shared.artist?.account {
+        if self.account != nil {
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "Add Payout bank")
+            setUpTableView(topView.2)
+        } else if let account = Customer.shared.artist?.account {
             self.account = account
             let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
             setUpTableView(topView.2)
@@ -42,8 +46,18 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         } else if accountingIsValidated() && routingIsValidated() {
-            if let accountId = self.account?.id, let country = self.account?.country, let currency = self.account?.currency, let routing = self.routingText.text, let accountNumber = self.accountText.text {
-                createNewBank(accountId, country: country, currency: currency, routing: routing, accountNumber: accountNumber)
+            if let country = self.account?.country, let currency = self.account?.currency, let bankRoutingNumber = self.routingText.text, let bankAccountNumber = self.accountText.text {
+                if let accountId = self.account?.id {
+                    createNewBank(accountId, country: country, currency: currency, routing: bankRoutingNumber, accountNumber: bankAccountNumber)
+                } else {
+                    self.account?.routingNumber = bankRoutingNumber
+                    self.account?.bankAccountNumber = bankAccountNumber
+                    self.dismiss(animated: true, completion: {() in
+                        if let accountDelegate = self.accountDelegate {
+                            accountDelegate.receivedAccount(self.account)
+                        }
+                    })
+                }
             }
         }
     }
@@ -113,7 +127,7 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
                             self.updateAndDismiss(json)
                         } else if let code = json["raw"]["code"].string, let message = json["raw"]["message"].string  {
                             self.stopAnimating()
-                            self.uiElement.showAlert(code, message: message, target: self)
+                            self.uiElement.showAlert("Error: \(code)", message: message, target: self)
                         }
                     } else {
                         self.updateAndDismiss(json)

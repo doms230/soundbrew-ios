@@ -47,6 +47,25 @@ class ProfileTableViewCell: UITableViewCell {
         return uiElement.soundbrewLabel(nil, textColor: .darkGray, font: UIFont(name: uiElement.mainFont, size: 15)!, numberOfLines: 0)
     }()
     
+    //new account
+    lazy var frontImageButton: UIButton = {
+        let button = self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "front_id"), titleFont: nil, titleColor: .clear, cornerRadius: 5)
+        button.imageView?.contentMode = .scaleAspectFill
+        return button
+    }()
+    lazy var frontImageLabel: UILabel = {
+        return uiElement.soundbrewLabel("Upload Front", textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+    }()
+    
+    lazy var backImageButton: UIButton = {
+        let button = self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "back_id"), titleFont: nil, titleColor: .clear, cornerRadius: 5)
+        button.imageView?.contentMode = .scaleAspectFill
+        return button
+    }()
+    lazy var backImageLabel: UILabel = {
+        return uiElement.soundbrewLabel("Upload Back", textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+    }()
+    
     //profile
     lazy var profileImage: UIImageView = {
         let profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)
@@ -142,26 +161,26 @@ class ProfileTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-                                        
         switch reuseIdentifier {
-        case "profileTitleReuse":
-            self.addSubview(profileTitle)
-            profileTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            break
-        case "searchReuse":
-            self.addSubview(searchBar)
-            searchBar.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            break
+            case "profileTitleReuse":
+                self.addSubview(profileTitle)
+                profileTitle.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self).offset(uiElement.topOffset)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                    make.right.equalTo(self).offset(uiElement.rightOffset)
+                    make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                }
+                break
+            
+            case "searchReuse":
+                self.addSubview(searchBar)
+                searchBar.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                    make.right.equalTo(self).offset(uiElement.rightOffset)
+                    make.bottom.equalTo(self)
+                }
+                break
             
             case "profileReuse":
                 self.addSubview(profileImage)
@@ -293,7 +312,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            
             break
             
         case "mentionsReuse":
@@ -321,7 +339,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(displayNameLabel)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            
             break
             
         case "settingsReuse":
@@ -351,7 +368,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
-            
             break
             
         case "settingsTitleReuse":
@@ -376,6 +392,36 @@ class ProfileTableViewCell: UITableViewCell {
                 make.top.equalTo(shareButton.snp.bottom).offset(uiElement.topOffset)
                 make.left.equalTo(self).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
+            
+        case "newAccountIdImageReuse":
+            self.addSubview(frontImageButton)
+            frontImageButton.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(150)
+                make.height.equalTo(100)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+            }
+            
+            self.addSubview(frontImageLabel)
+            frontImageLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(frontImageButton.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(frontImageButton)
+            }
+            
+            self.addSubview(backImageButton)
+            backImageButton.snp.makeConstraints { (make) -> Void in
+                make.width.equalTo(150)
+                make.height.equalTo(100)
+                make.left.equalTo(frontImageButton.snp.right).offset(uiElement.leftOffset)
+                make.top.equalTo(self).offset(uiElement.topOffset)
+            }
+            self.addSubview(backImageLabel)
+            backImageLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(backImageButton.snp.bottom).offset(uiElement.elementOffset)
+                make.left.equalTo(backImageButton)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
             break
@@ -430,7 +476,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
-            
             break
             
         case "editBioReuse":
@@ -463,7 +508,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
-
             break
             
         case "privateInfoTitleReuse":
@@ -499,7 +543,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
-            
             break
             
         case "spaceReuse":

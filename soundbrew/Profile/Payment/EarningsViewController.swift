@@ -208,7 +208,6 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func changeBio(_ value: String?) {
     }
-    
 }
 
 private class Payout {
