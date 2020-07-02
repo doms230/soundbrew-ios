@@ -20,8 +20,7 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         if let accountId = Customer.shared.artist?.account?.id {
-            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressActionButton(_:)), doneButtonTitle: "Done", title: "Weekly Transfers")
-            topView.0.setTitle("", for: .normal)
+            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressActionButton(_:)), doneButtonTitle: "", title: "Weekly Transfers")
             setUpTableView(topView.2)
             self.loadTransfers(accountId)
         } else {
@@ -30,7 +29,7 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     @objc func didPressActionButton(_ sender: UIButton) {
-        if sender.tag == 1 {
+        if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         }
     }

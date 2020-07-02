@@ -73,42 +73,17 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    lazy var dismissButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "dismiss"), for: .normal)
-        button.addTarget(self, action: #selector(self.didPressDismissbutton(_:)), for: .touchUpInside)
-        button.isOpaque = true
-        return button
-    }()
-    @objc func didPressDismissbutton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
+    var dividerLine: UIView!
+    func setupTopView() {
+        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDismissbutton(_:)), doneButtonTitle: "", title: "Soundbrew")
+       dividerLine = topView.2
+        setupGrowingTextView()
     }
     
-    lazy var appTitle: UILabel = {
-        let label = UILabel()
-        label.text = "Soundbrew"
-        label.textColor = .white
-        label.font = UIFont(name: "\(uiElement.mainFont)-Bold", size: 15)
-        label.textAlignment = .center
-        label.isOpaque = true
-        return label
-    }()
-    
-    func setupTopView() {
-        self.view.addSubview(self.dismissButton)
-        self.dismissButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
-            make.top.equalTo(self.view).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+    @objc func didPressDismissbutton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            self.dismiss(animated: true, completion: nil)
         }
-        
-        self.view.addSubview(self.appTitle)
-        self.appTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(dismissButton)
-            make.centerX.equalTo(self.view)
-        }
-        
-        setupGrowingTextView()
     }
     
     //mark: textview
@@ -288,7 +263,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             self.tableView.separatorStyle = .none
             self.view.addSubview(self.tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self.dismissButton.snp.bottom)
+                make.top.equalTo(self.dividerLine.snp.bottom)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.playBackControl!.playBackCurrentTime.snp.top).offset(self.uiElement.bottomOffset)

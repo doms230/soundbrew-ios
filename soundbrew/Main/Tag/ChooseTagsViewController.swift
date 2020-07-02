@@ -34,7 +34,6 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             case "country":
                 let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressUIElementTopViewButton(_:)), doneButtonTitle: "Cancel", title: "Choose Your Country")
-                topView.0.setTitle("", for: .normal)
                 self.setUpTableView(topView.2)
                 break
                 

@@ -499,6 +499,7 @@ class UIElement {
         
         let doneButton = UIButton()
         doneButton.setTitle(doneButtonTitle, for: .normal)
+        doneButton.titleLabel?.font = UIFont(name: "\(self.mainFont)-Bold", size: 17)
         doneButton.addTarget(target, action: action, for: .touchUpInside)
         doneButton.isOpaque = true
         doneButton.tag = 1
@@ -508,28 +509,26 @@ class UIElement {
             make.right.equalTo(target.view).offset(self.rightOffset)
         }
         
-        
         let cancelButton = UIButton()
-        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.setTitle("\(title) ", for: .normal)
+        cancelButton.titleLabel?.font = UIFont(name: "\(self.mainFont)-Bold", size: 17)
         cancelButton.addTarget(target, action: action, for: .touchUpInside)
         cancelButton.isOpaque = true
         cancelButton.tag = 0
         target.view.addSubview(cancelButton)
         cancelButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(doneButton)
-            make.right.equalTo(doneButton.snp.left).offset(self.rightOffset)
+            make.left.equalTo(target.view).offset(self.leftOffset)
         }
         
-        let titleLabel = UILabel()
-        titleLabel.textColor = .white
-        titleLabel.text = title
-        titleLabel.font = UIFont(name: "\(self.mainFont)-Bold", size: 15)
-        titleLabel.textAlignment = .center
-        titleLabel.isOpaque = true
-        target.view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(target.view).offset(self.leftOffset)
+        let downImage = UIImageView()
+        downImage.image = UIImage(named: "dismiss")
+        downImage.isOpaque = true
+        target.view.addSubview(downImage)
+        downImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(15)
             make.centerY.equalTo(cancelButton)
+            make.left.equalTo(cancelButton.snp.right).offset(self.elementOffset)
         }
         
         let dividerLine = UIView()
