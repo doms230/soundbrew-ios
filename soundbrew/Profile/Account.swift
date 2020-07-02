@@ -25,13 +25,22 @@ class Account {
     var firstName: String?
     var lastName: String?
     var personalIdNumber: String?
+    var ssnLastFour: String?
     var birthDay: String?
     var birthMonth: String?
     var birthYear: String?
     var documentFront: String?
-    var documentBack: String?
+    var phoneNumber: String?
+    //var documentBack: String?
+    //External Account
     var bankAccountNumber: String?
     var routingNumber: String?
+    //Address
+    var city: String?
+    var line1: String?
+    var line2: String?
+    var postal_code: String?
+    var state: String?
     
     init(_ id: String?) {
         self.id = id
@@ -111,8 +120,8 @@ class Account {
     }
     
     //new account
-    func createNewAccount(_ artist: Artist, target: ProfileViewController) {
-        if let customerId = artist.customerId, let userObjectId = artist.objectId, let username = artist.username, let email = artist.email, let country = self.country, let currency = self.currency, let routingNumber = self.routingNumber, let bankAccountNumber = self.bankAccountNumber {
+    func createNewAccount(_ artist: Artist, target: NewAccountViewController) {
+        if let customerId = artist.customerId, let userObjectId = artist.objectId, let firstName = self.firstName, let lastName = self.lastName, let idNumber = self.personalIdNumber, let birthDay = self.birthDay, let birthMonth = self.birthMonth, let birthYear = self.birthYear, let username = artist.username, let email = artist.email, let country = self.country, let documentFront = self.documentFront, let currency = self.currency, let routingNumber = self.routingNumber, let bankAccountNumber = self.bankAccountNumber, let city = self.city, let line1 = self.line1, let line2 = self.line2, let postal_code = self.postal_code, let state = self.state, let phoneNumber = self.phoneNumber {
             target.startAnimating()
             let url = self.baseURL!.appendingPathComponent("create")
             let parameters: Parameters = [
@@ -122,15 +131,31 @@ class Account {
                 "email": email,
                 "country": country,
                 "currency": currency,
+                "first_name": firstName,
+                "last_name": lastName,
+                "phone": phoneNumber,
+                "id_number": idNumber,
+                "ssn_last_4": idNumber.suffix(4),
+                "birthDay": birthDay,
+                "birthMonth": birthMonth,
+                "birthYear": birthYear,
+                "documentFront": documentFront,
                 "routing_number": routingNumber,
-                "account_number": bankAccountNumber]
+                "account_number": bankAccountNumber,
+                "city": city,
+                "line1": line1,
+                "line2": line2,
+                "postal_code": postal_code,
+                "state": state]
             
+            //"tos_acceptance_date": NSDate().timeIntervalSince1970
             AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
                 .responseJSON { responseJSON in
                     target.stopAnimating()
                     switch responseJSON.result {
                     case .success(let json):
                         let json = JSON(json)
+                        print(json)
                         if let statusCode = json["statusCode"].int {
                             if statusCode >= 200 && statusCode < 300 {
                                 self.id = json["id"].stringValue
@@ -154,13 +179,22 @@ class Account {
         }
     }
     
-    func updateAndMoveForward(_ target: ProfileViewController) {
-        target.isSettingUpNewAccount = true
+    func updateAndMoveForward(_ target: NewAccountViewController) {
+        self.bankAccountNumber = nil
+        self.routingNumber = nil
+        Customer.shared.artist?.account = self
+        updateUserInfoWithAccountNumber()
+        let menuAlert = UIAlertController(title: "Your Fan Club is Live!", message: "Your fans can join your fan club from the Soundbrew website at soundbrew.app/\(Customer.shared.artist?.username ?? "yourUsername").", preferredStyle: .alert)
+        menuAlert.addAction(UIAlertAction(title: "Okay", style: .default, handler: { action in
+            target.dismiss(animated: true, completion: nil)
+        }))
+        target.present(menuAlert, animated: true, completion: nil)
+        /*target.isSettingUpNewAccount = true
         target.performSegue(withIdentifier: "showAccountWebView", sender: self)
         self.bankAccountNumber = nil
         self.routingNumber = nil
         Customer.shared.artist?.account = self
-        self.updateUserInfoWithAccountNumber()
+        self.updateUserInfoWithAccountNumber()*/
     }
     
     func updateUserInfoWithAccountNumber() {
@@ -175,6 +209,45 @@ class Account {
             }
         }
     }
+    
+    func createNewFile(_ imageData: Data, spinner: UIActivityIndicatorView, target: NewAccountViewController, documentType: String) {
+        spinner.startAnimating()
+        spinner.isHidden = false
+        let fileName = "\(NSUUID().uuidString).jpeg"
+        AF.upload(multipartFormData: { multipartFormData in
+            multipartFormData.append(imageData, withName: "file", fileName: fileName, mimeType: "image/jpeg")
+            multipartFormData.append(("identity_document").data(using: .utf8)!, withName: "purpose")
+            }, to: "https://files.stripe.com/v1/files", method: .post, headers: ["Authorization": "Bearer pk_test_0wWjINHvhtgzckFeNxkN7jA400SRMuoO6r"]).responseJSON { responseJSON in
+                    spinner.isHidden = true
+                spinner.stopAnimating()
+                    switch responseJSON.result {
+                    case .success(let json):
+                        print(json)
+                        let json = JSON(json)
+                        if let statusCode = json["statusCode"].int {
+                            if statusCode >= 200 && statusCode < 300 {
+                                self.addFile(json, documentType: documentType)
+                            } else if let code = json["raw"]["code"].string, let message = json["raw"]["message"].string  {
+                                target.uiElement.showAlert("Error: \(code)", message: message, target: target)
+                            }
+                        } else {
+                            self.addFile(json, documentType: documentType)
+                        }
+
+                    case .failure(let error):
+                        UIElement().showAlert("Un-Successful", message: error.errorDescription ?? "", target: target)
+                    }
+            }
+    }
+    
+    func addFile(_ json: JSON, documentType: String) {
+        if documentType == "front" {
+            self.documentFront = json["id"].stringValue
+        } /*else {
+            self.documentBack = json["id"].stringValue
+        }*/
+    }
+    
 }
 
 protocol AccountDelegate {

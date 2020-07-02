@@ -69,7 +69,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
 
         let ac = UIAlertController(title: "How Much Would You Like Gift?", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .alert)
         ac.view.addSubview(pickerView)
-        ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        ac.addAction(UIAlertAction(title: "Okay", style: .default, handler: { _ in
             let amount = self.pickerNumbers[pickerView.selectedRow(inComponent: 1)]
             let amountInCents = amount * 100
             self.paymentContext.paymentAmount = amountInCents

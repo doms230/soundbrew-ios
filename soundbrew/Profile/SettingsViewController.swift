@@ -330,7 +330,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     container.isSideViewControllerPresented = false
                     if let topView = container.topViewController as? UINavigationController,
                         let view = topView.topViewController as? ProfileViewController{
-                        view.earnings = self.artist?.account?.weeklyEarnings
                         view.performSegue(withIdentifier: "showEarnings", sender: self)
                     }
                 }

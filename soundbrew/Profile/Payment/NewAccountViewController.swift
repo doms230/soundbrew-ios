@@ -15,7 +15,7 @@ import CropViewController
 import Alamofire
 import SwiftyJSON
 
-class NewAccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, UITextFieldDelegate {
+class NewAccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, UITextFieldDelegate, NVActivityIndicatorViewable, UIPickerViewDataSource, UIPickerViewDelegate {
 
     let uiElement = UIElement()
     let color = Color()
@@ -36,9 +36,38 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     @objc func didPressTopViewButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
-        } else {
-            //TODO: Create new account
+        } else if validateDocumentFront() && self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) &&
+            self.validateText(self.bankRoutingInput) && self.validateText(self.bankAccountNumberInput) {
+            
+            self.newAccount?.firstName = self.firstNameInput.text!
+            self.newAccount?.lastName = self.lastNameInput.text!
+            self.newAccount?.personalIdNumber = self.personalIdNumberInput.text!
+            
+            self.newAccount?.line1 = self.line1Input.text!
+            if self.line2Input.text!.isEmpty {
+                self.newAccount?.line2 = ""
+            } else {
+                self.newAccount?.line2 = self.line2Input.text!
+            }
+            self.newAccount?.city = self.cityInput.text!
+            self.newAccount?.state = self.stateInput.text!
+            self.newAccount?.postal_code = self.postalCodeInput.text!
+            
+            self.newAccount?.bankAccountNumber = self.bankAccountNumberInput.text!
+            self.newAccount?.routingNumber = self.bankRoutingInput.text!
+            
+            if let artist = Customer.shared.artist {
+                self.newAccount?.createNewAccount(artist, target: self)
+            }
         }
+    }
+    
+    func validateDocumentFront() -> Bool {
+        if self.newAccount?.documentFront == nil {
+            self.uiElement.showAlert("Government Issued ID Required.", message: "", target: self)
+            return false
+        }
+        return true
     }
     
     //Stripe Message Views
@@ -108,16 +137,16 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
+        return 8
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 2:
-            return 4
-        case 4:
+        case 2, 4:
+            return 5
+        case 6:
             return 2
-        case 5:
+        case 7:
             return 9
         default:
             return 1
@@ -130,7 +159,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
-            cell.privateInformationLabel.text = "Upload a picture of your goverment issued ID (Driver's License, Passport, State ID, etc.)"
+            cell.privateInformationLabel.text = "Upload an image of your government issued ID (Driver's License, Passport, State ID, etc.)"
             cell.privateInformationLabel.numberOfLines = 0
             cell.privateInformationLabel.textColor = .lightGray
             return cell
@@ -145,10 +174,20 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
+            cell.privateInformationLabel.text = "Address"
+            return cell
+            
+        } else if indexPath.section == 4 {
+            return addressCell(indexPath)
+            
+        } else if indexPath.section == 5 {
+            cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
+            cell.selectionStyle = .none
+            cell.backgroundColor = color.black()
             cell.privateInformationLabel.text = "Weekly Payout Bank"
             return cell
             
-        } else if indexPath.section == 4{
+        } else if indexPath.section == 6{
             return externalAccountCell(indexPath)
             
         } else {
@@ -161,7 +200,9 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     
     //MARK: ID Info
     var frontImageButton: UIButton!
+    var frontImageSpinner: UIActivityIndicatorView!
     var backImageButton: UIButton!
+    var backImageSpinner: UIActivityIndicatorView!
     var selectedIdImage: String!
     
     func idImageCell(_ tableView: UITableView) -> ProfileTableViewCell {
@@ -173,9 +214,12 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         cell.frontImageButton.addTarget(self, action: #selector(self.didPressIdImageButton(_:)), for: .touchUpInside)
         cell.frontImageButton.tag = 0
         frontImageButton = cell.frontImageButton
-        cell.backImageButton.addTarget(self, action: #selector(self.didPressIdImageButton(_:)), for: .touchUpInside)
+        frontImageSpinner = cell.frontImageSpinner
+        
+       /* cell.backImageButton.addTarget(self, action: #selector(self.didPressIdImageButton(_:)), for: .touchUpInside)
         cell.backImageButton.tag = 1
         backImageButton = cell.backImageButton
+        backImageSpinner = cell.backImageSpinner*/
         
         return cell
     }
@@ -242,13 +286,24 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        var spinner: UIActivityIndicatorView!
         if selectedIdImage == "front" {
             self.frontImageButton.setImage(image, for: .normal)
+            spinner = self.frontImageSpinner
         } else {
             self.backImageButton.setImage(image, for: .normal)
+            spinner = self.backImageSpinner
         }
-          //TODO: save file to Stripe and attache to File in Account object
         self.dismiss(animated: false, completion: nil)
+        if let chosenImageData = image.jpegData(compressionQuality: 0.5) {
+            self.newAccount?.createNewFile(chosenImageData, spinner: spinner, target: self, documentType: self.selectedIdImage)
+        }
+    }
+    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+        if cancelled {
+            cropViewController.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: false, completion: nil)
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -266,10 +321,11 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: Account Info
-    var firstNameText: UITextField!
-    var lastNameText: UITextField!
-    var personalIdNumber: UITextField!
+    var firstNameInput: UITextField!
+    var lastNameInput: UITextField!
+    var personalIdNumberInput: UITextField!
     var dobText: UITextField!
+    var phoneNumberText: UITextField!
     
     func accountInfoCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
@@ -280,46 +336,55 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         
         var inputTitle: String!
         var inputText: String!
+        cell.editProfileInput.delegate = self
+        cell.editProfileInput.tag = indexPath.row
         
         switch indexPath.row {
-        case 0:
-            inputTitle = "First Name"
-            cell.editProfileInput.keyboardType = .default
-            firstNameText = cell.editProfileInput
-            if let firstName = self.newAccount?.firstName {
-                inputText = firstName
-            }
-            break
+            case 0:
+                inputTitle = "First Name"
+                cell.editProfileInput.keyboardType = .default
+                firstNameInput = cell.editProfileInput
+                if let firstName = self.newAccount?.firstName {
+                    inputText = firstName
+                }
+                break
+                
+            case 1:
+                inputTitle = "Last Name"
+                cell.editProfileInput.keyboardType = .default
+                lastNameInput = cell.editProfileInput
+                if let lastName = self.newAccount?.lastName {
+                    inputText = lastName
+                }
+                break
+                
+            case 2:
+                inputTitle = "Date of Birth"
+                cell.editProfileInput.keyboardType = .default
+                dobText = cell.editProfileInput
+                if let birthMonth = self.newAccount?.birthMonth, let birthDay = self.newAccount?.birthDay, let birthYear = self.newAccount?.birthYear {
+                    let dob = "\(birthMonth)/\(birthDay)/\(birthYear)"
+                    inputText = dob
+                }
+                break
             
-        case 1:
-            inputTitle = "Last Name"
-            cell.editProfileInput.keyboardType = .default
-            lastNameText = cell.editProfileInput
-            if let lastName = self.newAccount?.lastName {
-                inputText = lastName
-            }
-            break
+            case 3:
+                inputTitle = "Phone #"
+                cell.editProfileInput.keyboardType = .numberPad
+                phoneNumberText = cell.editProfileInput
+                if let phoneNumber = self.newAccount?.phoneNumber {
+                    inputText = phoneNumber
+                }
+                break
             
-        case 2:
-            inputTitle = "Date of Birth"
-            cell.editProfileInput.keyboardType = .default
-            cell.editProfileInput.tag = indexPath.row
-            cell.editProfileInput.delegate = self
-            dobText = cell.editProfileInput
-            if let birthMonth = self.newAccount?.birthMonth, let birthDay = self.newAccount?.birthDay, let birthYear = self.newAccount?.birthYear {
-                let dob = "\(birthMonth)/\(birthDay)/\(birthYear)"
-                inputText = dob
-            }
-            break
-            
-        case 3:
-            inputTitle = "SSN"
-            cell.editProfileInput.keyboardType = .numberPad
-            personalIdNumber = cell.editProfileInput
-            if let lastName = self.newAccount?.lastName {
-                inputText = lastName
-            }
-            break
+            case 4:
+                inputTitle = "SSN"
+                cell.editProfileInput.keyboardType = .numberPad
+                personalIdNumberInput = cell.editProfileInput
+                if let lastName = self.newAccount?.personalIdNumber {
+                    inputText = lastName
+                }
+                break
             
         default:
             break
@@ -331,12 +396,209 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
+    var line1Input: UITextField!
+    var line2Input: UITextField!
+    var cityInput: UITextField!
+    var stateInput: UITextField!
+    var postalCodeInput: UITextField!
+    
+    func addressCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
+        let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
+        cell.backgroundColor = color.black()
+        cell.selectionStyle = .none
+        tableView.separatorInset = edgeInsets
+        
+        var inputTitle: String!
+        var inputText: String!
+        cell.editProfileInput.delegate = self
+        
+        switch indexPath.row {
+            case 0:
+                inputTitle = "Line 1"
+                cell.editProfileInput.keyboardType = .default
+                cell.editProfileInput.placeholder = "street"
+                cell.editProfileInput.tag = 5
+                line1Input = cell.editProfileInput
+                if let line1 = self.newAccount?.line1 {
+                    inputText = line1
+                }
+                break
+            
+            case 1:
+                inputTitle = "Line 2"
+                cell.editProfileInput.keyboardType = .default
+                cell.editProfileInput.placeholder = "apartment, suite, unit, or building)"
+                line2Input = cell.editProfileInput
+                cell.editProfileInput.tag = 6
+                if let line2 = self.newAccount?.line2 {
+                    inputText = line2
+                }
+                break
+                
+            case 2:
+                inputTitle = "City"
+                cell.editProfileInput.keyboardType = .default
+                cityInput = cell.editProfileInput
+                cell.editProfileInput.tag = 7
+                if let city = self.newAccount?.city {
+                    inputText = city
+                }
+                break
+                
+            case 3:
+                inputTitle = "State"
+                cell.editProfileInput.keyboardType = .default
+                stateInput = cell.editProfileInput
+                cell.editProfileInput.tag = 8
+                if let state = self.newAccount?.state {
+                    inputText = state
+                }
+                break
+                
+            case 4:
+                inputTitle = "Postal Code"
+                cell.editProfileInput.keyboardType = .numberPad
+                cell.editProfileInput.placeholder = "zip code"
+                cell.editProfileInput.tag = 9
+                postalCodeInput = cell.editProfileInput
+                if let postal = self.newAccount?.postal_code {
+                    inputText = postal
+                }
+                break
+                
+            default:
+                break
+        }
+        
+        cell.editProfileTitle.text = inputTitle
+        cell.editProfileInput.text = inputText
+        
+        return cell
+    }
+    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.tag == 2 {
             self.showDatePickerForUserAge()
+        } else if textField.tag == 8 {
+            let pickerView = UIPickerView(frame: CGRect(x: 10, y: 50, width: 250, height: 150))
+            pickerView.delegate = self
+            pickerView.dataSource = self
+
+            let ac = UIAlertController(title: "Choose Your State", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .alert)
+            ac.view.addSubview(pickerView)
+            ac.addAction(UIAlertAction(title: "Okay", style: .default, handler: { _ in
+                let state = self.stateChoices[pickerView.selectedRow(inComponent: 0)]
+                self.newAccount?.state = state
+                self.tableView.reloadData()
+            }))
+            present(ac, animated: true)
         }
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        switch textField.tag {
+            case 0:
+                if textField.text!.isEmpty {
+                    self.newAccount?.firstName = nil
+                } else {
+                   self.newAccount?.firstName = textField.text!
+                }
+                break
+                
+            case 1:
+                if textField.text!.isEmpty {
+                    self.newAccount?.lastName = nil
+                } else {
+                   self.newAccount?.lastName = textField.text!
+                }
+                break
+                
+            case 3:
+                if textField.text!.isEmpty {
+                    self.newAccount?.phoneNumber = nil
+                } else {
+                   self.newAccount?.phoneNumber = textField.text!
+                }
+                break
+            
+            case 4:
+                if textField.text!.isEmpty {
+                    self.newAccount?.personalIdNumber = nil
+                } else {
+                   self.newAccount?.personalIdNumber = textField.text!
+                }
+                break
+            
+            
+            case 5:
+                if textField.text!.isEmpty {
+                    self.newAccount?.line1 = nil
+                } else {
+                   self.newAccount?.line1 = textField.text!
+                }
+
+                break
+            
+            case 6:
+                if textField.text!.isEmpty {
+                    self.newAccount?.line2 = nil
+                } else {
+                   self.newAccount?.line2 = textField.text!
+                }
+                break
+            
+            case 7:
+                if textField.text!.isEmpty {
+                    self.newAccount?.city = nil
+                } else {
+                   self.newAccount?.city = textField.text!
+                }
+                break
+            
+            case 9:
+                if textField.text!.isEmpty {
+                    self.newAccount?.postal_code = nil
+                } else {
+                   self.newAccount?.postal_code = textField.text!
+                }
+                break
+
+            case 10:
+                if textField.text!.isEmpty {
+                    self.newAccount?.routingNumber = nil
+                } else {
+                   self.newAccount?.routingNumber = textField.text!
+                }
+                break
+            
+            case 11:
+                if textField.text!.isEmpty {
+                    self.newAccount?.bankAccountNumber = nil
+                } else {
+                   self.newAccount?.bankAccountNumber = textField.text!
+                }
+                break
+            
+            default:
+                break
+        }
+    }
+    
+    let stateChoices = ["Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", "California", "Colorado", "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Guam", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Virgin Islands", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return stateChoices.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return stateChoices[row]
+    }
+        
     var accountAge: Date?
     func showDatePickerForUserAge() {
         let birthdatePicker: UIDatePicker = UIDatePicker()
@@ -363,7 +625,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
     }
-    
+        
     func ageIsValidated(_ birthday: Date) -> Bool {
         let now = Date()
         let birthday: Date = birthday
@@ -371,7 +633,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         let ageComponents = calendar.dateComponents([.year], from: birthday, to: now)
         if let year = ageComponents.year {
             if year < 18 {
-                self.uiElement.showAlert("18 and Over Only", message: "We can only open fan club accounts for artists who are 18 or older. Alternatively, you can open a fan club account using your legal guardian's information, then use your own bank info.", target: self)
+                self.uiElement.showAlert("18+ Only", message: "We can only open fan club accounts for artists who are 18 or older. Alternatively, you can open a fan club account using your legal guardian's information, then use your own bank info.", target: self)
                 return false
             }
             return true
@@ -379,9 +641,18 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         return false
     }
     
+    func validateText(_ textField: UITextField) -> Bool {
+        if textField.text!.isEmpty {
+            self.uiElement.showTextFieldErrorMessage(textField, text: "Required")
+            return false
+        }
+        
+        return true
+    }
+    
     //MARK: Bank
-    var routingBankNumber: UITextField!
-    var accountBankNumber: UITextField!
+    var bankRoutingInput: UITextField!
+    var bankAccountNumberInput: UITextField!
     
     func externalAccountCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
@@ -394,17 +665,20 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         var inputText: String!
         
         cell.editProfileInput.keyboardType = .default
-
+        cell.editProfileInput.delegate = self
+        
         if indexPath.row == 0 {
             inputTitle = "Routing #"
-            routingBankNumber = cell.editProfileInput
+            bankRoutingInput = cell.editProfileInput
+            cell.editProfileInput.tag = 10
             if let routingBankNumber = self.newAccount?.routingNumber {
                 inputText = routingBankNumber
             }
             
         } else if indexPath.row == 1 {
             inputTitle = "Account #"
-            accountBankNumber = cell.editProfileInput
+            bankAccountNumberInput = cell.editProfileInput
+            cell.editProfileInput.tag = 11
             if let bankAccountNumber = self.newAccount?.bankAccountNumber {
                 inputText = bankAccountNumber
             }

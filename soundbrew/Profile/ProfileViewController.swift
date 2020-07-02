@@ -99,7 +99,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             backItem.title = "Earnings"
             navigationItem.backBarButtonItem = backItem
             let viewController = segue.destination as! EarningsViewController
-            viewController.earnings = self.earnings
+            if let earnings = Customer.shared.artist?.account?.weeklyEarnings {
+                viewController.earnings = earnings
+            }
             break
             
         case "showAccountWebView":
@@ -770,8 +772,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.present(modal, animated: true, completion: nil)
     }
     func receivedAccount(_ account: Account?) {
-        if let account = account, let artist = Customer.shared.artist  {
-            account.createNewAccount(artist, target: self)
-        }
+        /*if let account = account, let artist = Customer.shared.artist  {
+           // account.createNewAccount(artist, target: self)
+        }*/
     }
 }

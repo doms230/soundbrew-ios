@@ -373,6 +373,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
           }
         }
     }
+    
+    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+        if cancelled {
+            cropViewController.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: false, completion: nil)
+        }
+    }
         
     // Helper function inserted by Swift 4.2 migrator.
     fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
