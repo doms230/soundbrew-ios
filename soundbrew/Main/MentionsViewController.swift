@@ -219,7 +219,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         case "gift":
             var amountAsString = ""
             if let amount = mention.amount {
-                amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(amount, currency: "$")
+                amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(amount)
             }
                         
             var message = ""

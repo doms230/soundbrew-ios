@@ -8,8 +8,8 @@
 
 import UIKit
 import Parse
-import NVActivityIndicatorView
-class EditBioViewController: UIViewController, UITextViewDelegate, NVActivityIndicatorViewable {
+
+class EditBioViewController: UIViewController, UITextViewDelegate {
     
     let uiElement = UIElement()
     let color = Color()

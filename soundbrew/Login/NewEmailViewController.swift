@@ -1,12 +1,11 @@
 import UIKit
 import Parse
-import NVActivityIndicatorView
 import SnapKit
 import AuthenticationServices
 import Alamofire
 import GoogleSignIn
 
-class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate, ASAuthorizationControllerDelegate {
+class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, ASAuthorizationControllerDelegate {
     let color = Color()
     let uiElement = UIElement()
     
@@ -209,7 +208,6 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
                 let authData = ["id": userID, "token": authToken]
                 self.PFauthenticateWith(authData)
             } else {
-                self.stopAnimating()
                 self.setupNewEmailView()
             }
         }
@@ -217,12 +215,10 @@ class NewEmailViewController: UIViewController, NVActivityIndicatorViewable, PFU
     
     func checkIfEmailExistsThenMoveForward(_ email: String, authData: [String: String]?) {
         let localizedEmailAlreadyInUse = NSLocalizedString("emailAlreadyInUse", comment: "")
-        startAnimating()
         let query = PFQuery(className: "_User")
         query.whereKey("email", equalTo: email)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            self.stopAnimating()
             if object != nil && error == nil {
                 if let authData = authData {
                     if object?["googleId"] == nil {

@@ -14,10 +14,9 @@ import Parse
 import Kingfisher
 import SnapKit
 import SidebarOverlay
-import NVActivityIndicatorView
 import NotificationBannerSwift
 
-class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate, AccountDelegate, NVActivityIndicatorViewable {
+class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate, AccountDelegate {
     
     let uiElement = UIElement()
     let color = Color()

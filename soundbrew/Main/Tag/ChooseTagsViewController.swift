@@ -9,7 +9,6 @@
 import UIKit
 import Parse
 import SnapKit
-import FlagKit
 
 class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
@@ -32,10 +31,10 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 setupChooseTagsView(topView.2)
                 break
             
-            case "country":
+            /*case "country":
                 let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressUIElementTopViewButton(_:)), doneButtonTitle: "Cancel", title: "Choose Your Country")
                 self.setUpTableView(topView.2)
-                break
+                break*/
                 
             case "city":
                 let topView = addTopView("Cancel")
@@ -155,18 +154,19 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tagType == "sound" || tagType == "city" {
             return filteredTags.count
-        } else if tagType == "country" {
+        } /*else if tagType == "country" {
             return availableCountries.count
-        }
+        }*/
         return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tagType == "sound" || tagType == "city" {
+        return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
+       /* if tagType == "sound" || tagType == "city" {
             return filteredTags[indexPath.row].cell(tableView, reuse: searchTagViewReuse)
         } else {
             return countryCell(tableView, row: indexPath.row)
-        }
+        }*/
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -178,11 +178,11 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 break
             
-            case "country":
+          /*  case "country":
                 let tag = Tag(objectId: self.availableCountryCodes[indexPath.row], name: self.availableCountries[indexPath.row], count: 0, isSelected: false, type: "country", imageURL: nil, uiImage: nil)
                 self.chosenTagsForSound.append(tag)
                 self.handleTagsForDismissal()
-                break
+                break*/
             
             default:
                 if filteredTags.indices.contains(indexPath.row) {
@@ -208,7 +208,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: country
-    let availableCountries = ["United States", "Canada", "United Kingdom", "Australia", "Austria", "Belgium", "Bulgaria", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "India", "Ireland", "Italy", "Japan", "Latvia", "Lithuania", "Luxembourg", "Malta", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
+   /* let availableCountries = ["United States", "Canada", "United Kingdom", "Australia", "Austria", "Belgium", "Bulgaria", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hong Kong", "India", "Ireland", "Italy", "Japan", "Latvia", "Lithuania", "Luxembourg", "Malta", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
     let availableCountryCodes = ["US", "CA", "GB", "AU", "AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HK", "IN", "IE", "IT", "JP", "LV", "LT", "LU", "MT", "MX", "NL", "NZ", "NO", "PL", "PT",  "RO", "SG", "SK", "SI", "ES", "SE", "CH"]
     
     
@@ -229,7 +229,7 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         cell.displayNameLabel.text = country
         
         return cell
-    }
+    }*/
     
     //MARK: Sound
     var tagDelegate: TagDelegate?

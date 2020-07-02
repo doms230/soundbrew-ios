@@ -6,13 +6,13 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
-  - AppCenter (3.3.0):
-    - AppCenter/Analytics (= 3.3.0)
-    - AppCenter/Crashes (= 3.3.0)
-  - AppCenter/Analytics (3.3.0):
+  - AppCenter (3.3.1):
+    - AppCenter/Analytics (= 3.3.1)
+    - AppCenter/Crashes (= 3.3.1)
+  - AppCenter/Analytics (3.3.1):
     - AppCenter/Core
-  - AppCenter/Core (3.3.0)
-  - AppCenter/Crashes (3.3.0):
+  - AppCenter/Core (3.3.1)
+  - AppCenter/Crashes (3.3.1):
     - AppCenter/Core
   - Bolts/Tasks (1.9.1)
   - CropViewController (2.5.3)
@@ -44,7 +44,6 @@ PODS:
     - GoogleUtilities/Environment (~> 6.6)
     - GoogleUtilities/UserDefaults (~> 6.6)
     - PromisesObjC (~> 1.2)
-  - FlagKit (2.2)
   - GoogleAppMeasurement (6.6.1):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
@@ -99,30 +98,27 @@ PODS:
   - NotificationBannerSwift (3.0.2):
     - MarqueeLabel (~> 4.0.0)
     - SnapKit (~> 5.0.0)
-  - NVActivityIndicatorView (4.8.0):
-    - NVActivityIndicatorView/Presenter (= 4.8.0)
-  - NVActivityIndicatorView/Presenter (4.8.0)
   - Parse (1.18.0):
     - Parse/Core (= 1.18.0)
   - Parse/Core (1.18.0):
     - Bolts/Tasks (= 1.9.1)
   - PINCache (2.3)
-  - PINOperation (1.1.2)
+  - PINOperation (1.2)
   - PromisesObjC (1.2.9)
   - ShareInstagram (1.6)
   - SidebarOverlay (4.2.2)
   - SnapKit (5.0.1)
-  - SnapSDK (1.6.0):
-    - SnapSDK/SCSDKBitmojiKit (= 1.6.0)
-    - SnapSDK/SCSDKCreativeKit (= 1.6.0)
-    - SnapSDK/SCSDKLoginKit (= 1.6.0)
-    - SnapSDK/SCSDKStoryKit (= 1.6.0)
-  - SnapSDK/SCSDKBitmojiKit (1.6.0):
+  - SnapSDK (1.6.1):
+    - SnapSDK/SCSDKBitmojiKit (= 1.6.1)
+    - SnapSDK/SCSDKCreativeKit (= 1.6.1)
+    - SnapSDK/SCSDKLoginKit (= 1.6.1)
+    - SnapSDK/SCSDKStoryKit (= 1.6.1)
+  - SnapSDK/SCSDKBitmojiKit (1.6.1):
     - PINCache (< 3.1, >= 2.3)
     - PINOperation (~> 1.1)
-  - SnapSDK/SCSDKCreativeKit (1.6.0)
-  - SnapSDK/SCSDKLoginKit (1.6.0)
-  - SnapSDK/SCSDKStoryKit (1.6.0)
+  - SnapSDK/SCSDKCreativeKit (1.6.1)
+  - SnapSDK/SCSDKLoginKit (1.6.1)
+  - SnapSDK/SCSDKStoryKit (1.6.1)
   - Stripe (19.3.0)
   - SwiftyJSON (5.0.0)
   - UICircularProgressRing (6.5.0)
@@ -133,12 +129,10 @@ DEPENDENCIES:
   - AppCenter
   - CropViewController
   - Firebase/Core
-  - FlagKit
   - GoogleSignIn
   - GrowingTextView
   - Kingfisher
   - NotificationBannerSwift
-  - NVActivityIndicatorView
   - Parse
   - ShareInstagram
   - SidebarOverlay
@@ -161,7 +155,6 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseInstallations
-    - FlagKit
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
@@ -174,7 +167,6 @@ SPEC REPOS:
     - MarqueeLabel
     - nanopb
     - NotificationBannerSwift
-    - NVActivityIndicatorView
     - Parse
     - PINCache
     - PINOperation
@@ -191,7 +183,7 @@ SPEC CHECKSUMS:
   ActiveLabel: 5e3f4de79a1952d4604b845a0610d4776e4b82b3
   Alamofire: e911732990610fe89af59ac0077f923d72dc3dfd
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
-  AppCenter: 976294db3f288d82204afc6ad71790d71be249ac
+  AppCenter: 76ecf7e959a68e36b0fd314e8dc5897660214423
   Bolts: 8c1e8aab2f603387b8b9924f57d1d64f43d3ffdc
   CropViewController: a5c143548a0fabcd6cc25f2d26e40460cfb8c78c
   Firebase: fc4cbf6f1592636431821ef9a3c557e4dfd9f268
@@ -199,7 +191,6 @@ SPEC CHECKSUMS:
   FirebaseCore: feda061cb1ee6d8ad4824f4a4a8ffbcfe284f595
   FirebaseCoreDiagnostics: 4505e4d4009b1d93f605088ee7d7764d5f0d1c84
   FirebaseInstallations: 293f567159b6d66d1c990f13bb868066096c94ec
-  FlagKit: eca7dc89064b0c986302ba9acefad1bf80a435b1
   GoogleAppMeasurement: 2fd5c5a56c069db635c8e7b92d4809a9591d0a69
   GoogleDataTransport: 9a8a16f79feffc7f42096743de2a7c4815e84020
   GoogleDataTransportCCTSupport: 489c1265d2c85b68187a83a911913d190012158d
@@ -212,19 +203,18 @@ SPEC CHECKSUMS:
   MarqueeLabel: f762aa681ae201f66c1d511858b171f75d83013a
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   NotificationBannerSwift: 713e20f21b6105f4a36a00e5d9fa414a930d3d8e
-  NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
   Parse: 79bdda34fdb7eb2a707a43a951c8aae236cb3e34
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
-  PINOperation: 24b774353ca248fcf87d67b2d61eef42087c125a
+  PINOperation: 3a967a927e7867e61976c6cc23e5770416449fbc
   PromisesObjC: b48e0338dbbac2207e611750777895f7a5811b75
   ShareInstagram: 787136afff8d1fbe899b1c3e5450560694071dff
   SidebarOverlay: a5365455a2f9d54f70d0765764ca1a2806b1b11d
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
-  SnapSDK: ee86062276547fad0fa5b950cbe93fd5b3864395
+  SnapSDK: 1ecd84804fbc9f0935bf2662bb1a793686ea82e1
   Stripe: dd5bfdd5f1daed4f9ddbfb47e9449ec302f9f708
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   UICircularProgressRing: e6852e8f88e296cbbbe2720cccb55241acda6708
 
-PODFILE CHECKSUM: 85ad7aeda8ca9a0e599fe081e871102c5cbc8c89
+PODFILE CHECKSUM: 464c8362ea46e97b8e020f88468cfd4f9307b476
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

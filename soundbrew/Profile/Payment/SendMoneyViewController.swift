@@ -9,10 +9,11 @@
 import UIKit
 import Stripe
 import Parse
-import NVActivityIndicatorView
 import NotificationBannerSwift
+import Alamofire
+import SwiftyJSON
 
-class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVActivityIndicatorViewable, UIPickerViewDataSource, UIPickerViewDelegate, ArtistDelegate, UITextFieldDelegate {
+class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPickerViewDataSource, UIPickerViewDelegate, ArtistDelegate, UITextFieldDelegate {
     
     let color = Color()
     let uiElement = UIElement()
@@ -31,9 +32,10 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     var cancelButton: UIButton!
     var sendMoneyButton: UIButton!
     var topViewDividerLine: UIView!
-        
+    var activitySpinner: UIActivityIndicatorView!
+    
     func addFundsDescriptionView() {
-        (cancelButton, sendMoneyButton, topViewDividerLine) = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Send", title: "Gift Money")
+        (cancelButton, sendMoneyButton, topViewDividerLine, activitySpinner) = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Send", title: "Gift Money")
         
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
@@ -63,14 +65,14 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
         return button
     }()
     @objc func didChangeSendAmount(_ sender: UIBarButtonItem) {
-        let pickerView = UIPickerView(frame: CGRect(x: 10, y: 50, width: 150, height: 150))
+        let pickerView = UIPickerView(frame: CGRect(x: 10, y: 50, width: 250, height: 150))
         pickerView.delegate = self
         pickerView.dataSource = self
 
         let ac = UIAlertController(title: "How Much Would You Like Gift?", message: "\n\n\n\n\n\n\n\n\n\n", preferredStyle: .alert)
         ac.view.addSubview(pickerView)
         ac.addAction(UIAlertAction(title: "Okay", style: .default, handler: { _ in
-            let amount = self.pickerNumbers[pickerView.selectedRow(inComponent: 1)]
+            let amount = self.pickerNumbers[pickerView.selectedRow(inComponent: 0)]
             let amountInCents = amount * 100
             self.paymentContext.paymentAmount = amountInCents
             self.paymentContextDidChange(self.paymentContext)
@@ -81,27 +83,19 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     
     let pickerNumbers = Array(stride(from: 5, to: 999, by: 1))
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        2
+        1
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if component == 1 {
-            return pickerNumbers.count
-        }
-        return 1
+       return pickerNumbers.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if component == 0 {
-            return "$"
-        } else {
-            return "\(pickerNumbers[row])"
-        }
+        return "\(pickerNumbers[row])"
     }
     
     lazy var total: UILabel = {
         let label = UILabel()
-        label.text = "$10.00"
         label.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
         label.textColor =  .white
         label.numberOfLines = 0
@@ -323,8 +317,12 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         } else {
-            self.startAnimating()
-            self.paymentContext.requestPayment()
+            self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (sendMoneyButton, activitySpinner))
+            if self.paymentContext.paymentCurrency == "usd" {
+                self.paymentContext.requestPayment()
+            } else {
+                convertAmountToUSD()
+            }
         }
     }
     
@@ -337,17 +335,16 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
         paymentContext.paymentAmount = 1000
         self.paymentContext.delegate = self
         self.paymentContext.hostViewController = self
-        self.paymentContext.paymentCurrency = "usd"
+        self.paymentContext.paymentCurrency = customer.currencyCode
     }
     
     func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
         self.sendMoneyButton.isEnabled = paymentContext.selectedPaymentOption != nil
-        let fundsToSend = self.uiElement.convertCentsToDollarsAndReturnString(paymentContext.paymentAmount, currency: "$")
+        let fundsToSend = self.uiElement.convertCentsToDollarsAndReturnString(paymentContext.paymentAmount)
         self.sendMoneyButton.setTitle("Gift \(fundsToSend)", for: .normal)
         self.total.text = fundsToSend
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
-        
         setupView()
     }
     
@@ -357,9 +354,10 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
         if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email, let username = self.artist?.username, let accountId = self.artist?.account?.id, let customerId = Customer.shared.artist?.customerId {
+            print("inside payment context")
                 let payment = Payment.shared
                 let paymentAmount = paymentContext.paymentAmount
-            payment.createPaymentIntent(objectId, email: email, name: username, amount: paymentAmount, currency: paymentContext.paymentCurrency, account_id: accountId, customerId: customerId) { [weak self] (result) in
+            payment.createPaymentIntent(objectId, email: email, name: username, amount: paymentAmount, currency: paymentContext.paymentCurrency, account_id: accountId, customerId: customerId, internationalConversionAmount: internationalConversionAmount) { [weak self] (result) in
                     guard self != nil else {
                         // View controller was deallocated
                         return
@@ -391,6 +389,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
                             completion(.error, error)
                             break
                     case .none:
+                        print("none")
                         break
                     }
                 }
@@ -398,7 +397,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
-        self.stopAnimating()
+        self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (sendMoneyButton, activitySpinner))
         switch status {
         case .error:
             var errorString = ""
@@ -406,8 +405,9 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
                 errorString = reError
                 print(errorString)
             }
-            let banner = StatusBarNotificationBanner(title: "Declined: \(errorString)", style: .danger)
+            let banner = StatusBarNotificationBanner(title: "Didn't Go Through: \(errorString)", style: .danger)
             banner.show()
+            
         case .success:
             SKStoreReviewController.requestReview()
             if let fromUserId = PFUser.current()?.objectId, let toUserId = self.artist?.objectId {
@@ -417,6 +417,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
             banner.show()
             self.dismiss(animated: true, completion: nil)
             return
+            
         case .userCancellation:
             return
         default:
@@ -437,7 +438,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
             newMention.saveEventually {
                 (success: Bool, error: Error?) in
                 if success && error == nil {
-                    let amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(self.paymentContext.paymentAmount, currency: "$")
+                    let amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(self.paymentContext.paymentAmount)
                     var giftMessage = ""
                     if let message = self.messageLabel.text, !message.isEmpty {
                         giftMessage = message
@@ -451,5 +452,33 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, NVAc
     //
     func addCardViewControllerDidCancel(_ addCardViewController: STPAddCardViewController) {
         
+    }
+    
+    //MARK: International
+    var internationalConversionAmount: Int?
+    func convertAmountToUSD() {
+        let url = "https://data.fixer.io/api/convert?access_key=b7a859f68c36b386425eff68726faf95&format=1"
+        let parameters: Parameters = [
+            "from": self.paymentContext.paymentCurrency,
+            "to": "usd",
+            "amount": self.paymentContext.paymentAmount]
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    print(json)
+                    if let amount = json["result"].double {
+                        print("amount: \(amount)")
+                        print("amount rounded: \(Int(round(amount)))")
+                        self.internationalConversionAmount = Int(round(amount))
+                        self.paymentContext.requestPayment()
+                    }
+                    
+                case .failure(let error):
+                    print(error)
+                }
+        }
     }
 }

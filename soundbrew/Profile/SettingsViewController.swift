@@ -291,7 +291,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     break
                     
                 case 1:
-                    let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.artist?.account?.weeklyEarnings ?? 0, currency: "$")
+                    let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.artist?.account?.weeklyEarnings ?? 0)
                     cell.displayNameLabel.text = balanceString
                     cell.username.text = "Weekly Earnings"
                     break

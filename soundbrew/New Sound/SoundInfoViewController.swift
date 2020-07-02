@@ -8,13 +8,12 @@
 
 import UIKit
 import Parse
-import NVActivityIndicatorView
 import SnapKit
 import Kingfisher
 import UICircularProgressRing
 import CropViewController
 
-class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate, CropViewControllerDelegate {
+class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate, CropViewControllerDelegate {
     
     func receivedArtist(_ value: Artist?) {
     }
@@ -755,7 +754,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
             } else if let error = error {
-                self.stopAnimating()
                 let localizedArtProcessingFailed = NSLocalizedString("artProcessingFailded", comment: "")
                 self.errorAlert(localizedArtProcessingFailed, message: error.localizedDescription)
             }
@@ -805,7 +803,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func releaseSound() {
         self.didPressUploadButton = true
-        self.startAnimating()
         if self.soundArtDidFinishProcessing, let sound = soundThatIsBeingEdited {
             if sound.objectId != nil {
                 updateSound(sound, isDraft: false)
@@ -854,7 +851,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             } else if let error = error {
                 DispatchQueue.main.async {
-                    self.stopAnimating()
                     let localizedCouldNotPost = NSLocalizedString("couldNotPost", comment: "")
                     self.uiElement.showAlert(localizedCouldNotPost, message: error.localizedDescription, target: self)
                 }
@@ -904,7 +900,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         
                     } else if let error = error {
                         DispatchQueue.main.async {
-                            self.stopAnimating()
                             let localizedCouldNotUpdate = NSLocalizedString("couldNotUpdate", comment: "")
                             self.uiElement.showAlert(localizedCouldNotUpdate, message: error.localizedDescription, target: self)
                         }
@@ -945,7 +940,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func finishUp(_ shouldPlaySoundAndShowShareOptions: Bool, object: PFObject) {
         DispatchQueue.main.async {
-            self.stopAnimating()
             if shouldPlaySoundAndShowShareOptions {
                 let soundId = object.objectId!
                 self.uiElement.setUserDefault(soundId, key: "newSoundId")

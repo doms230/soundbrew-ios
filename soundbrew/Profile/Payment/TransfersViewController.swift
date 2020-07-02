@@ -65,7 +65,7 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: transferReuse) as! EarningsTableViewCell
         let transfer = self.transfers[indexPath.row]
-        let amountString = self.uiElement.convertCentsToDollarsAndReturnString(transfer.amount!, currency: "$")
+        let amountString = self.uiElement.convertCentsToDollarsAndReturnString(transfer.amount!)
         cell.titleLabel.text = "\(amountString)"
         let payoutDateString = convertDateFromUnix(transfer.createdAt!)
         cell.dateLabel.text = "\(payoutDateString)"

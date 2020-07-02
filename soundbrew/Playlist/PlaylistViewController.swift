@@ -10,9 +10,8 @@ import UIKit
 import Parse
 import Kingfisher
 import NotificationBannerSwift
-import NVActivityIndicatorView
 
-class PlaylistViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PlaylistDelegate, NVActivityIndicatorViewable {
+class PlaylistViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PlaylistDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -21,12 +20,12 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
     var dividerLine: UIView!
     var sound: Sound!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        
         if let currentUserId = PFUser.current()?.objectId {
             let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(didPressDoneButton(_:)), doneButtonTitle: "", title: "Select Playlist")
             dividerLine = topView.2
@@ -195,7 +194,6 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func attachSoundToPlaylist(_ soundId: String, playlistId: String) {
-        self.startAnimating()
         let newPlaylistSound = PFObject(className: "PlaylistSound")
         newPlaylistSound["playlistId"] = playlistId
         newPlaylistSound["soundId"] = soundId
@@ -214,7 +212,6 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
              if let object = object {
                 object.incrementKey("count")
                 object.saveEventually()
-                self.stopAnimating()
                 self.dismiss(animated: true, completion: nil)
             }
         }

@@ -68,7 +68,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
         if indexPath.section == 0 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: earningsReuse) as? EarningsTableViewCell
 
-            let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings, currency: "$")
+            let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings)
             cell.titleLabel.text = earningsString
             cell.dateLabel.text = "Next Payout: Monday, June 29th"
             
@@ -85,7 +85,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
         } else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: payoutReuse) as? EarningsTableViewCell
             let payout = self.payouts[indexPath.row]
-            let amountString = self.uiElement.convertCentsToDollarsAndReturnString(payout.amount!, currency: "$")
+            let amountString = self.uiElement.convertCentsToDollarsAndReturnString(payout.amount!)
             cell.titleLabel.text = "\(amountString)"
             cell.subTitleLabel.text = "\(payout.bankTitle ?? "payout bank")"
             let payoutDateString = convertDateFromUnix(payout.arrivalDate!)

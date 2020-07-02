@@ -7,12 +7,11 @@
 //
 
 import UIKit
-import NVActivityIndicatorView
 import Parse
 import CropViewController
 import Kingfisher
 
-class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, ArtistDelegate {
+class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, ArtistDelegate {
     func receivedArtist(_ value: Artist?) {
     }
     
@@ -25,7 +24,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     var soundList: SoundList!
     var playlistSounds = [Sound]()
-    
+    var topView: (UIButton, UIButton, UIView, UIActivityIndicatorView)!
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = color.black()
@@ -53,8 +52,9 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 if playlist.objectId != nil {
                     doneButtonTitle = "Update Playlist"
                 }
-                let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle, title: "New Playlist")
+                topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressPlaylistDoneButton(_:)), doneButtonTitle: doneButtonTitle, title: "New Playlist")
                 setUpTableView(topView.2)
+                
             }
             
         } else {
@@ -247,12 +247,10 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
         self.dismiss(animated: true, completion: nil)
-        self.startAnimating()
         let proPic = image.jpegData(compressionQuality: 0.5)
         self.playlist.image = PFFileObject(name: "playlistArt.jpeg", data: proPic!)
         self.playlist.image?.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
-            self.stopAnimating()
             if succeeded {
                 if self.soundList != nil {
                     self.updateSoundImages()
@@ -290,7 +288,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     
     //
     func createNewPlaylist(_ playlist: Playlist) {
-        startAnimating()
         let newPlaylist = PFObject(className: "Playlist")
         newPlaylist["userId"] = playlist.artist?.objectId
         newPlaylist["user"] = PFUser.current()
@@ -303,7 +300,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         newPlaylist["isRemoved"] = false
         newPlaylist.saveEventually {
             (success: Bool, error: Error?) in
-            self.stopAnimating()
             if (success) {
                 self.playlist.objectId = newPlaylist.objectId
                 if playlist.type == "collection" {
@@ -329,6 +325,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func updatePlaylist(_ playlist: Playlist) {
+        self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
         let query = PFQuery(className: "Playlist")
         query.getObjectInBackground(withId: playlist.objectId ?? "") {
             (object: PFObject?, error: Error?) -> Void in
@@ -337,6 +334,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 object["image"] = playlist.image
                 object.saveEventually {
                     (success: Bool, error: Error?) in
+                    self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (self.topView.1, self.topView.3))
                     if (success) {
                         if let playlistDelegate = self.playlistDelegate {
                             self.dismiss(animated: true, completion: {() in

@@ -22,6 +22,8 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     let uiElement = UIElement()
     var hasUsedReferralCode = false
     var referralCode: String?
+    var currencySymbol: String!
+    var currencyCode: String!
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         if let customerId = self.artist?.customerId {
@@ -105,6 +107,15 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     }
     
     func getCustomer(_ objectId: String) {
+        let locale = Locale.current
+        if let currencySymbol = locale.currencySymbol, let currencyCode = locale.currencyCode {
+            self.currencySymbol = currencySymbol
+            self.currencyCode = currencyCode.lowercased()
+        } else {
+            self.currencySymbol = "$"
+            self.currencyCode = "usd"
+        }
+        
         let query = PFQuery(className: "_User")
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {

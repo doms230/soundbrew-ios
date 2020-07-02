@@ -10,9 +10,8 @@ import UIKit
 import Parse
 import MobileCoreServices
 import SnapKit
-import NVActivityIndicatorView
 
-class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, PlayerDelegate, TagDelegate {
+class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, PlayerDelegate, TagDelegate {
     
     let uiElement = UIElement()
     let color = Color()

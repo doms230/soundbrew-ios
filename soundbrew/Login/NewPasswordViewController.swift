@@ -8,10 +8,9 @@
 
 import UIKit
 import Parse
-import NVActivityIndicatorView
 import SnapKit
 
-class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
+class NewPasswordViewController: UIViewController {
     let color = Color()
     let uiElement = UIElement()
     var emailString: String!
@@ -95,14 +94,12 @@ class NewPasswordViewController: UIViewController, NVActivityIndicatorViewable {
     
     func signup() {
         self.resignFirstResponder()
-        self.startAnimating()
         let user = PFUser()
         user.username = usernameString
         user.password = passwordText.text!
         user.email = emailString
         user["artistName"] = usernameString
         user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
-            self.stopAnimating()
             if let error = error {
                 UIElement().showAlert(self.uiElement.localizedOops, message: error.localizedDescription, target: self)
             } else {

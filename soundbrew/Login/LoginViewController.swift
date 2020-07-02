@@ -8,10 +8,9 @@
 
 import UIKit
 import Parse
-import NVActivityIndicatorView
 import UserNotifications
 
-class LoginViewController: UIViewController, NVActivityIndicatorViewable {
+class LoginViewController: UIViewController {
     var color = Color()
     let uiElement = UIElement()
     
@@ -176,16 +175,13 @@ class LoginViewController: UIViewController, NVActivityIndicatorViewable {
         return valPassword
     }
     
-    func loginUser(_ username: String, password: String) {
-        startAnimating()
-        
+    func loginUser(_ username: String, password: String) {        
         let trimmedUsername = username.trimmingCharacters(
             in: NSCharacterSet.whitespacesAndNewlines
         )
         
         PFUser.logInWithUsername(inBackground: trimmedUsername, password: password) {
             (user: PFUser?, error: Error?) -> Void in
-            self.stopAnimating()
             if let user = user  {
                 //associate current user with device
                 let installation = PFInstallation.current()

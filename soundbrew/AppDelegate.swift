@@ -7,7 +7,6 @@
 
 import UIKit
 import Parse
-import NVActivityIndicatorView
 import UserNotifications
 import AppCenter
 import AppCenterCrashes
@@ -59,11 +58,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         PFUser.register(self, forAuthType: "apple")
         PFUser.register(self, forAuthType: "google")
-        
-        NVActivityIndicatorView.DEFAULT_TYPE = .lineScale
-        NVActivityIndicatorView.DEFAULT_COLOR = Color().uicolorFromHex(0xa9c5d0)
-        NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE = CGSize(width: 60, height: 60)
-        NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
         
         registerForRemoteNotification()
         

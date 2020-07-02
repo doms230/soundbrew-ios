@@ -227,8 +227,8 @@ class UIElement {
         let snap = SCSDKNoSnapContent()
         snap.sticker = SCSDKSnapSticker(stickerImage: snapchatImage)
         snap.attachmentUrl = shareAppURL
-        let api = SCSDKSnapAPI(content: snap)
-        api.startSnapping(completionHandler: { (error: Error?) in
+        let api = SCSDKSnapAPI()
+        api.startSending(snap, completionHandler: { (error: Error?) in
             if let error = error {
                 print("Snapchat error: \(error)")
             }
@@ -395,10 +395,11 @@ class UIElement {
         return sound
     }
     
-    func convertCentsToDollarsAndReturnString(_ cents: Int, currency: String) -> String {
+    func convertCentsToDollarsAndReturnString(_ cents: Int) -> String {
         let centsToDollars = Double(cents) / 100.00
+        let currentUserCurrencySymbol = Customer.shared.currencySymbol
         let dollarsProperlyFormattedAsString = String(format: "%.2f", centsToDollars)
-        return "\(currency)\(dollarsProperlyFormattedAsString)"
+        return "\(currentUserCurrencySymbol!)\(dollarsProperlyFormattedAsString)"
     }
     
     func addTitleView(_ title: String, target: UIViewController) {
@@ -495,8 +496,8 @@ class UIElement {
         return view
     }
         
-    func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String, title: String) -> (UIButton, UIButton, UIView) {
-        
+    func addSubViewControllerTopView(_ target: UIViewController, action: Selector, doneButtonTitle: String, title: String) -> (UIButton, UIButton, UIView, UIActivityIndicatorView) {
+                
         let doneButton = UIButton()
         doneButton.setTitle(doneButtonTitle, for: .normal)
         doneButton.titleLabel?.font = UIFont(name: "\(self.mainFont)-Bold", size: 17)
@@ -507,6 +508,14 @@ class UIElement {
         doneButton.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(target.view).offset(self.topOffset)
             make.right.equalTo(target.view).offset(self.rightOffset)
+        }
+        
+        let activitySpinner = UIActivityIndicatorView()
+        activitySpinner.color = .white
+        target.view.addSubview(activitySpinner)
+        activitySpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(15)
+            make.center.equalTo(doneButton)
         }
         
         let cancelButton = UIButton()
@@ -543,7 +552,21 @@ class UIElement {
         }
         
         //return view so that the next view can set constraints 
-        return (cancelButton, doneButton, dividerLine)
+        return (cancelButton, doneButton, dividerLine, activitySpinner)
+    }
+    
+    func shouldAnimateActivitySpinner(_ shouldAnimate: Bool, buttonGroup: (UIButton, UIActivityIndicatorView)) {
+        let button = buttonGroup.0
+        let spinner = buttonGroup.1 
+        if shouldAnimate {
+            button.isHidden = true
+            spinner.isHidden = false
+            spinner.startAnimating()
+        } else {
+            spinner.isHidden = true
+            spinner.stopAnimating()
+            button.isHidden = false
+        }
     }
 }
 

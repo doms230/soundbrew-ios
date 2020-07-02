@@ -9,18 +9,18 @@
 import UIKit
 import SnapKit
 import Parse
-import NVActivityIndicatorView
 import Kingfisher
 import CropViewController
 import Alamofire
 import SwiftyJSON
 
-class NewAccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, UITextFieldDelegate, NVActivityIndicatorViewable, UIPickerViewDataSource, UIPickerViewDelegate {
+class NewAccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
 
     let uiElement = UIElement()
     let color = Color()
     
     var newAccount: Account?
+    var topView: (UIButton, UIButton, UIView, UIActivityIndicatorView)!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         navigationController?.navigationBar.tintColor = .white
 
         setupStripeMessage()
-        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Create", title: "New Fan Club Account")
+        topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Create", title: "New Fan Club Account")
         setUpTableView(topView.2)
     }
     
@@ -57,6 +57,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             self.newAccount?.routingNumber = self.bankRoutingInput.text!
             
             if let artist = Customer.shared.artist {
+                self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
                 self.newAccount?.createNewAccount(artist, target: self)
             }
         }

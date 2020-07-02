@@ -203,7 +203,7 @@ class Artist {
                 case .success(let json):
                     let json = JSON(json)
                     if let amount = json["unit_amount"].int, let _ = json["currency"].string {
-                        let amountAsString = UIElement().convertCentsToDollarsAndReturnString(amount, currency: "$")
+                        let amountAsString = UIElement().convertCentsToDollarsAndReturnString(amount)
                         priceInput.text = amountAsString
                     }
                 case .failure(let error):

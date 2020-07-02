@@ -122,7 +122,6 @@ class Account {
     //new account
     func createNewAccount(_ artist: Artist, target: NewAccountViewController) {
         if let customerId = artist.customerId, let userObjectId = artist.objectId, let firstName = self.firstName, let lastName = self.lastName, let idNumber = self.personalIdNumber, let birthDay = self.birthDay, let birthMonth = self.birthMonth, let birthYear = self.birthYear, let username = artist.username, let email = artist.email, let country = self.country, let documentFront = self.documentFront, let currency = self.currency, let routingNumber = self.routingNumber, let bankAccountNumber = self.bankAccountNumber, let city = self.city, let line1 = self.line1, let line2 = self.line2, let postal_code = self.postal_code, let state = self.state, let phoneNumber = self.phoneNumber {
-            target.startAnimating()
             let url = self.baseURL!.appendingPathComponent("create")
             let parameters: Parameters = [
                 "customerId": customerId,
@@ -151,7 +150,6 @@ class Account {
             //"tos_acceptance_date": NSDate().timeIntervalSince1970
             AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
                 .responseJSON { responseJSON in
-                    target.stopAnimating()
                     switch responseJSON.result {
                     case .success(let json):
                         let json = JSON(json)
@@ -161,7 +159,6 @@ class Account {
                                 self.id = json["id"].stringValue
                                 self.updateAndMoveForward(target)
                             } else if let code = json["raw"]["code"].string, let message = json["raw"]["message"].string  {
-                                target.stopAnimating()
                                 target.uiElement.showAlert("Error: \(code)", message: message, target: target)
                             }
                         } else {

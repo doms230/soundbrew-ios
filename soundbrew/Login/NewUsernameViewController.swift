@@ -9,11 +9,10 @@
 import UIKit
 import Parse
 import SnapKit
-import NVActivityIndicatorView
 import Kingfisher
 import SwiftyJSON
 
-class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, PFUserAuthenticationDelegate {
+class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate {
     func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
         return true 
     }
@@ -120,13 +119,11 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
     }
     
     func checkIfUsernameExistsThenMoveForward() {
-        startAnimating()
         let localizedUsernameAlreadyInUse = NSLocalizedString("usernameAlreadyInUse", comment: "")
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: usernameText.text!)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            self.stopAnimating()
             if object != nil && error == nil {
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameAlreadyInUse)
                 
@@ -169,7 +166,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
                 } else if let user = user {
                     if let _ = user["email"] as? String {
                         Customer.shared.getCustomer(user.objectId!)
-                        self.stopAnimating()
                         self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         
                     } else {
@@ -188,7 +184,6 @@ class NewUsernameViewController: UIViewController, NVActivityIndicatorViewable, 
             
                         user.saveEventually {
                             (success: Bool, error: Error?) in
-                            self.stopAnimating()
                             Customer.shared.getCustomer(user.objectId!)
                             self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         }

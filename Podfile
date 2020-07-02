@@ -19,7 +19,6 @@ target 'soundbrew' do
   
   pod 'SnapKit'
   pod 'Parse'
-  pod 'NVActivityIndicatorView'
   pod 'SidebarOverlay'
   pod 'Kingfisher'
   pod 'Alamofire'
@@ -33,7 +32,7 @@ target 'soundbrew' do
   pod 'CropViewController'
   pod 'Stripe'
   pod 'UICircularProgressRing'
-  pod 'FlagKit'
+  #pod 'FlagKit'
   pod 'NotificationBannerSwift'
   pod 'GoogleSignIn'
 end

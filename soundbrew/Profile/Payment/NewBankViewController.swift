@@ -9,10 +9,9 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-import NVActivityIndicatorView
 import NotificationBannerSwift
 
-class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable {
+class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let uiElement = UIElement()
     let color = Color()
     
@@ -24,18 +23,16 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
     var account: Account?
     var artistDelegate: ArtistDelegate?
     var accountDelegate: AccountDelegate?
+    var topView: (UIButton, UIButton, UIView, UIActivityIndicatorView)!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-        if self.account != nil {
-            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "Add Payout bank")
-            setUpTableView(topView.2)
-        } else if let account = Customer.shared.artist?.account {
+        if let account = Customer.shared.artist?.account {
             self.account = account
-            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
+            topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
             setUpTableView(topView.2)
         } else {
             self.dismiss(animated: true, completion: nil)
@@ -46,6 +43,8 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         } else if accountingIsValidated() && routingIsValidated() {
+            self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
+            
             if let country = self.account?.country, let currency = self.account?.currency, let bankRoutingNumber = self.routingText.text, let bankAccountNumber = self.accountText.text {
                 if let accountId = self.account?.id {
                     createNewBank(accountId, country: country, currency: currency, routing: bankRoutingNumber, accountNumber: bankAccountNumber)
@@ -109,7 +108,6 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func createNewBank(_ accountId: String, country: String, currency: String, routing: String, accountNumber: String) {
-        self.startAnimating()
         let url = self.baseURL!.appendingPathComponent("newBank")
         let parameters: Parameters = [
             "account": accountId,
@@ -119,6 +117,7 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
             "account_number": accountNumber]
         AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .responseJSON { responseJSON in
+                self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (self.topView.1, self.topView.3))
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
@@ -126,7 +125,6 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
                         if statusCode >= 200 && statusCode < 300 {
                             self.updateAndDismiss(json)
                         } else if let code = json["raw"]["code"].string, let message = json["raw"]["message"].string  {
-                            self.stopAnimating()
                             self.uiElement.showAlert("Error: \(code)", message: message, target: self)
                         }
                     } else {
@@ -134,7 +132,6 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
                     }
                     
                 case .failure(let error):
-                    self.stopAnimating()
                     self.uiElement.showAlert("Un-Successful", message: error.errorDescription ?? "", target: self)
                 }
         }
@@ -150,7 +147,6 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
             Customer.shared.artist?.account?.bankTitle = newBanktitle
          }
         
-        self.stopAnimating()
         let newBankTitle = Customer.shared.artist?.account?.bankTitle
         let banner = StatusBarNotificationBanner(title: "\(newBankTitle ?? "Your Bank") is now your payout bank.", style: .info)
         banner.show()

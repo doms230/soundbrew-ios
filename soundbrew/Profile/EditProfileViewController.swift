@@ -9,13 +9,12 @@
 import UIKit
 import SnapKit
 import Parse
-import NVActivityIndicatorView
 import Kingfisher
 import CropViewController
 import Alamofire
 import SwiftyJSON
 
-class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NVActivityIndicatorViewable, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate, CropViewControllerDelegate {
+class EditProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ArtistDelegate, TagDelegate, CropViewControllerDelegate {
     
     let uiElement = UIElement()
     let color = Color()
@@ -36,7 +35,8 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var isOnboarding = false
     
     var tagType: String!
-        
+    var topView: (UIButton, UIButton, UIView, UIActivityIndicatorView)!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
@@ -44,7 +44,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         navigationController?.navigationBar.tintColor = .white
         if let currentArtist = Customer.shared.artist {
             self.artist = currentArtist
-            let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done", title: "Edit Profile")
+            topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Done", title: "Edit Profile")
             self.setUpTableView(topView.2)
             
         } else {
@@ -58,8 +58,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
         } else {
-            self.startAnimating()
-            
             usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
             emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)
             websiteText.text = self.uiElement.cleanUpText(websiteText.text!, shouldLowercaseText: true)
@@ -73,9 +71,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 if didFinishProcessingImage {
                     updateUserInfo()
                 }
-                
-            } else {
-                self.stopAnimating()
             }
         }
     }
@@ -457,10 +452,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     //MARK: Data
     func updateUserInfo() {
+        self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
         let customer = Customer.shared
         let query = PFQuery(className: "_User")
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
+            self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (self.topView.1, self.topView.3))
             if let user = user {
                 user["artistName"] = self.nameText.text
                 
@@ -491,7 +488,6 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 
                 user.saveEventually {
                     (success: Bool, error: Error?) in
-                    self.stopAnimating()
                     if (success) {
                         customer.artist?.username = (user["username"] as! String)
                         customer.artist?.email = (user["email"] as! String)

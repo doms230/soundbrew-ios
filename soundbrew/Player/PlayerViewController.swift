@@ -11,10 +11,9 @@ import Parse
 import Kingfisher
 import SnapKit
 import GrowingTextView
-import NVActivityIndicatorView
 import AVFoundation
 
-class PlayerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate, NVActivityIndicatorViewable {
+class PlayerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate {
     
     var comments = [Comment?]()
     let uiElement = UIElement()
@@ -545,14 +544,13 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     
     func loadArtistFromUsername(_ username: String, commentId: String?) {
         if commentId == nil {
-            self.startAnimating()
+            //TODO: put some type of activity spinner here 
         }
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: username)
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            self.stopAnimating()
             if let object = object {
                 if let commentId = commentId, let fromUserId = PFUser.current()?.objectId {
                     self.newMention(object.objectId!, fromUserId: fromUserId, commentId: commentId)
