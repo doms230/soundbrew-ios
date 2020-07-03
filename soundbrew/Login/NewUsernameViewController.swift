@@ -185,7 +185,7 @@ class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate 
                     
                 } else if let user = user {
                     if let _ = user["email"] as? String {
-                        Customer.shared.getCustomer(user.objectId!)
+                        Customer.shared.getCurrentUserInfo(user.objectId!)
                         self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         
                     } else {
@@ -204,7 +204,7 @@ class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate 
             
                         user.saveEventually {
                             (success: Bool, error: Error?) in
-                            Customer.shared.getCustomer(user.objectId!)
+                            Customer.shared.getCurrentUserInfo(user.objectId!)
                             self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         }
                     }

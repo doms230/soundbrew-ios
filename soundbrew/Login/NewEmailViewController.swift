@@ -303,7 +303,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
                     self.updateUserInfo(nil)
                 }
             } else {
-                Customer.shared.getCustomer(parseUser!.objectId!)
+                Customer.shared.getCurrentUserInfo(parseUser!.objectId!)
                 DispatchQueue.main.async {
                     self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                 }
@@ -349,7 +349,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
                     user["googleId"] = self.googleAuthData["id"]
                     user.saveEventually {
                         (success: Bool, error: Error?) in
-                        Customer.shared.getCustomer(currentUserId)
+                        Customer.shared.getCurrentUserInfo(currentUserId)
                         DispatchQueue.main.async {
                             self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                         }

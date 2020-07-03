@@ -209,7 +209,7 @@ class LoginViewController: UIViewController {
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
                 
-                Customer.shared.getCustomer(user.objectId!)
+                Customer.shared.getCurrentUserInfo(user.objectId!)
                 self.uiElement.newRootView("Main", withIdentifier: "tabBar")
                 
             } else if let error = error?.localizedDescription {

@@ -24,6 +24,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     var referralCode: String?
     var currencySymbol: String!
     var currencyCode: String!
+    var fanClubs = [String]()
     
     func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
         if let customerId = self.artist?.customerId {
@@ -106,7 +107,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
         }
     }
     
-    func getCustomer(_ objectId: String) {
+    func getCurrentUserInfo(_ objectId: String) {
         let locale = Locale.current
         if let currencySymbol = locale.currencySymbol, let currencyCode = locale.currencyCode {
             self.currencySymbol = currencySymbol
@@ -135,6 +136,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                         self.create(user.objectId!, email: email, name: username)
                     } else {
                         artist.customerId = customerId
+                        self.getSubscriptions(customerId)
                     }
                     
                 } else {
@@ -169,6 +171,29 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 }
             }
         }
+    }
+    
+    func getSubscriptions(_ customerId: String) {
+            let url = self.baseURL!.appendingPathComponent("retrieveSubscriptions")
+            let parameters: Parameters = [
+                "customer": customerId]
+            AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+                .validate(statusCode: 200..<300)
+                .responseJSON { responseJSON in
+                    switch responseJSON.result {
+                    case .success(let json):
+                        let json = JSON(json)
+                        if let subs = json["data"].array {
+                            for sub in subs {
+                                if let product = sub["plan"]["product"].string {
+                                    self.fanClubs.append(product)
+                                }
+                            }
+                        }
+                    case .failure(let error):
+                        print(error)
+                    }
+            }
     }
     
     func getFriends(_ userId: String) {
