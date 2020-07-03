@@ -21,6 +21,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var newAccount: Account?
     var topView: (UIButton, UIButton, UIView, UIActivityIndicatorView)!
+    var didDoubleCheckInfo = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +37,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     @objc func didPressTopViewButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
-        } else if validateDocumentFront() && self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) &&
+        } else if validateDocumentFront() && self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.phoneNumberText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) &&
             self.validateText(self.bankRoutingInput) && self.validateText(self.bankAccountNumberInput) {
             
             self.newAccount?.firstName = self.firstNameInput.text!
@@ -56,9 +57,14 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             self.newAccount?.bankAccountNumber = self.bankAccountNumberInput.text!
             self.newAccount?.routingNumber = self.bankRoutingInput.text!
             
-            if let artist = Customer.shared.artist {
-                self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
-                self.newAccount?.createNewAccount(artist, target: self)
+            if didDoubleCheckInfo {
+                if let artist = Customer.shared.artist {
+                    self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
+                    self.newAccount?.createNewAccount(artist, target: self)
+                }
+            } else {
+                didDoubleCheckInfo = true
+                self.uiElement.showAlert("Double Check Info", message: "Double check that your info is correct to insure you get your weekly payouts on time!", target: self)
             }
         }
     }

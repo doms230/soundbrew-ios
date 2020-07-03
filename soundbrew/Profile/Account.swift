@@ -14,6 +14,7 @@ import Parse
 class Account {
     let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
     var id: String?
+    var productId: String?
     var country: String!
     var currency: String!
     var requiresAttentionItems: Int?
@@ -147,13 +148,12 @@ class Account {
                 "postal_code": postal_code,
                 "state": state]
             
-            //"tos_acceptance_date": NSDate().timeIntervalSince1970
             AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
                 .responseJSON { responseJSON in
+                target.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (target.topView.1, target.topView.3))
                     switch responseJSON.result {
                     case .success(let json):
                         let json = JSON(json)
-                        print(json)
                         if let statusCode = json["statusCode"].int {
                             if statusCode >= 200 && statusCode < 300 {
                                 self.id = json["id"].stringValue
@@ -162,7 +162,10 @@ class Account {
                                 target.uiElement.showAlert("Error: \(code)", message: message, target: target)
                             }
                         } else {
-                            self.id = json["id"].stringValue
+                            self.id = json["account"].string
+                            self.bankAccountId = json["bank"].string
+                            self.bankTitle = json["bankTitle"].string
+                            self.productId = json["product"].string
                             self.updateAndMoveForward(target)
                         }
 
@@ -177,6 +180,7 @@ class Account {
     }
     
     func updateAndMoveForward(_ target: NewAccountViewController) {
+        target.topView.1.isEnabled = false
         self.bankAccountNumber = nil
         self.routingNumber = nil
         Customer.shared.artist?.account = self
@@ -199,8 +203,9 @@ class Account {
         query.getObjectInBackground(withId: PFUser.current()!.objectId!) {
             (user: PFObject?, error: Error?) -> Void in
             if let user = user {
-                if let accountId = self.id {
+                if let accountId = self.id, let productId = self.productId {
                     user["accountId"] = accountId
+                    user["productId"] = productId
                 }
                 user.saveEventually()
             }
@@ -240,9 +245,7 @@ class Account {
     func addFile(_ json: JSON, documentType: String) {
         if documentType == "front" {
             self.documentFront = json["id"].stringValue
-        } /*else {
-            self.documentBack = json["id"].stringValue
-        }*/
+        }
     }
     
 }
