@@ -150,7 +150,11 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 
                 var account: Account?
                 if let accountId = user["accountId"] as? String, !accountId.isEmpty {
-                    account = Account(accountId)
+                    account = Account(accountId, productId: nil)
+                }
+                
+                if let productId = user["productId"] as? String, !productId.isEmpty {
+                    account?.productId = productId
                 }
                 
                 artist.account = account
@@ -159,9 +163,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     artist.account?.retreiveAccount()
                 }
                 
-                /*if let balance = user["balance"] as? Int {
-                    artist.balance = balance
-                }*/
                 self.artist = artist
                 if let userId = user.objectId {
                     self.getFriends(userId)

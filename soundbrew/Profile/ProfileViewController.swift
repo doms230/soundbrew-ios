@@ -763,7 +763,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //mark: account
     func showNewAccount(_ country: String) {
-        let account = Account(nil)
+        let account = Account(nil, productId: nil)
         account.country = country
         account.currency = "usd"
         let modal = NewAccountViewController()

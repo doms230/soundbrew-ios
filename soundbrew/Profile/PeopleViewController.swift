@@ -493,7 +493,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     var account: Account?
                     
                     if let accountId = user["accountId"] as? String, !accountId.isEmpty {
-                        account = Account(accountId)
+                        account = Account(accountId, productId: nil)
+                    }
+                    
+                    if let productId = user["productId"] as? String, !productId.isEmpty {
+                        account?.productId = productId
                     }
                     
                     self.filteredArtists.append(artist)

@@ -43,8 +43,9 @@ class Account {
     var postal_code: String?
     var state: String?
     
-    init(_ id: String?) {
+    init(_ id: String?, productId: String?) {
         self.id = id
+        self.productId = productId
     }
     
     func retreiveAccount() {
@@ -88,6 +89,16 @@ class Account {
                     print(error)
                 }
         }
+    }
+    
+    func updateAccount(_ newName: String) {
+        let url = baseURL!.appendingPathComponent("updateProduct")
+        let parameters: Parameters = [
+            "product": self.productId ?? "nil",
+            "name": "\(newName)'s Fan Club"]
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in}
     }
     
     func shouldSubstractRequiresAttentionNumber(_ due: [String]) {
@@ -147,7 +158,6 @@ class Account {
                 "line2": line2,
                 "postal_code": postal_code,
                 "state": state]
-            
             AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
                 .responseJSON { responseJSON in
                 target.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (target.topView.1, target.topView.3))
@@ -190,12 +200,6 @@ class Account {
             target.dismiss(animated: true, completion: nil)
         }))
         target.present(menuAlert, animated: true, completion: nil)
-        /*target.isSettingUpNewAccount = true
-        target.performSegue(withIdentifier: "showAccountWebView", sender: self)
-        self.bankAccountNumber = nil
-        self.routingNumber = nil
-        Customer.shared.artist?.account = self
-        self.updateUserInfoWithAccountNumber()*/
     }
     
     func updateUserInfoWithAccountNumber() {
@@ -212,6 +216,7 @@ class Account {
         }
     }
     
+    //MARK: Files
     func createNewFile(_ imageData: Data, spinner: UIActivityIndicatorView, target: NewAccountViewController, documentType: String) {
         spinner.startAnimating()
         spinner.isHidden = false

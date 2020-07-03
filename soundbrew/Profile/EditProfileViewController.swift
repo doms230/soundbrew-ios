@@ -489,6 +489,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                 user.saveEventually {
                     (success: Bool, error: Error?) in
                     if (success) {
+                        if let currentUsername = customer.artist?.username, let newUsername = self.usernameText.text, let account = customer.artist?.account,  currentUsername != newUsername {
+                            print("new name")
+                            account.updateAccount(newUsername)
+                        }
+                        
                         customer.artist?.username = (user["username"] as! String)
                         customer.artist?.email = (user["email"] as! String)
                         
@@ -519,7 +524,11 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         var account: Account?
                         
                         if let accountId = user["accountId"] as? String, !accountId.isEmpty {
-                            account = Account(accountId)
+                            account = Account(accountId, productId: nil)
+                        }
+                        
+                        if let productId = user["productId"] as? String, !productId.isEmpty {
+                            account?.productId = productId
                         }
                         
                         customer.artist?.account = account
