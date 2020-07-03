@@ -61,6 +61,13 @@ class LoginViewController: UIViewController {
         return button
     }()
     
+    lazy var signInSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -83,6 +90,12 @@ class LoginViewController: UIViewController {
             make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(self.signInSpinner)
+        self.signInSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(self.uiElement.buttonHeight / 2)
+            make.center.equalTo(self.signButton)
         }
         
         self.view.addSubview(passwordLabel)
@@ -175,13 +188,20 @@ class LoginViewController: UIViewController {
         return valPassword
     }
     
-    func loginUser(_ username: String, password: String) {        
+    func loginUser(_ username: String, password: String) {
+        self.signInSpinner.isHidden = false
+        self.signInSpinner.startAnimating()
+        self.signButton.setTitle("", for: .normal)
+        
         let trimmedUsername = username.trimmingCharacters(
             in: NSCharacterSet.whitespacesAndNewlines
         )
         
         PFUser.logInWithUsername(inBackground: trimmedUsername, password: password) {
             (user: PFUser?, error: Error?) -> Void in
+            self.signInSpinner.isHidden = true
+            self.signInSpinner.stopAnimating()
+            self.signButton.setTitle("SIGN IN", for: .normal)
             if let user = user  {
                 //associate current user with device
                 let installation = PFInstallation.current()

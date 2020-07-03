@@ -33,6 +33,13 @@ class NewPasswordViewController: UIViewController {
         button.addTarget(self, action: #selector(finish(_:)), for: .touchUpInside)
         return button
     }()
+    
+    lazy var finishSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +54,12 @@ class NewPasswordViewController: UIViewController {
             make.centerY.equalTo(self.view)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(finishSpinner)
+        finishSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(uiElement.buttonHeight / 2)
+            make.center.equalTo(finishButton)
         }
         
         self.passwordLabel = self.uiElement.soundbrewLabel("Password", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
@@ -93,6 +106,9 @@ class NewPasswordViewController: UIViewController {
     }
     
     func signup() {
+        self.finishButton.setTitle("", for: .normal)
+        self.finishSpinner.startAnimating()
+        self.finishButton.isHidden = false
         self.resignFirstResponder()
         let user = PFUser()
         user.username = usernameString
@@ -100,6 +116,9 @@ class NewPasswordViewController: UIViewController {
         user.email = emailString
         user["artistName"] = usernameString
         user.signUpInBackground{ (succeeded: Bool, error: Error?) -> Void in
+            self.finishSpinner.stopAnimating()
+            self.finishSpinner.isHidden = true
+            self.finishButton.setTitle("FINISH", for: .normal)
             if let error = error {
                 UIElement().showAlert(self.uiElement.localizedOops, message: error.localizedDescription, target: self)
             } else {

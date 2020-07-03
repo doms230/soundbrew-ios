@@ -26,13 +26,14 @@ class Artist {
     var isFollowedByCurrentUser: Bool?
     var followerCount: Int?
     var followingCount: Int?
+    var fanCount: Int?
     var earnings: Int?
     var customerId: String?
     var balance: Int?
     var friendObjectIds: [String]?
     var account: Account?
     
-    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, account: Account?) {
+    init(objectId: String!, name: String?, city: String?, image: String?, isVerified: Bool?, username: String?, website: String?, bio: String?, email: String?, isFollowedByCurrentUser: Bool?, followerCount: Int?, followingCount: Int?, fanCount: Int?, customerId: String?, balance: Int?, earnings: Int?, friendObjectIds: [String]?, account: Account?) {
         self.objectId = objectId
         self.name = name
         self.username = username
@@ -45,6 +46,7 @@ class Artist {
         self.isFollowedByCurrentUser = isFollowedByCurrentUser
         self.followerCount = followerCount
         self.followingCount = followingCount
+        self.fanCount = fanCount
         self.customerId = customerId
         self.balance = balance
         self.earnings = earnings

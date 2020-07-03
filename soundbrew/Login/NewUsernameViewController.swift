@@ -44,6 +44,13 @@ class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate 
         button.addTarget(self, action: #selector(next(_:)), for: .touchUpInside)
         return button
     }()
+    
+    lazy var nextSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,6 +65,12 @@ class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate 
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.centerY.equalTo(self.view)
+        }
+        
+        self.view.addSubview(self.nextSpinner)
+        self.nextSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(self.uiElement.buttonHeight / 2)
+            make.center.equalTo(self.nextButton)
         }
 
         self.usernameLabel = self.uiElement.soundbrewLabel("Username", textColor: .white, font: UIFont(name: "\(self.uiElement.mainFont)", size: 17)!, numberOfLines: 1)
@@ -119,11 +132,18 @@ class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate 
     }
     
     func checkIfUsernameExistsThenMoveForward() {
+        self.nextButton.setTitle("", for: .normal)
+        self.nextSpinner.startAnimating()
+        self.nextSpinner.isHidden = false
+        
         let localizedUsernameAlreadyInUse = NSLocalizedString("usernameAlreadyInUse", comment: "")
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: usernameText.text!)
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
+            self.nextSpinner.stopAnimating()
+            self.nextSpinner.isHidden = true
+            self.nextButton.setTitle("next", for: .normal)
             if object != nil && error == nil {
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameAlreadyInUse)
                 

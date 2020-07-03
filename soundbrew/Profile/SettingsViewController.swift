@@ -253,6 +253,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     if let following = object["following"] as? Int {
                         self.artist?.followingCount = following
                     }
+                    
+                    if let fans = object["fans"] as? Int {
+                        self.artist?.fanCount = fans
+                    }
                 }
                 self.setupBottomButtons()
             }
@@ -283,10 +287,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         if self.artist?.account == nil {
             cell.displayNameLabel.text = "Start Fan Club"
+            cell.username.text = "Earn From Your Followers"
         } else {
             switch indexPath.row {
                 case 0:
-                    cell.displayNameLabel.text = "100"
+                    if let fanCount = self.artist?.fanCount {
+                        cell.displayNameLabel.text = "\(fanCount)"
+                    } else {
+                        cell.displayNameLabel.text = "100"
+                    }
+                    
                     cell.username.text = "Fans"
                     break
                     
@@ -323,7 +333,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         } else {
             switch indexPath.row {
             case 0:
-                //show fans
+                showFollowersOrFollowing("fans")
                 break
             case 1:
                 if let container = self.so_containerViewController {
@@ -346,16 +356,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func showRequireAccountAttention() {
-        if let requiresAttentionItems = self.artist?.account?.requiresAttentionItems, requiresAttentionItems != 0 {
-            if let container = self.so_containerViewController {
-                container.isSideViewControllerPresented = false
-                if let topView = container.topViewController as? UINavigationController,
-                    let view = topView.topViewController as? ProfileViewController {
-                    view.performSegue(withIdentifier: "showAccountWebView", sender: self)
-                }
+        if let container = self.so_containerViewController {
+            container.isSideViewControllerPresented = false
+            if let topView = container.topViewController as? UINavigationController,
+                let view = topView.topViewController as? ProfileViewController {
+                view.performSegue(withIdentifier: "showAccountWebView", sender: self)
             }
-        } else {
-            self.uiElement.showAlert("All Good", message: "You're account is in good standing!", target: self)
         }
     }
     
@@ -369,10 +375,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 if let topView = container.topViewController as? UINavigationController,
                     let view = topView.topViewController as? ProfileViewController {
                     view.showNewAccount("US")
-                   /* let modal = ChooseTagsViewController()
-                    modal.tagType = "country"
-                    modal.tagDelegate = view
-                    view.present(modal, animated: true, completion: nil)*/
                     }
                 }
             }

@@ -272,7 +272,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                         artistDelegate.receivedArtist(artist)
                     })
                 }
-            } else if loadType == "following" || loadType == "followers" {
+            } else if loadType == "following" || loadType == "followers" || loadType == "fans" {
                 selectedArtist = artist
                 self.performSegue(withIdentifier: "showProfile", sender: self)
             } else if let playerDelegate = self.playerDelegate {
@@ -287,9 +287,11 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
         let query = PFQuery(className: "Follow")
         if loadType == "followers" {
             query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
-            
         } else if loadType == "following" {
             query.whereKey("fromUserId", equalTo: PFUser.current()!.objectId!)
+        } else if loadType == "fans" {
+            query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
+             query.whereKey("isFan", equalTo: true)
         }
         query.whereKey("isRemoved", equalTo: false)
         query.limit = 50
@@ -299,12 +301,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     var userId: String!
-                    if loadType == "followers" {
+                    if loadType == "followers" || loadType == "fans"  {
                         userId = object["fromUserId"] as? String
                     } else if loadType == "following" {
                         userId = object["toUserId"] as? String
                     }
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     self.artists.append(artist)
                 }
             }
@@ -323,7 +325,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     let userId = object["fromUserId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
@@ -346,7 +348,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
@@ -369,7 +371,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if let objects = objects {
                 for object in objects {
                     let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
@@ -448,7 +450,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                         }
                     }
                     
-                    let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+                    let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
                     if let followerCount = user["followerCount"] as? Int {
                         artist.followerCount = followerCount

@@ -76,6 +76,13 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
         return button
     }()
     
+    lazy var nextSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
+    }()
+    
     func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
         return true
     }
@@ -98,6 +105,12 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
                 make.centerY.equalTo(self.view)
                 make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
                 make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
+            }
+            
+            self.view.addSubview(self.nextSpinner)
+            self.nextSpinner.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(self.uiElement.buttonHeight / 2)
+                make.center.equalTo(self.nextButton)
             }
             
             self.view.addSubview(self.emailLabel)
@@ -129,6 +142,9 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
     @objc func next(_ sender: UIButton){
         if validateEmail(), let email = self.emailText.text {
            let cleanEmail = self.uiElement.cleanUpText(email, shouldLowercaseText: true)
+            self.nextButton.setTitle("", for: .normal)
+            self.nextSpinner.startAnimating()
+            self.nextSpinner.isHidden = false
             checkIfEmailExistsThenMoveForward(cleanEmail, authData: nil)
         }
     }
@@ -229,6 +245,9 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
                     }
                     
                 } else {
+                    self.nextSpinner.stopAnimating()
+                    self.nextSpinner.isHidden = true
+                    self.nextButton.setTitle("next", for: .normal)
                     self.uiElement.showTextFieldErrorMessage(self.emailText, text: localizedEmailAlreadyInUse)
                 }
                 

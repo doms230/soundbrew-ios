@@ -42,6 +42,13 @@ class ForgotPasswordViewController: UIViewController {
         return button
     }()
     
+    lazy var forgotPasswordSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        spinner.isHidden = true
+        return spinner
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,6 +66,12 @@ class ForgotPasswordViewController: UIViewController {
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        self.view.addSubview(self.forgotPasswordSpinner)
+        self.forgotPasswordSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(self.uiElement.buttonHeight / 2)
+            make.center.equalTo(self.forgotPasswordSpinner)
+        }
+        
         emailInput.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -68,11 +81,18 @@ class ForgotPasswordViewController: UIViewController {
     }
     
     @objc func didPressResetPassword(_ sender: UIButton) {
+        self.forgotPasswordSpinner.isHidden = false
+        self.forgotPasswordSpinner.startAnimating()
+        self.forgotPasswordButton.setTitle("", for: .normal)
+        
         let emailText = emailInput.text?.trimmingCharacters(in: .whitespaces).lowercased()
         let blockQuery = PFQuery(className: "_User")
         blockQuery.whereKey("email", equalTo: emailText ?? "")
         blockQuery.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
+            self.forgotPasswordSpinner.isHidden = true
+            self.forgotPasswordSpinner.stopAnimating()
+            self.forgotPasswordButton.setTitle("Reset Password", for: .normal)
             if objects?.count != 0 {
                 PFUser.requestPasswordResetForEmail(inBackground: emailText!)
                 let localizedStringTitle = NSLocalizedString("checkInboxTitle", comment: "")

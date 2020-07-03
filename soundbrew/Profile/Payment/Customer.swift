@@ -128,7 +128,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 let email = user["email"] as! String
                 let username = user["username"] as! String
                 
-                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, customerId: nil, balance: 0, earnings: nil, friendObjectIds: nil, account: nil)
+                let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: nil, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: 0, earnings: nil, friendObjectIds: nil, account: nil)
                 
                 if let customerId = user["customerId"] as? String {
                     if customerId.isEmpty {
