@@ -311,10 +311,9 @@ class UIElement {
                 artist.email = user["email"] as? String
             }
         }
-        
-        if let name = user["artistName"] as? String {
-            artist.name = name
-        }
+        artist.customerId = user["customerId"] as? String
+        artist.isVerified = user["isVerified"] as? Bool
+        artist.name = user["artistName"] as? String
         
         if let username = user["username"] as? String {
             if !username.contains("@") {
@@ -322,21 +321,10 @@ class UIElement {
             }
         }
         
-        if let city = user["city"] as? String {
-            artist.city = city
-        }
-        
-        if let userImageFile = user["userImage"] as? PFFileObject {
-            artist.image = userImageFile.url!
-        }
-        
-        if let bio = user["bio"] as? String {
-            artist.bio = bio
-        }
-        
-        if let website = user["website"] as? String {
-            artist.website = website
-        }
+        artist.city = user["city"] as? String
+        artist.image = (user["userImage"] as? PFFileObject)?.url
+        artist.bio = user["bio"] as? String
+        artist.website = user["website"] as? String
         
         var account: Account?
         
@@ -354,15 +342,10 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil)
+        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: nil)
         
-        if let createdAt = object.createdAt {
-            sound.createdAt = createdAt
-        }
-        
-        if let objectId = object.objectId {
-            sound.objectId = objectId
-        }
+        sound.createdAt = object.createdAt
+        sound.objectId = object.objectId
         
         if let audio = object["audioFile"] as? PFFileObject {
             sound.audio = audio
@@ -379,6 +362,7 @@ class UIElement {
             sound.title = "Untitled"
         }
         
+        sound.artFile = object["songArt"] as? PFFileObject
         if let art = object["songArt"] as? PFFileObject {
             sound.artFile = art 
         }
@@ -391,6 +375,7 @@ class UIElement {
         sound.isDraft = object["isDraft"] as? Bool
         sound.isFeatured = object["isFeatured"] as? Bool
         sound.isExclusive = object["isExclusive"] as? Bool
+        sound.productId = object["productId"] as? String
         
         let userId = object["userId"] as! String
         let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: "", website: "", bio: "", email: "", isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)

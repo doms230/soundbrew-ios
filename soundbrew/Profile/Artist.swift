@@ -75,36 +75,20 @@ class Artist {
                     }
                 }
                 
-                if let name = user["artistName"] as? String {
-                    self.name = name
-                }
-                
-                if let city = user["city"] as? String {
-                    self.city = city
-                }
-                
-                if let userImageFile = user["userImage"] as? PFFileObject {
-                    self.image = userImageFile.url!
-                }
-                
-                if let bio = user["bio"] as? String {
-                    self.bio = bio
-                }
-                
-                if let website = user["website"] as? String {
-                    self.website = website
-                }
+                self.isVerified = user["isVerified"] as? Bool
+                self.name = user["artistName"] as? String
+                self.city = user["city"] as? String
+                self.image = (user["userImage"] as? PFFileObject)?.url
+                self.bio = user["bio"] as? String
+                self.website = user["website"] as? String
                 
                 var account: Account?
-                
                 if let accountId = user["accountId"] as? String, !accountId.isEmpty {
                     account = Account(accountId, productId: nil)
                 }
-                
                 if let productId = user["productId"] as? String, !productId.isEmpty {
                     account?.productId = productId
                 }
-                
                 self.account = account
                 
                 if let cell = profileCell {
@@ -194,28 +178,6 @@ class Artist {
         }
         
         return cell
-    }
-    
-    func getAccountPrice(_ priceId: String, priceInput: UILabel) {
-        let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
-        let url = baseURL!.appendingPathComponent("retrievePrice")
-        let parameters: Parameters = [
-            "priceId": priceId]
-        
-        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-            .validate(statusCode: 200..<300)
-            .responseJSON { responseJSON in
-                switch responseJSON.result {
-                case .success(let json):
-                    let json = JSON(json)
-                    if let amount = json["unit_amount"].int, let _ = json["currency"].string {
-                        let amountAsString = UIElement().convertCentsToDollarsAndReturnString(amount)
-                        priceInput.text = amountAsString
-                    }
-                case .failure(let error):
-                    print("Get Account PRice- Artist.swift \(error)")
-                }
-        }
     }
 }
 

@@ -92,13 +92,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
+            //Loading here to so that Soundbrew can check if sound is exclusive to artist' fan club
             if shouldPlay {
-               self.play()
+                self.play()
             } else {
                 let miniPlayerView = MiniPlayerView.sharedInstance
                 miniPlayerView.isEnabled = true
             }
-            
+                        
         } else {
             setUpNextSong(false, at: nil, shouldPlay: false)
         }
@@ -125,14 +126,28 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func play() {
         shouldEnableCommandCenter(true)
         if let player = self.player {
-            if  let currentUserId = PFUser.current()?.objectId, let artistObjectId = self.currentSound?.artist?.objectId, let isExclusive = self.currentSound?.isExclusive, currentUserId != artistObjectId && isExclusive, let soundArtistProductId = self.currentSound?.artist?.account?.productId, !Customer.shared.fanClubs.contains(soundArtistProductId) {
+            if currentUserDoesHaveAccessToSound() {
+                if !player.isPlaying {
+                    player.play()
+                    sendSoundUpdateToUI()
+                    startTimer()
+                }
+                
+            } else {
                 playSoundIsExclusiveMessage()
-            } else if !player.isPlaying {
-                player.play()
-                sendSoundUpdateToUI()
-                startTimer()
             }
         }
+    }
+    
+    func currentUserDoesHaveAccessToSound() -> Bool {
+        if  let currentUserId = PFUser.current()?.objectId,
+            let artistObjectId = self.currentSound?.artist?.objectId,
+            let isExclusive = self.currentSound?.isExclusive,
+            currentUserId != artistObjectId && isExclusive,
+            let soundProductId = self.currentSound?.productId, !Customer.shared.fanClubs.contains(soundProductId) {
+            return false
+        }
+        return true
     }
     
     func playSoundIsExclusiveMessage() {
@@ -165,11 +180,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
         }
     }
-    
-   /* func next(_ shouldPlay: Bool) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-        self.setUpNextSong(false, at: nil, shouldPlay: shouldPlay)
-    }*/
     
     func previous() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
@@ -480,7 +490,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     //mark: data
-    func loadUserInfoFromCloud(_ userId: String, i: Int) {
+   /* func loadUserInfoFromCloud(_ userId: String, i: Int) {
         let query = PFQuery(className:"_User")
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: userId) {
@@ -493,7 +503,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 self.setBackgroundAudioNowPlaying()
             }
         }
-    }
+    }*/
 }
 
 protocol PlayerDelegate {

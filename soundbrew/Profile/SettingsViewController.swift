@@ -108,7 +108,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.view.addSubview(self.provideFeedbackButton)
             self.provideFeedbackButton.snp.makeConstraints { (make) -> Void in
                 make.left.equalTo(self.view).offset(self.uiElement.leftOffset)
-              //  make.right.equalTo(self.view).offset(self.uiElement.rightOffset)
                 if let tabBarHeight = self.tabBarController?.tabBar.frame.height {
                     make.bottom.equalTo(self.view).offset(-(tabBarHeight) + CGFloat(self.uiElement.bottomOffset))
                 } else {
@@ -119,14 +118,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.view.addSubview(self.connectWithUsButton)
             self.connectWithUsButton.snp.makeConstraints { (make) -> Void in
                 make.left.equalTo(self.provideFeedbackButton)
-               // make.right.equalTo(self.provideFeedbackButton)
                 make.bottom.equalTo(self.provideFeedbackButton.snp.top).offset(self.uiElement.bottomOffset)
             }
             
             self.view.addSubview(self.signOut)
             self.signOut.snp.makeConstraints { (make) -> Void in
                 make.left.equalTo(self.provideFeedbackButton)
-               // make.right.equalTo(self.provideFeedbackButton)
                 make.bottom.equalTo(self.connectWithUsButton.snp.top).offset(self.uiElement.bottomOffset)
             }
         }
@@ -328,8 +325,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func didSelectAccountSection(_ indexPath: IndexPath) {
+        print(self.artist?.isVerified)
         if self.artist?.account == nil {
-            newFanClubAlert()
+            if let isVerified = self.artist?.isVerified, isVerified {
+              newFanClubAlert()
+            } else {
+                self.uiElement.showAlert("Not Publicly Available Yet", message: "Email support@soundbrew.app or message us @sound_brew to request access.", target: self)
+            }
+            
         } else {
             switch indexPath.row {
             case 0:

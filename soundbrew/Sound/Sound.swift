@@ -32,8 +32,9 @@ class Sound {
     var isDraft: Bool?
     var isFeatured: Bool?
     var isExclusive: Bool?
+    var productId: String?
     
-    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?) {
+    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, productId: String?) {
         self.objectId = objectId
         self.title = title
         self.audio = audio
@@ -54,6 +55,7 @@ class Sound {
         self.commentCount = commentCount
         self.isFeatured = isFeatured
         self.isExclusive = isExclusive
+        self.productId = productId
     }
     
     func fetchAudioData(_ shouldPlay: Bool) {

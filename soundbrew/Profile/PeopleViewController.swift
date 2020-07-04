@@ -452,9 +452,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     
                     let artist = Artist(objectId: user.objectId, name: nil, city: nil, image: nil, isVerified: false, username: username, website: nil, bio: nil, email: email, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
                     
-                    if let followerCount = user["followerCount"] as? Int {
-                        artist.followerCount = followerCount
-                    }
+                    artist.isVerified = user["isVerified"] as? Bool
+                    artist.followerCount = user["followerCount"] as? Int
                     
                     if let name = user["artistName"] as? String {
                         artist.name = name
@@ -469,26 +468,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                             artist.username = username
                         }
                     }
-                    
-                    if let city = user["city"] as? String {
-                        artist.city = city
-                    }
-                    
-                    if let userImageFile = user["userImage"] as? PFFileObject {
-                        artist.image = userImageFile.url!
-                    }
-                    
-                    if let bio = user["bio"] as? String {
-                        artist.bio = bio
-                    }
-                    
-                    if let artistVerification = user["artistVerification"] as? Bool {
-                        artist.isVerified = artistVerification
-                    }
-                    
-                    if let website = user["website"] as? String {
-                        artist.website = website
-                    }
+                     
+                    artist.city = user["city"] as? String
+                    artist.image = (user["userImage"] as? PFFileObject)?.url
+                    artist.bio = user["bio"] as? String
+                    artist.isVerified = user["artistVerification"] as? Bool
+                    artist.website = user["website"] as? String
                     
                     var account: Account?
                     
