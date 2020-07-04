@@ -118,7 +118,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     
     func registerForRemoteNotification() {
         let center  = UNUserNotificationCenter.current()
-        
         center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
             if granted && error == nil {
                 DispatchQueue.main.async {

@@ -515,8 +515,10 @@ class SoundList: NSObject, PlayerDelegate {
                     let sound = self.uiElement.newSoundObject(object)
                     let player = self.player
                     player.sounds = [sound]
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
                     player.setUpNextSong(false, at: 0, shouldPlay: false)
+                    //player.next(false)
+                    /*NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
+                    player.setUpNextSong(false, at: 0, shouldPlay: false)*/
                     
                 } else {
                     let sound = self.uiElement.newSoundObject(object)
@@ -606,7 +608,7 @@ class SoundList: NSObject, PlayerDelegate {
         if self.soundType == "drafts" {
             query.whereKey("isDraft", equalTo: true)
         } else {
-           query.whereKey("isRemoved", notEqualTo: true)
+           //query.whereKey("isRemoved", notEqualTo: true)
         }
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {

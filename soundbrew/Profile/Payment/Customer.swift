@@ -186,6 +186,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                         if let subs = json["data"].array {
                             for sub in subs {
                                 if let product = sub["plan"]["product"].string {
+                                    print("product: \(product)")
                                     self.fanClubs.append(product)
                                 }
                             }

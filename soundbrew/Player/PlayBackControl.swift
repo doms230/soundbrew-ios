@@ -227,7 +227,8 @@ class PlayBackControl {
     }
     
     @objc func didPressSkipButton(_ sender: UIButton) {
-        player.next()
+        player.setUpNextSong(false, at: nil, shouldPlay: true)
+       // player.next()
     }
     
     @objc func didPressLikeButton(_ sender: UIButton) {

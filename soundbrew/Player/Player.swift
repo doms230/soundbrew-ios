@@ -104,6 +104,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
+    //This function is called when audio finishes playing. Not called anywhere in Soundbrew project files
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag {
+            setUpNextSong(false, at: nil, shouldPlay: true)
+        }
+    }
+    
     func sendSoundUpdateToUI() {
         self.setBackgroundAudioNowPlaying()
         if let tableView = self.tableView {
@@ -118,11 +125,34 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func play() {
         shouldEnableCommandCenter(true)
         if let player = self.player {
-            if !player.isPlaying {
+            if  let currentUserId = PFUser.current()?.objectId, let artistObjectId = self.currentSound?.artist?.objectId, let isExclusive = self.currentSound?.isExclusive, currentUserId != artistObjectId && isExclusive, let soundArtistProductId = self.currentSound?.artist?.account?.productId, !Customer.shared.fanClubs.contains(soundArtistProductId) {
+                playSoundIsExclusiveMessage()
+            } else if !player.isPlaying {
                 player.play()
                 sendSoundUpdateToUI()
                 startTimer()
             }
+        }
+    }
+    
+    func playSoundIsExclusiveMessage() {
+        if let path = Bundle.main.path(forResource: "soundbrewExclusiveMessage", ofType: "m4a") {
+            let url = URL(fileURLWithPath: path)
+            do {
+                player = try AVAudioPlayer(contentsOf: url)
+                guard let player = player else { return }
+                player.delegate = self
+                player.play()
+                
+                sendSoundUpdateToUI()
+                
+            } catch let error {
+                print(error.localizedDescription)
+                UIElement().showAlert("Fan Club Exclusive", message: "Join this artist's fan club to listen to this sound!", target: target)
+            }
+            
+        } else {
+            UIElement().showAlert("Fan Club Exclusive", message: "Join this artist's fan club to listen to this sound!", target: target)
         }
     }
     
@@ -136,10 +166,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func next() {
+   /* func next(_ shouldPlay: Bool) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-        self.setUpNextSong(false, at: nil, shouldPlay: true)
-    }
+        self.setUpNextSong(false, at: nil, shouldPlay: shouldPlay)
+    }*/
     
     func previous() {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
@@ -156,17 +186,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func didSelectSoundAt(_ i: Int) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         self.setUpNextSong(false, at: i, shouldPlay: true)
     }
     
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        if flag {
-            setUpNextSong(false, at: nil, shouldPlay: true)
-        }
-    }
-    
     func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         //stop soundplayer audio from playing over each other
         if player != nil {
             player = nil
@@ -384,7 +408,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         commandCenter.nextTrackCommand.addTarget { [weak self] event in
             if let nextSelf = self {
-                nextSelf.next()
+                nextSelf.setUpNextSong(false, at: nil, shouldPlay: true)
+               // nextSelf.next(true)
                 return .success
             }
 

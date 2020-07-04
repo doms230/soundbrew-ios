@@ -48,7 +48,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     }
     @objc func didReceiveSoundUpdate() {
         self.tableView.reloadData()
-        //self.loadCredits()
         loadComments()
         
         if let player = self.player.player, let atTime = self.didPressAtTime {
@@ -359,7 +358,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             if let commentId = comments[indexPath.row]?.objectId {
                 self.comments.remove(at: indexPath.row)
                 self.tableView.reloadSections([0], with: .automatic)
-              //  self.tableView.reloadData()
                 removeComment(objectId: commentId)
             }
         }
