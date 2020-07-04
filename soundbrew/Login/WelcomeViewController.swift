@@ -10,8 +10,9 @@ import Parse
 import UIKit
 import SnapKit
 import GoogleSignIn
+import AuthenticationServices
 
-class WelcomeViewController: UIViewController, GIDSignInDelegate {
+class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizationControllerDelegate {
     
     var loginType: String!
     
@@ -29,6 +30,10 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
             viewController.googleName = self.googleName
             viewController.googleImage = self.googleImage
             viewController.googleAuthData = self.googleAuthData
+            
+            viewController.appleEmail = self.appleEmail
+            viewController.appleName = self.appleName
+            viewController.appleAuthData = self.appleAuthData
         }
     }
     
@@ -176,7 +181,8 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
         case 1:
             if #available(iOS 13.0, *) {
                 self.loginType = "apple"
-                self.performSegue(withIdentifier: "showSignup", sender: self)
+                self.loginWithApple()
+                //self.performSegue(withIdentifier: "showSignup", sender: self)
                 
             } else {
                 self.uiElement.showAlert("Un-Available", message: "Sign in with Apple is only available on iOS 13 or newer.", target: self)
@@ -246,5 +252,62 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate {
                 self.performSegue(withIdentifier: "showSignup", sender: self)
             })
         }
+    }
+    
+    //MARK: Apple
+    var appleEmail: String?
+    var appleName: String?
+    var appleAuthData: [String: String]!
+    
+   /* func prepareAppleVariables(_ viewController: NewUsernameViewController) {
+        viewController.appleID = self.appleID
+        viewController.appleToken = self.appleToken
+        if let name = self.appleName {
+            viewController.appleName = name
+        }
+    }*/
+    
+    func loginWithApple() {
+        if #available(iOS 13.0, *) {
+            let request = ASAuthorizationAppleIDProvider().createRequest()
+            request.requestedScopes = [.fullName, .email]
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            //controller.presentationContextProvider = (self as! ASAuthorizationControllerPresentationContextProviding)
+            controller.performRequests()
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        switch authorization.credential {
+        case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            let appleID = appleIDCredential.user
+            let appleToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
+            appleAuthData = ["id": "\(appleID)", "token": "\(appleToken ?? "nil")"]
+            if let name = appleIDCredential.fullName?.givenName {
+                self.appleName = name
+            }
+            
+            if let email = appleIDCredential.email {
+                self.appleEmail = email
+                self.uiElement.setUserDefault(email, key: "appleEmail")
+            } else if let appleEmail = self.uiElement.getUserDefault("appleEmail") as? String {
+                self.appleEmail = appleEmail
+            }
+                        
+            self.dismiss(animated: true, completion: {() in
+                self.performSegue(withIdentifier: "showSignup", sender: self)
+            })
+            break
+        default:
+            break
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print(error)
+        self.dismiss(animated: true, completion: nil)
     }
 }

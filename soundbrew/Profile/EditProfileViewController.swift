@@ -56,7 +56,13 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     var didPressDoneButton = false
     @objc func didPressTopViewButton(_ sender: UIButton) {
         if sender.tag == 0 {
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true, completion: {() in
+                if let artistDelegate = self.artistDelegate {
+                    //if user is onboarding, so received artist is called and they are taken to soundsViewController
+                    artistDelegate.receivedArtist(nil)
+                }
+            })
+            
         } else {
             usernameText.text = self.uiElement.cleanUpText(usernameText.text!, shouldLowercaseText: true)
             emailText.text = self.uiElement.cleanUpText(emailText.text!, shouldLowercaseText: true)

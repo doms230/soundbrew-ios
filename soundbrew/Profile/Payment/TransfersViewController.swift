@@ -37,15 +37,16 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
     //MARK: TableView
     let tableView = UITableView()
     let transferReuse = "transferReuse"
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView(_ dividerLine: UIView) {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: transferReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.backgroundColor = color.black()
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
-        //self.view.addSubview(cancelButton)
         tableView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(dividerLine.snp.bottom)
             make.left.equalTo(self.view)
@@ -59,19 +60,36 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return transfers.count
+        if transfers.count != 0 {
+            return transfers.count
+        }
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: transferReuse) as! EarningsTableViewCell
-        let transfer = self.transfers[indexPath.row]
-        let amountString = self.uiElement.convertCentsToDollarsAndReturnString(transfer.amount!)
-        cell.titleLabel.text = "\(amountString)"
-        let payoutDateString = convertDateFromUnix(transfer.createdAt!)
-        cell.dateLabel.text = "\(payoutDateString)"
-        cell.selectionStyle = .none
-        cell.backgroundColor = color.black()
-        return cell
+        if transfers.count == 0 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+            cell.backgroundColor = color.black()
+            cell.selectionStyle = .none
+            cell.headerTitle.text = "Your weekly transfers will show here."
+            cell.headerTitle.textColor = .darkGray
+            cell.artistButton.isHidden = true
+            return cell
+        } else {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: transferReuse) as! EarningsTableViewCell
+            let transfer = self.transfers[indexPath.row]
+            let amountString = self.uiElement.convertCentsToDollarsAndReturnString(transfer.amount!)
+            cell.titleLabel.text = "\(amountString)"
+            let payoutDateString = convertDateFromUnix(transfer.createdAt!)
+            /*if let description = transfer.description {
+                cell.subTitleLabel.text = description
+            }*/
+            
+            cell.dateLabel.text = "\(payoutDateString)"
+            cell.selectionStyle = .none
+            cell.backgroundColor = color.black()
+            return cell
+        }
     }
     
     func convertDateFromUnix(_ unixDate: Int) -> String {
@@ -102,9 +120,10 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
+                    print(json)
                     if let transfers = json["data"].array {
                         for transfer in transfers {
-                            let transfer = Transfer(transfer["created"].int, amount: transfer["amount"].int)
+                            let transfer = Transfer(transfer["created"].int, amount: transfer["amount"].int, description: transfer["description"].string)
                             self.transfers.append(transfer)
                         }
                     }
@@ -120,9 +139,11 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
 private class Transfer {
     var createdAt: Int?
     var amount: Int?
+    var description: String?
     
-    init(_ createdAt: Int?, amount: Int?) {
+    init(_ createdAt: Int?, amount: Int?, description: String?) {
         self.createdAt = createdAt
         self.amount = amount
+        self.description = description
     }
 }

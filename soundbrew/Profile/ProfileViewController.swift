@@ -771,8 +771,5 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.present(modal, animated: true, completion: nil)
     }
     func receivedAccount(_ account: Account?) {
-        /*if let account = account, let artist = Customer.shared.artist  {
-           // account.createNewAccount(artist, target: self)
-        }*/
     }
 }

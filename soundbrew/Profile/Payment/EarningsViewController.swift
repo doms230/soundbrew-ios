@@ -35,12 +35,14 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     let earningsReuse = "earningsReuse"
     let payoutReuse = "payoutReuse"
     let payoutBankReuse = "payoutBankReuse"
+    let noSoundsReuse = "noSoundsReuse"
     func setUpTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: earningsReuse)
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: payoutReuse)
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: payoutBankReuse)
+        tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         self.view.addSubview(tableView)
@@ -57,7 +59,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 {
+        if section == 2 && payouts.count != 0 {
             return payouts.count
         }
         return 1
@@ -83,13 +85,23 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
             }
             
         } else {
-            cell = self.tableView.dequeueReusableCell(withIdentifier: payoutReuse) as? EarningsTableViewCell
-            let payout = self.payouts[indexPath.row]
-            let amountString = self.uiElement.convertCentsToDollarsAndReturnString(payout.amount!)
-            cell.titleLabel.text = "\(amountString)"
-            cell.subTitleLabel.text = "\(payout.bankTitle ?? "payout bank")"
-            let payoutDateString = convertDateFromUnix(payout.arrivalDate!)
-            cell.dateLabel.text = "\(payoutDateString)"
+            if self.payouts.count == 0 {
+                let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
+                cell.backgroundColor = color.black()
+                cell.selectionStyle = .none
+                cell.headerTitle.text = "Your past weekly payouts will show here."
+                cell.headerTitle.textColor = .darkGray
+                cell.artistButton.isHidden = true
+                return cell
+            } else {
+                cell = self.tableView.dequeueReusableCell(withIdentifier: payoutReuse) as? EarningsTableViewCell
+                let payout = self.payouts[indexPath.row]
+                let amountString = self.uiElement.convertCentsToDollarsAndReturnString(payout.amount!)
+                cell.titleLabel.text = "\(amountString)"
+                cell.subTitleLabel.text = "\(payout.bankTitle ?? "payout bank")"
+                let payoutDateString = convertDateFromUnix(payout.arrivalDate!)
+                cell.dateLabel.text = "\(payoutDateString)"
+            }
         }
         
         cell.backgroundColor = color.black()

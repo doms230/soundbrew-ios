@@ -16,7 +16,7 @@ class SoundListTableViewCell: UITableViewCell {
     
     //mark: no sounds
     lazy var headerTitle: UILabel = {
-        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 20)!, numberOfLines: 0)
+        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 0)
     }()
     
     //filter new/popular

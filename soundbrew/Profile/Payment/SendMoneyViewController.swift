@@ -81,7 +81,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
         present(ac, animated: true)
     }
     
-    let pickerNumbers = Array(stride(from: 5, to: 999, by: 1))
+    let pickerNumbers = Array(stride(from: 5, to: 101, by: 1))
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         1
     }

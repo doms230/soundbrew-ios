@@ -77,7 +77,7 @@ class EarningsTableViewCell: UITableViewCell {
             }
             break
             
-        case "payoutReuse":
+        case "payoutReuse", "transferReuse":
             self.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -109,7 +109,7 @@ class EarningsTableViewCell: UITableViewCell {
             }
             break
             
-        case "transferReuse":
+       /* case "transferReuse":
             self.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self).offset(uiElement.topOffset)
@@ -132,7 +132,7 @@ class EarningsTableViewCell: UITableViewCell {
                 make.right.equalTo(self).offset(uiElement.rightOffset)
                 make.bottom.equalTo(self)
             }
-            break
+            break*/
             
         default:
             break

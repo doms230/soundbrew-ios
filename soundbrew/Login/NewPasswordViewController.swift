@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import SnapKit
 
-class NewPasswordViewController: UIViewController {
+class NewPasswordViewController: UIViewController, ArtistDelegate {
     let color = Color()
     let uiElement = UIElement()
     var emailString: String!
@@ -126,10 +126,37 @@ class NewPasswordViewController: UIViewController {
                 installation?["user"] = PFUser.current()
                 installation?["userId"] = PFUser.current()?.objectId
                 installation?.saveEventually()
-                PFUser.logOut()
-                self.showAlertThenDismiss()
+                let artist = self.uiElement.newArtistObject(user)
+                self.saveNewArtistInfo(artist)
             }
         }
+    }
+    
+    func saveNewArtistInfo(_ artist: Artist) {
+        let locale = Locale.current
+        if let currencySymbol = locale.currencySymbol, let currencyCode = locale.currencyCode {
+            Customer.shared.currencySymbol = currencySymbol
+            Customer.shared.currencySymbol = currencyCode.lowercased()
+        } else {
+            Customer.shared.currencySymbol = "$"
+            Customer.shared.currencySymbol = "usd"
+        }
+        
+        Customer.shared.artist = artist
+        
+        DispatchQueue.main.async {
+            let modal = EditProfileViewController()
+            modal.artistDelegate = self
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    func changeBio(_ value: String?) {
+    }
+    
+    func receivedArtist(_ value: Artist?) {
+        PFUser.logOut()
+        showAlertThenDismiss()
     }
     
     func showAlertThenDismiss() {

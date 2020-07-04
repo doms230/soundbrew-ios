@@ -12,20 +12,12 @@ import SnapKit
 import Kingfisher
 import SwiftyJSON
 
-class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate {
-    func restoreAuthentication(withAuthData authData: [String : String]?) -> Bool {
-        return true 
-    }
+class NewUsernameViewController: UIViewController {
     
     let uiElement = UIElement()
     let color = Color()
     
     var emailString: String!
-    
-    //apple
-    var appleID: String?
-    var appleName: String? 
-    var appleToken: String?
     
     var usernameText: UITextField!
     var usernameLabel: UILabel!
@@ -146,70 +138,10 @@ class NewUsernameViewController: UIViewController, PFUserAuthenticationDelegate 
             self.nextButton.setTitle("next", for: .normal)
             if object != nil && error == nil {
                 self.uiElement.showTextFieldErrorMessage(self.usernameText, text: localizedUsernameAlreadyInUse)
-                
             } else {
-                if let appleID = self.appleID {
-                    self.authenticateWith("apple", userId: appleID, auth_token: self.appleToken, auth_token_secret: nil, username: self.usernameText.text!)
-                } else {
-                    self.performSegue(withIdentifier: "showPassword", sender: self)
-                }
+                self.performSegue(withIdentifier: "showPassword", sender: self)
             }
         }
     }
     
-    func authenticateWith(_ loginService: String, userId: String, auth_token: String?, auth_token_secret: String?, username: String) {
-                        
-        var authData: [String:String]
-        authData = ["token": auth_token!, "id": userId]
-        
-        PFUser.logInWithAuthType(inBackground: loginService, authData: authData).continueOnSuccessWith(block: {
-            (ignored: BFTask!) -> AnyObject? in
-            let parseUser = PFUser.current()
-            let installation = PFInstallation.current()
-            installation?["user"] = parseUser
-            installation?["userId"] = parseUser?.objectId
-            installation?.saveEventually()
-            
-            self.updateUserInfo()
-            return AnyObject.self as AnyObject
-        })
-    }
-    
-    func updateUserInfo() {
-        if let currentUserId = PFUser.current()?.objectId {
-            let query = PFQuery(className: "_User")
-            query.getObjectInBackground(withId: currentUserId) {
-                (user: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print(error)
-                    
-                } else if let user = user {
-                    if let _ = user["email"] as? String {
-                        Customer.shared.getCurrentUserInfo(user.objectId!)
-                        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                        
-                    } else {
-                        if let appleName = self.appleName {
-                            user["artistName"] = appleName
-                        } else {
-                            user["artistName"] = self.usernameText.text
-                        }
-                        
-                        user["username"] = self.usernameText.text
-                        user["email"] = self.emailString
-                        
-                        if let appleID = self.appleID {
-                            user["appleID"] = appleID
-                        }
-            
-                        user.saveEventually {
-                            (success: Bool, error: Error?) in
-                            Customer.shared.getCurrentUserInfo(user.objectId!)
-                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

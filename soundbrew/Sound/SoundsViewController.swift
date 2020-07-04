@@ -19,7 +19,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let color = Color()
     var soundType = "follow"
     var playlist: Playlist?
-    var onBoardingArtist: Artist?
     
     func doesMatchSoundType() -> Bool {
         if soundType == "follow" || soundType ==  "forYou" {
@@ -28,24 +27,30 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         return false
     }
     var userId: String?
+    var isNewUser: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = .black
         navigationController?.navigationBar.tintColor = .white
+        
+        /*
+         
+         if let isNewUser = self.uiElement.getUserDefault("isNewUser") as? Bool {
+             self.isNewUser = isNewUser
+             let modal = EditProfileViewController()
+             self.present(modal, animated: true, completion: nil)
+             self.uiElement.setUserDefault(nil, key: "isNewUser")
+         }
+         */
+        
         if doesMatchSoundType() {
             if let selectedIndex = self.tabBarController?.selectedIndex {
                 if selectedIndex == 1 {
                     self.soundType = "forYou"
                 } else {
                     setUpMiniPlayer()
-                    if let artist = self.onBoardingArtist {
-                        let modal = EditProfileViewController()
-                        modal.artist = artist
-                        self.present(modal, animated: true, completion: nil)
-                        self.onBoardingArtist = nil 
-                    }
                 }
             }
             createTopView()

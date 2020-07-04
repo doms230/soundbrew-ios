@@ -1,11 +1,12 @@
 import UIKit
 import Parse
 import SnapKit
-import AuthenticationServices
+//import AuthenticationServices
 import Alamofire
 import GoogleSignIn
 
-class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, ASAuthorizationControllerDelegate {
+class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, ArtistDelegate {
+    
     let color = Color()
     let uiElement = UIElement()
     
@@ -19,7 +20,12 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
 
         switch loginType {
         case "apple":
-            loginWithApple()
+            if let email = self.appleEmail {
+                self.checkIfEmailExistsThenMoveForward(email, authData: self.appleAuthData)
+            } else {
+                self.PFauthenticateWith(self.appleAuthData)
+            }
+            
             break
             
         case "google":
@@ -35,7 +41,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController = segue.destination as! NewUsernameViewController
         viewController.emailString = emailText.text!
-        prepareAppleVariables(viewController)
+       // prepareAppleVariables(viewController)
 
         var nextTitle: String!
         let localizedUsername = NSLocalizedString("username", comment: "")
@@ -154,58 +160,12 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
     }
     
     //apple
-    var appleID: String?
+    /*var appleID: String?
     var appleName: String?
-    var appleToken: String?
-    
-    func prepareAppleVariables(_ viewController: NewUsernameViewController) {
-        viewController.appleID = self.appleID
-        viewController.appleToken = self.appleToken
-        if let name = self.appleName {
-            viewController.appleName = name
-        }
-    }
-    
-    func loginWithApple() {
-        if #available(iOS 13.0, *) {
-            let request = ASAuthorizationAppleIDProvider().createRequest()
-            request.requestedScopes = [.fullName, .email]
-            let controller = ASAuthorizationController(authorizationRequests: [request])
-            controller.delegate = self
-            //controller.presentationContextProvider = (self as! ASAuthorizationControllerPresentationContextProviding)
-            controller.performRequests()
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        switch authorization.credential {
-        case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            let appleID = appleIDCredential.user
-            self.appleID = appleID
-            self.appleToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
-            
-            if let name = appleIDCredential.fullName?.givenName {
-                self.appleName = name
-            }
-            
-            if let email = appleIDCredential.email {
-                self.emailText.text = email
-            }
-            
-            self.checkIfUserExists(appleID, authToken: self.appleToken!)
-            
-            break
-        default:
-            break
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print(error)
-        self.dismiss(animated: true, completion: nil)
-    }
+    var appleToken: String?*/
+    var appleEmail: String!
+    var appleName: String? 
+    var appleAuthData: [String: String]!
     
     //MARK: Google
     var googleName: String?
@@ -215,7 +175,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
     
     //Validations
     //checking if user exists because apple only gives access to email once *side eyes*, so need to ask for email for 2nd, etc. tries at signing in with apple
-    func checkIfUserExists(_ userID: String, authToken: String) {
+   /* func checkIfUserExists(_ userID: String, authToken: String) {
         let query = PFQuery(className: "_User")
         query.whereKey("appleID", equalTo: userID)
         query.getFirstObjectInBackground {
@@ -227,7 +187,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
                 self.setupNewEmailView()
             }
         }
-    }
+    }*/
     
     func checkIfEmailExistsThenMoveForward(_ email: String, authData: [String: String]?) {
         let localizedEmailAlreadyInUse = NSLocalizedString("emailAlreadyInUse", comment: "")
@@ -237,10 +197,12 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
             (object: PFObject?, error: Error?) -> Void in
             if object != nil && error == nil {
                 if let authData = authData {
-                    if object?["googleId"] == nil {
+                    if self.loginType == "google" && object?["googleId"] == nil {
                         GIDSignIn.sharedInstance().signOut()
                         self.showErrorMessageAndDismiss()
-                    } else {
+                    } else if self.loginType == "apple" && object?["appleID"] == nil {
+                        self.showErrorMessageAndDismiss()
+                    } else  {
                         self.PFauthenticateWith(authData)
                     }
                     
@@ -296,12 +258,17 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
             installation?["userId"] = parseUser?.objectId
             installation?.saveEventually()
             
-            if self.loginType == "google", let isNew = parseUser?.isNew, isNew {
-                if let image = self.googleImage {
-                    self.downloadImageAndUpdateUserInfo(image)
-                } else {
+            if let isNew = parseUser?.isNew, isNew {
+                if self.loginType == "google" {
+                    if let image = self.googleImage {
+                        self.downloadImageAndUpdateUserInfo(image)
+                    } else {
+                        self.updateUserInfo(nil)
+                    }
+                } else if self.loginType == "apple" {
                     self.updateUserInfo(nil)
                 }
+
             } else {
                 Customer.shared.getCurrentUserInfo(parseUser!.objectId!)
                 DispatchQueue.main.async {
@@ -339,24 +306,58 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, AS
                     print(error)
                     
                 } else if let user = user {
-                    user["email"] = self.googleEmail
-                    if let name = self.googleName {
-                        user["artistName"] = name
+                    if self.loginType == "google" {
+                        user["email"] = self.googleEmail
+                        user["googleId"] = self.googleAuthData["id"]
+                        if let name = self.googleName {
+                            user["artistName"] = name
+                        }
+                        
+                    } else {
+                        user["email"] = self.appleEmail
+                        user["appleID"] = self.appleAuthData["id"]
+                        if let name = self.appleName {
+                            user["artistName"] = name
+                        }
                     }
+                    
                     if let image = image {
                         user["userImage"] = image
                     }
-                    user["googleId"] = self.googleAuthData["id"]
+                    
                     user.saveEventually {
                         (success: Bool, error: Error?) in
-                        Customer.shared.getCurrentUserInfo(currentUserId)
-                        DispatchQueue.main.async {
-                            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                        }
+                        self.saveNewArtistInfo(self.uiElement.newArtistObject(user))
                     }
                 }
             }
         }
+    }
+    
+    func saveNewArtistInfo(_ artist: Artist) {
+        let locale = Locale.current
+        if let currencySymbol = locale.currencySymbol, let currencyCode = locale.currencyCode {
+            Customer.shared.currencySymbol = currencySymbol
+            Customer.shared.currencySymbol = currencyCode.lowercased()
+        } else {
+            Customer.shared.currencySymbol = "$"
+            Customer.shared.currencySymbol = "usd"
+        }
+        
+        Customer.shared.artist = artist
+        
+        DispatchQueue.main.async {
+            let modal = EditProfileViewController()
+            modal.artistDelegate = self
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    func changeBio(_ value: String?) {
+    }
+    
+    func receivedArtist(_ value: Artist?) {
+        self.uiElement.newRootView("Main", withIdentifier: "tabBar")
     }
     
 }
