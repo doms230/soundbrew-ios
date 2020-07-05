@@ -12,13 +12,15 @@ import Alamofire
 
 class Credit {
     var objectId: String?
-    var artist: Artist?
+    var username: String?
     var title: String?
+    var artist: Artist?
 
-    init(objectId: String?, artist: Artist?, title: String?) {
+    init(objectId: String?, username: String?, title: String?, artist: Artist?) {
         self.objectId = objectId
-        self.artist = artist
+        self.username = username
         self.title = title
+        self.artist = artist
     }
 }
 

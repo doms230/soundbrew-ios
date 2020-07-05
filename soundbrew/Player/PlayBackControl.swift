@@ -80,14 +80,6 @@ class PlayBackControl {
         return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "goBack"), titleFont: nil, titleColor: .black, cornerRadius: nil)
     }()
     
-    lazy var shuffleButton: UIButton = {
-        return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "shuffle"), titleFont: nil, titleColor: .black, cornerRadius: nil)
-    }()
-    
-    lazy var repeatButton: UIButton = {
-        return self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "repeat"), titleFont: nil, titleColor: .black, cornerRadius: nil)
-    }()
-    
     func setupPlaybackControls() {
         if let duration = self.player.player?.duration {
             self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
@@ -115,7 +107,6 @@ class PlayBackControl {
         } else {
             self.likeSoundButton.isEnabled = true
             self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            like.checkIfUserLikedSong()
         }
     }
     
@@ -165,22 +156,6 @@ class PlayBackControl {
             make.height.width.equalTo(25)
             make.centerY.equalTo(self.playBackButton)
             make.left.equalTo(self.viewController.view).offset(uiElement.leftOffset)
-        }
-        
-        repeatButton.addTarget(self, action: #selector(self.didPressRepeatButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(repeatButton)
-        repeatButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(20)
-            make.centerY.equalTo(self.playBackButton)
-            make.left.equalTo(shareButton.snp.right).offset(uiElement.leftOffset + 20)
-        }
-        
-        shuffleButton.addTarget(self, action: #selector(self.didPressShuffleButton(_:)), for: .touchUpInside)
-        self.viewController.view.addSubview(shuffleButton)
-        shuffleButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(20)
-            make.centerY.equalTo(self.playBackButton)
-            make.right.equalTo(likeSoundButton.snp.left).offset(uiElement.rightOffset - 20)
         }
         
         //
@@ -261,22 +236,31 @@ class PlayBackControl {
             let floatCurrentTime = Float(currentTime)
             playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(currentTime)))"
             playBackSlider.value = floatCurrentTime
-            if !self.isTextViewEditing {
+            
+            if !self.isTextViewEditing && canComment() {
                 self.atTime = Float(currentTime)
                 let doubleAtTime = self.uiElement.formatTime(Double(currentTime))
                 if let textView = self.textView {
-                    textView.placeholder = "Add comment at \(doubleAtTime)"
+                    textView.placeholder = "Comment at \(doubleAtTime)"
                 }
             }
         }
     }
     
-    @objc func didPressShuffleButton(_ sender: UIButton) {
-        //TODO
+    func canComment() -> Bool {
+        if let sound = player.currentSound, let isExclusive = sound.isExclusive, let productId = sound.productId, let userDidLikeSong = sound.currentUserDidLikeSong, !userDidLikeSong && !Customer.shared.fanClubs.contains(productId) && isExclusive {
+            if let textView = self.textView {
+                textView.placeholder = "Comments for fan club members"
+                textView.isEditable = false
+            }
+            return false
+        }
+        
+        if let textView = self.textView {
+            textView.isEditable = true
+        }
+         
+        return true
     }
     
-    
-    @objc func didPressRepeatButton(_ sender: UIButton) {
-        //TODO
-    }
 }

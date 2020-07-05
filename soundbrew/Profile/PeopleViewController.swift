@@ -39,15 +39,9 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             case "likes":
                 loadLikes()
                 break
-                
             case "listens":
                 loadListens()
                 break
-                
-            case "credits":
-                loadCredits()
-                break
-                
             default:
                 break
             }
@@ -103,14 +97,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     let searchProfileReuse = "searchProfileReuse"
     let noSoundsReuse = "noSoundsReuse"
     let searchReuse = "searchReuse"
-    let creditProfileReuse = "creditProfileReuse"
     func setUpTableView() {
         self.filteredArtists = self.artists
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchProfileReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: searchReuse)
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: creditProfileReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
@@ -131,14 +123,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.view).offset(-165)
             }
-        } /*else {
-            tableView.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(exitButton.snp.bottom)
-                make.left.equalTo(self.view)
-                make.right.equalTo(self.view)
-                make.bottom.equalTo(self.view)
-            }
-        }*/
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -154,12 +139,8 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
             if section == 1 && self.filteredArtists.count != 0 {
                 return filteredArtists.count
             }
-        } else {
-            if loadType == "credits" && self.soundCredits.count != 0 {
-                return soundCredits.count
-            } else if filteredArtists.count != 0 {
-                return filteredArtists.count
-            }
+        } else if filteredArtists.count != 0 {
+            return filteredArtists.count
         }
         return 1
     }
@@ -176,20 +157,10 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 }
             }
 
+        } else if filteredArtists.count == 0 {
+            return noResultsCell()
         } else {
-            if loadType == "credits" {
-                if soundCredits.count == 0 {
-                    return noResultsCell()
-                } else {
-                    return creditsCell(indexPath)
-                }
-            }
-            
-            if filteredArtists.count == 0 {
-                return noResultsCell()
-            } else {
-                return peopleCell(indexPath)
-            }
+            return peopleCell(indexPath)
         }
     }
     
@@ -211,27 +182,9 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 }
             }
             
-        } else {
-            if loadType == "credits" {
-                if self.soundCredits.indices.contains(indexPath.row) {
-                    selectedArtist(self.soundCredits[indexPath.row].artist)
-                }
-                
-            } else if self.filteredArtists.indices.contains(indexPath.row) {
-                selectedArtist(self.filteredArtists[indexPath.row])
-            }
+        } else if self.filteredArtists.indices.contains(indexPath.row) {
+            selectedArtist(self.filteredArtists[indexPath.row])
         }
-    }
-    
-    func creditsCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: creditProfileReuse) as! ProfileTableViewCell
-        cell.backgroundColor = color.black()
-        let credit = self.soundCredits[indexPath.row]
-        credit.artist?.loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
-        if let title = credit.title {
-            cell.creditTitle.text = title
-        }
-        return cell
     }
     
     func peopleCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
@@ -353,33 +306,6 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                     let userIds = self.artists.map {$0.objectId}
                     if !userIds.contains(userId) {
                         self.artists.append(artist)
-                    }
-                }
-            }
-            
-            self.setUpTableView()
-        }
-    }
-    
-    func loadCredits() {
-        let query = PFQuery(className: "Credit")
-        query.whereKey("postId", equalTo: sound.objectId!)
-        query.addAscendingOrder("createdAt")
-        query.cachePolicy = .networkElseCache
-        query.findObjectsInBackground {
-            (objects: [PFObject]?, error: Error?) -> Void in
-            if let objects = objects {
-                for object in objects {
-                    let userId = object["userId"] as? String
-                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
-                    
-                    let userIds = self.artists.map {$0.objectId}
-                    if !userIds.contains(userId) {
-                        let credit = Credit(objectId: object.objectId, artist: artist, title: nil)
-                        if let title = object["title"] as? String {
-                            credit.title = title
-                        }
-                        self.soundCredits.append(credit)
                     }
                 }
             }

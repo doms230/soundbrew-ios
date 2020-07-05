@@ -93,12 +93,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
             //Loading here to so that Soundbrew can check if sound is exclusive to artist' fan club
-            if shouldPlay {
-                self.play()
-            } else {
-                let miniPlayerView = MiniPlayerView.sharedInstance
-                miniPlayerView.isEnabled = true
-            }
+            Like.shared.checkIfUserLikedSong(shouldPlay)
                         
         } else {
             setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: nil)
@@ -141,9 +136,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
     
     func currentUserDoesHaveAccessToSound() -> Bool {
         if  let currentUserId = PFUser.current()?.objectId,
-            let artistObjectId = self.currentSound?.artist?.objectId,
+            let artistUserId = self.currentSound?.artist?.objectId,
+            let currentUserDidLikeSound = self.currentSound?.currentUserDidLikeSong,
             let isExclusive = self.currentSound?.isExclusive,
-            currentUserId != artistObjectId && isExclusive,
+            currentUserId != artistUserId && isExclusive && !currentUserDidLikeSound,
             let soundProductId = self.currentSound?.productId, !Customer.shared.fanClubs.contains(soundProductId) {
             return false
         }
@@ -257,10 +253,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let audioData = sound.audioData {
             self.prepareAudio(audioData, shouldPlay: shouldPlay)
         } else {
-            self.currentSound?.isNextUpToPlay = true
-            self.currentSound?.fetchAudioData(shouldPlay)
-            //self.sounds[currentSoundIndex].isNextUpToPlay = true
-            //self.sounds[currentSoundIndex].fetchAudioData(shouldPlay)
+            sound.isNextUpToPlay = true
+            sound.fetchAudioData(shouldPlay)
+            //self.currentSound?.isNextUpToPlay = true
+            //self.currentSound?.fetchAudioData(shouldPlay)
         }
     }
     

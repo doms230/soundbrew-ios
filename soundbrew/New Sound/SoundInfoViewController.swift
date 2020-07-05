@@ -655,6 +655,10 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if let isExclusive = sound.isExclusive {
                     object["isExclusive"] = isExclusive
                 }
+                
+                if let productId = sound.artist?.account?.productId {
+                    object["productId"] = productId
+                }
 
                 object.saveEventually {
                     (success: Bool, error: Error?) in

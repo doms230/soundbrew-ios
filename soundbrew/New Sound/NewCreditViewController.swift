@@ -75,11 +75,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            var shouldEnableSlider = true
-            if indexPath.row == 0 {
-                shouldEnableSlider = false
-            }
-            return creditCell(credits[indexPath.row], shouldEnableSlider: shouldEnableSlider, indexPath: indexPath)
+            return creditCell(credits[indexPath.row], indexPath: indexPath)
             
         } else {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: newCreditReuse) as! SoundInfoTableViewCell
@@ -106,7 +102,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.section == 0 && indexPath.row != 0 {
+        if indexPath.section == 0 {
             return true
         }
         return false
@@ -114,14 +110,14 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            if indexPath.section == 0 && indexPath.row != 0 {
+            if indexPath.section == 0 {
                 self.credits.remove(at: indexPath.row)
                 self.tableView.reloadData()
             }
         }
     }
     
-    func creditCell(_ credit: Credit, shouldEnableSlider: Bool, indexPath: IndexPath) -> SoundInfoTableViewCell {
+    func creditCell(_ credit: Credit, indexPath: IndexPath) -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: creditReuse) as! SoundInfoTableViewCell
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
@@ -176,7 +172,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func receivedArtist(_ value: Artist?) {
         if let artist = value {
-            let credit = Credit(objectId: nil, artist: artist, title: nil)
+            let credit = Credit(objectId: nil, username: artist.username, title: nil, artist: artist)
             self.credits.append(credit)
             self.tableView.reloadData()
         }

@@ -47,9 +47,13 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     @objc func didReceiveSoundUpdate() {
-        self.tableView.reloadData()
-        loadComments()
-        
+        if tableView != nil {
+            self.tableView.reloadData()
+            if !didLoadComments {
+                loadCredits()
+                loadComments()
+            }
+        }
         if let player = self.player.player, let atTime = self.didPressAtTime {
             self.didPressAtTime = nil
             jumpToTime(player, atTime: atTime)
@@ -110,7 +114,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         textView.maxLength = 200
         textView.maxHeight = 70
         textView.trimWhiteSpaceWhenEndEditing = true
-        textView.placeholder = "Add comment at \(formattedCurrentTime)"
+        textView.placeholder = "Comment at \(formattedCurrentTime)"
         textView.placeholderColor = .darkGray
         textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -267,6 +271,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 make.bottom.equalTo(self.playBackControl!.playBackCurrentTime.snp.top).offset(self.uiElement.bottomOffset)
             }
         }
+        loadCredits()
         loadComments()
     }
     
@@ -274,7 +279,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         if isSearchingForUserToMention {
             return 1
         }
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -285,9 +290,17 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             return searchUsers.count
             
         } else {
-            if section == 0 || comments.count == 0 {
+            if section == 0 {
                 return 1
             }
+            
+            if section == 1 {
+                if self.soundArtistComment == nil {
+                    return 0
+                }
+                return 1
+            }
+            
             return comments.count
         }
     }
@@ -375,57 +388,63 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
 
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
-        if comments.indices.contains(indexPath.row), let comment = comments[indexPath.row] {
-            let artist = comment.artist
-            cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
-            cell.userImage.tag = indexPath.row
+        var comment: Comment?
+        if indexPath.section == 1, let soundAristComment = self.soundArtistComment {
+            comment = soundAristComment
+        } else if comments.indices.contains(indexPath.row), let currentComment = comments[indexPath.row] {
+            comment = currentComment
+        }
+        
+        if let comment = comment {
+              cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+              cell.userImage.tag = indexPath.row
             if let image = comment.artist?.image {
-                cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
-            } else {
-                cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
-                artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
-            }
-            
-            cell.username.tag = indexPath.row
-            cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
-            
+                  cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
+            } else if let artist = comment.artist {
+                  cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
+                  artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
+              }
+              
+              cell.username.tag = indexPath.row
+              cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+              
             if let username = comment.artist?.username {
-                cell.username.setTitle(username, for: .normal)
-            } else {
-                cell.username.setTitle("username", for: .normal)
-            }
-            
+                  cell.username.setTitle(username, for: .normal)
+              } else {
+                  cell.username.setTitle("username", for: .normal)
+              }
+               
             cell.comment.text = comment.text
-            cell.comment.handleMentionTap {userHandle in
-                self.loadArtistFromUsername(userHandle, commentId: nil)
-            }
-            cell.comment.handleHashtagTap { hashtag in
-                if let tagDelegate = self.tagDelegate {
-                    let tagObject = Tag(objectId: nil, name: hashtag, count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
-                    var chosenTags = [Tag]()
-                    chosenTags.append(tagObject)
-                    self.dismiss(animated: true, completion: {() in
-                        tagDelegate.receivedTags(chosenTags)
-                    })
-                }
-            }
-            
-            let atTime = self.uiElement.formatTime(Double(comment.atTime))
-            cell.atTime.setTitle("\(atTime)", for: .normal)
-            cell.atTime.tag = indexPath.row
-            cell.atTime.addTarget(self, action: #selector(self.didPressAtTimeButton(_:)), for: .touchUpInside)
-            
-            cell.replyButton.tag = indexPath.row
-            cell.replyButton.addTarget(self, action: #selector(self.didPressReplyButton(_:)), for: .touchUpInside)
-            
-            let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt!)
-            cell.date.text = formattedDate
-           
-            if let selectedCommentFromMentions = self.selectedCommentFromMentions {
-                if selectedCommentFromMentions == comment.objectId {
-                    cell.backgroundColor = color.purpleBlack()
-                }
-            }
+               cell.comment.handleMentionTap {userHandle in
+                   self.loadArtistFromUsername(userHandle, commentId: nil)
+               }
+               cell.comment.handleHashtagTap { hashtag in
+                   if let tagDelegate = self.tagDelegate {
+                       let tagObject = Tag(objectId: nil, name: hashtag, count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
+                       var chosenTags = [Tag]()
+                       chosenTags.append(tagObject)
+                       self.dismiss(animated: true, completion: {() in
+                           tagDelegate.receivedTags(chosenTags)
+                       })
+                   }
+               }
+               
+               let atTime = self.uiElement.formatTime(Double(comment.atTime))
+               cell.atTime.setTitle("\(atTime)", for: .normal)
+               cell.atTime.tag = indexPath.row
+               cell.atTime.addTarget(self, action: #selector(self.didPressAtTimeButton(_:)), for: .touchUpInside)
+               
+               cell.replyButton.tag = indexPath.row
+               cell.replyButton.addTarget(self, action: #selector(self.didPressReplyButton(_:)), for: .touchUpInside)
+               
+               let formattedDate = self.uiElement.formatDateAndReturnString(comment.createdAt!)
+               cell.date.text = formattedDate
+              
+               if let selectedCommentFromMentions = self.selectedCommentFromMentions {
+                   if selectedCommentFromMentions == comment.objectId {
+                       cell.backgroundColor = color.purpleBlack()
+                   }
+               }
         }
                 
         return cell
@@ -579,11 +598,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    var soundCredits = [Credit]()
     func loadCredits() {
         if let sound = player.currentSound {
-            self.soundCredits.removeAll()
-
+            var features = ""
             let query = PFQuery(className: "Credit")
             query.whereKey("postId", equalTo: sound.objectId!)
             query.cachePolicy = .networkElseCache
@@ -591,54 +608,45 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 (objects: [PFObject]?, error: Error?) -> Void in
                 if let objects = objects {
                     for object in objects {
-                        let userId = object["userId"] as? String
-                        let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
-                        artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
-                        let credit = Credit(objectId: object.objectId, artist: artist, title: nil)
+                        let username = object["username"] as? String
+                        let credit = Credit(objectId: object.objectId, username: username, title: nil, artist: nil)
                         if let title = object["title"] as? String {
                             credit.title = title
                         }
+                        features = "\(features) @\(credit.username ?? "unknown")(\(credit.title?.capitalized ?? "Featured"))"
+                    }
+                    if let soundArtist = sound.artist {
+                        var hashtagsAsString = ""
+                        if let hashtags = sound.tags {
+                            for hashtag in hashtags {
+                                if hashtagsAsString.isEmpty {
+                                    hashtagsAsString = "#\(hashtag)"
+                                } else {
+                                    hashtagsAsString = "\(hashtagsAsString) #\(hashtag)"
+                                }
+                            }
+                        }
                         
-                        self.soundCredits.append(credit)
+                        let text = "\(sound.title ?? "")\n\(features)\n\(hashtagsAsString)"
+                        let comment = Comment(objectId: nil, artist: soundArtist, text: text, atTime: 0, createdAt: sound.createdAt)
+                        self.soundArtistComment = comment
+                         DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                            //let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
+                            //self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                           // self.didLoadComments = true
+                        }
                     }
                 }
-                
-                self.loadComments()
             }
         }
     }
     
     var didLoadComments = false
+    var soundArtistComment: Comment?
     func loadComments() {
         if let sound = player.currentSound {
             self.comments.removeAll()
-            
-            if let soundArtist = sound.artist {
-                var hashtagsAsString = ""
-                if let hashtags = sound.tags {
-                    for hashtag in hashtags {
-                        if hashtagsAsString.isEmpty {
-                            hashtagsAsString = "#\(hashtag)"
-                        } else {
-                            hashtagsAsString = "\(hashtagsAsString) #\(hashtag)"
-                        }
-                    }
-                }
-                
-               /* var features = ""
-
-                for credit in self.soundCredits {
-                    if features.isEmpty {
-                        features = "Featuring: "
-                    }
-                    features = "\(features), @\(credit.artist?.username ?? "unknown")(\(credit.title?.capitalized ?? "Featured")"
-                }*/
-                
-                let text = "\(sound.title ?? "")\n\(hashtagsAsString)"
-                let comment = Comment(objectId: nil, artist: soundArtist, text: text, atTime: 0, createdAt: sound.createdAt)
-                self.comments.append(comment)
-            }
-
             let query = PFQuery(className: "Comment")
             query.cachePolicy = .networkElseCache
             query.whereKey("postId", equalTo: sound.objectId!)

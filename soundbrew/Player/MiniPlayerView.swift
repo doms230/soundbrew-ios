@@ -229,7 +229,7 @@ class MiniPlayerView: UIButton {
         } else {
             self.likeSoundButton.isEnabled = true
             self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-            like.checkIfUserLikedSong()
+           // like.checkIfUserLikedSong()
         }
         
         setCurrentSoundView()

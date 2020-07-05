@@ -50,7 +50,7 @@ class Like: NSObject {
         }
     }
     
-    func checkIfUserLikedSong() {
+    func checkIfUserLikedSong(_ shouldPlay: Bool) {
         if let soundId = self.player.currentSound?.objectId, let userId = PFUser.current()?.objectId {
             let query = PFQuery(className: "Tip")
             query.whereKey("fromUserId", equalTo: userId)
@@ -67,6 +67,9 @@ class Like: NSObject {
                     self.player.currentSound?.currentUserDidLikeSong = false
                 }
                 self.updateLikeButton()
+                if shouldPlay {
+                    self.player.play()
+                }
                 self.player.fetchAudioFromNextSound()
             }
         }
