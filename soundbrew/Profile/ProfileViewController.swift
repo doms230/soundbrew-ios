@@ -15,6 +15,8 @@ import Kingfisher
 import SnapKit
 import SidebarOverlay
 import NotificationBannerSwift
+import Alamofire
+import SwiftyJSON
 
 class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ArtistDelegate, PlayerDelegate, TagDelegate, PlaylistDelegate, AccountDelegate {
     
@@ -400,7 +402,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressMenuButton(_ sender: UIButton) {
-        
         let menuAlert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
         
         menuAlert.addAction(UIAlertAction(title: "Edit Playlist", style: .default, handler: { action in
@@ -590,12 +591,30 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
-        if sender.tag == 0 {
-            let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)
-            self.showNewEditPlaylistView(newPlaylist)
-        } else {
-            //TODO: show info about subscribing to user
+        self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Get access to exclusive sounds from \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
+        recordAnalytics()
+    }
+    
+    func recordAnalytics() {
+        if let email = Customer.shared.artist?.email, let name = Customer.shared.artist?.username, let artistName = self.profileArtist?.username {
+            let url = "https://www.soundbrew.app/analytics/google"
+            let parameters: Parameters = [
+                "artistName":  artistName,
+                "customerName":  name,
+                "email": email]
+            AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+                .validate(statusCode: 200..<300)
+                .responseJSON { responseJSON in
+                    switch responseJSON.result {
+                    case .success(let json):
+                        let json = JSON(json)
+                        print(json)
+                    case .failure(let error):
+                        print(error)
+                    }
+            }
         }
+        
     }
     
     @objc func didPressFollowUserEditProfileButton(_ sender: UIButton) {
