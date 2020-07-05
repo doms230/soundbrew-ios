@@ -515,7 +515,7 @@ class SoundList: NSObject, PlayerDelegate {
                     let sound = self.uiElement.newSoundObject(object)
                     let player = self.player
                     player.sounds = [sound]
-                    player.setUpNextSong(false, at: 0, shouldPlay: false)
+                    player.setUpNextSong(false, at: 0, shouldPlay: false, selectedSound: nil)
                     
                 } else {
                     let sound = self.uiElement.newSoundObject(object)

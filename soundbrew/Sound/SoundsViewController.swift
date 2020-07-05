@@ -385,11 +385,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func resetPlayer(sounds: [Sound], shouldPlay: Bool) {
         let player = Player.sharedInstance
-        player.player = nil
         player.sounds = sounds
-        player.currentSound = sounds[0]
         player.currentSoundIndex = 0
-        player.setUpNextSong(false, at: 0, shouldPlay: shouldPlay)
+        player.setUpNextSong(false, at: 0, shouldPlay: shouldPlay, selectedSound: sounds[0])
     }
         
     //mark: tags

@@ -161,11 +161,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     
                     let player = Player.sharedInstance
                     if let currentSound = player.currentSound, currentSound.objectId! != mentionSound.objectId! {
-                        player.pause()
+                        player.setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: mentionSound)
+                        /*NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
                         player.player = nil
                         player.currentSound = mentionSound
                         player.sendSoundUpdateToUI()
-                        player.prepareToPlaySound(mentionSound, shouldPlay: true)
+                        player.prepareToPlaySound(mentionSound, shouldPlay: true)*/
                     }
                 }
                 self.present(commentModal, animated: true, completion: nil)
@@ -376,10 +377,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       func selectedArtist(_ artist: Artist?) {
           if let artist = artist {
               switch artist.objectId {
-                  case "addFunds":
-                      self.performSegue(withIdentifier: "showAddFunds", sender: self)
-                      break
-                      
                   case "signup":
                       self.performSegue(withIdentifier: "showWelcome", sender: self)
                       break

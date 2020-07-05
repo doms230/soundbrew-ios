@@ -101,14 +101,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
                         
         } else {
-            setUpNextSong(false, at: nil, shouldPlay: false)
+            setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: nil)
         }
     }
     
     //This function is called when audio finishes playing. Not called anywhere in Soundbrew project files
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            setUpNextSong(false, at: nil, shouldPlay: true)
+            setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
         }
     }
     
@@ -190,16 +190,16 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 incrementPlayCount(sound)
                 recordListener(sound)
             } else {
-                self.setUpNextSong(true, at: nil, shouldPlay: true)
+                self.setUpNextSong(true, at: nil, shouldPlay: true, selectedSound: nil)
             }
         }
     }
     
     func didSelectSoundAt(_ i: Int) {
-        self.setUpNextSong(false, at: i, shouldPlay: true)
+        self.setUpNextSong(false, at: i, shouldPlay: true, selectedSound: nil)
     }
     
-    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool) {
+    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool, selectedSound: Sound?) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         //stop soundplayer audio from playing over each other
         if player != nil {
@@ -211,8 +211,15 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sound.audio?.cancel()
             }
         }
-                
-        if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
+        
+        var soundToPrepare: Sound?
+        if let sound = selectedSound {
+            soundToPrepare = sound
+        } else if let sound = determineSoundToPlay(didPressGoBackButton, at: at) {
+            soundToPrepare = sound
+        }
+        
+        if let sound = soundToPrepare {
             currentSound = sound
             self.sendSoundUpdateToUI()
             prepareToPlaySound(sound, shouldPlay: shouldPlay)
@@ -250,8 +257,10 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let audioData = sound.audioData {
             self.prepareAudio(audioData, shouldPlay: shouldPlay)
         } else {
-            self.sounds[currentSoundIndex].isNextUpToPlay = true
-            self.sounds[currentSoundIndex].fetchAudioData(shouldPlay)
+            self.currentSound?.isNextUpToPlay = true
+            self.currentSound?.fetchAudioData(shouldPlay)
+            //self.sounds[currentSoundIndex].isNextUpToPlay = true
+            //self.sounds[currentSoundIndex].fetchAudioData(shouldPlay)
         }
     }
     
@@ -418,7 +427,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         commandCenter.nextTrackCommand.addTarget { [weak self] event in
             if let nextSelf = self {
-                nextSelf.setUpNextSong(false, at: nil, shouldPlay: true)
+                nextSelf.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
                // nextSelf.next(true)
                 return .success
             }

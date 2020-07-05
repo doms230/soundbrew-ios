@@ -543,19 +543,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.followUserEditProfileButton.clipsToBounds = true
                     cell.followUserEditProfileButton.tag = 0
                     
-                   /* cell.subscribeUserCreatePlaylistButton.setTitle("Create Playlist", for: .normal)
-                    cell.subscribeUserCreatePlaylistButton.backgroundColor = color.black()
-                    cell.subscribeUserCreatePlaylistButton.setTitleColor(.white, for: .normal)
-                    cell.subscribeUserCreatePlaylistButton.layer.borderColor = color.lightGray().cgColor
-                    cell.subscribeUserCreatePlaylistButton.layer.borderWidth = 1
-                    cell.subscribeUserCreatePlaylistButton.clipsToBounds = true
-                    cell.subscribeUserCreatePlaylistButton.tag = 0*/
                 } else {
                     if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
                             cell.followUserEditProfileButton.setTitle(localizedFollowing, for: .normal)
-                            cell.followUserEditProfileButton.backgroundColor = color.lightGray()
-                            cell.followUserEditProfileButton.setTitleColor(color.black(), for: .normal)
+                            cell.followUserEditProfileButton.backgroundColor = .darkGray
+                            cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
                             cell.followUserEditProfileButton.tag = 1
                         } else {
                             cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
@@ -565,7 +558,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         }
                     }
                     
-                    //TODO: show subscribe option
+                    if let productId = self.profileArtist?.account?.productId {
+                        if Customer.shared.fanClubs.contains(productId) {
+                            cell.joinFanClubButton.setTitle("💎", for: .normal)
+                            cell.joinFanClubButton.backgroundColor = .darkGray
+                        } else {
+                            cell.joinFanClubButton.setTitle("Join Fan Club", for: .normal)
+                            cell.joinFanClubButton.backgroundColor = color.blue()
+                            cell.joinFanClubButton.setTitleColor(.white, for: .normal)
+                        }
+                    }
                 }
             } else {
                 cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
@@ -573,11 +575,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
                 cell.followUserEditProfileButton.tag = 3
             }
-            
-            cell.joinFanClubButton.setTitle("Join Fan Club", for: .normal)
-            cell.joinFanClubButton.backgroundColor = color.red()
-            cell.joinFanClubButton.setTitleColor(.white, for: .normal)
-            
         }
         
         return cell
@@ -591,8 +588,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
-        self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Get access to exclusive sounds from \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
-        recordAnalytics()
+
+        if let productId = self.profileArtist?.account?.productId, Customer.shared.fanClubs.contains(productId) {
+            self.uiElement.showAlert("You're a Fan Club Member!", message: "You can manage your membership at soundbrew.app/fans", target: self)
+        } else {
+            self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Get access to exclusive sounds from \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
+            //recordAnalytics()
+        }
     }
     
     func recordAnalytics() {
