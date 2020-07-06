@@ -68,7 +68,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     }()
     
     lazy var appDescription: UILabel = {
-        let label = self.uiElement.soundbrewLabel("Where Creators Get Paid", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 15)!, numberOfLines: 0)
+        let label = self.uiElement.soundbrewLabel("Where Artists & Creators Get Paid", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
         label.textAlignment = .center
         return label
     }()
@@ -123,7 +123,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.right.equalTo(self.view)
         }
         
-        self.view.addSubview(appImage)
+      /*  self.view.addSubview(appImage)
         appImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(50)
             make.top.equalTo(backgroundView.snp.bottom).offset(uiElement.topOffset)
@@ -131,11 +131,12 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             //make.centerY.equalTo(self.view)
             //make.centerX.equalTo(self.view)
            // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 5)
-        }
+        }*/
         
         self.view.addSubview(appLabel)
         appLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(appImage.snp.bottom)
+            make.top.equalTo(backgroundView.snp.bottom).offset(uiElement.topOffset * 3)
+          //  make.top.equalTo(appImage.snp.bottom)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -147,39 +148,45 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
+        let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 1, shouldShowBorderColor: true)
+        appleButton.titleLabel?.textAlignment = .center
+        self.view.addSubview(appleButton)
+        appleButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset * 3)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            //make.bottom.equalTo(googleButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        let googleButton = signInWithButton("Sign in with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
+        googleButton.titleLabel?.textAlignment = .center
+        self.view.addSubview(googleButton)
+        googleButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(appleButton.snp.bottom).offset(uiElement.topOffset * 2)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+          //  make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        let emailButton = signInWithButton("Sign in with Email", titleColor: .black, backgroundColor: .white, imageName: "email", tag: 0, shouldShowBorderColor: false)
+        emailButton.titleLabel?.textAlignment = .center
+        self.view.addSubview(emailButton)
+        emailButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(50)
+            make.top.equalTo(googleButton.snp.bottom).offset(uiElement.topOffset * 2)
+            //make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+           // make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
+        }
+        
         self.view.addSubview(termsButton)
         termsButton.snp.makeConstraints { (make) -> Void in
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.view).offset(uiElement.bottomOffset)
-        }
-        
-        let signupButton = signInWithButton("Sign in with Email", titleColor: .black, backgroundColor: .white, imageName: "email", tag: 0, shouldShowBorderColor: false)
-        self.view.addSubview(signupButton)
-        signupButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        let googleButton = signInWithButton("Sign in with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
-        self.view.addSubview(googleButton)
-        googleButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
-        }
-        
-        let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 1, shouldShowBorderColor: false)
-        appleButton.titleLabel?.textAlignment = .left
-        self.view.addSubview(appleButton)
-        appleButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(googleButton.snp.top).offset(uiElement.bottomOffset)
         }
     }
     
