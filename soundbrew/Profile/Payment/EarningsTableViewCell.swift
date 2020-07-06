@@ -38,10 +38,22 @@ class EarningsTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
+        case "titleReuse":
+            self.addSubview(titleLabel)
+            titleLabel.font = UIFont(name: "\(self.uiElement.mainFont)-bold", size: 20)
+            titleLabel.text = "Past Payouts"
+            titleLabel.snp.makeConstraints { (make) -> Void in
+                make.top.equalTo(self).offset(uiElement.topOffset)
+                make.left.equalTo(self).offset(uiElement.leftOffset)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
+                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+            }
+            break
+            
         case "earningsReuse", "payoutBankReuse":
             self.addSubview(downArrow)
             downArrow.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(25)
+                make.width.height.equalTo(15)
                 make.centerY.equalTo(self)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
@@ -108,31 +120,6 @@ class EarningsTableViewCell: UITableViewCell {
                 make.bottom.equalTo(self)
             }
             break
-            
-       /* case "transferReuse":
-            self.addSubview(titleLabel)
-            titleLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            self.addSubview(dateLabel)
-            dateLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(titleLabel.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            self.addSubview(dividerLine)
-            dividerLine.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(0.5)
-                make.top.equalTo(dateLabel.snp.bottom).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-                make.bottom.equalTo(self)
-            }
-            break*/
             
         default:
             break

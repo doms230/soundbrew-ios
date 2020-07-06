@@ -404,7 +404,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //searchBar.setShowsCancelButton(false, animated: true)
         searchBar.text = ""
         self.searchBar.resignFirstResponder()
         isSearchActive = false
@@ -416,14 +415,10 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let nameQuery = PFQuery(className: "_User")
         nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
         nameQuery.whereKey("artistName", matchesRegex: text)
-        //nameQuery.whereKey("artistName", matchesRegex: text.uppercased())
-        //nameQuery.whereKey("artistName", matchesRegex: text.capitalized)
         
         let usernameQuery = PFQuery(className: "_User")
         usernameQuery.whereKey("username", matchesRegex: text.lowercased())
         usernameQuery.whereKey("username", matchesRegex: text)
-        //usernameQuery.whereKey("username", matchesRegex: text.uppercased())
-        //usernameQuery.whereKey("username", matchesRegex: text.capitalized)
         
         let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
         query.limit = 5

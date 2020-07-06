@@ -91,7 +91,7 @@ class Account {
         }
     }
     
-    func updateAccount(_ newName: String) {
+    func updateProductName(_ newName: String) {
         let url = baseURL!.appendingPathComponent("updateProduct")
         let parameters: Parameters = [
             "product": self.productId ?? "nil",
@@ -99,6 +99,26 @@ class Account {
         AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in}
+    }
+    
+    func updateAccountEmail(_ newEmail: String) {
+        print("account id: \(self.id)")
+        print("email: \(newEmail)")
+        let url = baseURL!.appendingPathComponent("updateAccount")
+        let parameters: Parameters = [
+            "account": self.id ?? "nil",
+            "email": newEmail]
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+                switch responseJSON.result {
+                case .success(let json):
+                    print(json)
+                case .failure(let error):
+                    self.weeklyEarnings = 0
+                    print(error)
+                }
+            }
     }
     
     func shouldSubstractRequiresAttentionNumber(_ due: [String]) {

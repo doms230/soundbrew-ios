@@ -35,16 +35,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         navigationController?.navigationBar.barTintColor = .black
         navigationController?.navigationBar.tintColor = .white
         
-        /*
-         
-         if let isNewUser = self.uiElement.getUserDefault("isNewUser") as? Bool {
-             self.isNewUser = isNewUser
-             let modal = EditProfileViewController()
-             self.present(modal, animated: true, completion: nil)
-             self.uiElement.setUserDefault(nil, key: "isNewUser")
-         }
-         */
-        
         if doesMatchSoundType() {
             if let selectedIndex = self.tabBarController?.selectedIndex {
                 if selectedIndex == 1 {
@@ -72,14 +62,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidAppear(_ animated: Bool) {
         self.tabBarController?.delegate = self
         setMiniPlayer()
-        if self.tableView != nil {
+        /*if self.tableView != nil {
             if soundType == "playlist" {
-                //Check for newly added Sounds 
                 showSoundList()
             } else {
                 self.tableView.reloadData()
             }
-        }
+        }*/
         
     }
     
@@ -300,7 +289,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if let tabBarController = self.tabBarController, !tabBarController.tabBar.subviews.contains(miniPlayerView) {
             tabBarController.view.addSubview(miniPlayerView)
             miniPlayerView.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(75)
+                make.height.equalTo(70)
                 make.right.equalTo(tabBarController.tabBar)
                 make.left.equalTo(tabBarController.tabBar)
                 make.bottom.equalTo(tabBarController.tabBar.snp.top)
@@ -344,16 +333,11 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print("load last listen - Sounds View Controller: \(error)")
-                }
-                var objectId: String?
                 if let object = object {
                     if let soundId = object["postId"] as? String {
-                        objectId = soundId
+                        self.loadDynamicLinkSound(soundId, shouldShowShareSoundView: false, shouldPlay: false)
                     }
                 }
-                self.loadDynamicLinkSound(objectId, shouldShowShareSoundView: false, shouldPlay: false)
             }
         }
     }
@@ -370,9 +354,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print("load Dynamic Link sounds - SoundsViewController: \(error)")
-            }
             if let object = object {
                 let sound = self.uiElement.newSoundObject(object)
                 if shouldShowShareSoundView {
@@ -395,7 +376,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var selectedTagFromPlayerView: Tag!
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tags = chosenTags {
-            print(tags)
             self.selectedTagFromPlayerView = tags[0]
             self.performSegue(withIdentifier: "showSounds", sender: self)
         }

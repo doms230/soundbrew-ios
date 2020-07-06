@@ -187,6 +187,12 @@ class SoundList: NSObject, PlayerDelegate {
                     }))
                 
                 self.addToPlaylistAlert(menuAlert, sound: sound)
+                
+                if let playlist = playlist, let playlistUserId = playlist.artist?.objectId, let currentUserObjectId = PFUser.current()?.objectId, playlistUserId == currentUserObjectId {
+                    menuAlert.addAction(UIAlertAction(title: "Remove from Playlist", style: .default, handler: { action in
+                        self.removeFromPlaylistAlert(playlist, sound: sound, row: row)
+                    }))
+                }
                     
                 let localizedCancel = NSLocalizedString("cancel", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -223,12 +229,12 @@ class SoundList: NSObject, PlayerDelegate {
             }))
         }
         
+        self.addToPlaylistAlert(alert, sound: sound)
+        
         if let playlist = playlist, let playlistUserId = playlist.artist?.objectId, let currentUserObjectId = PFUser.current()?.objectId, playlistUserId == currentUserObjectId {
             alert.addAction(UIAlertAction(title: "Remove from Playlist", style: .default, handler: { action in
                 self.removeFromPlaylistAlert(playlist, sound: sound, row: row)
             }))
-        } else {
-            self.addToPlaylistAlert(alert, sound: sound)
         }
         
         let localizedCancel = NSLocalizedString("cancel", comment: "")

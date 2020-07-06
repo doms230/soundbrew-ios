@@ -1,7 +1,6 @@
 import UIKit
 import Parse
 import SnapKit
-//import AuthenticationServices
 import Alamofire
 import GoogleSignIn
 
@@ -41,7 +40,6 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, Ar
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let viewController = segue.destination as! NewUsernameViewController
         viewController.emailString = emailText.text!
-       // prepareAppleVariables(viewController)
 
         var nextTitle: String!
         let localizedUsername = NSLocalizedString("username", comment: "")

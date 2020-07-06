@@ -66,7 +66,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                                 
                 let viewController = segue.destination as! SoundsViewController
                 
-                if let indexPath = tableView.indexPathForSelectedRow {
+                if let selectedTag = self.selectedTagFromPlayerView {
+                    viewController.soundType = "discover"
+                    viewController.selectedTagForFiltering = selectedTag
+                    backItem.title = selectedTag.name
+                } else if let indexPath = tableView.indexPathForSelectedRow {
                     if indexPath.section == 2, let title = self.artistPlaylists[indexPath.row].title {
                         backItem.title = title
                         viewController.soundType = "playlist"
@@ -121,6 +125,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let artist = value {
             self.profileArtist = artist
             self.tableView.reloadData()
+            if let username = artist.username {
+                self.uiElement.addTitleView(username, target: self)
+            }
         }
     }
     
@@ -768,17 +775,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: tags
-    var isSettingUpNewAccount: Bool?
-    var selectedTagFromPlayerView: Tag!
+    var selectedTagFromPlayerView: Tag?
     func receivedTags(_ chosenTags: Array<Tag>?) {
         if let tags = chosenTags {
             let tag = tags[0]
-            if tag.type == "country" {
-                self.showNewAccount(tag.objectId)
-            } else {
-                self.selectedTagFromPlayerView = tag
-                self.performSegue(withIdentifier: "showSounds", sender: self)
-            }
+            self.selectedTagFromPlayerView = tag
+            self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
     

@@ -107,13 +107,8 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
         let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
         let url = baseURL!.appendingPathComponent("listTransfers")
         var parameters: [String : Any]
-        if let lastPayoutDate = self.lastPayoutDate {
-            parameters = ["account": accountId, "gte": lastPayoutDate]
-        } else {
-            parameters = ["account": accountId]
-        }
-       // "gte": self.lastPayoutDate ?? ""
-        
+        let lastPayoutDate = Double(Date.today().previous(.monday).timeIntervalSince1970)
+        parameters = ["account": accountId, "gte": lastPayoutDate]
         AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in

@@ -23,8 +23,8 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
             self.uiElement.addTitleView("Activity", target: self)
-        
-            setUpTableView()
+            self.loadMentions()
+           // setUpTableView()
       }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -90,8 +90,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             make.right.equalTo(self.view)
             make.bottom.equalTo(self.view).offset(-175)
         }
-        
-        self.loadMentions()
       }
       
       @objc func refresh(_ sender: UIRefreshControl) {
@@ -113,14 +111,11 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         if mentions.count == 0 {
             let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
             cell.backgroundColor = color.black()
+            cell.artistButton.isHidden = true
             if self.isLoadingMentions {
                 cell.headerTitle.text = ""
-                cell.artistButton.isHidden = true
             } else {
                 cell.headerTitle.text = "Any mentions such as likes or follows will appear here!"
-                cell.artistButton.setTitle("Upload Sounds", for: .normal)
-                cell.artistButton.addTarget(self, action: #selector(self.didPressDiscoverButton(_:)), for: .touchUpInside)
-                cell.artistButton.isHidden = false
             }
               
               return cell
@@ -157,16 +152,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     commentModal.playerDelegate = self
                     if let commentId = mention.comment?.objectId {
                        commentModal.selectedCommentFromMentions = commentId
+                        print("comment Id: \(commentId)")
                     }
                     
                     let player = Player.sharedInstance
                     if let currentSound = player.currentSound, currentSound.objectId! != mentionSound.objectId! {
                         player.setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: mentionSound)
-                        /*NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-                        player.player = nil
-                        player.currentSound = mentionSound
-                        player.sendSoundUpdateToUI()
-                        player.prepareToPlaySound(mentionSound, shouldPlay: true)*/
                     }
                 }
                 self.present(commentModal, animated: true, completion: nil)
@@ -252,9 +243,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     var mentions = [Mention]()
     var isLoadingMentions = true
     func loadMentions() {
-        if let refreshControl = self.tableView.refreshControl {
-            refreshControl.beginRefreshing()
-        }
         isLoadingMentions = true
         let query = PFQuery(className: "Mention")
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
@@ -366,8 +354,12 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     func finishedLoading() {
         DispatchQueue.main.async {
             self.isLoadingMentions = false
-            self.tableView.refreshControl?.endRefreshing()
-            self.tableView.reloadData()
+            if self.tableView == nil {
+                self.setUpTableView()
+            } else {
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+            }
         }
     }
       

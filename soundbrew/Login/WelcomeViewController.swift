@@ -18,6 +18,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
         signupView()
     }
     
@@ -43,6 +44,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     lazy var backgroundView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "welcomeImage")
+        image.contentMode = .scaleAspectFill
         return image
     }()
     
@@ -110,16 +112,25 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
-        
+    
         self.view.addSubview(backgroundView)
-        backgroundView.frame = view.bounds
+       // backgroundView.frame = view.bounds
+        backgroundView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.height.equalTo(self.view.frame.height / 2)
+           // make.bottom.equalTo(self.view.frame.height / 2)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+        }
         
         self.view.addSubview(appImage)
         appImage.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(50)
-            //make.centerY.equalTo(self.view)
+            make.top.equalTo(backgroundView.snp.bottom).offset(uiElement.topOffset)
             make.centerX.equalTo(self.view)
-            make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 5)
+            //make.centerY.equalTo(self.view)
+            //make.centerX.equalTo(self.view)
+           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 5)
         }
         
         self.view.addSubview(appLabel)
@@ -175,7 +186,8 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     @objc func didPressButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
-            showSignInWithEmailOption()
+            self.performSegue(withIdentifier: "showSignin", sender: self)
+            //showSignInWithEmailOption()
             break
             
         case 1:
@@ -258,14 +270,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     var appleEmail: String?
     var appleName: String?
     var appleAuthData: [String: String]!
-    
-   /* func prepareAppleVariables(_ viewController: NewUsernameViewController) {
-        viewController.appleID = self.appleID
-        viewController.appleToken = self.appleToken
-        if let name = self.appleName {
-            viewController.appleName = name
-        }
-    }*/
     
     func loginWithApple() {
         if #available(iOS 13.0, *) {

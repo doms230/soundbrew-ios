@@ -370,7 +370,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         if editingStyle == .delete {
             if let commentId = comments[indexPath.row]?.objectId {
                 self.comments.remove(at: indexPath.row)
-                self.tableView.reloadSections([0], with: .automatic)
+                self.tableView.reloadSections([2], with: .automatic)
                 removeComment(objectId: commentId)
             }
         }
@@ -403,7 +403,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             } else if let artist = comment.artist {
                   cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
                   artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
-              }
+            }
               
               cell.username.tag = indexPath.row
               cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
@@ -632,9 +632,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         self.soundArtistComment = comment
                          DispatchQueue.main.async {
                             self.tableView.reloadData()
-                            //let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
-                            //self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                           // self.didLoadComments = true
                         }
                     }
                 }
@@ -655,7 +652,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             query.findObjectsInBackground {
                 (objects: [PFObject]?, error: Error?) -> Void in
                 if let objects = objects {
-                    for object in objects {
+                    for i in 0..<objects.count {
+                        let object = objects[i]
+                   // for object in objects {
                         let text = object["text"] as! String
                         let atTime = object["atTime"] as! Double
                         let userId = object["userId"] as! String
@@ -666,22 +665,23 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         self.comments.append(comment)
                         
                         if let selectedCommentFromMentions = self.selectedCommentFromMentions {
-                            if selectedCommentFromMentions != comment.objectId {
-                                self.mentionedRowToScrollTo = self.mentionedRowToScrollTo + 1
+                            if selectedCommentFromMentions == comment.objectId {
+                                self.mentionedRowToScrollTo = i
                             }
                         }
                     }
                 }
-                
-                DispatchQueue.main.async {self.tableView.reloadData()}
-
+                                
                 if self.selectedCommentFromMentions != nil && !self.didLoadComments {
                      DispatchQueue.main.async {
                         self.tableView.reloadData()
-                        //let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 0)
-                        //self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                        let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 2)
+                        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                         self.didLoadComments = true
                     }
+                    
+                } else {
+                    self.tableView.reloadData()
                 }
             }
         }

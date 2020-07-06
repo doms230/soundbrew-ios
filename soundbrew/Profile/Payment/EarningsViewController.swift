@@ -36,12 +36,14 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     let payoutReuse = "payoutReuse"
     let payoutBankReuse = "payoutBankReuse"
     let noSoundsReuse = "noSoundsReuse"
+    let titleReuse = "titleReuse"
     func setUpTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: earningsReuse)
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: payoutReuse)
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: payoutBankReuse)
+        tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: titleReuse)
         tableView.register(SoundListTableViewCell.self, forCellReuseIdentifier: noSoundsReuse)
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
@@ -55,11 +57,11 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 2 && payouts.count != 0 {
+        if section == 3 && payouts.count != 0 {
             return payouts.count
         }
         return 1
@@ -72,7 +74,9 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
 
             let earningsString = self.uiElement.convertCentsToDollarsAndReturnString(self.earnings)
             cell.titleLabel.text = earningsString
-            cell.dateLabel.text = "Next Payout: Monday, June 29th"
+            let nextMonday = self.uiElement.formatDateAndReturnString(Date.today().next(.monday))
+            cell.dateLabel.text = "Next Payout: \(nextMonday)"
+            
             
         } else if indexPath.section == 1 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: payoutBankReuse) as? EarningsTableViewCell
@@ -84,6 +88,11 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
                 cell.titleLabel.textColor = color.red()
             }
             
+        } else if indexPath.section == 2 {
+            let cell = self.tableView.dequeueReusableCell(withIdentifier: titleReuse) as! EarningsTableViewCell
+            cell.backgroundColor = color.black()
+            cell.selectionStyle = .none
+            return cell
         } else {
             if self.payouts.count == 0 {
                 let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
@@ -98,9 +107,10 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let payout = self.payouts[indexPath.row]
                 let amountString = self.uiElement.convertCentsToDollarsAndReturnString(payout.amount!)
                 cell.titleLabel.text = "\(amountString)"
-                cell.subTitleLabel.text = "\(payout.bankTitle ?? "payout bank")"
+                cell.subTitleLabel.text = "\(payout.bankTitle ?? "Payout Bank Unknown")"
+                cell.subTitleLabel.textColor = .darkGray
                 let payoutDateString = convertDateFromUnix(payout.arrivalDate!)
-                cell.dateLabel.text = "\(payoutDateString)"
+                cell.dateLabel.text = "Status: \(payout.status ?? "Unknown") | \(payoutDateString)"
             }
         }
         
@@ -141,13 +151,12 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    print(json)
                     if let payoutObjects = json["data"].array {
                         for i in 0..<payoutObjects.count {
                             let payoutObject = payoutObjects[i]
                             
                             if i == 0 {
-                                self.lastPayoutDate = payoutObject["created"].int
+                               // self.lastPayoutDate = payoutObject["created"].int
                             }
                             
                             let payout = Payout(payoutObject["arrival_date"].int, amount: payoutObject["amount"].int, status: payoutObject["status"].string, bankTitle: nil)
@@ -160,7 +169,6 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
                             self.getBank(accountId, bankId: payoutObject["destination"].stringValue, payout: payout, isLastIndex: isLastIndex)
                         }
                     }
-                    self.tableView.reloadData()
                 case .failure(let error):
                     print(error)
                 }
@@ -168,15 +176,20 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     private func getBank(_ accountId: String, bankId: String, payout: Payout, isLastIndex: Bool) {
+        print("accountId: \(accountId)")
+        print("bankId: \(bankId)")
         let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
         let url = baseURL!.appendingPathComponent("retrieveBank")
         let parameters: Parameters = ["accountId": accountId, "bankId": bankId]
-        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString)).validate(statusCode: 200..<300).responseJSON { responseJSON in
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .responseJSON { responseJSON in
             switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
                     if let bankName = json["bank_name"].string, let last4 = json["last4"].string {
                         payout.bankTitle = "\(bankName) \(last4)"
+                    } else {
+                        payout.bankTitle = "Payout Bank Unknown"
                     }
                     self.payouts.append(payout)
                 case .failure(let error):
