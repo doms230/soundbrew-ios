@@ -15,15 +15,12 @@ import AVFoundation
 
 class PlayerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, GrowingTextViewDelegate {
     
-    var comments = [Comment?]()
     let uiElement = UIElement()
     let color = Color()
     
     var atTime: Float = 0
     let player = Player.sharedInstance
     var selectedArtist: Artist?
-    var selectedCommentFromMentions: String? 
-    var mentionedRowToScrollTo = 0
     var playerDelegate: PlayerDelegate?    
     var tagDelegate: TagDelegate?
     var playBackControl: PlayBackControl?
@@ -76,8 +73,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     var dividerLine: UIView!
+    var playerTitle: String?
     func setupTopView() {
-        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDismissbutton(_:)), doneButtonTitle: "", title: "Soundbrew")
+        let topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDismissbutton(_:)), doneButtonTitle: "", title: playerTitle ?? "Soundbrew")
        dividerLine = topView.2
         setupGrowingTextView()
     }
@@ -114,6 +112,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         textView.maxLength = 200
         textView.maxHeight = 70
         textView.trimWhiteSpaceWhenEndEditing = true
+        if let username = self.selectedCommentReply {
+            textView.text = "@\(username) "
+        }
         textView.placeholder = "Comment at \(formattedCurrentTime)"
         textView.placeholderColor = .darkGray
         textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
@@ -619,15 +620,22 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         var hashtagsAsString = ""
                         if let hashtags = sound.tags {
                             for hashtag in hashtags {
+                                let cleanHashtag = self.uiElement.cleanUpText(hashtag, shouldLowercaseText: true)
                                 if hashtagsAsString.isEmpty {
-                                    hashtagsAsString = "#\(hashtag)"
+                                    hashtagsAsString = "#\(cleanHashtag)"
                                 } else {
-                                    hashtagsAsString = "\(hashtagsAsString) #\(hashtag)"
+                                    hashtagsAsString = "\(hashtagsAsString) #\(cleanHashtag)"
                                 }
                             }
                         }
                         
-                        let text = "\(sound.title ?? "")\n\(features)\n\(hashtagsAsString)"
+                        var text = sound.title ?? ""
+                        if !features.isEmpty {
+                            text = "\(text)\n\(features)"
+                        }
+                        if !hashtagsAsString.isEmpty {
+                            text = "\(text)\n\(hashtagsAsString)"
+                        }                        
                         let comment = Comment(objectId: nil, artist: soundArtist, text: text, atTime: 0, createdAt: sound.createdAt)
                         self.soundArtistComment = comment
                          DispatchQueue.main.async {
@@ -639,6 +647,11 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    //MARK: Comments
+    var comments = [Comment?]()
+    var selectedCommentFromMentions: String?
+    var selectedCommentReply: String?
+    var mentionedRowToScrollTo = 0
     var didLoadComments = false
     var soundArtistComment: Comment?
     func loadComments() {
@@ -654,7 +667,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 if let objects = objects {
                     for i in 0..<objects.count {
                         let object = objects[i]
-                   // for object in objects {
                         let text = object["text"] as! String
                         let atTime = object["atTime"] as! Double
                         let userId = object["userId"] as! String

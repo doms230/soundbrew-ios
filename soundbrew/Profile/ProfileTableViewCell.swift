@@ -347,6 +347,7 @@ class ProfileTableViewCell: UITableViewCell {
             }
             
             self.addSubview(city)
+            city.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
             city.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(displayNameLabel.snp.bottom)
                 make.left.equalTo(displayNameLabel)

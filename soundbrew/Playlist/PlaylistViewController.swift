@@ -174,14 +174,10 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if let error  = error {
-                print("load playlists - PlaylistViewCOntroller: \(error)")
-            }
             if let objects = objects {
                 for object in objects {
                     let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil, type: nil, count: nil)
-                    let artist = Artist(objectId: object["userId"] as? String, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
-                    playlist.artist = artist
+                    playlist.artist = Customer.shared.artist
                     playlist.title = object["title"] as? String
                     playlist.image = object["image"] as? PFFileObject
                     playlist.type = object["type"] as? String
@@ -206,9 +202,6 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         let query = PFQuery(className: "Playlist")
         query.getObjectInBackground(withId: playlistId) {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print("update playlist Count - PlaylistViewCOntroller: \(error)")
-            }
              if let object = object {
                 object.incrementKey("count")
                 object.saveEventually()
@@ -225,9 +218,6 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
             query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print("check if user liked soung - Like.swift: \(error)")
-                }
                 if object == nil {
                     if let currentSoundId = Player.sharedInstance.currentSound?.objectId, currentSoundId == soundId {
                         Player.sharedInstance.currentSound?.currentUserDidLikeSong = true

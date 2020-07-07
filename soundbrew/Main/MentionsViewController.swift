@@ -20,11 +20,10 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           navigationController?.navigationBar.barTintColor = color.black()
           navigationController?.navigationBar.tintColor = .white
         
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
+           // NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
         
             self.uiElement.addTitleView("Activity", target: self)
             self.loadMentions()
-           // setUpTableView()
       }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -36,11 +35,11 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       }
     }
     
-    @objc func didReceiveSoundUpdate() {
+  /*  @objc func didReceiveSoundUpdate() {
         if PFUser.current() != nil {
             self.tableView.reloadData()
         }
-    }
+    }*/
           
       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
           switch segue.identifier {
@@ -152,7 +151,10 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     commentModal.playerDelegate = self
                     if let commentId = mention.comment?.objectId {
                        commentModal.selectedCommentFromMentions = commentId
-                        print("comment Id: \(commentId)")
+                    }
+                    
+                    if let commentUsername = mention.artist?.username {
+                        commentModal.selectedCommentReply = commentUsername
                     }
                     
                     let player = Player.sharedInstance

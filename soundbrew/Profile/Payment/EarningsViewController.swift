@@ -155,10 +155,6 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
                         for i in 0..<payoutObjects.count {
                             let payoutObject = payoutObjects[i]
                             
-                            if i == 0 {
-                               // self.lastPayoutDate = payoutObject["created"].int
-                            }
-                            
                             let payout = Payout(payoutObject["arrival_date"].int, amount: payoutObject["amount"].int, status: payoutObject["status"].string, bankTitle: nil)
                             
                             var isLastIndex = false

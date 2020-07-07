@@ -411,20 +411,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func searchUsers(_ text: String) {
-        self.searchUsers.removeAll()
-        let nameQuery = PFQuery(className: "_User")
-        nameQuery.whereKey("artistName", matchesRegex: text.lowercased())
-        nameQuery.whereKey("artistName", matchesRegex: text)
-        
-        let usernameQuery = PFQuery(className: "_User")
-        usernameQuery.whereKey("username", matchesRegex: text.lowercased())
-        usernameQuery.whereKey("username", matchesRegex: text)
-        
-        let query = PFQuery.orQuery(withSubqueries: [nameQuery, usernameQuery])
+        let query = PFQuery(className: "_User")
         query.limit = 5
         query.cachePolicy = .networkElseCache
+        query.whereKey("username", matchesRegex: text)
+        query.whereKey("artistName", matchesRegex: text)
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
+            self.searchUsers.removeAll()
             if let objects = objects {
                 for user in objects {
                     let artist = self.uiElement.newArtistObject(user)

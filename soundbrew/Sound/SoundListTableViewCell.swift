@@ -205,11 +205,11 @@ class SoundListTableViewCell: UITableViewCell {
                 make.left.equalTo(soundArtImage.snp.right).offset(uiElement.leftOffset)
                 make.right.equalTo(self).offset(uiElement.rightOffset)
             }
-            
+
             soundDate.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(soundTitle.snp.bottom).offset(uiElement.elementOffset)
                 make.left.equalTo(soundTitle)
-                make.right.equalTo(soundTitle)
+                make.right.equalTo(self).offset(uiElement.rightOffset)
             }
             
             dividerLine.snp.makeConstraints { (make) -> Void in

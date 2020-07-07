@@ -93,9 +93,15 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         alertController.addAction(newUploadAction)
         
         let newPlaylistAction = UIAlertAction(title: "New Collection", style: .default) { (_) -> Void in
-            self.didSelectNewPlaylist = true
-            self.tableView.reloadData()
-            self.setupNavigationBar()
+            if self.soundList != nil {
+                if self.soundList.sounds.count == 0 {
+                    self.uiElement.showAlert("Sound Drafts Required", message: "Start a new upload, new save your sound as a draft to start a new collection.", target: self)
+                } else {
+                    self.didSelectNewPlaylist = true
+                    self.tableView.reloadData()
+                    self.setupNavigationBar()
+                }
+            }
         }
         alertController.addAction(newPlaylistAction)
         
@@ -115,7 +121,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
                 
                 let viewController = segue.destination as! NewPlaylistViewController
                 viewController.playlistSounds = selectedSoundsForPlaylist
-                let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "collection", count: selectedSoundsForPlaylist.count)
+                let newPlaylist = Playlist(objectId: nil, artist: Customer.shared.artist, title: nil, image: nil, type: "collection", count: selectedSoundsForPlaylist.count)
                 viewController.playlist = newPlaylist
             break
             

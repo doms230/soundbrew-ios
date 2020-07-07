@@ -58,6 +58,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
             }
             
         } else {
+            print("no artist")
             self.uiElement.goBackToPreviousViewController(self)
         }
     }
@@ -68,10 +69,13 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         } else {
             if playlist.title == nil {
                 self.uiElement.showAlert("Title Required", message: "", target: self)
-            } else if playlist.objectId == nil {
-                createNewPlaylist(self.playlist)
-            } else if playlist.objectId != nil {
-                updatePlaylist(self.playlist)
+            } else {
+                self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
+                if playlist.objectId == nil {
+                    createNewPlaylist(self.playlist)
+                } else if playlist.objectId != nil {
+                    updatePlaylist(self.playlist)
+                }
             }
         }
     }
@@ -300,6 +304,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         newPlaylist["isRemoved"] = false
         newPlaylist.saveEventually {
             (success: Bool, error: Error?) in
+            self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (self.topView.1, self.topView.3))
             if (success) {
                 self.playlist.objectId = newPlaylist.objectId
                 if playlist.type == "collection" {
@@ -325,7 +330,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func updatePlaylist(_ playlist: Playlist) {
-        self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (topView.1, topView.3))
         let query = PFQuery(className: "Playlist")
         query.getObjectInBackground(withId: playlist.objectId ?? "") {
             (object: PFObject?, error: Error?) -> Void in

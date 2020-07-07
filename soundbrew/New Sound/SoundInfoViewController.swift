@@ -22,7 +22,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let uiElement = UIElement()
     
     var soundArtDidFinishProcessing = true
-    var didPressUploadButton = false
+    var didPressDoneButton = false
+    var isDraft = false
     var soundParseFileDidFinishProcessing = false
     
     var soundThatIsBeingEdited: Sound?
@@ -37,7 +38,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        //loading city Tag, so want to get most recent data if user updated profile.
         self.tableView.reloadData()
     }
     
@@ -50,23 +50,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             shouldUploadButtonBeEnabled = true
         }
         
-        uploadButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressUploadButton(_:)))
+        uploadButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
         uploadButton.isEnabled = shouldUploadButtonBeEnabled
         self.navigationItem.rightBarButtonItem = uploadButton
     }
     
     @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
         self.uiElement.goBackToPreviousViewController(self)
-    }
-    
-    func saveDraft() {
-        if let sound = self.soundThatIsBeingEdited {
-            if sound.objectId == nil {
-                self.createSound(sound, isDraft: true)
-            } else {
-                self.updateSound(sound, isDraft: true)
-            }
-        }
     }
     
     //MARK: Tableview
@@ -118,6 +108,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         case fanClubExclusiveSection:
             cell = fanClubExclusiveCell()
             break
+            
         case creditCellSection:
             cell = creditCell(indexPath)
             break
@@ -242,15 +233,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     func getSelectedTags() {
         if let soundTags = soundThatIsBeingEdited?.tags {
             for tag in soundTags {
-                loadTag(tag)
+                loadTag(tag, type: nil)
             }
         }
         
         if let currentUser = Customer.shared.artist {
+            print("load current city")
             loadCurrentUserCity(currentUser.objectId)
-            if let username = currentUser.username {
-                loadTag(username)
-            }
         }
     }
     
@@ -310,6 +299,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func saveTags(_ tags: Array<Tag>) {
+        print("Saving tags")
         for tag in tags {
             if let tagId = tag.objectId {
                 let query = PFQuery(className: "Tag")
@@ -333,7 +323,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func loadTag(_ tag: String) {
+    func loadTag(_ tag: String, type: String? ) {
         let query = PFQuery(className: "Tag")
         query.whereKey("tag", equalTo: tag)
         query.cachePolicy = .networkElseCache
@@ -341,9 +331,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (object: PFObject?, error: Error?) -> Void in
             if let object = object{
                 let tag = Tag(objectId: object.objectId, name: object["tag"] as? String, count: 0, isSelected: false, type: object["type"] as? String, imageURL: nil, uiImage: nil)
+                print("got tag object: \(tag.name)")
                 self.soundTags?.append(tag)
+            } else {
+                let newCityTag = Tag(objectId: nil, name: tag, count: 0, isSelected: false, type: type, imageURL: nil, uiImage: nil)
+                self.soundTags?.append(newCityTag)
             }
-            self.tableView.reloadData()
         }
     }
     
@@ -527,8 +520,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundArtDidFinishProcessing = true
-                if self.didPressUploadButton {
-                    self.releaseSound()
+                if self.didPressDoneButton {
+                    self.doneAction(self.isDraft)
                 }
                 
             } else if let error = error {
@@ -550,16 +543,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //
-    @objc func didPressUploadButton(_ sender: UIBarButtonItem) {
+    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
         let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
         
         let yesAction = UIAlertAction(title: "Release as Single", style: .default) { (_) -> Void in
-            self.releaseSound()
+            self.doneAction(false)
         }
         alertController.addAction(yesAction)
         
         let noAction = UIAlertAction(title: "Save to Drafts", style: .default) { (_) -> Void in
-            self.saveDraft()
+            self.doneAction(true)
         }
         alertController.addAction(noAction)
         
@@ -570,13 +563,18 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func releaseSound() {
-        self.didPressUploadButton = true
+    func doneAction(_ isDraft: Bool) {
+        if let tags = soundTags {
+            self.soundThatIsBeingEdited?.tags = tags.map {$0.name}
+            print(self.soundThatIsBeingEdited?.tags)
+        }
+        self.didPressDoneButton = true
+        self.isDraft = isDraft
         if self.soundArtDidFinishProcessing, let sound = soundThatIsBeingEdited {
             if sound.objectId != nil {
-                updateSound(sound, isDraft: false)
+                updateSound(sound, isDraft: isDraft)
             } else {
-                createSound(sound, isDraft: false)
+                createSound(sound, isDraft: isDraft)
             }
         }
     }
@@ -601,6 +599,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             newSound["productId"] = productId
         }
         
+        if let username = sound.artist?.username {
+            newSound["username"] = username
+        }
+        
+        if let name = sound.artist?.name {
+            newSound["name"] = name
+        }
+        
         newSound["isDraft"] = isDraft
         newSound["isRemoved"] = isDraft
         newSound["credits"] = credits.count
@@ -611,16 +617,13 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound.saveEventually {
             (success: Bool, error: Error?) in
             if (success) {
-                if isDraft {
-                    self.finishUp(false, object: newSound)
-                } else {
-                    if let tags = self.soundTags {
-                        self.saveTags(tags)
-                    }
-                    sound.objectId = newSound.objectId
-                    self.saveCredits(sound)
-                    self.finishUp(true, object: newSound)
+                if let tags = self.soundTags {
+                    self.saveTags(tags)
                 }
+                self.soundThatIsBeingEdited?.objectId = newSound.objectId
+                self.saveCredits(sound)
+                self.finishUp(isDraft)
+                
             } else if let error = error {
                 DispatchQueue.main.async {
                     let localizedCouldNotPost = NSLocalizedString("couldNotPost", comment: "")
@@ -646,6 +649,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 if let tags = sound.tags {
+                    print("tag count: \(tags.count)")
                     object["tags"] = tags
                 }
                 
@@ -659,20 +663,24 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if let productId = sound.artist?.account?.productId {
                     object["productId"] = productId
                 }
+                
+                if let username = sound.artist?.username {
+                    object["username"] = username
+                }
+                
+                if let name = sound.artist?.name {
+                    object["name"] = name
+                }
 
                 object.saveEventually {
                     (success: Bool, error: Error?) in
                     if (success) {
-                        if isDraft {
-                            self.finishUp(false, object: object)
-                        } else {
-                            if let tags = self.soundTags {
-                                self.saveTags(tags)
-                            }
-                            sound.objectId = object.objectId
-                            self.saveCredits(sound)
-                            self.finishUp(true, object: object)
+                        if let tags = self.soundTags {
+                            self.saveTags(tags)
                         }
+                        self.soundThatIsBeingEdited?.objectId = object.objectId
+                        self.saveCredits(sound)
+                        self.finishUp(isDraft)
                         
                     } else if let error = error {
                         DispatchQueue.main.async {
@@ -696,7 +704,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             } else if let user = user {
                 if let city = user["city"] as? String {
                     if !city.isEmpty {
-                        self.loadTag(city.lowercased())
+                        print("user city: \(city)")
+                        self.loadTag(city.lowercased(), type: "city")
                     }
                 }
             }
@@ -714,14 +723,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func finishUp(_ shouldPlaySoundAndShowShareOptions: Bool, object: PFObject) {
+    func finishUp(_ isDraft: Bool) {
         DispatchQueue.main.async {
-            if shouldPlaySoundAndShowShareOptions {
-                let soundId = object.objectId!
+            if isDraft {
+                self.uiElement.goBackToPreviousViewController(self)
+            } else {
+                let soundId = self.soundThatIsBeingEdited?.objectId
                 self.uiElement.setUserDefault(soundId, key: "newSoundId")
                 self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-            } else {
-                self.uiElement.goBackToPreviousViewController(self)
             }
         }
     }

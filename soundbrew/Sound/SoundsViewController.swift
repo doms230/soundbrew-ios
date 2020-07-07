@@ -40,7 +40,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 if selectedIndex == 1 {
                     self.soundType = "forYou"
                 } else {
-                    setUpMiniPlayer()
+                    self.setUpMiniPlayer()
                 }
             }
             createTopView()
@@ -113,7 +113,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.performSegue(withIdentifier: "showSearch", sender: self)
     }
     
-    func checkForDefaultValue() {
+    /*func checkForDefaultValue() {
         if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: false, shouldPlay: true)
@@ -129,7 +129,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if self.uiElement.getUserDefault("receivedUsername") != nil {
             self.performSegue(withIdentifier: "showProfile", sender: self)
         }
-    }
+    }*/
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         if self.tableView != nil {
@@ -143,6 +143,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didReceiveSoundUpdate(){
+        //need to update current sound as playing on soundlist .. turns blue 
         if self.tableView != nil {
             self.tableView.reloadData()
         }
@@ -265,6 +266,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         } else if soundType == "playlist" {
             cell.headerTitle.text = "Tap the menu button at the top right corner to add sounds to this playlist!"
             cell.artistButton.isHidden = true
+        } else if soundType == "uploads" {
+            cell.headerTitle.text = "No Uploads Yet."
+            cell.artistButton.isHidden = true
+        } else if soundType == "collection" {
+            cell.headerTitle.text = "No Likes Yet."
+            cell.artistButton.isHidden = true
         }
         
         return cell
@@ -295,7 +302,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.bottom.equalTo(tabBarController.tabBar.snp.top)
             }
         }
-        checkForDefaultValue()
+        self.loadLastListen()
     }
     
     //mark: selectedArtist
@@ -351,6 +358,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             query.whereKey("isFeatured", equalTo: true)
             query.addDescendingOrder("tippers")
         }
+        query.whereKey("isRemoved", notEqualTo: true)
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in

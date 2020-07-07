@@ -330,7 +330,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func didSelectAccountSection(_ indexPath: IndexPath) {
-        print(self.artist?.isVerified)
         if self.artist?.account == nil {
             if let isVerified = self.artist?.isVerified, isVerified {
               newFanClubAlert()

@@ -66,15 +66,16 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                                 
                 let viewController = segue.destination as! SoundsViewController
                 
-                if let selectedTag = self.selectedTagFromPlayerView {
+                if let newPlaylist = self.newPlaylist {
+                    showPlaylistSounds(newPlaylist, backItem: backItem, viewController: viewController)
+                    self.newPlaylist = nil 
+                } else if let selectedTag = self.selectedTagFromPlayerView {
                     viewController.soundType = "discover"
                     viewController.selectedTagForFiltering = selectedTag
                     backItem.title = selectedTag.name
                 } else if let indexPath = tableView.indexPathForSelectedRow {
-                    if indexPath.section == 2, let title = self.artistPlaylists[indexPath.row].title {
-                        backItem.title = title
-                        viewController.soundType = "playlist"
-                        viewController.playlist = self.artistPlaylists[indexPath.row]
+                    if indexPath.section == 2 {
+                        showPlaylistSounds(self.artistPlaylists[indexPath.row], backItem: backItem, viewController: viewController)
                     } else if indexPath.section == 3, let userId = profileArtist?.objectId, let username = profileArtist?.username {
                         if indexPath.row == 0 {
                             backItem.title = "\(username)'s Uploads"
@@ -99,22 +100,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 viewController.loadType = followerOrFollowing
                 break
             
-        case "showEarnings":
-            let backItem = UIBarButtonItem()
-            backItem.title = "Earnings"
-            navigationItem.backBarButtonItem = backItem
-            let viewController = segue.destination as! EarningsViewController
-            if let earnings = Customer.shared.artist?.account?.weeklyEarnings {
-                viewController.earnings = earnings
-            }
-            break
-            
-        case "showAccountWebView":
-            let backItem = UIBarButtonItem()
-            backItem.title = "Account Info"
-            navigationItem.backBarButtonItem = backItem
-            default:
+            case "showEarnings":
+                let backItem = UIBarButtonItem()
+                backItem.title = "Earnings"
+                navigationItem.backBarButtonItem = backItem
+                let viewController = segue.destination as! EarningsViewController
+                if let earnings = Customer.shared.artist?.account?.weeklyEarnings {
+                    viewController.earnings = earnings
+                }
                 break
+                
+            case "showAccountWebView":
+                let backItem = UIBarButtonItem()
+                backItem.title = "Account Info"
+                navigationItem.backBarButtonItem = backItem
+                MiniPlayerView.sharedInstance.isHidden = true
+                default:
+                    break
         }
     }
     
@@ -233,6 +235,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         miniPlayerView.superViewController = self
         miniPlayerView.tagDelegate = self
         miniPlayerView.playerDelegate = self
+        miniPlayerView.isHidden = false 
     }
     
     //mark: selectedArtist
@@ -265,7 +268,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     //mark: Playlist
+    var newPlaylist: Playlist?
     var artistPlaylists = [Playlist]()
+    
+    func showPlaylistSounds(_ playlist: Playlist, backItem: UIBarButtonItem, viewController: SoundsViewController) {
+        backItem.title = playlist.title ?? "Playlist"
+        viewController.soundType = "playlist"
+        viewController.playlist = playlist
+    }
+    
     func receivedPlaylist(_ playlist: Playlist?) {
         if let newPlaylist = playlist {
             var didFindMatchingPlaylist = false
@@ -282,6 +293,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.artistPlaylists.insert(newPlaylist, at: 0)
                 self.tableView.reloadData()
             }
+            
+            self.newPlaylist = newPlaylist
+            self.performSegue(withIdentifier: "showSounds", sender: self)
         }
     }
     
@@ -454,8 +468,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if let objects = objects {
                 for object in objects {
                     let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil, type: nil, count: nil)
-                    let artist = Artist(objectId: object["userId"] as? String, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
-                    playlist.artist = artist
+                    playlist.artist = self.profileArtist
                     playlist.title = object["title"] as? String
                     playlist.image = object["image"] as? PFFileObject
                     playlist.type = object["type"] as? String
@@ -526,13 +539,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
+            cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressJoinFanClubNewPlaylistButton(_:)), for: .touchUpInside)
             
             if artist.account != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
-                cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressSubscribeUserCreatePlaylistButton(_:)), for: .touchUpInside)
-                
                 cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
             } else {
-                cell.joinFanClubButton.isHidden = true
                 cell.sendGiftButton.isHidden = true
             }
             
@@ -549,6 +560,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.followUserEditProfileButton.layer.borderWidth = 1
                     cell.followUserEditProfileButton.clipsToBounds = true
                     cell.followUserEditProfileButton.tag = 0
+                    
+                    cell.joinFanClubButton.setTitle("New Playlist", for: .normal)
+                    cell.joinFanClubButton.backgroundColor = color.black()
+                    cell.joinFanClubButton.setTitleColor(.white, for: .normal)
+                    cell.joinFanClubButton.layer.borderColor = color.lightGray().cgColor
+                    cell.joinFanClubButton.layer.borderWidth = 1
+                    cell.joinFanClubButton.clipsToBounds = true
                     
                 } else {
                     if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
@@ -574,6 +592,8 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                             cell.joinFanClubButton.backgroundColor = color.blue()
                             cell.joinFanClubButton.setTitleColor(.white, for: .normal)
                         }
+                    } else {
+                        cell.joinFanClubButton.isHidden = true 
                     }
                 }
             } else {
@@ -594,36 +614,21 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.present(modal, animated: true, completion: nil)
     }
     
-    @objc func didPressSubscribeUserCreatePlaylistButton(_ sender: UIButton) {
-
-        if let productId = self.profileArtist?.account?.productId, Customer.shared.fanClubs.contains(productId) {
-            self.uiElement.showAlert("You're a Fan Club Member!", message: "You can manage your membership at soundbrew.app/fans", target: self)
+    @objc func didPressJoinFanClubNewPlaylistButton(_ sender: UIButton) {
+        if self.profileArtist?.objectId == PFUser.current()?.objectId {
+            let modal = NewPlaylistViewController()
+            modal.playlistDelegate = self
+            let playlist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)
+            modal.playlist = playlist
+            self.present(modal, animated: true, completion: nil)
+            
         } else {
-            self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Get access to exclusive sounds from \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
-            //recordAnalytics()
-        }
-    }
-    
-    func recordAnalytics() {
-        if let email = Customer.shared.artist?.email, let name = Customer.shared.artist?.username, let artistName = self.profileArtist?.username {
-            let url = "https://www.soundbrew.app/analytics/google"
-            let parameters: Parameters = [
-                "artistName":  artistName,
-                "customerName":  name,
-                "email": email]
-            AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-                .validate(statusCode: 200..<300)
-                .responseJSON { responseJSON in
-                    switch responseJSON.result {
-                    case .success(let json):
-                        let json = JSON(json)
-                        print(json)
-                    case .failure(let error):
-                        print(error)
-                    }
+            if let productId = self.profileArtist?.account?.productId, Customer.shared.fanClubs.contains(productId) {
+                self.uiElement.showAlert("You're a Fan Club Member!", message: "You can manage your membership at soundbrew.app/fans", target: self)
+            } else {
+                self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Get access to exclusive sounds from \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
             }
         }
-        
     }
     
     @objc func didPressFollowUserEditProfileButton(_ sender: UIButton) {
