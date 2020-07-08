@@ -325,9 +325,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 }
                 return cell
             } else if indexPath.section == 1 {
-                return commentCell(indexPath, comment: self.soundArtistComment)
+                return commentCell(indexPath, comment: self.soundArtistComment, isUploaderProfile: true)
             } else {
-                return commentCell(indexPath, comment: comments[indexPath.row])
+                return commentCell(indexPath, comment: comments[indexPath.row], isUploaderProfile: false)
             }
         }
     }
@@ -386,21 +386,21 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
-    func commentCell(_ indexPath: IndexPath, comment: Comment?) -> PlayerTableViewCell {
+    func commentCell(_ indexPath: IndexPath, comment: Comment?, isUploaderProfile: Bool) -> PlayerTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: commentReuse) as! PlayerTableViewCell
 
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
-        /*if indexPath.section == 1, let soundAristComment = self.soundArtistComment {
-            comment = soundAristComment
-        } else if comments.indices.contains(indexPath.row), let currentComment = comments[indexPath.row] {
-            comment = currentComment
-        }*/
         
         if let comment = comment {
             cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
-              cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
-              cell.userImage.tag = indexPath.row
+            if isUploaderProfile {
+                cell.userImage.addTarget(self, action: #selector(didPressUploaderProfileButton(_:)), for: .touchUpInside)
+            } else {
+                cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+                cell.userImage.tag = indexPath.row
+            }
+            
             if let image = comment.artist?.image {
                   cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
             } else if let artist = comment.artist {
@@ -486,6 +486,12 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    @objc func didPressUploaderProfileButton(_ sender: UIButton) {
+        if let artist = self.soundArtistComment?.artist {
+            handleDismissal(artist)
+        }
+    }
+        
     @objc func didPressReplyButton(_ sender: UIButton) {
         if let username = self.comments[sender.tag]?.artist?.username {
             if let atTime = self.comments[sender.tag]?.atTime {
@@ -696,18 +702,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         }
                     }
                 }
-                                
-                /*if self.selectedCommentFromMentions != nil && !self.didLoadComments {
-                     DispatchQueue.main.async {
-                        self.didLoadComments = true
-                        self.tableView.reloadData()
-                        let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 2)
-                        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                    }
-                    
-                } else {
-                    self.tableView.reloadData()
-                }*/
             }
         }
     }
