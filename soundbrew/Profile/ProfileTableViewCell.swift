@@ -64,21 +64,6 @@ class ProfileTableViewCell: UITableViewCell {
         return spinner
     }()
     
-   /* lazy var backImageButton: UIButton = {
-        let button = self.uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .black, image: UIImage(named: "back_id"), titleFont: nil, titleColor: .clear, cornerRadius: 5)
-        button.imageView?.contentMode = .scaleAspectFill
-        return button
-    }()
-    lazy var backImageLabel: UILabel = {
-        return uiElement.soundbrewLabel("Upload Back", textColor: .lightGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
-    }()
-    
-    lazy var backImageSpinner: UIActivityIndicatorView = {
-        let spinner = UIActivityIndicatorView(style: .gray)
-        spinner.isHidden = true
-        return spinner
-    }()*/
-    
     //profile
     lazy var profileImage: UIImageView = {
         let profileImage = uiElement.soundbrewImageView(UIImage(named: "profile_icon"), cornerRadius: nil, backgroundColor: nil)
@@ -175,16 +160,6 @@ class ProfileTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         switch reuseIdentifier {
-            case "profileTitleReuse":
-                self.addSubview(profileTitle)
-                profileTitle.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(self).offset(uiElement.topOffset)
-                    make.left.equalTo(self).offset(uiElement.leftOffset)
-                    make.right.equalTo(self).offset(uiElement.rightOffset)
-                    make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-                }
-                break
-            
             case "searchReuse":
                 self.addSubview(searchBar)
                 searchBar.snp.makeConstraints { (make) -> Void in
@@ -273,39 +248,6 @@ class ProfileTableViewCell: UITableViewCell {
                 }
                 
                 break
-            
-        case "creditProfileReuse":
-            let profileImageHeightWidth = 75
-            profileImage.layer.cornerRadius = CGFloat(profileImageHeightWidth / 2)
-            self.addSubview(profileImage)
-            profileImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(profileImageHeightWidth)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            self.addSubview(displayNameLabel)
-            displayNameLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(profileImage).offset(uiElement.elementOffset)
-                make.left.equalTo(profileImage.snp.right).offset(uiElement.elementOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset)
-            }
-            
-            self.addSubview(username)
-            username.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(displayNameLabel.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            
-            self.addSubview(creditTitle)
-            creditTitle.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(username.snp.bottom)
-                make.left.equalTo(displayNameLabel)
-                make.right.equalTo(displayNameLabel)
-            }
-            break
             
         case "searchTagViewReuse":
             self.addSubview(profileImage)
@@ -431,25 +373,6 @@ class ProfileTableViewCell: UITableViewCell {
                 make.left.equalTo(frontImageButton)
                 make.bottom.equalTo(self).offset(uiElement.bottomOffset)
             }
-            
-           /* self.addSubview(backImageButton)
-            backImageButton.snp.makeConstraints { (make) -> Void in
-                make.width.equalTo(150)
-                make.height.equalTo(100)
-                make.left.equalTo(frontImageButton.snp.right).offset(uiElement.leftOffset)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-            }
-            self.addSubview(backImageSpinner)
-            backImageSpinner.snp.makeConstraints { (make) -> Void in
-                make.width.height.equalTo(100)
-                make.center.equalTo(frontImageButton)
-            }
-            self.addSubview(backImageLabel)
-            backImageLabel.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(backImageButton.snp.bottom).offset(uiElement.elementOffset)
-                make.left.equalTo(backImageButton)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }*/
             break
             
         case "editProfileImageReuse":

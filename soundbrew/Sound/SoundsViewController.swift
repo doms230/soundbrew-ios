@@ -28,7 +28,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     var userId: String?
     var isNewUser: Bool?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
@@ -47,9 +47,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         } else if soundType == "playlist", let playlist = self.playlist, playlist.objectId != nil {
             let sharePlaylistButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSharePlaylistButton(_:)))
+            
+            let shuffleButton = UIBarButtonItem(image: UIImage(named: "shuffle"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShuffleButton(_:)))
+            
             if  let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
                 let addSoundsToPlaylistButton = UIBarButtonItem(image: UIImage(named: "new_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddSoundsToPlaylistButton(_:)))
-                self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, sharePlaylistButton]
+                self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, sharePlaylistButton, shuffleButton]
                 
             } else {
                 self.navigationItem.rightBarButtonItem = sharePlaylistButton
@@ -102,6 +105,16 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         default:
             break
+        }
+    }
+    
+    @objc func didPressShuffleButton(_ sender: UIBarButtonItem) {
+        if soundList != nil {
+            soundList.sounds.shuffle()
+            let player = Player.sharedInstance
+            player.sounds = soundList.sounds
+            player.currentSoundIndex = -1
+            if self.tableView != nil {self.tableView.reloadData()}
         }
     }
     

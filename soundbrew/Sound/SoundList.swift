@@ -130,15 +130,7 @@ class SoundList: NSObject, PlayerDelegate {
             cell.soundTitle.text = sound.title
 
             if let currentUser = PFUser.current()?.objectId, currentUser == self.domSmithUserId, let createdAt = sound.createdAt {
-                var tipCount = 0
-                var likeString = "likes"
-                if let tips = sound.tipCount {
-                    tipCount = tips
-                    if tips == 1 {
-                        likeString = "like"
-                    }
-                }
-                cell.soundDate.text = "\(self.uiElement.formatDateAndReturnString(createdAt)) | \(tipCount) \(likeString)"
+                cell.soundDate.text = "\(self.uiElement.formatDateAndReturnString(createdAt)) | likes: \(sound.tipCount ?? 0) | plays: \(sound.playCount ?? 0)"
             } else {
                 var hashtagString = ""
                 if let hashtags = sound.tags {
@@ -169,7 +161,7 @@ class SoundList: NSObject, PlayerDelegate {
             let sound = sounds[sender.tag]
                         
             if let currentUser = PFUser.current(), sound.artist!.objectId == currentUser.objectId {
-                let menuAlert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
+                let menuAlert = UIAlertController(title: "Likes: \(sound.tipCount ?? 0)", message: "Plays: \(sound.playCount ?? 0)", preferredStyle: .actionSheet)
                 
                 let localizedEditSound = NSLocalizedString("editSound", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in

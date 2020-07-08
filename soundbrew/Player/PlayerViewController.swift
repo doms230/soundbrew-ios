@@ -324,8 +324,10 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                     cell.soundArt.kf.setImage(with: URL(string: sound.artFile?.url  ?? ""), placeholder: UIImage(named: "sound"))
                 }
                 return cell
+            } else if indexPath.section == 1 {
+                return commentCell(indexPath, comment: self.soundArtistComment)
             } else {
-                return commentCell(indexPath)
+                return commentCell(indexPath, comment: comments[indexPath.row])
             }
         }
     }
@@ -384,19 +386,19 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
-    func commentCell(_ indexPath: IndexPath) -> PlayerTableViewCell {
+    func commentCell(_ indexPath: IndexPath, comment: Comment?) -> PlayerTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: commentReuse) as! PlayerTableViewCell
 
         cell.backgroundColor = color.black()
         cell.selectionStyle = .none
-        var comment: Comment?
-        if indexPath.section == 1, let soundAristComment = self.soundArtistComment {
+        /*if indexPath.section == 1, let soundAristComment = self.soundArtistComment {
             comment = soundAristComment
         } else if comments.indices.contains(indexPath.row), let currentComment = comments[indexPath.row] {
             comment = currentComment
-        }
+        }*/
         
         if let comment = comment {
+            cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
               cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
               cell.userImage.tag = indexPath.row
             if let image = comment.artist?.image {
@@ -683,18 +685,29 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         }
                     }
                 }
-                                
-                if self.selectedCommentFromMentions != nil && !self.didLoadComments {
+                
+                if !self.didLoadComments {
                      DispatchQueue.main.async {
+                        self.didLoadComments = true
+                        self.tableView.reloadData()
+                        if self.selectedCommentFromMentions != nil {
+                            let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 2)
+                            self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                        }
+                    }
+                }
+                                
+                /*if self.selectedCommentFromMentions != nil && !self.didLoadComments {
+                     DispatchQueue.main.async {
+                        self.didLoadComments = true
                         self.tableView.reloadData()
                         let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 2)
                         self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                        self.didLoadComments = true
                     }
                     
                 } else {
                     self.tableView.reloadData()
-                }
+                }*/
             }
         }
     }

@@ -53,9 +53,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if self.uiElement.getUserDefault("friends") != nil {
                 self.uiElement.setUserDefault(nil, key: "friends")
             }
-            
-            MiniPlayerView.sharedInstance.removeFromSuperview()
-            
+        
            let player = Player.sharedInstance
             player.pause()
             player.player = nil

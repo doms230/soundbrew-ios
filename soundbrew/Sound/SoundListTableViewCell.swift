@@ -220,33 +220,6 @@ class SoundListTableViewCell: UITableViewCell {
             }
             break
             
-        case "filterSoundsReuse":
-            self.addSubview(searchTagsButton)
-            searchTagsButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(self).offset(uiElement.leftOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            self.addSubview(searchArtistsButton)
-            searchArtistsButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.left.equalTo(searchTagsButton.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-            }
-            
-            self.addSubview(searchSoundsButton)
-            searchSoundsButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(35)
-                make.top.equalTo(searchArtistsButton)
-                make.left.equalTo(searchArtistsButton.snp.right).offset(uiElement.leftOffset + 10)
-                make.bottom.equalTo(searchArtistsButton)
-            }
-    
-            break
-            
         default:
             break
         }

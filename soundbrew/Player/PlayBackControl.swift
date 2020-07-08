@@ -131,7 +131,7 @@ class PlayBackControl {
         goBackButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(35)
             make.centerY.equalTo(playBackButton)
-            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset)
+            make.right.equalTo(playBackButton.snp.left).offset(uiElement.rightOffset * 2)
         }
         
         skipButton.addTarget(self, action: #selector(self.didPressSkipButton(_:)), for: .touchUpInside)
@@ -139,13 +139,13 @@ class PlayBackControl {
         skipButton.snp.makeConstraints { (make) -> Void in
             make.height.width.equalTo(35)
             make.centerY.equalTo(playBackButton)
-            make.left.equalTo(playBackButton.snp.right).offset(uiElement.leftOffset)
+            make.left.equalTo(playBackButton.snp.right).offset(uiElement.leftOffset * 2)
         }
         
         likeSoundButton.addTarget(self, action: #selector(self.didPressLikeButton(_:)), for: .touchUpInside)
         self.viewController.view.addSubview(likeSoundButton)
         likeSoundButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
+            make.height.width.equalTo(30)
             make.centerY.equalTo(self.playBackButton)
             make.right.equalTo(self.viewController.view).offset(uiElement.rightOffset)
         }
@@ -153,7 +153,7 @@ class PlayBackControl {
         shareButton.addTarget(self, action: #selector(didPressShareButton(_:)), for: .touchUpInside)
         self.viewController.view.addSubview(shareButton)
         shareButton.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(25)
+            make.height.width.equalTo(30)
             make.centerY.equalTo(self.playBackButton)
             make.left.equalTo(self.viewController.view).offset(uiElement.leftOffset)
         }

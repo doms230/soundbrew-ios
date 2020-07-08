@@ -111,10 +111,6 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-
-    }
-    
     func receivedPlaylist(_ playlist: Playlist?) {
         if let playlist = playlist {
             self.playlists.append(playlist)
@@ -210,6 +206,8 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    
+    
     func checkIfUserLikedSong() {
         if let soundId = self.sound.objectId, let userId = PFUser.current()?.objectId {
             let query = PFQuery(className: "Tip")
@@ -219,11 +217,6 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
                 if object == nil {
-                    if let currentSoundId = Player.sharedInstance.currentSound?.objectId, currentSoundId == soundId {
-                        Player.sharedInstance.currentSound?.currentUserDidLikeSong = true
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
-
-                    }
                     self.newLike()
                 }
             }
@@ -231,14 +224,27 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func newLike() {
-        if let soundId = self.sound.objectId, let fromUserId = PFUser.current()?.objectId, let toUserId = sound.artist?.objectId {
+        if currentUserDoesHaveAccessToSound(), let soundId = self.sound.objectId, let fromUserId = PFUser.current()?.objectId, let toUserId = sound.artist?.objectId {
             let newPayment = PFObject(className: "Tip")
             newPayment["fromUserId"] = fromUserId
             newPayment["toUserId"] = toUserId
             newPayment["soundId"] = soundId
             newPayment.saveEventually()
+            Player.sharedInstance.currentSound?.currentUserDidLikeSong = true
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
             newMention(soundId, fromUserId: fromUserId, toUserId: toUserId)
         }
+    }
+    
+    func currentUserDoesHaveAccessToSound() -> Bool {
+        if let currentSound = Player.sharedInstance.currentSound,  let currentUserId = PFUser.current()?.objectId,
+            let artistUserId = currentSound.artist?.objectId,
+            let isExclusive = currentSound.isExclusive,
+            currentUserId != artistUserId && isExclusive,
+            let soundProductId = currentSound.productId, !Customer.shared.fanClubs.contains(soundProductId) {
+            return false
+        }
+        return true
     }
     
     func newMention(_ soundId: String, fromUserId: String, toUserId: String) {
@@ -256,15 +262,4 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
             }
         }
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

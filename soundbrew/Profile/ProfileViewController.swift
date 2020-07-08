@@ -214,7 +214,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             return playlistCell(indexPath)
         case 3:
             return uploadsAndLikesPlaylistCell(indexPath)
-            
         default:
             let cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as! ProfileTableViewCell
             cell.backgroundColor = color.black()
@@ -461,10 +460,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         query.whereKey("userId", equalTo: profileUserId)
         query.addDescendingOrder("createdAt")
         query.whereKey("isRemoved", equalTo: false)
-        query.whereKey("objectId", notContainedIn: self.artistPlaylists.map {$0.objectId!})
         query.cachePolicy = .networkElseCache
+        query.limit = 50
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
+            self.artistPlaylists.removeAll()
             if let objects = objects {
                 for object in objects {
                     let playlist = Playlist(objectId: object.objectId, artist: nil, title: nil, image: nil, type: nil, count: nil)

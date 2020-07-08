@@ -85,7 +85,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func decideAction() {
-        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+        let alertController = UIAlertController (title: "", message: "Upload drafts from the web at soundbrew.app/uploads", preferredStyle: .actionSheet)
         
         let newUploadAction = UIAlertAction(title: "New Upload", style: .default) { (_) -> Void in
             self.showNewUpload()

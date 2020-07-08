@@ -114,29 +114,16 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         view.backgroundColor = color.black()
     
         self.view.addSubview(backgroundView)
-       // backgroundView.frame = view.bounds
         backgroundView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view)
             make.height.equalTo(self.view.frame.height / 2)
-           // make.bottom.equalTo(self.view.frame.height / 2)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
         
-      /*  self.view.addSubview(appImage)
-        appImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(50)
-            make.top.equalTo(backgroundView.snp.bottom).offset(uiElement.topOffset)
-            make.centerX.equalTo(self.view)
-            //make.centerY.equalTo(self.view)
-            //make.centerX.equalTo(self.view)
-           // make.top.equalTo(self.view).offset(uiElement.uiViewTopOffset(self) * 5)
-        }*/
-        
         self.view.addSubview(appLabel)
         appLabel.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(backgroundView.snp.bottom).offset(uiElement.topOffset * 3)
-          //  make.top.equalTo(appImage.snp.bottom)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -156,7 +143,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset * 3)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            //make.bottom.equalTo(googleButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         let googleButton = signInWithButton("Sign in with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
@@ -167,7 +153,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.top.equalTo(appleButton.snp.bottom).offset(uiElement.topOffset * 2)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
-          //  make.bottom.equalTo(signupButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         let emailButton = signInWithButton("Sign in with Email", titleColor: .black, backgroundColor: .white, imageName: "email", tag: 0, shouldShowBorderColor: false)
@@ -176,10 +161,8 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         emailButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
             make.top.equalTo(googleButton.snp.bottom).offset(uiElement.topOffset * 2)
-            //make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
-           // make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
         
         self.view.addSubview(termsButton)
@@ -194,14 +177,12 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         switch sender.tag {
         case 0:
             self.performSegue(withIdentifier: "showSignin", sender: self)
-            //showSignInWithEmailOption()
             break
             
         case 1:
             if #available(iOS 13.0, *) {
                 self.loginType = "apple"
                 self.loginWithApple()
-                //self.performSegue(withIdentifier: "showSignup", sender: self)
                 
             } else {
                 self.uiElement.showAlert("Un-Available", message: "Sign in with Apple is only available on iOS 13 or newer.", target: self)
@@ -220,27 +201,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         }
     }
     
-    func showSignInWithEmailOption() {
-        let alertController = UIAlertController (title: "I am" , message: "", preferredStyle: .actionSheet)
-        
-        let newToSoundbrewAction = UIAlertAction(title: "New to Soundbrew", style: .default) { (_) -> Void in
-            self.loginType = "email"
-            self.performSegue(withIdentifier: "showSignup", sender: self)
-        }
-        alertController.addAction(newToSoundbrewAction)
-        
-        let returningToSoundbrewAction = UIAlertAction(title: "Returning to Soundbrew", style: .default) { (_) -> Void in
-            self.performSegue(withIdentifier: "showSignin", sender: self)
-        }
-        alertController.addAction(returningToSoundbrewAction)
-        
-        let localizedCancel = NSLocalizedString("cancel", comment: "")
-        let cancelAction = UIAlertAction(title: localizedCancel, style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
     @objc func didPressTermsButton(_ sender: UIButton) {
         UIApplication.shared.open(URL(string: "https://www.soundbrew.app/privacy" )!, options: [:], completionHandler: nil)
     }
@@ -253,7 +213,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
       if let error = error {
-       // self.dismiss(animated: true, completion: nil)
         if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
           print("The user has not signed in before or they have since signed out.")
         } else {
@@ -284,7 +243,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             request.requestedScopes = [.fullName, .email]
             let controller = ASAuthorizationController(authorizationRequests: [request])
             controller.delegate = self
-            //controller.presentationContextProvider = (self as! ASAuthorizationControllerPresentationContextProviding)
             controller.performRequests()
         }
     }
