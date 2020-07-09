@@ -172,8 +172,6 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     private func getBank(_ accountId: String, bankId: String, payout: Payout, isLastIndex: Bool) {
-        print("accountId: \(accountId)")
-        print("bankId: \(bankId)")
         let baseURL = URL(string: "https://www.soundbrew.app/accounts/")
         let url = baseURL!.appendingPathComponent("retrieveBank")
         let parameters: Parameters = ["accountId": accountId, "bankId": bankId]

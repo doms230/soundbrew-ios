@@ -40,8 +40,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                     playlistSounds[i].artFile = nil
                 }
                 
-                let doneButton = UIBarButtonItem(title: "Release", style: .plain, target: self, action: #selector(didPressCollectionDoneButton(_:)))
-                self.navigationItem.rightBarButtonItem = doneButton
+                self.shouldShowActivitySpinner(false)
                 setUpTableView(nil)
                 soundList = SoundList(target: self, tableView: tableView, soundType: "", userId: nil, tags: nil, searchText: nil, descendingOrder: nil, linkObjectId: nil, playlist: nil)
                 soundList.sounds = playlistSounds
@@ -58,7 +57,6 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
             }
             
         } else {
-            print("no artist")
             self.uiElement.goBackToPreviousViewController(self)
         }
     }
@@ -81,12 +79,25 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     @objc func didPressCollectionDoneButton(_ sender: UIBarButtonItem) {
+
         if playlist.title == nil {
             self.uiElement.showAlert("Title Required", message: "", target: self)
         } else if playlist.image == nil {
             self.uiElement.showAlert("Collection Image Required", message: "", target: self)
         } else {
             createNewPlaylist(self.playlist)
+        }
+    }
+    
+    func shouldShowActivitySpinner(_ shouldShow: Bool) {
+        if shouldShow {
+            let activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView.init(style: .white)
+            let refreshBarButton: UIBarButtonItem = UIBarButtonItem(customView: activityIndicator)
+            self.navigationItem.rightBarButtonItem = refreshBarButton
+            activityIndicator.startAnimating()
+        } else {
+            let doneButton = UIBarButtonItem(title: "Release", style: .plain, target: self, action: #selector(didPressCollectionDoneButton(_:)))
+            self.navigationItem.rightBarButtonItem = doneButton
         }
     }
     
@@ -304,7 +315,12 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         newPlaylist["isRemoved"] = false
         newPlaylist.saveEventually {
             (success: Bool, error: Error?) in
-            self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (self.topView.1, self.topView.3))
+            if self.topView == nil {
+                self.shouldShowActivitySpinner(false)
+            } else {
+                self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (self.topView.1, self.topView.3))
+            }
+
             if (success) {
                 self.playlist.objectId = newPlaylist.objectId
                 if playlist.type == "collection" {
@@ -355,6 +371,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         let newPlaylistSound = PFObject(className: "PlaylistSound")
         newPlaylistSound["playlistId"] = playlistId
         newPlaylistSound["soundId"] = soundId
+        newPlaylistSound["isRemoved"] = false 
         newPlaylistSound.saveEventually()
     }
     

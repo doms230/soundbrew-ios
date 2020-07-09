@@ -32,7 +32,7 @@ class NewBankViewController: UIViewController, UITableViewDelegate, UITableViewD
         navigationController?.navigationBar.tintColor = .white
         if let account = Customer.shared.artist?.account {
             self.account = account
-            topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New Bank")
+            topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressDoneButton(_:)), doneButtonTitle: "Add", title: "New  Payout Bank")
             setUpTableView(topView.2)
         } else {
             self.dismiss(animated: true, completion: nil)

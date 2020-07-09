@@ -32,6 +32,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let objectId = self.soundThatIsBeingEdited?.objectId {
+            self.loadCredits(objectId)
+        }
         getSelectedTags()
         setUpViews()
         setUpTableView()
@@ -137,6 +140,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             let modal = NewCreditViewController()
             modal.creditDelegate = self
             modal.credits = credits
+            if let soundObjectId = self.soundThatIsBeingEdited?.objectId {
+                modal.soundObjectId = soundObjectId
+            }
             self.present(modal, animated: true, completion: nil)
             break
             
@@ -204,27 +210,66 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func saveCredits(_ sound: Sound) {
-        let postId = sound.objectId!
-        for i in 0..<credits.count {
-            let credit = credits[i]
-            if i != 0 {
-                newCredit(credit, postId: postId)
-                self.uiElement.sendAlert("credited you on their new release '\(sound.title ?? "")'", toUserId: credit.artist!.objectId, shouldIncludeName: true)
+    func loadCredits(_ postId: String) {
+        let query = PFQuery(className: "Credit")
+        query.whereKey("postId", equalTo: postId)
+        query.addDescendingOrder("createdAt")
+        query.cachePolicy = .networkElseCache
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
+            if let objects = objects {
+                for object in objects {
+                    let credit = Credit(objectId: object.objectId, username: nil, title: nil, artist: nil)
+                    if let username = object["username"] as? String {
+                        credit.username = username
+                    }
+                    
+                    if let title = object["title"] as? String {
+                        credit.title = title
+                    }
+                    if let userId = object["userId"] as? String {
+                    let artist = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+                        artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                        credit.artist = artist
+                        self.credits.append(credit)
+                    }
+                }
             }
         }
     }
     
-    func newCredit(_ credit: Credit, postId: String) {
-        let newCredit = PFObject(className: "Credit")
-        if let title = credit.title {
-            newCredit["title"] = title
-        } else {
-            newCredit["title"] = ""
+    func saveCredits(_ sound: Sound) {
+        for i in 0..<credits.count {
+            let credit = credits[i]
+            self.checkIfFeatureAlreadyExists(credit, postId: sound.objectId!, title: sound.title ?? "")
         }
-        newCredit["userId"] = credit.artist!.objectId!
-        newCredit["postId"] = postId
-        newCredit.saveEventually()
+    }
+    
+    func checkIfFeatureAlreadyExists(_ credit: Credit, postId: String, title: String) {
+        let query = PFQuery(className: "Credit")
+        query.whereKey("userId", equalTo: credit.artist?.objectId ?? "")
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if object == nil {
+                self.newCredit(credit, postId: postId)
+                self.uiElement.sendAlert("featured you on their new release '\(title)'", toUserId: credit.artist!.objectId, shouldIncludeName: true)
+            }
+        }
+    }
+    func newCredit(_ credit: Credit, postId: String){
+        if let userId = credit.artist?.objectId, let username = credit.artist?.username {
+            let newCredit = PFObject(className: "Credit")
+            if let title = credit.title {
+                newCredit["title"] = title
+            } else {
+                newCredit["title"] = "Featured"
+            }
+            
+            newCredit["userId"] = userId
+            newCredit["postId"] = postId
+            newCredit["username"] = username
+            newCredit.saveEventually()
+        }
     }
 
     //MARK: tags

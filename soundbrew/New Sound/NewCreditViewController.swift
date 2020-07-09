@@ -19,6 +19,7 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     var credits = [Credit]()
     var creditDelegate: CreditDelegate?
     var creditTitleCurrentlyBeingEdited: Int!
+    var soundObjectId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,6 +112,9 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if indexPath.section == 0 {
+                if let postId = self.soundObjectId, let userId = self.credits[indexPath.row].artist?.objectId {
+                    self.removeCredit(userId, postId: postId)
+                }
                 self.credits.remove(at: indexPath.row)
                 self.tableView.reloadData()
             }
@@ -147,6 +151,18 @@ class NewCreditViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         return cell
+    }
+    
+    func removeCredit(_ userId: String, postId: String) {
+        let query = PFQuery(className: "Credit")
+        query.whereKey("userId", equalTo: userId)
+        query.whereKey("postId", equalTo: postId)
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let object = object {
+                object.deleteEventually()
+            }
+        }
     }
     
     @objc func didPressChangeCreditTitle(_ sender: UIButton) {

@@ -200,9 +200,23 @@ class ProfileTableViewCell: UITableViewCell {
                     make.right.equalTo(displayNameLabel)
                 }
                 
+                self.addSubview(websiteView)
+                websiteView.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(bio.snp.bottom).offset(uiElement.topOffset)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
+                    make.right.equalTo(self).offset(uiElement.rightOffset)
+                }
+                
+                websiteView.addSubview(website)
+                website.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(websiteView)
+                    make.left.equalTo(websiteView)
+                    make.right.equalTo(websiteView)
+                    make.bottom.equalTo(websiteView)
+                }
                 self.addSubview(followUserEditProfileButton)
                 followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(bio.snp.bottom).offset(uiElement.topOffset)
+                    make.top.equalTo(websiteView.snp.bottom).offset(uiElement.topOffset)
                     make.width.equalTo(115)
                     make.left.equalTo(self).offset(uiElement.leftOffset)
                     make.bottom.equalTo(self)

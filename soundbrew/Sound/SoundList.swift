@@ -103,12 +103,14 @@ class SoundList: NSObject, PlayerDelegate {
                 artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
-            cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
-            cell.artistButton.tag = indexPath.row
-            
             if reuse == "soundReuse" {
                 cell.menuButton.addTarget(self, action: #selector(self.didPressMenuButton(_:)), for: .touchUpInside)
                 cell.menuButton.tag = indexPath.row
+                
+                cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
+                cell.artistButton.tag = indexPath.row
+            } else {
+                cell.menuButton.isHidden = true
             }
             
             if let soundURL = sound.artFile?.url  {

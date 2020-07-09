@@ -433,9 +433,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.showDeletePlaylistAlert(playlist, row: sender.tag)
         }))
         
-        menuAlert.addAction(UIAlertAction(title: "Share Playlist", style: .default, handler: { action in
+        /*menuAlert.addAction(UIAlertAction(title: "Share Playlist", style: .default, handler: { action in
             self.uiElement.createDynamicLink(nil, artist: nil, playlist: self.artistPlaylists[sender.tag], target: self)
-        }))
+        }))*/
             
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))
@@ -536,6 +536,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             if let bio = artist.bio {
                 cell.bio.text = bio
+            }
+            
+            if let website = artist.website, !website.isEmpty {
+                cell.websiteView.addTarget(self, action: #selector(self.didPressWebsiteButton(_:)), for: .touchUpInside)
+                cell.website.text = website
+                cell.followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(cell.websiteView.snp.bottom).offset(uiElement.topOffset)
+                    make.width.equalTo(115)
+                    make.left.equalTo(cell).offset(uiElement.leftOffset)
+                    make.bottom.equalTo(cell)
+                }
+            } else {
+                cell.followUserEditProfileButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(cell.bio.snp.bottom).offset(uiElement.topOffset)
+                    make.width.equalTo(115)
+                    make.left.equalTo(cell).offset(uiElement.leftOffset)
+                    make.bottom.equalTo(cell)
+                }
             }
             
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
@@ -699,7 +717,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-  /*  @objc func didPressWebsiteButton(_ sender: UIButton) {
+    @objc func didPressWebsiteButton(_ sender: UIButton) {
         if let website = self.profileArtist?.website {
             if let websiteURL = URL(string: website) {
                 if UIApplication.shared.canOpenURL(websiteURL) {
@@ -707,7 +725,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
         }
-    }*/
+    }
     
     @objc func didPressShareProfileButton(_ sender: UIBarButtonItem) {
         if let artist = profileArtist {

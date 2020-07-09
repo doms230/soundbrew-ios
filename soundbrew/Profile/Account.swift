@@ -75,7 +75,6 @@ class Account {
                     
                     if let bankAccountId = json["external_accounts"]["data"][0]["id"].string {
                         self.bankAccountId = bankAccountId
-                        print("current bank id: \(bankAccountId)")
                     }
                     
                     if let country = json["country"].string {
@@ -102,8 +101,6 @@ class Account {
     }
     
     func updateAccountEmail(_ newEmail: String) {
-        print("account id: \(self.id)")
-        print("email: \(newEmail)")
         let url = baseURL!.appendingPathComponent("updateAccount")
         let parameters: Parameters = [
             "account": self.id ?? "nil",
@@ -244,7 +241,7 @@ class Account {
         AF.upload(multipartFormData: { multipartFormData in
             multipartFormData.append(imageData, withName: "file", fileName: fileName, mimeType: "image/jpeg")
             multipartFormData.append(("identity_document").data(using: .utf8)!, withName: "purpose")
-            }, to: "https://files.stripe.com/v1/files", method: .post, headers: ["Authorization": "Bearer pk_test_0wWjINHvhtgzckFeNxkN7jA400SRMuoO6r"]).responseJSON { responseJSON in
+            }, to: "https://files.stripe.com/v1/files", method: .post, headers: ["Authorization": "Bearer \(UIElement().liveStripeKey)"]).responseJSON { responseJSON in
                     spinner.isHidden = true
                 spinner.stopAnimating()
                     switch responseJSON.result {

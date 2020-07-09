@@ -9,6 +9,7 @@
 import Foundation
 import SnapKit
 import GrowingTextView
+import Parse
 
 class PlayBackControl {
     var viewController: UIViewController!
@@ -248,7 +249,7 @@ class PlayBackControl {
     }
     
     func canComment() -> Bool {
-        if let sound = player.currentSound, let isExclusive = sound.isExclusive, let productId = sound.productId, let userDidLikeSong = sound.currentUserDidLikeSong, !userDidLikeSong && !Customer.shared.fanClubs.contains(productId) && isExclusive {
+        if let sound = player.currentSound, let currentUserId = PFUser.current()?.objectId, let isExclusive = sound.isExclusive, let productId = sound.productId, let userDidLikeSong = sound.currentUserDidLikeSong, !userDidLikeSong && !Customer.shared.fanClubs.contains(productId) && isExclusive && currentUserId != sound.artist?.objectId {
             if let textView = self.textView {
                 textView.placeholder = "Comments for fan club members"
                 textView.isEditable = false

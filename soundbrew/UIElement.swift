@@ -39,6 +39,8 @@ class UIElement {
     let localizedOops = NSLocalizedString("oops", comment: "")
     
     let soundbrewSocialHandle = "@sound_brew"
+    let liveStripeKey = "pk_live_ZD56KwV1HfBk9kwDUOzdjjEc00u0dPBHk6"
+    let testStripeKey = "pk_test_0wWjINHvhtgzckFeNxkN7jA400SRMuoO6r"
     
     func determineChosenTagButtonTitleWidth(_ buttonTitle: String) -> Int {
         let uiFont = UIFont(name: "\(mainFont)-bold", size: 17)!

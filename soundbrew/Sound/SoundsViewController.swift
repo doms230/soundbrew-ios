@@ -46,16 +46,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             createTopView()
             
         } else if soundType == "playlist", let playlist = self.playlist, playlist.objectId != nil {
-            let sharePlaylistButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSharePlaylistButton(_:)))
-            
             let shuffleButton = UIBarButtonItem(image: UIImage(named: "shuffle"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShuffleButton(_:)))
-            
             if  let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
                 let addSoundsToPlaylistButton = UIBarButtonItem(image: UIImage(named: "new_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddSoundsToPlaylistButton(_:)))
-                self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, sharePlaylistButton, shuffleButton]
+                self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, shuffleButton]
                 
             } else {
-                self.navigationItem.rightBarButtonItem = sharePlaylistButton
+                self.navigationItem.rightBarButtonItem = shuffleButton
             }
         }
         setUpTableView()

@@ -372,7 +372,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func newFanClubAlert() {
         let alertController = UIAlertController (title: "Earn From Your Followers", message:
-            "Earn money from your followers by starting a fan club. You'll earn $11.04 per fan per month, and you can choose which sounds are exclusive to your fan club!", preferredStyle: .actionSheet)
+            "Earn money from your followers by starting a fan club. You can choose which sounds are exclusive!", preferredStyle: .actionSheet)
             
         let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
             if let container = self.so_containerViewController {
