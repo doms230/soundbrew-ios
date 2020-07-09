@@ -180,6 +180,12 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     let noSoundsReuse = "noSoundsReuse"
     let selectPlaylistSoundsReuse = "selectPlaylistSoundsReuse"
     func setUpTableView() {
+        let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+        
         self.tableView = UITableView()
         self.tableView.dataSource = self
         self.tableView.delegate = self
@@ -197,7 +203,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
             make.top.equalTo(self.view)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-175)
+            make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
         }
         self.showSounds()
     }

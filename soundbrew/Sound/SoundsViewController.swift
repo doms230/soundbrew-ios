@@ -39,6 +39,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             if let selectedIndex = self.tabBarController?.selectedIndex {
                 if selectedIndex == 1 {
                     self.soundType = "forYou"
+                    self.setUpTableView()
                 } else {
                     self.setUpMiniPlayer()
                 }
@@ -55,7 +56,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.navigationItem.rightBarButtonItem = shuffleButton
             }
         }
-        setUpTableView()
         setupNotificationCenter()
     }
     
@@ -180,6 +180,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let soundReuse = "soundReuse"
     let noSoundsReuse = "noSoundsReuse"
     func setUpTableView() {
+        let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+
         self.tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
@@ -197,7 +203,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.top.equalTo(self.view)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-170)
+            make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
         }
         
         let player = Player.sharedInstance
@@ -294,17 +300,18 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func setUpMiniPlayer() {
-        let miniPlayerView = MiniPlayerView.sharedInstance
+    let miniPlayerView = MiniPlayerView.sharedInstance
         if let tabBarController = self.tabBarController, !tabBarController.tabBar.subviews.contains(miniPlayerView) {
             tabBarController.view.addSubview(miniPlayerView)
             miniPlayerView.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(70)
+                make.height.equalTo(75)
                 make.right.equalTo(tabBarController.tabBar)
                 make.left.equalTo(tabBarController.tabBar)
                 make.bottom.equalTo(tabBarController.tabBar.snp.top)
             }
         }
         self.loadLastListen()
+        setUpTableView()
     }
     
     //mark: selectedArtist

@@ -158,6 +158,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     let spaceReuse = "spaceReuse"
     let dividerReuse = "dividerReuse"
     func setUpTableView() {
+        let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+        
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
@@ -175,7 +181,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             make.top.equalTo(self.view)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-175)
+            make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
         }
         
         let player = Player.sharedInstance

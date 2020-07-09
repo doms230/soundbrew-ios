@@ -112,17 +112,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
-        
-        var offset = 0
-        switch UIDevice.modelName {
-        case "iPhone 5", "iPhone 5c", "iPhone 5s":
-            offset = 50
-            break
-            
-        default:
-            offset = 0
-            break
-        }
     
         self.view.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { (make) -> Void in

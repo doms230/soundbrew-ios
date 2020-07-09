@@ -76,7 +76,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 soundPlayable = false
             }
             
-        } catch let error {
+        } catch _ {
             soundPlayable = false
         }
         

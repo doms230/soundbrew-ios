@@ -39,6 +39,12 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     let noSoundsReuse = "noSoundsReuse"
     let titleReuse = "titleReuse"
     func setUpTableView() {
+        let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+        
         tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
@@ -54,7 +60,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
             make.top.equalTo(self.view)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
-            make.bottom.equalTo(self.view).offset(-165)
+            make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
         }
     }
     

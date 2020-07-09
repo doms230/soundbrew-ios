@@ -111,6 +111,12 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
     let selectPlaylistSoundsReuse = "selectPlaylistSoundsReuse"
     let soundSocialReuse = "soundSocialReuse"
     func setUpTableView(_ dividerLine: UIView?) {
+        let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
@@ -134,7 +140,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
                 make.top.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
-                make.bottom.equalTo(self.view).offset(-175)
+                make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
             }
         }
     }
@@ -371,7 +377,7 @@ class NewPlaylistViewController: UIViewController, UITableViewDelegate, UITableV
         let newPlaylistSound = PFObject(className: "PlaylistSound")
         newPlaylistSound["playlistId"] = playlistId
         newPlaylistSound["soundId"] = soundId
-        newPlaylistSound["isRemoved"] = false 
+        newPlaylistSound["isRemoved"] = false
         newPlaylistSound.saveEventually()
     }
     

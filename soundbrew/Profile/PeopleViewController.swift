@@ -98,6 +98,12 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     let noSoundsReuse = "noSoundsReuse"
     let searchReuse = "searchReuse"
     func setUpTableView() {
+        let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+        
         self.filteredArtists = self.artists
         tableView.dataSource = self
         tableView.delegate = self
@@ -121,7 +127,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
                 make.top.equalTo(self.view)
                 make.left.equalTo(self.view)
                 make.right.equalTo(self.view)
-                make.bottom.equalTo(self.view).offset(-165)
+                make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
             }
         }
     }
