@@ -622,7 +622,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         if let title = object["title"] as? String {
                             credit.title = title
                         }
-                        features = "\(features) @\(credit.username ?? "unknown")(\(credit.title?.capitalized ?? "Featured"))"
+                        features = "\(features) @\(credit.username ?? "unknown") (\(credit.title?.capitalized ?? "Featured"))"
                     }
                     if let soundArtist = sound.artist {
                         var hashtagsAsString = ""
