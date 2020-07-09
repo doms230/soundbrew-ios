@@ -22,6 +22,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = color.black()
         if let accountId = self.artist?.account?.id {
             setUpTableView()
             loadPayouts(accountId)
@@ -38,6 +39,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     let noSoundsReuse = "noSoundsReuse"
     let titleReuse = "titleReuse"
     func setUpTableView() {
+        tableView.backgroundColor = color.black()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(EarningsTableViewCell.self, forCellReuseIdentifier: earningsReuse)

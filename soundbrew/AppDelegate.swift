@@ -126,7 +126,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     }
     
     func receivedUserId(_ userId: String) {
-        print(userId)
         self.uiElement.setUserDefault(userId, key: "receivedUserId")
         showMainViewController(1)
     }

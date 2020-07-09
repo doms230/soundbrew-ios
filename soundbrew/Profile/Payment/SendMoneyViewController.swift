@@ -354,7 +354,6 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
     
     func paymentContext(_ paymentContext: STPPaymentContext, didCreatePaymentResult paymentResult: STPPaymentResult, completion: @escaping STPPaymentStatusBlock) {
         if let currentUser = PFUser.current(), let objectId = currentUser.objectId, let email = currentUser.email, let username = self.artist?.username, let accountId = self.artist?.account?.id, let customerId = Customer.shared.artist?.customerId {
-            print("inside payment context")
                 let payment = Payment.shared
                 let paymentAmount = paymentContext.paymentAmount
             payment.createPaymentIntent(objectId, email: email, name: username, amount: paymentAmount, currency: paymentContext.paymentCurrency, account_id: accountId, customerId: customerId, internationalConversionAmount: internationalConversionAmount) { [weak self] (result) in
@@ -468,10 +467,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    print(json)
                     if let amount = json["result"].double {
-                        print("amount: \(amount)")
-                        print("amount rounded: \(Int(round(amount)))")
                         self.internationalConversionAmount = Int(round(amount))
                         self.paymentContext.requestPayment()
                     }

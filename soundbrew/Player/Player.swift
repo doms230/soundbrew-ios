@@ -77,8 +77,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
         } catch let error {
-            print("prepare Audio- Player.swift \(error)")
-
             soundPlayable = false
         }
         
@@ -354,9 +352,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         let query = PFQuery(className: "Post")
         query.getObjectInBackground(withId: sound.objectId!) {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print("incrementPlayCount- Player.swift \(error)")
-            } else if let object = object {
+             if let object = object {
                 if let plays = object["plays"] as? Double {
                     //We want to notify artists every time their song hits a milestone like 10, 20, 100, 110, etc. Best way to determine if "plays" equally divids by 10
                     let incrementedPlays = plays + 1.0
@@ -482,9 +478,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func loadArtfileImageData(_ sound: Sound) {
         if let artFile = sound.artFile {
             artFile.getDataInBackground { (imageData: Data?, error: Error?) in
-                if let error = error {
-                    print("loadArtFileImageData-Player.swift: \(error.localizedDescription)")
-                } else if let imageData = imageData {
+                if let imageData = imageData {
                     let image = UIImage(data:imageData)
                     sound.artImage = image
                     
@@ -493,22 +487,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
         }
     }
-    
-    //mark: data
-   /* func loadUserInfoFromCloud(_ userId: String, i: Int) {
-        let query = PFQuery(className:"_User")
-        query.cachePolicy = .networkElseCache
-        query.getObjectInBackground(withId: userId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print("load user info from cloud - Player.swift: \(error)")
-            }
-            if let user = user {
-                self.sounds[i].artist = UIElement().newArtistObject(user)
-                self.setBackgroundAudioNowPlaying()
-            }
-        }
-    }*/
 }
 
 protocol PlayerDelegate {

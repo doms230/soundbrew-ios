@@ -285,6 +285,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func accountReuse(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: settingsReuse) as! ProfileTableViewCell
         cell.selectionStyle = .none
+        cell.backgroundColor = color.black()
         if self.artist?.account == nil {
             cell.displayNameLabel.text = "Start Fan Club"
             cell.username.text = "Earn From Your Followers"

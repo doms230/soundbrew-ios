@@ -184,9 +184,6 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
             query.cachePolicy = .networkElseCache
             query.findObjectsInBackground {
                 (objects: [PFObject]?, error: Error?) -> Void in
-                if let error = error {
-                    print("get friends - Customer.swift: \(error)")
-                }
                 if let objects = objects {
                     var friendObjectIds = [String]()
                     for object in objects {

@@ -478,7 +478,6 @@ class SoundList: NSObject, PlayerDelegate {
     var didLoadPlaylist = false
     func loadPlaylistSounds(_ playlistId: String) {
         let query = PFQuery(className: "PlaylistSound")
-        print(playlistId)
         query.whereKey("playlistId", equalTo: playlistId)
         query.limit = 50
         query.addDescendingOrder("createdAt")
@@ -504,10 +503,7 @@ class SoundList: NSObject, PlayerDelegate {
         query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: objectId) {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print("loadSOund- SoundList.swift \(error)")
-                
-            } else if let object = object {
+             if let object = object {
                 if isForYouPage {
                     let tags = object["tags"] as! [String]?
                     self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: tags)
@@ -535,9 +531,6 @@ class SoundList: NSObject, PlayerDelegate {
         query.cachePolicy = .networkElseCache
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
-            if let error = error {
-                print("load last like - Sound list: \(error)")
-            }
              if let object = object {
                 let soundId = object["soundId"] as! String
                 self.loadSound(soundId, isForYouPage: true, isForLastSoundUserListenedTo: false)
@@ -610,9 +603,6 @@ class SoundList: NSObject, PlayerDelegate {
         query.cachePolicy = .networkElseCache
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
-            if let error = error {
-                print("load sounds - Sound list: \(error)")
-            }
             if error == nil {
                 if let objects = objects {
                     for object in objects {
@@ -670,9 +660,6 @@ class SoundList: NSObject, PlayerDelegate {
         query.findObjectsInBackground {
             (objects: [PFObject]?, error: Error?) -> Void in
             self.didLoadCollection = true
-            if let error = error {
-                print("load credit - Sound list: \(error)")
-            }
             if error == nil {
                 if let objects = objects {
                     for object in objects {
@@ -699,10 +686,7 @@ class SoundList: NSObject, PlayerDelegate {
             let query = PFQuery(className: "Post")
             query.getObjectInBackground(withId: objectId) {
                 (post: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print(error)
-                    
-                } else if let post = post {
+                 if let post = post {
                     post["isRemoved"] = true
                     post["isDraft"] = false 
                     post.saveEventually()

@@ -158,9 +158,6 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, Ar
     }
     
     //apple
-    /*var appleID: String?
-    var appleName: String?
-    var appleToken: String?*/
     var appleEmail: String!
     var appleName: String? 
     var appleAuthData: [String: String]!
@@ -172,21 +169,6 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, Ar
     var googleAuthData: [String: String]!
     
     //Validations
-    //checking if user exists because apple only gives access to email once *side eyes*, so need to ask for email for 2nd, etc. tries at signing in with apple
-   /* func checkIfUserExists(_ userID: String, authToken: String) {
-        let query = PFQuery(className: "_User")
-        query.whereKey("appleID", equalTo: userID)
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-            if object != nil && error == nil {
-                let authData = ["id": userID, "token": authToken]
-                self.PFauthenticateWith(authData)
-            } else {
-                self.setupNewEmailView()
-            }
-        }
-    }*/
-    
     func checkIfEmailExistsThenMoveForward(_ email: String, authData: [String: String]?) {
         let localizedEmailAlreadyInUse = NSLocalizedString("emailAlreadyInUse", comment: "")
         let query = PFQuery(className: "_User")
@@ -282,9 +264,6 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, Ar
             if let data = response.value, let newProfileImageFile = PFFileObject(name: "profile_ios.jpeg", data: data) {
                 newProfileImageFile.saveInBackground {
                   (success: Bool, error: Error?) in
-                    if let error = error?.localizedDescription {
-                        print("dowloading Image error: \(error)")
-                    }
                     if success {
                         self.updateUserInfo(newProfileImageFile)
                     } else {
@@ -300,10 +279,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, Ar
             let query = PFQuery(className: "_User")
             query.getObjectInBackground(withId: currentUserId) {
                 (user: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print(error)
-                    
-                } else if let user = user {
+                 if let user = user {
                     if self.loginType == "google" {
                         user["email"] = self.googleEmail
                         user["googleId"] = self.googleAuthData["id"]

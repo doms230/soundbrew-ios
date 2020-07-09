@@ -112,11 +112,22 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         view.backgroundColor = color.black()
+        
+        var offset = 0
+        switch UIDevice.modelName {
+        case "iPhone 5", "iPhone 5c", "iPhone 5s":
+            offset = 50
+            break
+            
+        default:
+            offset = 0
+            break
+        }
     
         self.view.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { (make) -> Void in
             make.top.equalTo(self.view)
-            make.height.equalTo(self.view.frame.height / 2)
+            make.height.equalTo((self.view.frame.height / 2) - 50)
             make.left.equalTo(self.view)
             make.right.equalTo(self.view)
         }
@@ -213,11 +224,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
       if let error = error {
-        if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
-          print("The user has not signed in before or they have since signed out.")
-        } else {
-          print("\(error.localizedDescription)")
-        }
+        self.uiElement.showAlert("Error", message: error.localizedDescription, target: self)
         return
       }
         if let userId = user.userID, let idToken = user.authentication.idToken {

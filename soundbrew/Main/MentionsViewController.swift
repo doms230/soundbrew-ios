@@ -34,12 +34,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           self.setMiniPlayer()
       }
     }
-    
-  /*  @objc func didReceiveSoundUpdate() {
-        if PFUser.current() != nil {
-            self.tableView.reloadData()
-        }
-    }*/
           
       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
           switch segue.identifier {

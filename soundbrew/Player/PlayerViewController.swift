@@ -67,8 +67,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             }
             textViewBottomConstraint.constant = -keyboardHeight - 8
             view.layoutIfNeeded()
-        } else {
-            print("dismissed")
         }
     }
     

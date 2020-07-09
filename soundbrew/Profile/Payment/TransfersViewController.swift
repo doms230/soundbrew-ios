@@ -81,9 +81,6 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
             let amountString = self.uiElement.convertCentsToDollarsAndReturnString(transfer.amount!)
             cell.titleLabel.text = "\(amountString)"
             let payoutDateString = convertDateFromUnix(transfer.createdAt!)
-            /*if let description = transfer.description {
-                cell.subTitleLabel.text = description
-            }*/
             
             cell.dateLabel.text = "\(payoutDateString)"
             cell.selectionStyle = .none
@@ -115,7 +112,6 @@ class TransfersViewController: UIViewController, UITableViewDataSource, UITableV
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    print(json)
                     if let transfers = json["data"].array {
                         for transfer in transfers {
                             let transfer = Transfer(transfer["created"].int, amount: transfer["amount"].int, description: transfer["description"].string)

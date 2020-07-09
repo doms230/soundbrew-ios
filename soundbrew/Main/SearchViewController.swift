@@ -226,18 +226,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    /*func noResultsCell() -> SoundListTableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: noSoundsReuse) as! SoundListTableViewCell
-        cell.backgroundColor = color.black()
-        if isLoadingResults {
-            cell.headerTitle.text = ""
-        } else {
-            let localizedNoResults = NSLocalizedString("noResults", comment: "")
-            cell.headerTitle.text = localizedNoResults
-        }
-        return cell
-    }*/
-    
     //mark: tags
     var featureTagTypes = ["genre","city", "mood", "activity"]
     var selectedTag: Tag!

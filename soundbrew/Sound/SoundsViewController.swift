@@ -62,14 +62,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidAppear(_ animated: Bool) {
         self.tabBarController?.delegate = self
         setMiniPlayer()
-        /*if self.tableView != nil {
-            if soundType == "playlist" {
-                showSoundList()
-            } else {
-                self.tableView.reloadData()
-            }
-        }*/
-        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

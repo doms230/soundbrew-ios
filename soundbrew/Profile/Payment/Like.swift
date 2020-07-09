@@ -58,9 +58,6 @@ class Like: NSObject {
             query.cachePolicy = .networkElseCache
             query.getFirstObjectInBackground {
                 (object: PFObject?, error: Error?) -> Void in
-                if let error = error {
-                    print("check if user liked soung - Like.swift: \(error)")
-                }
                  if object != nil {
                     self.player.currentSound?.currentUserDidLikeSong = true
                  } else {

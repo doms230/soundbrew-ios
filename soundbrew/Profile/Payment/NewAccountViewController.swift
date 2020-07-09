@@ -223,11 +223,6 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         frontImageButton = cell.frontImageButton
         frontImageSpinner = cell.frontImageSpinner
         
-       /* cell.backImageButton.addTarget(self, action: #selector(self.didPressIdImageButton(_:)), for: .touchUpInside)
-        cell.backImageButton.tag = 1
-        backImageButton = cell.backImageButton
-        backImageSpinner = cell.backImageSpinner*/
-        
         return cell
     }
     

@@ -62,10 +62,7 @@ class Sound {
         if self.audioData == nil, let audio = self.audio {            
             audio.getDataInBackground {
                 (audioData: Data?, error: Error?) -> Void in
-                if let error = error?.localizedDescription {
-                    print("Fetch Audio Data- Player.swift \(error)")
-                    
-                } else if let audioData = audioData {
+                 if let audioData = audioData {
                     self.audioData = audioData
                     if self.isNextUpToPlay {
                         self.isNextUpToPlay = false
