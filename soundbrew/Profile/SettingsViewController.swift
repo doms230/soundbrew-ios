@@ -295,7 +295,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     if let fanCount = self.artist?.fanCount {
                         cell.displayNameLabel.text = "\(fanCount)"
                     } else {
-                        cell.displayNameLabel.text = "100"
+                        cell.displayNameLabel.text = "0"
                     }
                     
                     cell.username.text = "Fans"

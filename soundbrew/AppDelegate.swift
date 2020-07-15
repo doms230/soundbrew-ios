@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         Stripe.setDefaultPublishableKey(self.uiElement.liveStripeKey)
         let config = STPPaymentConfiguration.shared()
-        config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-artists"
+        config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-inc"
         config.companyName = "Soundbrew, Inc."
         
         let configuration = ParseClientConfiguration {

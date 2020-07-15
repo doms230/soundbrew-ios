@@ -319,7 +319,7 @@ class NewEmailViewController: UIViewController, PFUserAuthenticationDelegate, Ar
         }
         
         Customer.shared.artist = artist
-        
+        Customer.shared.create(artist.objectId, email: artist.email ?? "unknown", name: artist.username ?? "")
         DispatchQueue.main.async {
             let modal = EditProfileViewController()
             modal.artistDelegate = self

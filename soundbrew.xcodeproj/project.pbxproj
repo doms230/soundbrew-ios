@@ -27,15 +27,14 @@
 		E46A641F234E56D30055E65A /* NewEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A641E234E56D30055E65A /* NewEmailViewController.swift */; };
 		E46A6421234E57120055E65A /* NewUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6420234E57120055E65A /* NewUsernameViewController.swift */; };
 		E46A6423234E57470055E65A /* NewPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A6422234E57470055E65A /* NewPasswordViewController.swift */; };
+		E472977924BE0A3E00B92FBA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E472977824BE0A3D00B92FBA /* GoogleService-Info.plist */; };
 		E4880D6924A1185500362B54 /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6824A1185500362B54 /* PlaylistViewController.swift */; };
-		E4880D6D24A54D4B00362B54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */; };
 		E4880D6F24A670F600362B54 /* EarningsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D6E24A670F500362B54 /* EarningsViewController.swift */; };
 		E4880D7224A7D92100362B54 /* EarningsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */; };
 		E4880D7424A80F2700362B54 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D7324A80F2600362B54 /* Account.swift */; };
 		E4880D7724A932A200362B54 /* TransfersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4880D7624A932A100362B54 /* TransfersViewController.swift */; };
 		E4C9DCEF23E10FE6003835E5 /* PlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCEE23E10FE6003835E5 /* PlayerTableViewCell.swift */; };
 		E4C9DCF123E11018003835E5 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C9DCF023E11018003835E5 /* PlayerViewController.swift */; };
-		E4EB686D2384B67000FB1D71 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4EB686C2384B67000FB1D71 /* CloudKit.framework */; };
 		E4EB6870238CBC5000FB1D71 /* AKConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EB686F238CBC4F00FB1D71 /* AKConverter.swift */; };
 		F203C76C225D7ED80050F113 /* InstagramStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F203C76B225D7ED80050F113 /* InstagramStoriesArtImage.swift */; };
 		F226B5C92329705400C3E951 /* SnapchatStoriesArtImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F226B5C82329705400C3E951 /* SnapchatStoriesArtImage.swift */; };
@@ -175,8 +174,8 @@
 		E46A641E234E56D30055E65A /* NewEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEmailViewController.swift; sourceTree = "<group>"; };
 		E46A6420234E57120055E65A /* NewUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUsernameViewController.swift; sourceTree = "<group>"; };
 		E46A6422234E57470055E65A /* NewPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasswordViewController.swift; sourceTree = "<group>"; };
+		E472977824BE0A3D00B92FBA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E4880D6824A1185500362B54 /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
-		E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E4880D6E24A670F500362B54 /* EarningsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsViewController.swift; sourceTree = "<group>"; };
 		E4880D7124A7D92100362B54 /* EarningsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsTableViewCell.swift; sourceTree = "<group>"; };
 		E4880D7324A80F2600362B54 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
@@ -238,7 +237,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4EB686D2384B67000FB1D71 /* CloudKit.framework in Frameworks */,
 				F246999B22A82EEE0020497E /* AuthenticationServices.framework in Frameworks */,
 				FD514CDB38E1611E8B0BF945 /* Pods_soundbrew.framework in Frameworks */,
 			);
@@ -348,8 +346,8 @@
 		F2689868215AEF8F00C21663 /* soundbrew */ = {
 			isa = PBXGroup;
 			children = (
+				E472977824BE0A3D00B92FBA /* GoogleService-Info.plist */,
 				E453C23224AFFE1A002F82D2 /* soundbrewExclusiveMessage.m4a */,
-				E4880D6C24A54D4B00362B54 /* GoogleService-Info.plist */,
 				F2E6E4F522A5934900B4537D /* d */,
 				F26898F0216B874C00C21663 /* soundbrew.entitlements */,
 				F2689875215AEF9000C21663 /* Info.plist */,
@@ -685,7 +683,7 @@
 				F2689874215AEF9000C21663 /* LaunchScreen.storyboard in Resources */,
 				F2689871215AEF9000C21663 /* Assets.xcassets in Resources */,
 				F268986F215AEF8F00C21663 /* Main.storyboard in Resources */,
-				E4880D6D24A54D4B00362B54 /* GoogleService-Info.plist in Resources */,
+				E472977924BE0A3E00B92FBA /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1048,14 +1046,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 39D725360E8FD463AF5DD069 /* Pods-soundbrew.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = soundbrew/soundbrew.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 44;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 8963R7TGNB;
+				DEVELOPMENT_TEAM = C7RT8HGMTR;
 				INFOPLIST_FILE = soundbrew/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1063,7 +1060,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.7.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-artists";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-inc";
 				PRODUCT_NAME = Soundbrew;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -1075,14 +1072,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7A4EF2DDF0A520CBB15481F8 /* Pods-soundbrew.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = soundbrew/soundbrew.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 44;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 8963R7TGNB;
+				DEVELOPMENT_TEAM = C7RT8HGMTR;
 				INFOPLIST_FILE = soundbrew/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1090,7 +1086,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.7.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-artists";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.soundbrew.soundbrew-inc";
 				PRODUCT_NAME = Soundbrew;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

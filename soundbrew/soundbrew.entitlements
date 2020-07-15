@@ -14,7 +14,7 @@
 	<true/>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>merchant.com.soundbrew.soundbrew-artists</string>
+		<string>merchant.com.soundbrew.soundbrew-inc</string>
 	</array>
 </dict>
 </plist>

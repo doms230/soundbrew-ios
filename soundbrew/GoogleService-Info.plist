@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>510041293074-i6iieluob2ln9vvidfcv4kqa7lhtjub8.apps.googleusercontent.com</string>
+	<string>510041293074-ahl1sek2c6osrgbpkth865o9iup5b201.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.510041293074-i6iieluob2ln9vvidfcv4kqa7lhtjub8</string>
+	<string>com.googleusercontent.apps.510041293074-ahl1sek2c6osrgbpkth865o9iup5b201</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAD2l2wiSV7RX-mhI--tN5MvI_aQgEYrcY</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,26 +13,24 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.soundbrew.soundbrew-artists</string>
+	<string>com.soundbrew.soundbrew-inc</string>
 	<key>PROJECT_ID</key>
 	<string>soundbrew-artists</string>
 	<key>STORAGE_BUCKET</key>
 	<string>soundbrew-artists.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:510041293074:ios:185ff0991a41bdcd</string>
+	<string>1:510041293074:ios:a6d18796e051be7a37b3cb</string>
 	<key>DATABASE_URL</key>
 	<string>https://soundbrew-artists.firebaseio.com</string>
-	<key>ADMOB_APP_ID</key>
-	<string>ca-app-pub-9150756002517285~6608111231</string>
 </dict>
 </plist>
