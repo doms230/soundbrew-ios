@@ -190,8 +190,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 didSelectSoundAt(row: indexPath.row)
             }
             
-        } else if let playlistId = playlist?.objectId, let playlistTitle = playlist?.title, let soundTitle = soundList.sounds[indexPath.row].title, let soundId = soundList.sounds[indexPath.row].objectId {
-            attachSoundToPlaylist(soundId, playlistId: playlistId)
+        } else if let playlistId = playlist?.objectId, let playlistTitle = playlist?.title, let soundTitle = soundList.sounds[indexPath.row].title, let soundId = soundList.sounds[indexPath.row].objectId, let artistUsername = soundList.sounds[indexPath.row].artist?.username, let artistDisplayname = soundList.sounds[indexPath.row].artist?.name {
+            attachSoundToPlaylist(soundId, soundTitle: soundTitle, soundArtistDisplayName: artistDisplayname, soundArtistUsername: artistUsername, playlistId: playlistId)
             let banner = StatusBarNotificationBanner(title: "\(soundTitle) added to \(playlistTitle).", style: .info)
             banner.show()
             if soundList.sounds.indices.contains(indexPath.row) {
@@ -212,10 +212,13 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func attachSoundToPlaylist(_ soundId: String, playlistId: String) {
+    func attachSoundToPlaylist(_ soundId: String, soundTitle: String, soundArtistDisplayName: String, soundArtistUsername: String,  playlistId: String) {
         let newPlaylistSound = PFObject(className: "PlaylistSound")
         newPlaylistSound["playlistId"] = playlistId
         newPlaylistSound["soundId"] = soundId
+        newPlaylistSound["soundTitle"] = soundTitle
+        newPlaylistSound["soundArtistDisplayName"] = soundArtistDisplayName
+        newPlaylistSound["soundArtistUsername"] = soundArtistUsername
         newPlaylistSound["isRemoved"] = false
         newPlaylistSound.saveEventually()
         updatePlaylistCount(playlistId)

@@ -100,7 +100,7 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
             let banner = StatusBarNotificationBanner(title: "\(sound.title ?? "Selected Sound has been") added to \(playlists[indexPath.row].title ?? "selected playlist").", style: .info)
             banner.show()
             self.checkIfUserLikedSong()
-            attachSoundToPlaylist(sound.objectId ?? "", playlistId: playlists[indexPath.row].objectId ?? "")
+            attachSoundToPlaylist(sound.objectId ?? "", playlistId: playlists[indexPath.row].objectId ?? "", soundTitle: sound.title ?? "", soundArtistUsername: sound.artist?.username ?? "", soundArtistDisplayName: sound.artist?.name ?? "")
             
         } else {
             let newPlaylist = Playlist(objectId: nil, artist: nil, title: nil, image: nil, type: "playlist", count: 0)
@@ -185,11 +185,14 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    func attachSoundToPlaylist(_ soundId: String, playlistId: String) {
+    func attachSoundToPlaylist(_ soundId: String, playlistId: String, soundTitle: String, soundArtistUsername: String, soundArtistDisplayName: String) {
         let newPlaylistSound = PFObject(className: "PlaylistSound")
         newPlaylistSound["playlistId"] = playlistId
         newPlaylistSound["soundId"] = soundId
-        newPlaylistSound["isRemoved"] = false 
+        newPlaylistSound["isRemoved"] = false
+        newPlaylistSound["soundTitle"] = soundTitle
+        newPlaylistSound["soundArtistUsername"] = soundArtistUsername
+        newPlaylistSound["soundArtistDisplayName"] = soundArtistDisplayName
         newPlaylistSound.saveEventually()
         updatePlaylistCount(playlistId)
     }
