@@ -82,19 +82,27 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     
     func signInWithButton(_ title: String, titleColor: UIColor, backgroundColor: UIColor, imageName: String?, tag: Int, shouldShowBorderColor: Bool) -> UIButton {
         let button = UIButton()
-        
-        if let imageName = imageName {
-            let image = UIImageView(frame: CGRect(x: 10, y: 5, width: 40, height: 40))
-            image.image = UIImage(named: imageName)
-            button.addSubview(image)
-        }
-        
-        let label = UILabel(frame: CGRect(x: 55, y: 5, width: 200, height: 40))
+        self.view.addSubview(button)
+        let label = UILabel()
         label.text = title
         label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         label.textColor = titleColor
         button.addSubview(label)
-
+        label.snp.makeConstraints { (make) -> Void in
+            make.center.equalTo(button)
+        }
+        
+        if let imageName = imageName {
+            let image = UIImageView()
+            image.image = UIImage(named: imageName)
+            button.addSubview(image)
+            image.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(30)
+                make.centerY.equalTo(label)
+                make.right.equalTo(label.snp.left).offset(uiElement.rightOffset)
+            }
+        }
+        
         button.backgroundColor = backgroundColor
         if shouldShowBorderColor {
             button.layer.borderWidth = 1
@@ -135,7 +143,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        let appleButton = signInWithButton("Sign in with Apple", titleColor: .white, backgroundColor: .black, imageName: "appleLogo", tag: 1, shouldShowBorderColor: true)
+        let appleButton = signInWithButton("Sign in with Apple", titleColor: .black, backgroundColor: .white, imageName: "appleLogo", tag: 1, shouldShowBorderColor: true)
         appleButton.titleLabel?.textAlignment = .center
         self.view.addSubview(appleButton)
         appleButton.snp.makeConstraints { (make) -> Void in
@@ -155,7 +163,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
         
-        let emailButton = signInWithButton("Sign in with Email", titleColor: .black, backgroundColor: .white, imageName: "email", tag: 0, shouldShowBorderColor: false)
+        let emailButton = signInWithButton("Sign in with Email", titleColor: .white, backgroundColor: .black, imageName: "appy", tag: 0, shouldShowBorderColor: true)
         emailButton.titleLabel?.textAlignment = .center
         self.view.addSubview(emailButton)
         emailButton.snp.makeConstraints { (make) -> Void in

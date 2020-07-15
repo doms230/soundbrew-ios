@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "icons8-apple-logo-210.png",
       "idiom" : "universal",
-      "filename" : "Apple_Store_logo.svg.png",
       "scale" : "1x"
     },
     {
+      "filename" : "icons8-apple-logo-209.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "icons8-apple-logo-208.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }
