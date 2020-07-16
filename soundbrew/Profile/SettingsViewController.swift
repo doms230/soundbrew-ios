@@ -135,15 +135,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //MARK: Tableview
-    let tableView = UITableView()
+    var tableView: UITableView!
     let settingsReuse = "settingsReuse"
     let settingsTitleReuse = "settingsTitleReuse"
     func setUpTableView() {
         DispatchQueue.main.async {
+            self.tableView = UITableView()
             self.tableView.delegate = self
             self.tableView.dataSource = self
             self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.settingsReuse)
             self.tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: self.settingsTitleReuse)
+            let refreshControl = UIRefreshControl()
+            refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
+            self.tableView.refreshControl = refreshControl
             self.tableView.separatorStyle = .none
             self.tableView.backgroundColor = self.color.black()
             self.view.addSubview(self.tableView)
@@ -153,6 +157,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 make.right.equalTo(self.view)
                 make.bottom.equalTo(self.signOut.snp.top)
             }
+        }
+    }
+    
+    @objc func refresh(_ sender: UIRefreshControl) {
+       loadFollowerFollowingStats()
+        if let account = artist?.account {
+            account.loadEarnings(self.tableView)
+            account.retreiveAccount(self.tableView)
         }
     }
     
@@ -166,7 +178,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         if section == 2 && self.artist?.account != nil {
-            return 3
+            return 2
         }
         
         return 1
@@ -258,7 +270,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                         self.artist?.fanCount = fans
                     }
                 }
-                self.setupBottomButtons()
+                if self.tableView != nil {
+                    DispatchQueue.main.async {
+                        self.tableView.refreshControl?.endRefreshing()
+                        self.tableView.reloadData()
+                    }
+                } else {
+                    self.setupBottomButtons()
+                }
             }
         }
     }
@@ -291,7 +310,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             cell.username.text = "Earn From Your Followers"
         } else {
             switch indexPath.row {
-                case 0:
+              /*  case 0:
                     if let fanCount = self.artist?.fanCount {
                         cell.displayNameLabel.text = "\(fanCount)"
                     } else {
@@ -299,15 +318,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     }
                     
                     cell.username.text = "Fans"
-                    break
+                    break*/
                     
-                case 1:
+                case 0:
                     let balanceString = self.uiElement.convertCentsToDollarsAndReturnString(self.artist?.account?.weeklyEarnings ?? 0)
                     cell.displayNameLabel.text = balanceString
                     cell.username.text = "Weekly Earnings"
                     break
                     
-                case 2:
+                case 1:
                     cell.username.text = "Account"
                     if let requiresAttentionItems = self.artist?.account?.requiresAttentionItems, requiresAttentionItems > 0 {
                         var itemTitle = "1 item"
@@ -338,10 +357,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         } else {
             switch indexPath.row {
+            //case 0:
+              //  showFollowersOrFollowing("fans")
+               // break
             case 0:
-                showFollowersOrFollowing("fans")
-                break
-            case 1:
                 if let container = self.so_containerViewController {
                     container.isSideViewControllerPresented = false
                     if let topView = container.topViewController as? UINavigationController,
@@ -351,7 +370,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
                 break
                 
-            case 2:
+            case 1:
                 showRequireAccountAttention()
                 break
                 

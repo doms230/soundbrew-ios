@@ -136,8 +136,8 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 }
                 
                 if artist.account != nil {
-                    artist.account?.loadEarnings()
-                    artist.account?.retreiveAccount()
+                    artist.account?.loadEarnings(nil)
+                    artist.account?.retreiveAccount(nil)
                 }
                 
                 self.artist = artist

@@ -59,10 +59,12 @@ class Sound {
     }
     
     func fetchAudioData(_ shouldPlay: Bool) {
-        if self.audioData == nil, let audio = self.audio {            
+        if self.audioData == nil, let audio = self.audio {
+            var audioWasLoaded = false
             audio.getDataInBackground {
                 (audioData: Data?, error: Error?) -> Void in
                  if let audioData = audioData {
+                    audioWasLoaded = true
                     self.audioData = audioData
                     if self.isNextUpToPlay {
                         self.isNextUpToPlay = false
@@ -73,11 +75,18 @@ class Sound {
                     }
                     
                     if self.artist?.image == nil {
-                        self.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                        self.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
                     }
                 }
             }
-        }        
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+                if !audioWasLoaded {
+                    audio.cancel()
+                    Player.sharedInstance.setUpNextSong(false, at: nil, shouldPlay: shouldPlay, selectedSound: nil)
+                }
+            }
+        }
     }
 }
 

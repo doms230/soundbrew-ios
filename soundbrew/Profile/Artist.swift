@@ -54,7 +54,7 @@ class Artist {
         self.account = account
     }
     
-    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: PlayerTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
+    func loadUserInfoFromCloud(_ profileCell: ProfileTableViewCell?, soundCell: SoundListTableViewCell?, commentCell: PlayerTableViewCell?, mentionCell: ProfileTableViewCell?, artistUsernameLabel: UILabel?, artistImageButton: UIImageView?) {
         let query = PFQuery(className: "_User")
        query.cachePolicy = .networkElseCache
         query.getObjectInBackground(withId: self.objectId) {
@@ -124,6 +124,13 @@ class Artist {
                     
                     if let username = self.username {
                         cell.username.setTitle(username, for: .normal)
+                    }
+                    
+                } else if let cell = mentionCell {
+                    if let image = self.image {
+                        cell.profileImage.kf.setImage(with: URL(string: image))
+                    } else {
+                        cell.profileImage.image = UIImage(named: "profile_icon")
                     }
                     
                 } else if let label = artistUsernameLabel, let image = artistImageButton {

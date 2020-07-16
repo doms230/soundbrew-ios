@@ -28,7 +28,6 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         self.view.backgroundColor = color.black()
         navigationController?.navigationBar.barTintColor = color.black()
         navigationController?.navigationBar.tintColor = .white
-
         setupStripeMessage()
         topView = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Create", title: "New Fan Club Account")
         setUpTableView(topView.2)
@@ -80,7 +79,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     //Stripe Message Views
     lazy var stripeMessage: UIButton = {
         let button = UIButton()
-        button.setTitle("Your information is securely processed by Stripe.", for: .normal)
+        button.setTitle("Your information is securely processed & stored by stripe.com", for: .normal)
         button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 15)
         button.setTitleColor(.darkGray, for: .normal)
         button.titleLabel?.numberOfLines = 0
@@ -139,7 +138,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             make.top.equalTo(topView.snp.bottom).offset(uiElement.topOffset)
             make.right.equalTo(self.view)
             make.left.equalTo(self.view)
-            make.bottom.equalTo(self.stripeMessage.snp.top)
+            make.bottom.equalTo(self.stripeMessage.snp.top).offset(uiElement.bottomOffset)
         }
     }
     

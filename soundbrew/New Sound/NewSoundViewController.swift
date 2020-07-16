@@ -234,7 +234,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
                 let localizedNoDraftsMessage = NSLocalizedString("noDraftsMessage", comment: "")
                 cell.headerTitle.text = localizedNoDraftsMessage
                 if !wasShownNewUpload {
-                    showNewUpload()
+                    decideAction()
                 }
             }
 

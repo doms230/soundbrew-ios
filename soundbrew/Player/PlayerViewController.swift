@@ -25,32 +25,36 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     var tagDelegate: TagDelegate?
     var playBackControl: PlayBackControl?
     
+    var currentSound: Sound?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = color.black()
-        if player.currentSound != nil {
+        if let currentSound =  player.currentSound {
+            self.currentSound = currentSound
             setupTopView()
             setupNotificationCenter()
-        } else {
-            self.dismiss(animated: true, completion: nil)
         }
     }
         
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
-        
         NotificationCenter.default.addObserver(self, selector:#selector(didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     @objc func didReceiveSoundUpdate() {
         if tableView != nil {
-            self.tableView.reloadData()
-            if !didLoadComments {
+            if let currentSound = self.currentSound?.objectId, let playerCurrentSound = self.player.currentSound?.objectId, currentSound != playerCurrentSound {
+                self.currentSound = self.player.currentSound
+                self.soundArtistComment = nil
+                self.comments.removeAll()
+                self.selectedCommentFromMentions = nil
+                self.commentTextView.text = ""
                 loadCredits()
                 loadComments()
+                self.tableView.reloadData()
             }
-        }
+        } 
         if let player = self.player.player, let atTime = self.didPressAtTime {
             self.didPressAtTime = nil
             jumpToTime(player, atTime: atTime)
@@ -88,7 +92,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     var isSearchingForUserToMention = false
     var searchUsers = [Artist]()
     private var inputToolBar: UIView!
-    private var textView = GrowingTextView()
+    private var commentTextView = GrowingTextView()
     var isTextViewEditing = false
     private var textViewBottomConstraint: NSLayoutConstraint!
     private var sendButton: UIButton!
@@ -105,21 +109,21 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         inputToolBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(inputToolBar)
         
-        textView.backgroundColor = color.black()
-        textView.delegate = self
-        textView.maxLength = 200
-        textView.maxHeight = 70
-        textView.trimWhiteSpaceWhenEndEditing = true
+        commentTextView.backgroundColor = color.black()
+        commentTextView.delegate = self
+        commentTextView.maxLength = 200
+        commentTextView.maxHeight = 70
+        commentTextView.trimWhiteSpaceWhenEndEditing = true
         if let username = self.selectedCommentReply {
-            textView.text = "@\(username) "
+            commentTextView.text = "@\(username) "
         }
-        textView.placeholder = "Comment at \(formattedCurrentTime)"
-        textView.placeholderColor = .darkGray
-        textView.font = UIFont(name: self.uiElement.mainFont, size: 17)
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.keyboardType = .twitter
-        textView.textColor = .white
-        inputToolBar.addSubview(textView)
+        commentTextView.placeholder = "Comment at \(formattedCurrentTime)"
+        commentTextView.placeholderColor = .darkGray
+        commentTextView.font = UIFont(name: self.uiElement.mainFont, size: 17)
+        commentTextView.translatesAutoresizingMaskIntoConstraints = false
+        commentTextView.keyboardType = .twitter
+        commentTextView.textColor = .white
+        inputToolBar.addSubview(commentTextView)
 
         let buttonWidthHeight = 35
         sendButton = UIButton(frame: CGRect(x: Int(view.frame.width) + uiElement.rightOffset - buttonWidthHeight, y: uiElement.topOffset, width: buttonWidthHeight, height: buttonWidthHeight))
@@ -144,7 +148,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         inputToolBar.addSubview(userImageView)
         
         // *** Autolayout ***/
-        let topConstraint = textView.topAnchor.constraint(equalTo: inputToolBar.topAnchor, constant: 8)
+        let topConstraint = commentTextView.topAnchor.constraint(equalTo: inputToolBar.topAnchor, constant: 8)
         topConstraint.priority = UILayoutPriority(999)
         NSLayoutConstraint.activate([
             inputToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -153,14 +157,14 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             topConstraint
         ])
         
-        textViewBottomConstraint = textView.bottomAnchor.constraint(equalTo: inputToolBar.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        textViewBottomConstraint = commentTextView.bottomAnchor.constraint(equalTo: inputToolBar.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: userImageView.safeAreaLayoutGuide.trailingAnchor, constant: 15),
-            textView.trailingAnchor.constraint(equalTo: sendButton.safeAreaLayoutGuide.leadingAnchor, constant: -15),
+            commentTextView.leadingAnchor.constraint(equalTo: userImageView.safeAreaLayoutGuide.trailingAnchor, constant: 15),
+            commentTextView.trailingAnchor.constraint(equalTo: sendButton.safeAreaLayoutGuide.leadingAnchor, constant: -15),
             textViewBottomConstraint
             ])
         
-        playBackControl = PlayBackControl(self, textView: textView, inputToolBar: inputToolBar)
+        playBackControl = PlayBackControl(self, textView: commentTextView, inputToolBar: inputToolBar)
         setUpTableView()
     }
     
@@ -223,12 +227,12 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         
     @objc func didPressSendButton(_ sender: UIButton) {
         if let artist = Customer.shared.artist, let objectId = self.player.currentSound?.objectId, let atTime = self.playBackControl?.atTime {
-            addNewComment(textView.text, atTime: Double(atTime), postId: objectId)
-            let comment = Comment(objectId: nil, artist: artist, text: textView.text, atTime: Float(atTime), createdAt: Date())
+            let comment = Comment(objectId: nil, artist: artist, text: commentTextView.text, atTime: Float(atTime), createdAt: Date())
+            addNewComment(commentTextView.text, atTime: Double(atTime), postId: objectId, newCommentObject: comment)
             self.comments.append(comment)
             self.comments.sort(by: {$0!.atTime < $1!.atTime})
-            textView.text = ""
-            textView.resignFirstResponder()
+            commentTextView.text = ""
+            commentTextView.resignFirstResponder()
             sendButton.isHidden = true
             sendButton.isEnabled = false
             self.tableView.reloadData()
@@ -270,8 +274,10 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 make.bottom.equalTo(self.playBackControl!.playBackCurrentTime.snp.top).offset(self.uiElement.bottomOffset)
             }
         }
-        loadCredits()
-        loadComments()
+        if !self.didLoadComments {
+            loadCredits()
+            loadComments()
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -332,14 +338,14 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isSearchingForUserToMention, let selectedUsername = self.searchUsers[indexPath.row].username {
-            let textViewArray = textView.text.split{$0 == " "}.map(String.init)
+            let textViewArray = commentTextView.text.split{$0 == " "}.map(String.init)
             var newTextView: String!
             for i in 0..<textViewArray.count {
                 if i == textViewArray.count - 1 {
                     if i == 0 {
-                        self.textView.text = "@\(selectedUsername) "
+                        self.commentTextView.text = "@\(selectedUsername) "
                     } else {
-                       self.textView.text = "\(newTextView!) @\(selectedUsername) "
+                       self.commentTextView.text = "\(newTextView!) @\(selectedUsername) "
                     }
                     self.isSearchingForUserToMention = false
                     self.tableView.reloadData()
@@ -403,7 +409,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                   cell.userImage.kf.setImage(with: URL(string: image), for: .normal)
             } else if let artist = comment.artist {
                   cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
-                  artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
+                artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
               
               cell.username.tag = indexPath.row
@@ -416,9 +422,9 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
               }
                
             cell.comment.text = comment.text
-               cell.comment.handleMentionTap {userHandle in
-                   self.loadArtistFromUsername(userHandle, commentId: nil)
-               }
+            cell.comment.handleMentionTap {userHandle in
+                self.loadArtistFromUsername(userHandle, comment: nil, postId: nil)
+            }
                cell.comment.handleHashtagTap { hashtag in
                    if let tagDelegate = self.tagDelegate {
                        let tagObject = Tag(objectId: nil, name: hashtag, count: 0, isSelected: false, type: nil, imageURL: nil, uiImage: nil)
@@ -496,29 +502,31 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 self.playBackControl?.isTextViewEditing = true
                 self.atTime = atTime
             }
-            textView.text = "@\(username) "
-            textView.becomeFirstResponder()
+            commentTextView.text = "@\(username) "
+            commentTextView.becomeFirstResponder()
         }
     }
     
     //mark: Data
-    func addNewComment(_ text: String, atTime: Double, postId: String) {
+    func addNewComment(_ commentText: String, atTime: Double, postId: String, newCommentObject: Comment) {
         let newComment = PFObject(className: "Comment")
         newComment["postId"] = postId
         newComment["userId"] = PFUser.current()!.objectId
         newComment["user"] = PFUser.current()
-        newComment["text"] = text
+        newComment["text"] = commentText
         newComment["atTime"] = atTime
         newComment["isRemoved"] = false
         newComment.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
                 self.comments[self.comments.count - 1]?.objectId = newComment.objectId
+                newCommentObject.objectId = newComment.objectId
                 self.updateCommentCount(postId, byAmount: 1)
                 if let fromUserId = PFUser.current()?.objectId {
-                    self.newMention(self.player.currentSound!.artist!.objectId, fromUserId: fromUserId, commentId: newComment.objectId!)
+                    self.newMention(self.player.currentSound!.artist!.objectId, fromUserId: fromUserId, commentId: newComment.objectId!, commentText: commentText, postId: postId)
                 }
-                self.checkForMentions(text, commentId: newComment.objectId!)
+                
+                self.checkForMentions(commentText, comment: newCommentObject, postId: postId)
                 
             } else {
                 self.comments.removeLast()
@@ -556,18 +564,18 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    func checkForMentions(_ text: String, commentId: String) {
+    func checkForMentions(_ text: String, comment: Comment, postId: String) {
         let textArray = text.split{$0 == " "}.map(String.init)
         for text in textArray {
             if text.starts(with: "@") {
-                let textWithoutAt = self.getTextWithoutAtSign(text)
-                loadArtistFromUsername(textWithoutAt, commentId: commentId)
+                let usernameWithoutAt = self.getTextWithoutAtSign(text)
+                loadArtistFromUsername(usernameWithoutAt, comment: comment, postId: postId)
             }
         }
     }   
     
-    func loadArtistFromUsername(_ username: String, commentId: String?) {
-        if commentId == nil {
+    func loadArtistFromUsername(_ username: String, comment: Comment?, postId: String?) {
+        if comment?.objectId == nil {
             //TODO: put some type of activity spinner here 
         }
         let query = PFQuery(className: "_User")
@@ -576,30 +584,33 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         query.getFirstObjectInBackground {
             (object: PFObject?, error: Error?) -> Void in
             if let object = object {
-                if let commentId = commentId, let fromUserId = PFUser.current()?.objectId {
-                    self.newMention(object.objectId!, fromUserId: fromUserId, commentId: commentId)
+                if let comment = comment, let commentId = comment.objectId, let toUserId = object.objectId,  let fromUserId = PFUser.current()?.objectId, let postId = postId {
+                    //Used to mention other people also mentioned in comment text
+                    self.newMention(toUserId, fromUserId: fromUserId, commentId: commentId, commentText: comment.text, postId: postId)
                 } else {
                     let artist = self.uiElement.newArtistObject(object)
                     self.handleDismissal(artist)
                 }
 
-            } else if commentId == nil {
+            } else if comment?.objectId == nil {
                 self.uiElement.showAlert("User doesn't exist.", message: "", target: self)
             }
         }
     }
     
-    func newMention(_ toUserId: String, fromUserId: String, commentId: String) {
+    func newMention(_ toUserId: String, fromUserId: String, commentId: String, commentText: String, postId: String) {
         if fromUserId != toUserId {
             let newMention = PFObject(className: "Mention")
             newMention["type"] = "comment"
             newMention["commentId"] = commentId
             newMention["fromUserId"] = fromUserId
             newMention["toUserId"] = toUserId
+            newMention["postId"] = postId
+            newMention["message"] = "@\(Customer.shared.artist?.username ?? "") commented '\(commentText)'"
             newMention.saveEventually {
                 (success: Bool, error: Error?) in
                 if success && error == nil {
-                    self.uiElement.sendAlert("mentioned you in a comment", toUserId: toUserId, shouldIncludeName: true)
+                    self.uiElement.sendAlert("commented: \(commentText)", toUserId: toUserId, shouldIncludeName: true)
                 }
             }
         }
@@ -689,15 +700,12 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                         }
                     }
                 }
-                
-                if !self.didLoadComments {
-                     DispatchQueue.main.async {
-                        self.didLoadComments = true
-                        self.tableView.reloadData()
-                        if self.selectedCommentFromMentions != nil {
-                            let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 2)
-                            self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                        }
+                 DispatchQueue.main.async {
+                    self.didLoadComments = true
+                    self.tableView.reloadData()
+                    if self.selectedCommentFromMentions != nil {
+                        let indexPath = IndexPath(row: self.mentionedRowToScrollTo, section: 2)
+                        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                     }
                 }
             }

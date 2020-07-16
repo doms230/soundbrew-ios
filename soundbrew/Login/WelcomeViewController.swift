@@ -85,7 +85,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         self.view.addSubview(button)
         let label = UILabel()
         label.text = title
-        label.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
+        label.font = UIFont(name: "system-bold", size: 20)
         label.textColor = titleColor
         button.addSubview(label)
         label.snp.makeConstraints { (make) -> Void in
@@ -97,7 +97,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             image.image = UIImage(named: imageName)
             button.addSubview(image)
             image.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(30)
+                make.height.width.equalTo(20)
                 make.centerY.equalTo(label)
                 make.right.equalTo(label.snp.left).offset(uiElement.rightOffset)
             }
@@ -108,7 +108,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             button.layer.borderWidth = 1
             button.layer.borderColor = UIColor.white.cgColor
         }
-        button.layer.cornerRadius = 3
+        button.layer.cornerRadius = 5
         button.clipsToBounds = true
         button.tag = tag
         button.addTarget(self, action: #selector(self.didPressButton(_:)), for: .touchUpInside)
@@ -143,27 +143,18 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        let appleButton = signInWithButton("Sign in with Apple", titleColor: .black, backgroundColor: .white, imageName: "appleLogo", tag: 1, shouldShowBorderColor: true)
-        appleButton.titleLabel?.textAlignment = .center
-        self.view.addSubview(appleButton)
-        appleButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
-            make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset * 3)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
         
         let googleButton = signInWithButton("Sign in with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
         googleButton.titleLabel?.textAlignment = .center
         self.view.addSubview(googleButton)
         googleButton.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(50)
-            make.top.equalTo(appleButton.snp.bottom).offset(uiElement.topOffset * 2)
+            make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset * 3)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
-        
-        let emailButton = signInWithButton("Sign in with Email", titleColor: .white, backgroundColor: .black, imageName: "appy", tag: 0, shouldShowBorderColor: true)
+                
+        let emailButton = signInWithButton("Sign in with Soundbrew", titleColor: .white, backgroundColor: .black, imageName: "appIcon_white", tag: 0, shouldShowBorderColor: true)
         emailButton.titleLabel?.textAlignment = .center
         self.view.addSubview(emailButton)
         emailButton.snp.makeConstraints { (make) -> Void in
@@ -171,6 +162,18 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.top.equalTo(googleButton.snp.bottom).offset(uiElement.topOffset * 2)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        if #available(iOS 13.0, *) {
+            let appleButton = ASAuthorizationAppleIDButton(authorizationButtonType: .default, authorizationButtonStyle: .white)
+            appleButton.addTarget(self, action: #selector(diPressAppleButton(_:)), for: .touchUpInside)
+            self.view.addSubview(appleButton)
+            appleButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(50)
+                make.top.equalTo(emailButton.snp.bottom).offset(uiElement.topOffset * 2)
+                make.left.equalTo(self.view).offset(uiElement.leftOffset)
+                make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            }
         }
         
         self.view.addSubview(termsButton)
@@ -181,13 +184,19 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         }
     }
     
+    @available(iOS 13.0, *)
+    @objc func diPressAppleButton(_ sender: ASAuthorizationAppleIDButton) {
+        self.loginType = "apple"
+        self.loginWithApple()
+    }
+    
     @objc func didPressButton(_ sender: UIButton) {
         switch sender.tag {
         case 0:
             self.performSegue(withIdentifier: "showSignin", sender: self)
             break
             
-        case 1:
+       /* case 1:
             if #available(iOS 13.0, *) {
                 self.loginType = "apple"
                 self.loginWithApple()
@@ -195,7 +204,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             } else {
                 self.uiElement.showAlert("Un-Available", message: "Sign in with Apple is only available on iOS 13 or newer.", target: self)
             }
-            break
+            break*/
             
         case 3:
             self.loginType = "google"
@@ -220,8 +229,8 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     var googleAuthData: [String: String]!
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!,
               withError error: Error!) {
-      if let error = error {
-        self.uiElement.showAlert("Error", message: error.localizedDescription, target: self)
+      if error != nil {
+     //   self.uiElement.showAlert("Error", message: error.localizedDescription, target: self)
         return
       }
         if let userId = user.userID, let idToken = user.authentication.idToken {

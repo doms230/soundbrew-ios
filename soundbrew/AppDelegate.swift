@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         //password: asdf
         //change publishableable key for creating a file on Account.Swift
         
-        Stripe.setDefaultPublishableKey(self.uiElement.liveStripeKey)
+        Stripe.setDefaultPublishableKey(self.uiElement.testStripeKey)
         let config = STPPaymentConfiguration.shared()
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-inc"
         config.companyName = "Soundbrew, Inc."

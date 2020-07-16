@@ -87,7 +87,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
             if sound.artist?.image == nil {
-                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
             //Loading here to so that Soundbrew can check if sound is exclusive to artist' fan club
@@ -194,7 +194,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool, selectedSound: Sound?) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
         //stop soundplayer audio from playing over each other
         if player != nil {
             player = nil
@@ -215,6 +214,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         if let sound = soundToPrepare {
             currentSound = sound
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
             self.sendSoundUpdateToUI()
             prepareToPlaySound(sound, shouldPlay: shouldPlay)
         }
@@ -253,8 +253,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         } else {
             sound.isNextUpToPlay = true
             sound.fetchAudioData(shouldPlay)
-            //self.currentSound?.isNextUpToPlay = true
-            //self.currentSound?.fetchAudioData(shouldPlay)
         }
     }
     

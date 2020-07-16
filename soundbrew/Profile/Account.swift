@@ -48,7 +48,7 @@ class Account {
         self.productId = productId
     }
     
-    func retreiveAccount() {
+    func retreiveAccount(_ tableView: UITableView?) {
         let url = self.baseURL!.appendingPathComponent("retrieve")
         let parameters: Parameters = [
             "accountId": self.id ?? "nil"]
@@ -84,6 +84,11 @@ class Account {
                     if let currency = json["default_currency"].string {
                         self.currency = currency
                     }
+                    
+                    if let tableView = tableView {
+                        tableView.reloadData()
+                    }
+                    
                 case .failure(let error):
                     print(error)
                 }
@@ -125,7 +130,7 @@ class Account {
         }
     }
     
-    func loadEarnings() {
+    func loadEarnings(_ tableView: UITableView?) {
         let url = baseURL!.appendingPathComponent("retrieveBalance")
         let parameters: Parameters = [
             "account": self.id ?? "nil"]
@@ -139,6 +144,9 @@ class Account {
                         self.weeklyEarnings =  balance
                     } else {
                         self.weeklyEarnings = 0
+                    }
+                    if let tableView = tableView {
+                        tableView.reloadData()
                     }
                     
                 case .failure(let error):

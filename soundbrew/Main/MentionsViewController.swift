@@ -20,8 +20,6 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
           navigationController?.navigationBar.barTintColor = color.black()
           navigationController?.navigationBar.tintColor = .white
         
-           // NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)
-        
             self.uiElement.addTitleView("Activity", target: self)
             self.loadMentions()
       }
@@ -137,32 +135,16 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       
       func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if self.mentions.indices.contains(indexPath.row) {
-            tableView.cellForRow(at: indexPath)?.isSelected = false
             let mention = self.mentions[indexPath.row]
             switch mention.type {
             case "like", "follow", "gift":
+                tableView.cellForRow(at: indexPath)?.isSelected = false
                 selectedArtist = mentions[indexPath.row].artist
                 self.performSegue(withIdentifier: "showProfile", sender: self)
                 break
                 
             case "comment":
-                let commentModal = PlayerViewController()
-                if let mentionSound = mention.sound {
-                    commentModal.playerDelegate = self
-                    if let commentId = mention.comment?.objectId {
-                       commentModal.selectedCommentFromMentions = commentId
-                    }
-                    
-                    if let commentUsername = mention.artist?.username {
-                        commentModal.selectedCommentReply = commentUsername
-                    }
-                    
-                    let player = Player.sharedInstance
-                    if let currentSound = player.currentSound, currentSound.objectId! != mentionSound.objectId! {
-                        player.setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: mentionSound)
-                    }
-                }
-                self.present(commentModal, animated: true, completion: nil)
+                loadAndPresentSoundWithCommentAttached(mention, tableView: tableView, indexPath: indexPath)
                 break
                 
             default:
@@ -171,63 +153,60 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         }
       }
     
+    func loadAndPresentSoundWithCommentAttached(_ mention: Mention, tableView: UITableView, indexPath: IndexPath) {
+        if let soundId = mention.soundId {
+            let query = PFQuery(className: "Post")
+            query.cachePolicy = .networkElseCache
+            query.getObjectInBackground(withId: soundId) {
+                (object: PFObject?, error: Error?) -> Void in
+                if let object = object {
+                    let mentionSound = self.uiElement.newSoundObject(object)
+                    let commentModal = PlayerViewController()
+                    commentModal.playerDelegate = self
+                    if let commentId = mention.commentId {
+                       commentModal.selectedCommentFromMentions = commentId
+                    }
+                    
+                    if let commentUsername = mention.artist?.username {
+                        commentModal.selectedCommentReply = commentUsername
+                    }
+                    
+                    let player = Player.sharedInstance
+                    if let currentSoundId = player.currentSound?.objectId {
+                        if currentSoundId != mentionSound.objectId {
+                            player.setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: mentionSound)
+                        }
+                        
+                    } else {
+                        player.sounds = [mentionSound]
+                        player.setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: mentionSound)
+                    }
+
+                    tableView.cellForRow(at: indexPath)?.isSelected = false
+                    self.present(commentModal, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
     func mentionsCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: mentionsReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
         let mention = self.mentions[indexPath.row]
-        var name = ""
-        if let username = mention.artist?.username {
-            name = username
-        } else if let artistName = mention.artist?.name {
-            name = artistName
+        
+        if let name = mention.artist?.name {
+            cell.username.text = name
+            if let image = mention.artist?.image {
+                cell.profileImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
+            }
+        } else if let artist = mention.artist {
+            artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, mentionCell: cell, artistUsernameLabel: nil, artistImageButton: nil)
         }
         
-        if let image = mention.artist?.image {
-            cell.profileImage.kf.setImage(with: URL(string: image))
-        } else {
-            cell.profileImage.image = UIImage(named: "profile_icon")
+        if let message = mention.message {
+            cell.displayNameLabel.text = message
         }
-        
-        switch mention.type {
-        case "like":
-            var title = ""
-            if let soundTitle = mention.sound?.title {
-                title = soundTitle
-            }
-            cell.displayNameLabel.text = "\(name) liked \(title)."
-            break
-            
-        case "follow":
-            cell.displayNameLabel.text = "\(name) followed you."
-            break
-            
-        case "comment":
-            var comment = ""
-            if let commentText = mention.comment?.text {
-                comment = "'\(commentText)'"
-            }
-            cell.displayNameLabel.text = "\(name) commented \(comment)"
-            cell.displayNameLabel.numberOfLines = 2
-            break
-            
-        case "gift":
-            var amountAsString = ""
-            if let amount = mention.amount {
-                amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(amount)
-            }
-                        
-            var message = ""
-            if let messageText = mention.message {
-                message = "'\(messageText)'"
-            }
-            
-            cell.displayNameLabel.text = "\(name) gifted you \(amountAsString): \(message)"
-            break
-            
-        default:
-            break
-        }
-        
+                
         //createdAt
         cell.city.text = self.uiElement.formatDateAndReturnString(mention.createdAt)
         
@@ -250,6 +229,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         query.whereKey("toUserId", equalTo: PFUser.current()!.objectId!)
         query.whereKey("fromUserId", notEqualTo: PFUser.current()!.objectId!)
         query.whereKey("objectId", notContainedIn: mentions.map {$0.objectId!})
+        query.whereKeyExists("message")
         query.limit = 50
         query.addDescendingOrder("createdAt")
         query.cachePolicy = .networkElseCache
@@ -258,48 +238,17 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             if let objects = objects {
                 for object in objects {
                     let fromUserId = object["fromUserId"] as! String
-                    let mention = Mention(object.objectId, createdAt: object.createdAt!, type: nil, fromUserId: fromUserId, artist: nil, sound: nil, comment: nil, message: nil, amount: nil)
+                    let mention = Mention(object.objectId, createdAt: object.createdAt!, type: object["type"] as? String, fromUserId: fromUserId, artist: nil, soundId: nil, commentId: nil, message: nil)
+                    let artist = self.getArtist(fromUserId)
+                    mention.artist = artist
                     
-                    if let type = object["type"] as? String {
-                        mention.type = type
-                        switch type {
-                            case "comment":
-                                if let commentId = object["commentId"] as? String {
-                                    self.loadComment(commentId, mention: mention)
-                                }
-                                break
-                                
-                            case "like":
-                                if let postId = object["postId"] as? String {
-                                    self.loadPost(postId, mention: mention)
-                                }
-                                break
-                                
-                            case "follow":
-                                self.loadArtist(mention)
-                                break
-                                
-                            case "gift":
-                                if let amount = object["amount"] as? Int {
-                                    mention.amount = amount
-                                }
-                                if let message = object["message"] as? String {
-                                    mention.message = message
-                                }
-                                self.loadArtist(mention)
-                                break
-                            
-                        default:
-                            break
-                        }
-                    }
+                    mention.soundId = object["postId"] as? String
+                    mention.commentId = object["commentId"] as? String
+                    mention.message = object["message"] as? String
+                    self.mentions.append(mention)
                 }
                 
-                if objects.count > 0 && PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
-                    SKStoreReviewController.requestReview()
-                } else {
-                    self.finishedLoading()
-                }
+                self.finishedLoading()
                 
             } else {
                 self.finishedLoading()
@@ -307,50 +256,9 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    func loadComment(_ commentId: String, mention: Mention) {
-        let query = PFQuery(className: "Comment")
-        query.cachePolicy = .networkElseCache
-        query.getObjectInBackground(withId: commentId) {
-            (object: PFObject?, error: Error?) -> Void in
-            if let object = object {
-                let comment = Comment(objectId: object.objectId, artist: nil, text: "", atTime: 0, createdAt: object.createdAt)
-                if let text = object["text"] as? String {
-                    comment.text = text
-                }
-                mention.comment = comment
-                let postId = object["postId"] as! String
-                self.loadPost(postId, mention: mention)
-            }
-        }
-    }
-    
-    func loadPost(_ soundId: String, mention: Mention) {
-        let query = PFQuery(className: "Post")
-        query.cachePolicy = .networkElseCache
-        query.getObjectInBackground(withId: soundId) {
-            (object: PFObject?, error: Error?) -> Void in
-            if let object = object {
-                let sound = self.uiElement.newSoundObject(object)
-                mention.sound = sound
-                self.loadArtist(mention)
-            }
-        }
-    }
-    
-    func loadArtist(_ mention: Mention) {
-        let query = PFQuery(className: "_User")
-        query.cachePolicy = .networkElseCache
-        query.getObjectInBackground(withId: mention.fromUserId) {
-            (user: PFObject?, error: Error?) -> Void in
-            if let user = user {
-                let artist = self.uiElement.newArtistObject(user)
-                mention.artist = artist
-                self.mentions.append(mention)
-               let sortedMentions =  self.mentions.sorted(by: {$0.createdAt > $1.createdAt})
-                self.mentions = sortedMentions
-            }
-            self.finishedLoading()
-        }
+    func getArtist(_ userId: String) -> Artist {
+        let newArtisObjectt = Artist(objectId: userId, name: nil, city: nil, image: nil, isVerified: nil, username: nil, website: nil, bio: nil, email: nil, isFollowedByCurrentUser: nil, followerCount: nil, followingCount: nil, fanCount: nil, customerId: nil, balance: nil, earnings: nil, friendObjectIds: nil, account: nil)
+        return newArtisObjectt
     }
     
     func finishedLoading() {
@@ -361,6 +269,10 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
             } else {
                 self.tableView.refreshControl?.endRefreshing()
                 self.tableView.reloadData()
+            }
+            
+            if self.mentions.count > 0 { //&& PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
+                SKStoreReviewController.requestReview()
             }
         }
     }
@@ -403,20 +315,18 @@ class Mention {
     var type: String?
     var fromUserId: String!
     var artist: Artist?
-    var sound: Sound?
-    var comment: Comment?
+    var soundId: String?
+    var commentId: String?
     var message: String?
-    var amount: Int?
     
-    init(_ objectId: String!, createdAt: Date!, type: String?, fromUserId: String!, artist: Artist?, sound: Sound?, comment: Comment?, message: String?, amount: Int?) {
+    init(_ objectId: String!, createdAt: Date!, type: String?, fromUserId: String!, artist: Artist?, soundId: String?, commentId: String?, message: String?) {
         self.objectId = objectId
         self.createdAt = createdAt
         self.type = type
         self.fromUserId = fromUserId
         self.artist = artist
-        self.sound = sound
-        self.comment = comment
+        self.soundId = soundId
+        self.commentId = commentId
         self.message = message
-        self.amount = amount
     }
 }

@@ -366,9 +366,6 @@ class UIElement {
         }
         
         sound.artFile = object["songArt"] as? PFFileObject
-        if let art = object["songArt"] as? PFFileObject {
-            sound.artFile = art 
-        }
         
         sound.tags = object["tags"] as? Array<String>
         sound.playCount = object["plays"] as? Int

@@ -346,7 +346,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
              }
          } else if let artist = playlist.artist {
-             artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+            artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
          }
          
          cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)
@@ -388,7 +388,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                  }
              } else if let artist = playlist.artist {
-                 artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
              }
              
              cell.artistButton.addTarget(self, action: #selector(didPressArtistButton(_:)), for: .touchUpInside)

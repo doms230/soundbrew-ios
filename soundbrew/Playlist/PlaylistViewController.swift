@@ -134,7 +134,7 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
                     cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                  }
              } else if let artist = playlist.artist {
-                 artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
              }
              
             if let playlistImageURL = playlist.image?.url  {
@@ -235,7 +235,7 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
             newPayment.saveEventually()
             Player.sharedInstance.currentSound?.currentUserDidLikeSong = true
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
-            newMention(soundId, fromUserId: fromUserId, toUserId: toUserId)
+            newMention(self.sound, fromUserId: fromUserId, toUserId: toUserId)
         }
     }
     
@@ -250,13 +250,16 @@ class PlaylistViewController: UIViewController, UITableViewDataSource, UITableVi
         return true
     }
     
-    func newMention(_ soundId: String, fromUserId: String, toUserId: String) {
+    func newMention(_ sound: Sound, fromUserId: String, toUserId: String) {
         if fromUserId != toUserId {
             let newMention = PFObject(className: "Mention")
             newMention["type"] = "like"
             newMention["fromUserId"] = fromUserId
             newMention["toUserId"] = toUserId
-            newMention["postId"] = soundId
+            if let objectId = sound.objectId {
+                newMention["postId"] = objectId
+            }
+            newMention["message"] = "@\(Customer.shared.artist?.username ?? "") liked \(sound.title ?? "your sound")."
             newMention.saveEventually {
                 (success: Bool, error: Error?) in
                 if success && error == nil {

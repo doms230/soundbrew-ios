@@ -40,7 +40,10 @@ class Like: NSObject {
             newMention["type"] = "like"
             newMention["fromUserId"] = fromUserId
             newMention["toUserId"] = toUserId
-            newMention["postId"] = sound.objectId
+            if let objectId = sound.objectId {
+                newMention["postId"] = objectId
+            }
+            newMention["message"] = "@\(Customer.shared.artist?.username ?? "") liked \(sound.title ?? "your sound")."
             newMention.saveEventually {
                 (success: Bool, error: Error?) in
                 if success && error == nil {

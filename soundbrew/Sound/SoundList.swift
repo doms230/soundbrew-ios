@@ -100,7 +100,7 @@ class SoundList: NSObject, PlayerDelegate {
                     cell.artistImage.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "profile_icon"))
                 }
             } else if let artist = sound.artist {
-                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+                artist.loadUserInfoFromCloud(nil, soundCell: cell, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
             
             if reuse == "soundReuse" {

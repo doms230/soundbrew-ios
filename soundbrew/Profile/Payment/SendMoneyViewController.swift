@@ -408,7 +408,9 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
             banner.show()
             
         case .success:
-            SKStoreReviewController.requestReview()
+            DispatchQueue.main.async {
+                SKStoreReviewController.requestReview()
+            }
             if let fromUserId = PFUser.current()?.objectId, let toUserId = self.artist?.objectId {
                 self.newMention(fromUserId, toUserId: toUserId)
             }
@@ -426,22 +428,20 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
     
     func newMention(_ fromUserId: String, toUserId: String) {
         if fromUserId != toUserId {
+            let amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(self.paymentContext.paymentAmount)
+            var giftMessage = ""
+            if let message = self.messageLabel.text, !message.isEmpty, message != "Add" {
+                giftMessage = message
+            }
+            
             let newMention = PFObject(className: "Mention")
             newMention["type"] = "gift"
-            newMention["amount"] = self.paymentContext.paymentAmount
-            if let message = self.messageLabel.text, !message.isEmpty {
-                newMention["message"] = message
-            }
             newMention["fromUserId"] = fromUserId
             newMention["toUserId"] = toUserId
+            newMention["message"] = "@\(Customer.shared.artist?.username ?? "") gifted you \(amountAsString): '\(giftMessage)'"
             newMention.saveEventually {
                 (success: Bool, error: Error?) in
                 if success && error == nil {
-                    let amountAsString = self.uiElement.convertCentsToDollarsAndReturnString(self.paymentContext.paymentAmount)
-                    var giftMessage = ""
-                    if let message = self.messageLabel.text, !message.isEmpty {
-                        giftMessage = message
-                    }
                     self.uiElement.sendAlert("gifted you\(amountAsString)! '\(giftMessage)'", toUserId: toUserId, shouldIncludeName: true)
                 }
             }

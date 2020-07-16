@@ -196,7 +196,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     func peopleCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: searchProfileReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
-        self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+        self.filteredArtists[indexPath.row].loadUserInfoFromCloud(cell, soundCell: nil, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
         return cell
     }
     

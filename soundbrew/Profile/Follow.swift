@@ -132,6 +132,7 @@ class Follow {
         newMention["type"] = "follow"
         newMention["fromUserId"] = self.fromArtist.objectId!
         newMention["toUserId"] = toUserId
+        newMention["message"] = "@\(Customer.shared.artist?.username ?? "") followed you."
         newMention.saveEventually {
             (success: Bool, error: Error?) in
             if success && error == nil {
