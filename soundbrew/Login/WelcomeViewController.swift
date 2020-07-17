@@ -99,7 +99,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             image.snp.makeConstraints { (make) -> Void in
                 make.height.width.equalTo(20)
                 make.centerY.equalTo(label)
-                make.right.equalTo(label.snp.left).offset(uiElement.rightOffset)
+                make.right.equalTo(label.snp.left).offset(-(uiElement.elementOffset))
             }
         }
         
