@@ -498,6 +498,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         if let currentUsername = customer.artist?.username, let newUsername = self.usernameText.text, let account = customer.artist?.account {
                             if currentUsername != newUsername {
                                 account.updateProductName(newUsername)
+                                account.updateAccountURL(newUsername)
                             }
                         }
                         
@@ -583,15 +584,16 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func validateWebsite() -> Bool {
-        if let websiteText = websiteText {
-            if let text = websiteText.text {
-                if !text.isEmpty {
-                    if !text.starts(with: "https") && !text.starts(with: "http") {
-                        self.websiteText.text = "https://\(text)"
-                    }
-            }
+        var websiteText = ""
+        if let text = self.websiteText.text {
+            websiteText = text
+            if !text.isEmpty {
+                if !text.starts(with: "https") && !text.starts(with: "http") {
+                    websiteText = "https://\(text)"
+                    self.websiteText.text = websiteText
+                }
                 
-                if let url = URL(string: text), !UIApplication.shared.canOpenURL(url) {
+                if let url = URL(string: websiteText), !UIApplication.shared.canOpenURL(url) {
                     let localizedInvalidURL = NSLocalizedString("invalidURL", comment: "")
                     self.uiElement.showTextFieldErrorMessage(self.websiteText, text: localizedInvalidURL)
                     return false

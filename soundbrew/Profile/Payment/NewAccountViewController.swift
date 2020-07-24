@@ -36,8 +36,8 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     @objc func didPressTopViewButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
-        } else if validateDocumentFront() && self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.phoneNumberText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) &&
-            self.validateText(self.bankRoutingInput) && self.validateText(self.bankAccountNumberInput) {
+        } else if validateDocumentFront() && self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.phoneNumberText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) {
+            //self.validateText(self.bankRoutingInput) && self.validateText(self.bankAccountNumberInput) {
             
             self.newAccount?.firstName = self.firstNameInput.text!
             self.newAccount?.lastName = self.lastNameInput.text!
@@ -53,8 +53,8 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             self.newAccount?.state = self.stateInput.text!
             self.newAccount?.postal_code = self.postalCodeInput.text!
             
-            self.newAccount?.bankAccountNumber = self.bankAccountNumberInput.text!
-            self.newAccount?.routingNumber = self.bankRoutingInput.text!
+         //   self.newAccount?.bankAccountNumber = self.bankAccountNumberInput.text!
+          //  self.newAccount?.routingNumber = self.bankRoutingInput.text!
             
             if didDoubleCheckInfo {
                 if let artist = Customer.shared.artist {
@@ -143,16 +143,16 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 8
+        return 6
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 2, 4:
             return 5
-        case 6:
-            return 2
-        case 7:
+       // case 6:
+         //   return 2
+        case 5:
             return 9
         default:
             return 1
@@ -186,7 +186,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         } else if indexPath.section == 4 {
             return addressCell(indexPath)
             
-        } else if indexPath.section == 5 {
+        } /*else if indexPath.section == 5 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
@@ -196,7 +196,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         } else if indexPath.section == 6{
             return externalAccountCell(indexPath)
             
-        } else {
+        }*/ else {
             cell = self.tableView.dequeueReusableCell(withIdentifier: spaceReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
@@ -379,7 +379,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
                 break
             
             case 4:
-                inputTitle = "SSN"
+                inputTitle = "SSN (last 4)"
                 cell.editProfileInput.keyboardType = .numberPad
                 personalIdNumberInput = cell.editProfileInput
                 if let lastName = self.newAccount?.personalIdNumber {
@@ -652,10 +652,10 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: Bank
-    var bankRoutingInput: UITextField!
-    var bankAccountNumberInput: UITextField!
+   // var bankRoutingInput: UITextField!
+   // var bankAccountNumberInput: UITextField!
     
-    func externalAccountCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
+   /* func externalAccountCell(_ indexPath: IndexPath) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: editProfileInfoReuse) as! ProfileTableViewCell
         let edgeInsets = UIEdgeInsets(top: 0, left: 85 + CGFloat(UIElement().leftOffset), bottom: 0, right: 0)
         cell.backgroundColor = color.black()
@@ -688,7 +688,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         cell.editProfileTitle.text = inputTitle
         cell.editProfileInput.text = inputText
         return cell
-    }
+    }*/
 
 }
 

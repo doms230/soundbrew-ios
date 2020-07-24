@@ -14,14 +14,14 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
     let color = Color()
     let uiElement = UIElement()
 
-      override func viewDidLoad() {
-          super.viewDidLoad()
-          self.view.backgroundColor = color.black()
-          navigationController?.navigationBar.barTintColor = color.black()
-          navigationController?.navigationBar.tintColor = .white
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
         
-            self.uiElement.addTitleView("Activity", target: self)
-            self.loadMentions()
+        self.uiElement.addTitleView("Activity", target: self)
+        self.loadMentions()
       }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -61,9 +61,9 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
       
       //mark: tableview
     var tableView: UITableView!
-      let mentionsReuse = "mentionsReuse"
-      let noSoundsReuse = "noSoundsReuse"
-      func setUpTableView() {
+    let mentionsReuse = "mentionsReuse"
+    let noSoundsReuse = "noSoundsReuse"
+    func setUpTableView() {
         let miniPlayerHeight = MiniPlayerView.sharedInstance.frame.height
         var tabBarControllerHeight: CGFloat = 50
         if let tabBar = self.tabBarController?.tabBar {
@@ -174,6 +174,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                     let player = Player.sharedInstance
                     if let currentSoundId = player.currentSound?.objectId {
                         if currentSoundId != mentionSound.objectId {
+                            player.sounds = [mentionSound]
                             player.setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: mentionSound)
                         }
                         
@@ -271,7 +272,7 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.tableView.reloadData()
             }
             
-            if self.mentions.count > 0 { //&& PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
+            if self.mentions.count > 0 && PFUser.current()?.objectId != self.uiElement.d_innovatorObjectId {
                 SKStoreReviewController.requestReview()
             }
         }

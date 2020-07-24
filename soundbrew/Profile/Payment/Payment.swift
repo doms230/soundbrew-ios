@@ -40,7 +40,7 @@ class Payment: NSObject {
                 switch responseJSON.result {
                 case .success(let json):
                     let json = JSON(json)
-                    print(json)
+                   // print(json)
                     if let secret = json["clientSecret"].string {
                         completion(.success(secret))
                     }

@@ -17,7 +17,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
     let uiElement = UIElement()
     let color = Color()
     var earnings = 0
-    let artist = Customer.shared.artist
+    var artist = Customer.shared.artist
     var lastPayoutDate: Int?
     
     override func viewDidLoad() {
@@ -229,7 +229,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
      }
     
     func receivedArtist(_ value: Artist?) {
-        //new artist bank details are attached to Customer.shared so only need to reload tableview
+        self.artist = Customer.shared.artist
         self.tableView.reloadData()
     }
     

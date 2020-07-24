@@ -77,7 +77,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             break
             
         case "showSounds":
-            let viewController = segue.destination as! SoundsViewController
+            var viewController: SoundsViewController
+            if let navigationController = segue.destination as? UINavigationController {
+                viewController = navigationController.topViewController as! SoundsViewController
+            } else {
+                viewController = segue.destination as! SoundsViewController
+            }            
+            
             viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
             viewController.soundType = "discover"
             

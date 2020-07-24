@@ -38,7 +38,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                     switch responseJSON.result {
                     case .success(let json):
                         completion(json as? [String: AnyObject], nil)
-                        print(json)
+                        //print(json)
                     case .failure(let error):
                         completion(nil, error)
                         print(error)
@@ -149,22 +149,23 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
     }
     
     func getSubscriptions(_ customerId: String) {
-            let url = self.baseURL!.appendingPathComponent("retrieveSubscriptions")
-            let parameters: Parameters = [
+        self.fanClubs.removeAll()
+        let url = self.baseURL!.appendingPathComponent("retrieveSubscriptions")
+        let parameters: Parameters = [
                 "customer": customerId]
-            AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
-                .validate(statusCode: 200..<300)
-                .responseJSON { responseJSON in
-                    switch responseJSON.result {
-                    case .success(let json):
-                        let json = JSON(json)
-                        if let subs = json["data"].array {
-                            for sub in subs {
-                                if let product = sub["plan"]["product"].string {
-                                    self.fanClubs.append(product)
-                                }
+        AF.request(url, method: .get, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+            switch responseJSON.result {
+                case .success(let json):
+                    let json = JSON(json)
+                    if let subs = json["data"].array {
+                        for sub in subs {
+                            if let product = sub["plan"]["product"].string {
+                                self.fanClubs.append(product)
                             }
                         }
+                    }
                     case .failure(let error):
                         print(error)
                     }

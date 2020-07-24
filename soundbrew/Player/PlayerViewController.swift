@@ -468,7 +468,14 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     //didPressAtTime for people who are coming in from mentions page
     var didPressAtTime: Float?
     @objc func didPressAtTimeButton(_ sender: UIButton) {
-        if let comment = self.comments[sender.tag] {
+        var comment: Comment?
+        if self.comments.indices.contains(sender.tag), let selectedComment = self.comments[sender.tag] {
+            comment = selectedComment
+        } else if let selectedComment = self.soundArtistComment {
+            comment = selectedComment
+        }
+        
+        if let comment = comment {
             if let player = self.player.player, let playerSound = self.player.currentSound, let commentSound = self.player.currentSound, playerSound.objectId == commentSound.objectId {
                 jumpToTime(player, atTime: comment.atTime)
             } else {

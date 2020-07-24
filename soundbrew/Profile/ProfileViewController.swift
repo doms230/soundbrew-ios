@@ -423,7 +423,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressArtistButton(_ sender: UIButton) {
-        self.selectedArtist = self.artistPlaylists[sender.tag].artist
+        if self.artistPlaylists.indices.contains(sender.tag) {
+            self.selectedArtist = self.artistPlaylists[sender.tag].artist
+        } else {
+            self.selectedArtist = self.profileArtist
+        }
         self.performSegue(withIdentifier: "showProfile", sender: self)
     }
     

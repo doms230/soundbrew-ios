@@ -113,13 +113,29 @@ class Account {
         AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
             .validate(statusCode: 200..<300)
             .responseJSON { responseJSON in
-                switch responseJSON.result {
+               /* switch responseJSON.result {
                 case .success(let json):
-                    print(json)
+                    //print(json)
                 case .failure(let error):
-                    self.weeklyEarnings = 0
                     print(error)
-                }
+                }*/
+            }
+    }
+    
+    func updateAccountURL(_ newUsername: String) {
+        let url = baseURL!.appendingPathComponent("updateAccountURL")
+        let parameters: Parameters = [
+            "account": self.id ?? "nil",
+            "username": newUsername]
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(destination: .queryString))
+            .validate(statusCode: 200..<300)
+            .responseJSON { responseJSON in
+               /* switch responseJSON.result {
+                case .success(let json):
+                    //print(json)
+                case .failure(let error):
+                    print(error)
+                }*/
             }
     }
     
@@ -158,7 +174,7 @@ class Account {
     
     //new account
     func createNewAccount(_ artist: Artist, target: NewAccountViewController) {
-        if let customerId = artist.customerId, let userObjectId = artist.objectId, let firstName = self.firstName, let lastName = self.lastName, let idNumber = self.personalIdNumber, let birthDay = self.birthDay, let birthMonth = self.birthMonth, let birthYear = self.birthYear, let username = artist.username, let email = artist.email, let country = self.country, let documentFront = self.documentFront, let currency = self.currency, let routingNumber = self.routingNumber, let bankAccountNumber = self.bankAccountNumber, let city = self.city, let line1 = self.line1, let line2 = self.line2, let postal_code = self.postal_code, let state = self.state, let phoneNumber = self.phoneNumber {
+        if let customerId = artist.customerId, let userObjectId = artist.objectId, let firstName = self.firstName, let lastName = self.lastName, let idNumber = self.personalIdNumber, let birthDay = self.birthDay, let birthMonth = self.birthMonth, let birthYear = self.birthYear, let username = artist.username, let email = artist.email, let country = self.country, let documentFront = self.documentFront, let currency = self.currency, let city = self.city, let line1 = self.line1, let line2 = self.line2, let postal_code = self.postal_code, let state = self.state, let phoneNumber = self.phoneNumber {
             let url = self.baseURL!.appendingPathComponent("create")
             let parameters: Parameters = [
                 "customerId": customerId,
@@ -170,14 +186,15 @@ class Account {
                 "first_name": firstName,
                 "last_name": lastName,
                 "phone": phoneNumber,
-                "id_number": idNumber,
-                "ssn_last_4": idNumber.suffix(4),
+                "ssn_last_4": idNumber,
+               // "id_number": idNumber,
+              //  "ssn_last_4": idNumber.suffix(4),
                 "birthDay": birthDay,
                 "birthMonth": birthMonth,
                 "birthYear": birthYear,
                 "documentFront": documentFront,
-                "routing_number": routingNumber,
-                "account_number": bankAccountNumber,
+               // "routing_number": routingNumber,
+                //"account_number": bankAccountNumber,
                 "city": city,
                 "line1": line1,
                 "line2": line2,
@@ -189,6 +206,7 @@ class Account {
                     switch responseJSON.result {
                     case .success(let json):
                         let json = JSON(json)
+                     //   print(json)
                         if let statusCode = json["statusCode"].int {
                             if statusCode >= 200 && statusCode < 300 {
                                 self.id = json["id"].stringValue
@@ -198,8 +216,8 @@ class Account {
                             }
                         } else {
                             self.id = json["account"].string
-                            self.bankAccountId = json["bank"].string
-                            self.bankTitle = json["bankTitle"].string
+                           // self.bankAccountId = json["bank"].string
+                            //self.bankTitle = json["bankTitle"].string
                             self.productId = json["product"].string
                             self.updateAndMoveForward(target)
                         }
@@ -254,7 +272,7 @@ class Account {
                 spinner.stopAnimating()
                     switch responseJSON.result {
                     case .success(let json):
-                        print(json)
+                       // print(json)
                         let json = JSON(json)
                         if let statusCode = json["statusCode"].int {
                             if statusCode >= 200 && statusCode < 300 {
