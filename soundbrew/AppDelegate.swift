@@ -128,11 +128,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     func applicationDidBecomeActive(_ application: UIApplication) {
         let customer = Customer.shared
         if let userObjectId = customer.artist?.objectId {
-            print("getting user info")
             customer.getCurrentUserInfo(userObjectId)
         }
     }
-    
+        
     func receivedUserId(_ userId: String) {
         self.uiElement.setUserDefault(userId, key: "receivedUserId")
         showMainViewController(1)
