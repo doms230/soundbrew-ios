@@ -91,6 +91,7 @@ class EarningsViewController: UIViewController, UITableViewDataSource, UITableVi
             cell.dateLabel.text = "Payout Bank"
             if let bankTitle = self.artist?.account?.bankTitle {
                 cell.titleLabel.text = bankTitle
+                cell.titleLabel.textColor = .white 
             } else {
                 cell.titleLabel.text = "Add"
                 cell.titleLabel.textColor = color.red()

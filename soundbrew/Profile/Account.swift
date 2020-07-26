@@ -174,7 +174,8 @@ class Account {
     
     //new account
     func createNewAccount(_ artist: Artist, target: NewAccountViewController) {
-        if let customerId = artist.customerId, let userObjectId = artist.objectId, let firstName = self.firstName, let lastName = self.lastName, let idNumber = self.personalIdNumber, let birthDay = self.birthDay, let birthMonth = self.birthMonth, let birthYear = self.birthYear, let username = artist.username, let email = artist.email, let country = self.country, let documentFront = self.documentFront, let currency = self.currency, let city = self.city, let line1 = self.line1, let line2 = self.line2, let postal_code = self.postal_code, let state = self.state, let phoneNumber = self.phoneNumber {
+        //let documentFront = self.documentFront,
+        if let customerId = artist.customerId, let userObjectId = artist.objectId, let firstName = self.firstName, let lastName = self.lastName, let idNumber = self.personalIdNumber, let birthDay = self.birthDay, let birthMonth = self.birthMonth, let birthYear = self.birthYear, let username = artist.username, let email = artist.email, let country = self.country, let currency = self.currency, let city = self.city, let line1 = self.line1, let line2 = self.line2, let postal_code = self.postal_code, let state = self.state, let phoneNumber = self.phoneNumber {
             let url = self.baseURL!.appendingPathComponent("create")
             let parameters: Parameters = [
                 "customerId": customerId,
@@ -192,7 +193,7 @@ class Account {
                 "birthDay": birthDay,
                 "birthMonth": birthMonth,
                 "birthYear": birthYear,
-                "documentFront": documentFront,
+                //"documentFront": documentFront,
                // "routing_number": routingNumber,
                 //"account_number": bankAccountNumber,
                 "city": city,

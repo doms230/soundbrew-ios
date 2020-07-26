@@ -10,11 +10,10 @@ import UIKit
 import SnapKit
 import Parse
 import Kingfisher
-import CropViewController
 import Alamofire
 import SwiftyJSON
 
-class NewAccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CropViewControllerDelegate, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
+class NewAccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
 
     let uiElement = UIElement()
     let color = Color()
@@ -36,7 +35,8 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     @objc func didPressTopViewButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
-        } else if validateDocumentFront() && self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.phoneNumberText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) {
+            //validateDocumentFront() &&
+        } else if  self.validateText(self.firstNameInput) && self.validateText(self.lastNameInput) && self.validateText(self.dobText) && self.validateText(self.phoneNumberText) && self.validateText(self.personalIdNumberInput) && self.validateText(line1Input) && self.validateText(cityInput) && self.validateText(stateInput) && self.validateText(postalCodeInput) {
             //self.validateText(self.bankRoutingInput) && self.validateText(self.bankAccountNumberInput) {
             
             self.newAccount?.firstName = self.firstNameInput.text!
@@ -68,13 +68,13 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func validateDocumentFront() -> Bool {
+   /* func validateDocumentFront() -> Bool {
         if self.newAccount?.documentFront == nil {
             self.uiElement.showAlert("Government Issued ID Required.", message: "", target: self)
             return false
         }
         return true
-    }
+    }*/
     
     //Stripe Message Views
     lazy var stripeMessage: UIButton = {
@@ -119,14 +119,14 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     
     //MARK: TableView
     let tableView = UITableView()
-    let newAccountIdImageReuse = "newAccountIdImageReuse"
+   // let newAccountIdImageReuse = "newAccountIdImageReuse"
     let editProfileInfoReuse = "editProfileInfoReuse"
     let privateInfoTitleReuse = "privateInfoTitleReuse"
     let spaceReuse = "spaceReuse"
     func setUpTableView(_ topView: UIView) {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: newAccountIdImageReuse)
+      //  tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: newAccountIdImageReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: editProfileInfoReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: privateInfoTitleReuse)
         tableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: spaceReuse)
@@ -143,12 +143,12 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
+        return 5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 2, 4:
+        case 1, 3:
             return 5
        // case 6:
          //   return 2
@@ -165,25 +165,25 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
-            cell.privateInformationLabel.text = "Upload an image of your government issued ID (Driver's License, Passport, State ID, etc.)"
-            cell.privateInformationLabel.numberOfLines = 0
             cell.privateInformationLabel.textColor = .lightGray
+            cell.privateInformationLabel.text = "To accept payment from fans, we need to verify your identity."
+            cell.privateInformationLabel.numberOfLines = 0
             return cell
             
-        } else if indexPath.section == 1 {
+        } /*else if indexPath.section == 1 {
             return idImageCell(tableView)
             
-        } else if indexPath.section == 2 {
+        }*/ else if indexPath.section == 1 {
             return accountInfoCell(indexPath)
             
-        } else if indexPath.section == 3 {
+        } else if indexPath.section == 2 {
             cell = self.tableView.dequeueReusableCell(withIdentifier: privateInfoTitleReuse) as? ProfileTableViewCell
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
             cell.privateInformationLabel.text = "Address"
             return cell
             
-        } else if indexPath.section == 4 {
+        } else if indexPath.section == 3 {
             return addressCell(indexPath)
             
         } /*else if indexPath.section == 5 {
@@ -205,13 +205,13 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     //MARK: ID Info
-    var frontImageButton: UIButton!
+    /*var frontImageButton: UIButton!
     var frontImageSpinner: UIActivityIndicatorView!
     var backImageButton: UIButton!
     var backImageSpinner: UIActivityIndicatorView!
-    var selectedIdImage: String!
+    var selectedIdImage: String!*/
     
-    func idImageCell(_ tableView: UITableView) -> ProfileTableViewCell {
+    /*func idImageCell(_ tableView: UITableView) -> ProfileTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: newAccountIdImageReuse) as! ProfileTableViewCell
         cell.backgroundColor = color.black()
         tableView.separatorInset = .zero
@@ -223,9 +223,9 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
         frontImageSpinner = cell.frontImageSpinner
         
         return cell
-    }
+    }*/
     
-    @objc func didPressIdImageButton(_ sender: UIButton) {
+   /* @objc func didPressIdImageButton(_ sender: UIButton) {
         if sender.tag == 0 {
             selectedIdImage = "front"
         } else {
@@ -319,7 +319,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
     // Helper function inserted by Swift 4.2 migrator.
     fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
         return input.rawValue
-    }
+    }*/
     
     //MARK: Account Info
     var firstNameInput: UITextField!
