@@ -166,7 +166,7 @@ class NewAccountViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.selectionStyle = .none
             cell.backgroundColor = color.black()
             cell.privateInformationLabel.textColor = .lightGray
-            cell.privateInformationLabel.text = "To accept payment from fans, we need to verify your identity."
+            cell.privateInformationLabel.text = "We need to verify your identity before you can start accepting payment from fans."
             cell.privateInformationLabel.numberOfLines = 0
             return cell
             

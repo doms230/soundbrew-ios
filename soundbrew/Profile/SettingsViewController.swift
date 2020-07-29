@@ -349,11 +349,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func didSelectAccountSection(_ indexPath: IndexPath) {
         if self.artist?.account == nil {
-            if let isVerified = self.artist?.isVerified, isVerified {
-              newFanClubAlert()
+            newFanClubAlert()
+            /*if let isVerified = self.artist?.isVerified, isVerified {
+              
             } else {
                 self.uiElement.showAlert("Not Publicly Available Yet", message: "Email support@soundbrew.app or message us @sound_brew to request access.", target: self)
-            }
+            }*/
             
         } else {
             switch indexPath.row {
@@ -392,7 +393,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func newFanClubAlert() {
         let alertController = UIAlertController (title: "Earn From Your Followers", message:
-            "Earn money from your followers by starting a fan club. You can choose which sounds are exclusive!", preferredStyle: .actionSheet)
+            "Earn money from your followers by starting a fan club. Fans pay $12.99 per month, and you'll earn $11.04 per fan per month after Soundbrew's 15% fee. You can choose which sounds are exclusive to your fanbase!", preferredStyle: .actionSheet)
             
         let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
             if let container = self.so_containerViewController {
