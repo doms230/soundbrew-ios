@@ -130,6 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         if let userObjectId = customer.artist?.objectId {
             customer.getCurrentUserInfo(userObjectId)
         }
+        FileManager.default.clearTmpDirectory()
     }
         
     func receivedUserId(_ userId: String) {

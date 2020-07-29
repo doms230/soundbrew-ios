@@ -50,7 +50,7 @@ class LoginViewController: UIViewController {
     lazy var signButton: UIButton = {
         let localizedSignin = NSLocalizedString("signin", comment: "")
         let button = UIButton()
-        button.titleLabel?.font = UIFont(name: uiElement.mainFont, size: 17)
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)-bold", size: 17)
         button.titleLabel?.textAlignment = .right
         button.setTitle(localizedSignin, for: .normal)
         button.setTitleColor(.white, for: .normal)

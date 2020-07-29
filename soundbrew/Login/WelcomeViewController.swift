@@ -196,16 +196,6 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             self.performSegue(withIdentifier: "showSignin", sender: self)
             break
             
-       /* case 1:
-            if #available(iOS 13.0, *) {
-                self.loginType = "apple"
-                self.loginWithApple()
-                
-            } else {
-                self.uiElement.showAlert("Un-Available", message: "Sign in with Apple is only available on iOS 13 or newer.", target: self)
-            }
-            break*/
-            
         case 3:
             self.loginType = "google"
             GIDSignIn.sharedInstance()?.presentingViewController = self

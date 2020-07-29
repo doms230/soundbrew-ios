@@ -368,7 +368,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func setupSearchBar() {
         let rightNavBarButton = UIBarButtonItem(customView: searchBar)
         self.navigationItem.rightBarButtonItem = rightNavBarButton
-        self.searchBar.becomeFirstResponder()
     }
     
     @objc func didPressSearchTypeButton(_ sender: UIButton) {

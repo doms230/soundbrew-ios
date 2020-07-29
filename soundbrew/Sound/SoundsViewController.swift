@@ -17,7 +17,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var soundList: SoundList!
     let uiElement = UIElement()
     let color = Color()
-    var soundType = "follow"
+    var soundType = "forYou"
     var playlist: Playlist?
     
     func doesMatchSoundType() -> Bool {
@@ -36,30 +36,59 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         navigationController?.navigationBar.tintColor = .white
         
         if doesMatchSoundType() {
-            if let selectedIndex = self.tabBarController?.selectedIndex {
-                if selectedIndex == 1 {
-                    self.soundType = "forYou"
-                    self.setUpTableView()
-                } else {
-                    self.setUpMiniPlayer()
-                }
-            }
+            self.setUpMiniPlayer()
             createTopView()
+            
+            let changeSoundTypeButton = UIBarButtonItem(image: UIImage(named: "dismiss_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSoundTypeButton(_:)))
+            
+            self.navigationItem.rightBarButtonItem = changeSoundTypeButton
             
         } else {
             self.setUpTableView()
             if soundType == "playlist", let playlist = self.playlist, playlist.objectId != nil {
                 let shuffleButton = UIBarButtonItem(image: UIImage(named: "shuffle"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressShuffleButton(_:)))
+                
+                let shareButton = UIBarButtonItem(image: UIImage(named: "share_small"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSharePlaylistButton(_:)))
+                
                 if  let currentUserId = PFUser.current()?.objectId, playlist.artist?.objectId == currentUserId {
                     let addSoundsToPlaylistButton = UIBarButtonItem(image: UIImage(named: "new_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressAddSoundsToPlaylistButton(_:)))
-                    self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, shuffleButton]
+                    self.navigationItem.rightBarButtonItems = [addSoundsToPlaylistButton, shuffleButton, shareButton]
                     
                 } else {
-                    self.navigationItem.rightBarButtonItem = shuffleButton
+                    self.navigationItem.rightBarButtonItems = [shuffleButton, shareButton]
                 }
             }
         }
         setupNotificationCenter()
+    }
+    
+   @objc func didPressSoundTypeButton(_ sender: UIButton) {
+        let alertController = UIAlertController (title: "Show My", message: "", preferredStyle: .actionSheet)
+    
+        let followingAction = UIAlertAction(title: "Following", style: .default) { (_) -> Void in
+            self.soundType = "follow"
+            self.createTopView()
+            self.showSoundList()
+        }
+        alertController.addAction(followingAction)
+    
+        let forYouAction = UIAlertAction(title: "For You", style: .default) { (_) -> Void in
+            self.soundType = "forYou"
+            self.createTopView()
+            self.showSoundList()
+        }
+        alertController.addAction(forYouAction)
+    
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+    
+        if soundType == "follow" {
+            followingAction.isEnabled = false
+        } else {
+            forYouAction.isEnabled = false
+        }
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -173,8 +202,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         var soundTypeTitle = "Following"
         if soundType == "forYou" {
             soundTypeTitle = "For You"
-            let searchUIButton = UIBarButtonItem(image: UIImage(named: "search_filled"), style: .plain, target: self, action: #selector(self.didPressSearchButton(_:)))
-            self.navigationItem.rightBarButtonItem = searchUIButton
         }
         
         self.uiElement.addTitleView(soundTypeTitle, target: self)
@@ -295,9 +322,9 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func didPressDiscoverButton(_ sender: UIButton) {
-        if let tabBar = self.tabBarController {
-            tabBar.selectedIndex = 1
-        }
+        self.soundType = "forYou"
+        self.createTopView()
+        self.showSoundList()
     }
     
     //mark: miniPlayer

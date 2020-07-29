@@ -443,9 +443,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.showDeletePlaylistAlert(playlist, row: sender.tag)
         }))
         
-        /*menuAlert.addAction(UIAlertAction(title: "Share Playlist", style: .default, handler: { action in
+        menuAlert.addAction(UIAlertAction(title: "Share Playlist", style: .default, handler: { action in
             self.uiElement.createDynamicLink(nil, artist: nil, playlist: self.artistPlaylists[sender.tag], target: self)
-        }))*/
+        }))
             
         let localizedCancel = NSLocalizedString("cancel", comment: "")
         menuAlert.addAction(UIAlertAction(title: localizedCancel, style: .cancel, handler: nil))

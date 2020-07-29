@@ -400,9 +400,13 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
             if isUploaderProfile {
                 cell.userImage.addTarget(self, action: #selector(didPressUploaderProfileButton(_:)), for: .touchUpInside)
+                cell.username.addTarget(self, action: #selector(didPressUploaderProfileButton(_:)), for: .touchUpInside)
             } else {
                 cell.userImage.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
                 cell.userImage.tag = indexPath.row
+                
+                cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
+                cell.username.tag = indexPath.row
             }
             
             if let image = comment.artist?.image {
@@ -411,9 +415,6 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                   cell.userImage.setImage(UIImage(named: "profile_icon"), for: .normal)
                 artist.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: cell, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
             }
-              
-              cell.username.tag = indexPath.row
-              cell.username.addTarget(self, action: #selector(didPressProfileButton(_:)), for: .touchUpInside)
               
             if let username = comment.artist?.username {
                   cell.username.setTitle(username, for: .normal)
