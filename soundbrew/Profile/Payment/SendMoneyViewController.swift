@@ -35,7 +35,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
     var activitySpinner: UIActivityIndicatorView!
     
     func addFundsDescriptionView() {
-        (cancelButton, sendMoneyButton, topViewDividerLine, activitySpinner) = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "Send", title: "Gift Money")
+        (cancelButton, sendMoneyButton, topViewDividerLine, activitySpinner) = self.uiElement.addSubViewControllerTopView(self, action: #selector(self.didPressTopViewButton(_:)), doneButtonTitle: "", title: "Gift Money")
         
         self.view.addSubview(addFundsDescription)
         addFundsDescription.snp.makeConstraints { (make) -> Void in
@@ -50,7 +50,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
         return self.uiElement.soundbrewLabel("Support \(self.artist?.name ?? "this artist") by gifting them money.", textColor: .darkGray, font: UIFont(name: "\(UIElement().mainFont)", size: 17)!, numberOfLines: 1)
     }()
     
-    lazy var totalAmountDividerLine: UIView = {
+    lazy var messageDividerLine: UIView = {
         return self.uiElement.soundbrewDividerLine()
     }()
     
@@ -170,6 +170,54 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
     func receivedArtist(_ value: Artist?) {
     }
     
+    //Pay Button Views
+    lazy var applePayButton: PKPaymentButton = {
+        let button = PKPaymentButton(paymentButtonType: .checkout, paymentButtonStyle: .white)
+        button.addTarget(self, action: #selector(self.didPressTopViewButton(_:)), for: .touchUpInside)
+        button.isHidden = true
+        button.tag = 2
+        return button
+    }()
+    
+    lazy var payWithCardButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Check out", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = self.color.blue()
+        button.titleLabel?.font = UIFont(name: "\(uiElement.mainFont)", size: 17)
+        button.addTarget(self, action: #selector(self.didPressTopViewButton(_:)), for: .touchUpInside)
+        button.isHidden = true
+        button.tag = 2
+        return button
+    }()
+    
+    lazy var paymentInProgressSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .black
+        spinner.isHidden = true
+        return spinner
+    }()
+    
+    func shouldAnimagePaymentProgressSpinner(_ shouldAnimate: Bool) {
+        if shouldAnimate {
+            self.messageButton.isEnabled = false
+            self.totalButton.isEnabled = false
+            self.paymentButton.isEnabled = false
+            self.payWithCardButton.isEnabled = false
+            self.applePayButton.isEnabled = false
+            self.paymentInProgressSpinner.isHidden = false
+            self.paymentInProgressSpinner.startAnimating()
+        } else {
+            self.paymentInProgressSpinner.isHidden = true
+            self.paymentInProgressSpinner.stopAnimating()
+            self.messageButton.isEnabled = true
+            self.totalButton.isEnabled = true
+            self.paymentButton.isEnabled = true
+            self.payWithCardButton.isEnabled = true
+            self.applePayButton.isEnabled = true
+        }
+    }
+    
     //Stripe Message Views
     lazy var stripeAddFundsMessage: UIButton = {
         let localizedStripeAddFundsMessage = NSLocalizedString("stripeAddFundsMessage", comment: "")
@@ -212,10 +260,79 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
             }
         }
         
+        //Total View
+        self.view.addSubview(totalTitle)
+        totalTitle.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(self.view)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.view.addSubview(totalButton)
+        totalButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(30)
+            make.width.equalTo(100)
+            make.centerY.equalTo(totalTitle)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        self.totalButton.addSubview(changeTotalAmountImage)
+        changeTotalAmountImage.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(20)
+            make.centerY.equalTo(totalTitle)
+            make.right.equalTo(totalButton)
+        }
+        
+        self.totalButton.addSubview(total)
+        total.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(changeTotalAmountImage)
+            make.right.equalTo(changeTotalAmountImage.snp.left).offset(-(uiElement.elementOffset))
+        }
+        
+        let totalDividerLine = self.uiElement.soundbrewDividerLine()
+        self.view.addSubview(totalDividerLine)
+        totalDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.top.equalTo(totalButton.snp.bottom).offset(self.uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+        }
+        
+        //add message View
+        self.view.addSubview(messageDividerLine)
+        messageDividerLine.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(0.5)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(totalTitle.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        self.view.addSubview(messageButton)
+        messageButton.snp.makeConstraints { (make) -> Void in
+           // make.top.equalTo(paymentDividerLine.snp.bottom).offset(uiElement.topOffset)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(messageDividerLine.snp.top).offset(uiElement.bottomOffset)
+        }
+        
+        let messageTitle = self.uiElement.soundbrewLabel("Message", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
+        self.messageButton.addSubview(messageTitle)
+        messageTitle.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(messageButton)
+            make.left.equalTo(messageButton)
+        }
+        
+        self.messageButton.addSubview(messageLabel)
+        messageLabel.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(messageButton)
+            make.left.equalTo(messageTitle.snp.right).offset(uiElement.leftOffset)
+            make.right.equalTo(messageButton)
+        }
+        
         //payment view
         self.view.addSubview(paymentButton)
         paymentButton.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(self.view)
+            make.top.equalTo(totalDividerLine.snp.bottom).offset(uiElement.topOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
@@ -244,80 +361,35 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
             make.right.equalTo(cardNumberLastFour.snp.left)
         }
         
-        let paymentDividerLine = self.uiElement.soundbrewDividerLine()
-        self.view.addSubview(paymentDividerLine)
-        paymentDividerLine.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(0.5)
-            make.top.equalTo(paymentButton.snp.bottom).offset(self.uiElement.topOffset)
+        self.view.addSubview(applePayButton)
+        applePayButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(self.uiElement.buttonHeight)
+            make.top.equalTo(paymentTitle.snp.bottom).offset(uiElement.topOffset * 4)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        //Total View
-        self.view.addSubview(totalAmountDividerLine)
-        totalAmountDividerLine.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(0.5)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(paymentTitle.snp.top).offset(uiElement.bottomOffset)
+        self.view.addSubview(payWithCardButton)
+        payWithCardButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(applePayButton)
+            make.top.equalTo(applePayButton)
+            make.left.equalTo(applePayButton)
+            make.right.equalTo(applePayButton)
         }
         
-        self.view.addSubview(totalTitle)
-        totalTitle.snp.makeConstraints { (make) -> Void in
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.bottom.equalTo(totalAmountDividerLine.snp.bottom).offset(uiElement.bottomOffset)
+        self.view.addSubview(paymentInProgressSpinner)
+        paymentInProgressSpinner.snp.makeConstraints { (make) -> Void in
+            make.height.width.equalTo(payWithCardButton.snp.height)
+            make.center.equalTo(payWithCardButton)
         }
         
-        self.view.addSubview(totalButton)
-        totalButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(30)
-            make.width.equalTo(100)
-            make.centerY.equalTo(totalTitle)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-        }
-        
-        self.totalButton.addSubview(changeTotalAmountImage)
-        changeTotalAmountImage.snp.makeConstraints { (make) -> Void in
-            make.height.width.equalTo(20)
-            make.centerY.equalTo(totalTitle)
-            make.right.equalTo(totalButton)
-        }
-        
-        self.totalButton.addSubview(total)
-        total.snp.makeConstraints { (make) -> Void in
-            make.centerY.equalTo(changeTotalAmountImage)
-            make.right.equalTo(changeTotalAmountImage.snp.left).offset(-(uiElement.elementOffset))
-        }
-        
-        //add message View
-        self.view.addSubview(messageButton)
-        messageButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(paymentDividerLine.snp.bottom).offset(uiElement.topOffset)
-            make.left.equalTo(self.view).offset(uiElement.leftOffset)
-            make.right.equalTo(self.view).offset(uiElement.rightOffset)
-            make.bottom.equalTo(stripeAddFundsMessage).offset(uiElement.bottomOffset * 2)
-        }
-        
-        let messageTitle = self.uiElement.soundbrewLabel("Message", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 1)
-        self.messageButton.addSubview(messageTitle)
-        messageTitle.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(messageButton)
-            make.left.equalTo(messageButton)
-        }
-        
-        self.messageButton.addSubview(messageLabel)
-        messageLabel.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(messageButton)
-            make.left.equalTo(messageTitle.snp.right).offset(uiElement.leftOffset)
-            make.right.equalTo(messageButton)
-        }
     }
     
     @objc func didPressTopViewButton(_ sender: UIButton) {
         if sender.tag == 0 {
             self.dismiss(animated: true, completion: nil)
-        } else {
-            self.uiElement.shouldAnimateActivitySpinner(true, buttonGroup: (sendMoneyButton, activitySpinner))
+        } else if sender.tag == 2 {
+            self.shouldAnimagePaymentProgressSpinner(true)
             if self.paymentContext.paymentCurrency == "usd" {
                 self.paymentContext.requestPayment()
             } else {
@@ -341,10 +413,19 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
     func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
         self.sendMoneyButton.isEnabled = paymentContext.selectedPaymentOption != nil
         let fundsToSend = self.uiElement.convertCentsToDollarsAndReturnString(paymentContext.paymentAmount)
-        self.sendMoneyButton.setTitle("Gift \(fundsToSend)", for: .normal)
+
         self.total.text = fundsToSend
         self.cardNumberLastFour.text = paymentContext.selectedPaymentOption?.label
         self.cardImage.image = paymentContext.selectedPaymentOption?.image
+        
+        if paymentContext.selectedPaymentOption?.label == "Apple Pay" {
+            payWithCardButton.isHidden = true
+            applePayButton.isHidden = false
+        } else {
+            applePayButton.isHidden = true
+            payWithCardButton.isHidden = false
+        }
+        
         setupView()
     }
     
@@ -396,7 +477,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
     }
     
     func paymentContext(_ paymentContext: STPPaymentContext, didFinishWith status: STPPaymentStatus, error: Error?) {
-        self.uiElement.shouldAnimateActivitySpinner(false, buttonGroup: (sendMoneyButton, activitySpinner))
+        self.shouldAnimagePaymentProgressSpinner(false)
         switch status {
         case .error:
             var errorString = ""
