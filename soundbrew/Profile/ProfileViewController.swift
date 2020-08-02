@@ -569,11 +569,23 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
             cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressJoinFanClubNewPlaylistButton(_:)), for: .touchUpInside)
             
-            if artist.account != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
+            if let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId {
                 cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
+                if profileArtistId == currentArtistId && artist.account == nil {
+                    cell.sendGiftButton.tag = 0
+                } else if profileArtistId != currentArtistId && artist.account != nil {
+                    cell.sendGiftButton.tag = 1
+                } else {
+                    cell.sendGiftButton.isHidden = true
+                }
+            }
+            
+            /*if artist.account != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
+                cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
+                
             } else {
                 cell.sendGiftButton.isHidden = true
-            }
+            }*/
             
             let localizedFollow = NSLocalizedString("follow", comment: "")
             let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
@@ -596,7 +608,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.joinFanClubButton.layer.borderWidth = 1
                     cell.joinFanClubButton.clipsToBounds = true
                     
+                    cell.sendGiftButton.setTitle("Start Fan Club", for: .normal)
+                    
                 } else {
+                    cell.sendGiftButton.setTitle("Send Gift", for: .normal)
+                    
                     if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
                             cell.followUserEditProfileButton.setTitle(localizedFollowing, for: .normal)
@@ -637,9 +653,29 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //mark: button actions
     @objc func didPressSendArtistMoneyButton(_ sender: UIButton) {
-        let modal = SendMoneyViewController()
-        modal.artist = self.profileArtist
-        self.present(modal, animated: true, completion: nil)
+        if sender.tag == 0 {
+            newFanClubAlert()
+        } else {
+            let modal = SendMoneyViewController()
+            modal.artist = self.profileArtist
+            self.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    func newFanClubAlert() {
+        let alertController = UIAlertController (title: "Earn From Your Followers (US Only)", message:
+            "Earn money from your followers by starting a fan club. Fans pay $12.99 per month, and you'll earn $11.04 per fan per month after Soundbrew's 15% fee. Fans can gift you money within the app, and you can choose which sounds are exclusive!", preferredStyle: .actionSheet)
+            
+        let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
+            self.showNewAccount("US")
+        }
+        alertController.addAction(getStartedAction)
+            
+        let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
+        }
+        alertController.addAction(cancelAction)
+            
+        present(alertController, animated: true, completion: nil)
     }
     
     @objc func didPressJoinFanClubNewPlaylistButton(_ sender: UIButton) {

@@ -239,7 +239,7 @@ class Account {
         self.routingNumber = nil
         Customer.shared.artist?.account = self
         updateUserInfoWithAccountNumber()
-        let menuAlert = UIAlertController(title: "Your Fan Club is Live!", message: "Your fans can join your fan club from the Soundbrew website at soundbrew.app/\(Customer.shared.artist?.username ?? "yourUsername").", preferredStyle: .alert)
+        let menuAlert = UIAlertController(title: "Your Fan Club is Live!", message: "Your fans can join from your Soundbrew website profile at soundbrew.app/\(Customer.shared.artist?.username ?? "yourUsername"). You can add your payout bank and see your account info on the settings tab of your profile.", preferredStyle: .alert)
         menuAlert.addAction(UIAlertAction(title: "Okay", style: .default, handler: { action in
             target.dismiss(animated: true, completion: nil)
         }))

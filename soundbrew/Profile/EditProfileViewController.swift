@@ -31,9 +31,7 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
 
     var emailText: UITextField!
     var shouldUpdateEmail = false
-    
-    var isOnboarding = false
-    
+        
     var tagType: String!
     var topView: (UIButton, UIButton, UIView, UIActivityIndicatorView)!
     
@@ -540,16 +538,12 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
                         customer.update()
                         
                         DispatchQueue.main.async {
-                            if self.isOnboarding {
-                                self.uiElement.newRootView("Main", withIdentifier: "tabBar")
-                            } else {
-                                //used to let give profileViewController updated profile
-                                self.dismiss(animated: true, completion: {() in
-                                    if let artistDelegate = self.artistDelegate {
-                                        artistDelegate.receivedArtist(customer.artist)
-                                    }
-                                })
-                            }
+                            //used to let give profileViewController updated profile
+                            self.dismiss(animated: true, completion: {() in
+                                if let artistDelegate = self.artistDelegate {
+                                    artistDelegate.receivedArtist(customer.artist)
+                                }
+                            })
                         }
                         
                     } else if let error = error {

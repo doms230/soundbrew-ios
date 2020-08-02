@@ -176,7 +176,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func didPressFanClubExclusiveSwitch(_ sender: UISwitch) {
         if Customer.shared.artist?.account?.id == nil {
             sender.isOn = false
-            self.uiElement.showAlert("Fan Club Required", message: "Earn money from your followers by starting a fan club! You can get started from the settings panel on your profile.", target: self)
+            self.uiElement.showAlert("Fan Club Account Required", message: "Earn money from your followers by starting a fan club! You can get started on your profile page.", target: self)
         } else {
             self.soundThatIsBeingEdited?.isExclusive = sender.isOn
         }

@@ -38,7 +38,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if doesMatchSoundType() {
             self.setUpMiniPlayer()
             createTopView()
-            
+            checkForDefaultValue()
             let changeSoundTypeButton = UIBarButtonItem(image: UIImage(named: "dismiss_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSoundTypeButton(_:)))
             
             self.navigationItem.rightBarButtonItem = changeSoundTypeButton
@@ -153,8 +153,14 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.performSegue(withIdentifier: "showSearch", sender: self)
     }
     
-    /*func checkForDefaultValue() {
-        if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
+    func checkForDefaultValue() {
+        if let soundId = self.uiElement.getUserDefault("newSoundId") as? String {
+            UserDefaults.standard.removeObject(forKey: "newSoundId")
+            loadDynamicLinkSound(soundId, shouldShowShareSoundView: true, shouldPlay: true)
+        } else {
+            loadLastListen()
+        }
+       /* if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: false, shouldPlay: true)
         } else if let soundId = self.uiElement.getUserDefault("newSoundId") as? String {
@@ -168,8 +174,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.performSegue(withIdentifier: "showProfile", sender: self)
         } else if self.uiElement.getUserDefault("receivedUsername") != nil {
             self.performSegue(withIdentifier: "showProfile", sender: self)
-        }
-    }*/
+        }*/
+    }
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         if self.tableView != nil {
@@ -346,7 +352,8 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 make.bottom.equalTo(tabBarController.tabBar.snp.top)
             }
         }
-        self.loadLastListen()
+       // self.loadLastListen()
+        checkForDefaultValue()
         setUpTableView()
     }
     

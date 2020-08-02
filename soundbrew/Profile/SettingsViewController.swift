@@ -177,8 +177,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return 2
         }
         
-        if section == 2 && self.artist?.account != nil {
-            return 2
+        if section == 2 {
+            if self.artist?.account == nil {
+                return 0
+            } else {
+                return 2 
+            }
         }
         
         return 1
@@ -348,36 +352,26 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func didSelectAccountSection(_ indexPath: IndexPath) {
-        if self.artist?.account == nil {
-            newFanClubAlert()
-            /*if let isVerified = self.artist?.isVerified, isVerified {
-              
-            } else {
-                self.uiElement.showAlert("Not Publicly Available Yet", message: "Email support@soundbrew.app or message us @sound_brew to request access.", target: self)
-            }*/
-            
-        } else {
-            switch indexPath.row {
-            //case 0:
-              //  showFollowersOrFollowing("fans")
-               // break
-            case 0:
-                if let container = self.so_containerViewController {
-                    container.isSideViewControllerPresented = false
-                    if let topView = container.topViewController as? UINavigationController,
-                        let view = topView.topViewController as? ProfileViewController{
-                        view.performSegue(withIdentifier: "showEarnings", sender: self)
-                    }
+        switch indexPath.row {
+        //case 0:
+          //  showFollowersOrFollowing("fans")
+           // break
+        case 0:
+            if let container = self.so_containerViewController {
+                container.isSideViewControllerPresented = false
+                if let topView = container.topViewController as? UINavigationController,
+                    let view = topView.topViewController as? ProfileViewController{
+                    view.performSegue(withIdentifier: "showEarnings", sender: self)
                 }
-                break
-                
-            case 1:
-                showRequireAccountAttention()
-                break
-                
-            default:
-                break
             }
+            break
+            
+        case 1:
+            showRequireAccountAttention()
+            break
+            
+        default:
+            break
         }
     }
     
@@ -389,28 +383,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 view.performSegue(withIdentifier: "showAccountWebView", sender: self)
             }
         }
-    }
-    
-    func newFanClubAlert() {
-        let alertController = UIAlertController (title: "Earn From Your Followers", message:
-            "Earn money from your followers by starting a fan club. Fans pay $12.99 per month, and you'll earn $11.04 per fan per month after Soundbrew's 15% fee. You can choose which sounds are exclusive to your fanbase!", preferredStyle: .actionSheet)
-            
-        let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
-            if let container = self.so_containerViewController {
-                container.isSideViewControllerPresented = false
-                if let topView = container.topViewController as? UINavigationController,
-                    let view = topView.topViewController as? ProfileViewController {
-                    view.showNewAccount("US")
-                    }
-                }
-            }
-        alertController.addAction(getStartedAction)
-            
-        let cancelAction = UIAlertAction(title: "Later", style: .cancel) { (_) -> Void in
-        }
-        alertController.addAction(cancelAction)
-            
-        present(alertController, animated: true, completion: nil)
     }
     
 }

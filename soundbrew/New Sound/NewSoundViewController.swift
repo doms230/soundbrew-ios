@@ -85,17 +85,17 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     func decideAction() {
-        let alertController = UIAlertController (title: "", message: "Upload drafts from the web at soundbrew.app/uploads", preferredStyle: .actionSheet)
+        let alertController = UIAlertController (title: "", message: "Upload drafts from the web at soundbrew.app/upload", preferredStyle: .actionSheet)
         
         let newUploadAction = UIAlertAction(title: "New Upload", style: .default) { (_) -> Void in
             self.showNewUpload()
         }
         alertController.addAction(newUploadAction)
         
-        let newPlaylistAction = UIAlertAction(title: "New Collection", style: .default) { (_) -> Void in
+        let newPlaylistAction = UIAlertAction(title: "New Collection (Album, EP, etc.)", style: .default) { (_) -> Void in
             if self.soundList != nil {
                 if self.soundList.sounds.count == 0 {
-                    self.uiElement.showAlert("Sound Drafts Required", message: "Start a new upload, new save your sound as a draft to start a new collection.", target: self)
+                    self.uiElement.showAlert("Sound Drafts Required", message: "Start a new upload, then save your sound as a draft to start a new collection.", target: self)
                 } else {
                     self.didSelectNewPlaylist = true
                     self.tableView.reloadData()
