@@ -18,20 +18,34 @@ class Like: NSObject {
     var likeSoundButton: UIButton!
     
     func newLike() {
-        if let sound = player.currentSound, let toUserId = sound.artist?.objectId, let fromUserId = self.customer.artist?.objectId {
-            let newPayment = PFObject(className: "Tip")
-            newPayment["fromUserId"] = fromUserId
-            newPayment["toUserId"] = toUserId
-            newPayment["soundId"] = sound.objectId
-            newPayment.saveEventually {
-                (success: Bool, error: Error?) in
-                  if success {
-                    self.player.currentSound?.currentUserDidLikeSong = true
-                    self.updateLikeButton()
-                    self.newMention(sound, fromUserId: fromUserId, toUserId: toUserId)
+        if currentUserDoesHaveAccessToSound() {
+            if let sound = player.currentSound, let toUserId = sound.artist?.objectId, let fromUserId = self.customer.artist?.objectId {
+                let newPayment = PFObject(className: "Tip")
+                newPayment["fromUserId"] = fromUserId
+                newPayment["toUserId"] = toUserId
+                newPayment["soundId"] = sound.objectId
+                newPayment.saveEventually {
+                    (success: Bool, error: Error?) in
+                      if success {
+                        self.player.currentSound?.currentUserDidLikeSong = true
+                        self.updateLikeButton()
+                        self.newMention(sound, fromUserId: fromUserId, toUserId: toUserId)
+                      }
                   }
-              }
+            }
         }
+    }
+    
+    func currentUserDoesHaveAccessToSound() -> Bool {
+        let currentSound = Player.sharedInstance.currentSound
+        if  let currentUserId = PFUser.current()?.objectId,
+            let artistUserId = currentSound?.artist?.objectId,
+            let isExclusive = currentSound?.isExclusive,
+            currentUserId != artistUserId && isExclusive,
+            let soundProductId = currentSound?.productId, !Customer.shared.fanClubs.contains(soundProductId) {
+            return false
+        }
+        return true
     }
     
     func newMention(_  sound: Sound, fromUserId: String, toUserId: String) {
