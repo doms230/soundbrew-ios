@@ -63,7 +63,7 @@ class SoundListTableViewCell: UITableViewCell {
         let soundArtImage = uiElement.soundbrewImageView(nil, cornerRadius: 5, backgroundColor: .clear)
         soundArtImage.layer.borderColor = color.purpleBlack().cgColor
         soundArtImage.layer.borderWidth = 1
-        soundArtImage.backgroundColor = .darkGray
+        soundArtImage.backgroundColor = color.purpleBlack()
         return soundArtImage
     }()
     

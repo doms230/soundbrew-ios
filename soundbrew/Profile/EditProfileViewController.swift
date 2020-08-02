@@ -171,8 +171,10 @@ class EditProfileViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
-       artist?.website = websiteText.text
+        artist?.website = websiteText.text
         artist?.email = emailText.text?.lowercased()
+        artist?.username = usernameText.text
+        artist?.name = nameText.text
         
         switch indexPath.section {
         case 0:
