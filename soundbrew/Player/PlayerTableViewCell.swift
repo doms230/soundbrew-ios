@@ -38,12 +38,23 @@ class PlayerTableViewCell: UITableViewCell {
         
         if reuseIdentifier == "playerReuse" {
             self.addSubview(soundArt)
-            soundArt.snp.makeConstraints { (make) -> Void in
-                make.top.equalTo(self).offset(uiElement.topOffset)
-                make.bottom.equalTo(self).offset(uiElement.bottomOffset)
-                make.right.equalTo(self).offset(uiElement.rightOffset * 3)
-                make.left.equalTo(self).offset(uiElement.leftOffset * 3)
-                make.height.equalTo(soundArt.snp.width)
+            if Player.sharedInstance.videoPlayer != nil {
+                soundArt.snp.makeConstraints { (make) -> Void in
+                    make.height.equalTo(200)
+                    make.top.equalTo(self).offset(uiElement.topOffset)
+                    make.right.equalTo(self)
+                    make.left.equalTo(self)
+                    make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                }
+                
+            } else {
+                soundArt.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(self).offset(uiElement.topOffset)
+                    make.bottom.equalTo(self).offset(uiElement.bottomOffset)
+                    make.right.equalTo(self).offset(uiElement.rightOffset * 3)
+                    make.left.equalTo(self).offset(uiElement.leftOffset * 3)
+                    make.height.equalTo(soundArt.snp.width)
+                }
             }
             
         } else {

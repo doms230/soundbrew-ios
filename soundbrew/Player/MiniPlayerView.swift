@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SnapKit
 import Parse
+import FWPlayerCore
 
 class MiniPlayerView: UIButton {
     static let sharedInstance = MiniPlayerView()
@@ -64,16 +65,22 @@ class MiniPlayerView: UIButton {
         return button
     }()
     @objc func didPressPlayBackButton(_ sender: UIButton) {
+        var isPlaying = false
+        
         if let soundPlayer = player.player {
-            if soundPlayer.isPlaying {
-                player.pause()
-                timer.invalidate()
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-            } else {
-                player.play()
-                startTimer()
-                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            }
+            isPlaying = soundPlayer.isPlaying
+        } else if let videoPlayerIsPlaying = player.videoPlayer?.currentPlayerManager.isPlaying {
+            isPlaying = videoPlayerIsPlaying
+        }
+        
+        if isPlaying {
+            player.pause()
+            timer.invalidate()
+            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+        } else {
+            player.play()
+            startTimer()
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
         }
         
         activitySpinner.isHidden = true
@@ -119,7 +126,7 @@ class MiniPlayerView: UIButton {
         let slider = UISlider()
         slider.value = 0
         slider.minimumValue = 0
-        slider.maximumValue = 100
+        slider.maximumValue = 1000
         slider.tintColor = .white
         slider.setThumbImage(UIImage(), for: .normal)
         slider.isEnabled = false
@@ -128,10 +135,19 @@ class MiniPlayerView: UIButton {
     
     var timer = Timer()
     func startTimer() {
+        print("start timer")
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     @objc func UpdateTimer(_ timer: Timer) {
-        if let currentTime = player.player?.currentTime {
+        var currentTime: TimeInterval?
+        
+        if let audioCurrentTime = player.player?.currentTime {
+            currentTime = audioCurrentTime
+        } else if let videoCurrentTime = player.videoPlayer?.currentTime {
+            currentTime = videoCurrentTime
+        }
+        
+        if let currentTime = currentTime {
             playBackSlider.value = Float(currentTime)
         }
     }
@@ -235,6 +251,12 @@ class MiniPlayerView: UIButton {
         setSound()
     }
     
+    @objc func didReceivePreparingSoundNotification() {
+        self.activitySpinner.isHidden = false
+        playBackButton.isHidden = true
+        playBackSlider.value = 0
+    }
+    
     func setSound() {
         like.likeSoundButton = self.likeSoundButton
         like.target = self.superViewController
@@ -249,33 +271,41 @@ class MiniPlayerView: UIButton {
         } else {
             self.likeSoundButton.isEnabled = true
             self.likeSoundButton.setImage(UIImage(named: "sendTip"), for: .normal)
-           // like.checkIfUserLikedSong()
         }
         
         setCurrentSoundView()
         self.playBackButton.isEnabled = true
         
-        if let duration = self.player.player?.duration {
+        var duration: TimeInterval?
+        
+        if let audioDuration = self.player.player?.duration {
+            duration = audioDuration
+        } else if let videoDuration = self.player.videoPlayer?.totalTime {
+            duration = videoDuration
+        }
+        
+        if let duration = duration {
             playBackSlider.maximumValue = Float(duration)
             self.startTimer()
         }
         
+        var isPlaying: Bool!
+        
         if let audioPlayer = player.player {
-            if audioPlayer.isPlaying {
-                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-            } else {
-                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
-            }
-            
-            activitySpinner.isHidden = true
-            playBackButton.isHidden = false
+            isPlaying = audioPlayer.isPlaying
+        } else if let videoPlayer = self.player.videoPlayer?.currentPlayerManager {
+            isPlaying = videoPlayer.isPlaying
         }
-    }
-    
-    @objc func didReceivePreparingSoundNotification() {
-        self.activitySpinner.isHidden = false
-        playBackButton.isHidden = true
-        playBackSlider.value = 0
+        
+        if let isPlaying = isPlaying, isPlaying {
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        } else {
+            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+        }
+        
+        activitySpinner.isHidden = true
+        playBackButton.isHidden = false
+        
     }
     
     func setCurrentSoundView() {
@@ -283,6 +313,11 @@ class MiniPlayerView: UIButton {
             self.songTitle.text = sound.title
             
             self.songArt.kf.setImage(with: URL(string: sound.artFile?.url ?? ""), placeholder: UIImage(named: "sound"))
+            
+            if let videoPlayer = self.player.videoPlayer {
+                videoPlayer.allowOrentitaionRotation = false
+                videoPlayer.containerView = self.songArt
+            }
             
             if let artistName = sound.artist?.name {
                 self.artistName.text = artistName

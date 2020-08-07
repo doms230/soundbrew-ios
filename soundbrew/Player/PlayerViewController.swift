@@ -325,6 +325,10 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 
                 if let sound = player.currentSound {
                     player.target = self
+                    if let videoPlayer = self.player.videoPlayer {
+                        videoPlayer.allowOrentitaionRotation = true
+                        videoPlayer.containerView = cell.soundArt
+                    }
                     cell.soundArt.kf.setImage(with: URL(string: sound.artFile?.url  ?? ""), placeholder: UIImage(named: "sound"))
                 }
                 return cell

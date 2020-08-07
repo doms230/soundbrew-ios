@@ -35,4 +35,6 @@ target 'soundbrew' do
   #pod 'FlagKit'
   pod 'NotificationBannerSwift'
   pod 'GoogleSignIn'
+  pod 'FWPlayer'
+  
 end

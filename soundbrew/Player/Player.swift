@@ -13,12 +13,15 @@ import Parse
 import MediaPlayer
 import Kingfisher
 import Alamofire
+import FWPlayerCore
 
 class Player: NSObject, AVAudioPlayerDelegate {
     
     static let sharedInstance = Player()
     
     var player: AVAudioPlayer?
+    var videoPlayer: FWPlayerController?
+    
     var currentSoundIndex = 0
     var sounds: Array<Sound>!
     var currentSound: Sound?
@@ -34,6 +37,41 @@ class Player: NSObject, AVAudioPlayerDelegate {
         setupRemoteTransportControls()
     }
     
+    func prepareVideo(_ shouldPlay: Bool) {
+        if let videoURL = URL(string: currentSound?.videoURL ?? "") {
+            videoPlayer = FWPlayerController()
+            
+            let playerManager = FWAVPlayerManager()
+            playerManager.isEnableMediaCache = false
+            playerManager.shouldAutoPlay = false
+            videoPlayer?.replaceCurrentPlayerManager(playerManager)
+            
+            let videoPlayerView = FWPlayerControlView()
+            videoPlayerView.fastViewAnimated = true
+            videoPlayerView.autoHiddenTimeInterval = 5.0
+            videoPlayerView.autoFadeTimeInterval = 0.5
+            videoPlayerView.prepareShowLoading = false
+            videoPlayerView.prepareShowControlView = true
+            videoPlayerView.bottomPgrogress.isHidden = true
+            videoPlayer?.controlView = videoPlayerView
+            
+            videoPlayer?.pauseWhenAppResignActive = false
+            videoPlayer?.assetURL = videoURL
+            videoPlayer?.playerDidToEnd = { (asset) in
+                self.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
+            }
+            
+            videoPlayer?.playerReadyToPlay = { (playback, url) in
+                self.soundIsPlayableActions(self.sounds[self.currentSoundIndex])
+            }
+            
+            videoPlayer?.playerPlayFailed = { (playback, url) in
+                self.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
+            }
+            
+        }
+    }
+        
     func prepareAudio(_ audioData: Data, shouldPlay: Bool) {
         var soundPlayable = true
         
@@ -81,21 +119,24 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         if soundPlayable {
-            resetStream()
-            if sound.artImage == nil {
-                loadArtfileImageData(sound)
-            }
-            
-            if sound.artist?.image == nil {
-                sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
-            }
-            
-            //Loading here to so that Soundbrew can check if sound is exclusive to artist' fan club
-            Like.shared.checkIfUserLikedSong(shouldPlay)
-                        
+            soundIsPlayableActions(sound)
         } else {
             setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: nil)
         }
+    }
+    
+    func soundIsPlayableActions(_ sound: Sound) {
+        resetStream()
+        if sound.artImage == nil {
+            loadArtfileImageData(sound)
+        }
+        
+        if sound.artist?.image == nil {
+            sound.artist?.loadUserInfoFromCloud(nil, soundCell: nil, commentCell: nil, mentionCell: nil, artistUsernameLabel: nil, artistImageButton: nil)
+        }
+        
+        //Loading here to so that Soundbrew can check if sound is exclusive to artist' fan club
+        Like.shared.checkIfUserLikedSong(true)
     }
     
     //This function is called when audio finishes playing. Not called anywhere in Soundbrew project files
@@ -111,24 +152,31 @@ class Player: NSObject, AVAudioPlayerDelegate {
             tableView.reloadData()
         }
         
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
         let miniPlayer = MiniPlayerView.sharedInstance
         miniPlayer.setSound()
     }
     
     func play() {
         shouldEnableCommandCenter(true)
-        if let player = self.player {
-            if currentUserDoesHaveAccessToSound() {
+        
+        if currentUserDoesHaveAccessToSound() {
+            if let player = self.player {
                 if !player.isPlaying {
                     player.play()
                     sendSoundUpdateToUI()
                     startTimer()
                 }
                 
-            } else {
-                playSoundIsExclusiveMessage()
+            } else if let videoPlayerPlayerManager = self.videoPlayer?.currentPlayerManager {
+                if !videoPlayerPlayerManager.isPlaying! {
+                    videoPlayerPlayerManager.play?()
+                    sendSoundUpdateToUI()
+                    startTimer()
+                }
             }
+
+        } else {
+            playSoundIsExclusiveMessage()
         }
     }
     
@@ -172,6 +220,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sendSoundUpdateToUI()
                 secondsPlayedTimer.invalidate()
             }
+        } else if let videoPlayerPlayerManager = self.videoPlayer?.currentPlayerManager {
+            if videoPlayerPlayerManager.isPlaying! {
+                print("pause")
+                videoPlayerPlayerManager.pause?()
+                sendSoundUpdateToUI()
+                secondsPlayedTimer.invalidate()
+            }
         }
     }
     
@@ -197,6 +252,8 @@ class Player: NSObject, AVAudioPlayerDelegate {
         //stop soundplayer audio from playing over each other
         if player != nil {
             player = nil
+        } else if videoPlayer != nil {
+            videoPlayer = nil
         } else if let sound = self.currentSound {
             if sound.audioData == nil {
                 //don't want audio to continue downloading while attempting to fetch next song...
@@ -215,8 +272,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let sound = soundToPrepare {
             currentSound = sound
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
+            
             self.sendSoundUpdateToUI()
-            prepareToPlaySound(sound, shouldPlay: shouldPlay)
+            if sound.audioURL != nil {
+                prepareToPlaySound(sound, shouldPlay: shouldPlay)
+            } else {
+                self.prepareVideo(shouldPlay)
+            }
         }
     }
     

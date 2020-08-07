@@ -323,9 +323,10 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         guard let fileURL = urls.first else {
              return
         }
+        //TODO: relplace videoURL with video file instead of nil
         wasShownNewUpload = true 
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: artist?.account?.productId)
+        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: artist?.account?.productId, videoURL: nil)
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     

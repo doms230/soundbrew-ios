@@ -185,7 +185,26 @@ class PlayBackControl {
     var timer = Timer()
     
     @objc func didPressPlayBackButton(_ sender: UIButton) {
+        var isPlaying = false
+        
         if let soundPlayer = player.player {
+            isPlaying = soundPlayer.isPlaying
+        } else if let videoPlayerIsPlaying = player.videoPlayer?.currentPlayerManager.isPlaying {
+            isPlaying = videoPlayerIsPlaying
+        }
+        
+        if isPlaying {
+            player.pause()
+            timer.invalidate()
+            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+        } else {
+            player.play()
+            startTimer()
+            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+        }
+        
+        
+        /*if let soundPlayer = player.player {
             if soundPlayer.isPlaying {
                 player.pause()
                 timer.invalidate()
@@ -195,7 +214,7 @@ class PlayBackControl {
                 startTimer()
                 self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
             }
-        }
+        }*/
     }
     
     @objc func didPressGoBackButton(_ sender: UIButton) {
@@ -243,17 +262,27 @@ class PlayBackControl {
     
     @objc func sliderValueDidChange(_ sender: UISlider) {
         if let soundPlayer = player.player {
-            playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
             soundPlayer.currentTime = TimeInterval(sender.value)
-            player.setBackgroundAudioNowPlaying()
+        } else if let videoPlayer = player.videoPlayer {
+            videoPlayer.seek(toTime: TimeInterval(sender.value), completionHandler: nil)
         }
+        playBackCurrentTime.text = self.uiElement.formatTime(Double(sender.value))
+        player.setBackgroundAudioNowPlaying()
     }
     
     func startTimer() {
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     @objc func UpdateTimer(_ timer: Timer) {
-        if let currentTime = player.player?.currentTime {
+        var currentTime: TimeInterval?
+        
+        if let soundCurrentTime = player.player?.currentTime {
+            currentTime = soundCurrentTime
+        } else if let videoCurrentTime = player.videoPlayer?.currentTime {
+            currentTime = videoCurrentTime
+        }
+        
+        if let currentTime = currentTime {
             let floatCurrentTime = Float(currentTime)
             playBackCurrentTime.text = "\(self.uiElement.formatTime(Double(currentTime)))"
             playBackSlider.value = floatCurrentTime
