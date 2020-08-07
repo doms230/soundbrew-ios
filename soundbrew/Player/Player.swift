@@ -68,7 +68,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
             videoPlayer?.playerPlayFailed = { (playback, url) in
                 self.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
             }
-            
         }
     }
         
@@ -151,9 +150,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if let tableView = self.tableView {
             tableView.reloadData()
         }
-        
-        let miniPlayer = MiniPlayerView.sharedInstance
-        miniPlayer.setSound()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        if let _ = self.target as? PlayerViewController {
+            
+        } else {
+            let miniPlayer = MiniPlayerView.sharedInstance
+            miniPlayer.setSound()
+        }
+
     }
     
     func play() {
@@ -222,19 +226,25 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
         } else if let videoPlayerPlayerManager = self.videoPlayer?.currentPlayerManager {
             if videoPlayerPlayerManager.isPlaying! {
-                print("pause")
                 videoPlayerPlayerManager.pause?()
-                sendSoundUpdateToUI()
+               // sendSoundUpdateToUI()
                 secondsPlayedTimer.invalidate()
             }
         }
     }
     
     func previous() {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
-        if let player = self.player, let sound = self.currentSound {
-            if Int(player.currentTime) > 5 || currentSoundIndex == 0 {
-                player.currentTime = 0.0
+        var currentTime: TimeInterval?
+        if let audioCurrentTime = self.player?.currentTime {
+            currentTime = audioCurrentTime
+        } else if let videoCurrentTime = self.videoPlayer?.currentTime {
+            currentTime = videoCurrentTime
+        }
+        
+        if let currentTime = currentTime, let sound = self.currentSound {
+            if Int(currentTime) > 5 || currentSoundIndex == 0 {
+                self.player?.currentTime = 0.0
+                self.videoPlayer?.seek(toTime: 0.0, completionHandler: nil)
                 setBackgroundAudioNowPlaying()
                 incrementPlayCount(sound)
                 recordListener(sound)
@@ -252,8 +262,14 @@ class Player: NSObject, AVAudioPlayerDelegate {
         //stop soundplayer audio from playing over each other
         if player != nil {
             player = nil
+            if let playerViewController = target as? PlayerViewController {
+                playerViewController.setUpTableView()
+            }
         } else if videoPlayer != nil {
             videoPlayer = nil
+            if let playerViewController = target as? PlayerViewController {
+                playerViewController.setUpTableView()
+            }
         } else if let sound = self.currentSound {
             if sound.audioData == nil {
                 //don't want audio to continue downloading while attempting to fetch next song...
@@ -271,7 +287,6 @@ class Player: NSObject, AVAudioPlayerDelegate {
         
         if let sound = soundToPrepare {
             currentSound = sound
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
             
             self.sendSoundUpdateToUI()
             if sound.audioURL != nil {
@@ -522,11 +537,26 @@ class Player: NSObject, AVAudioPlayerDelegate {
                     }
                 }
                 
+                var duration: TimeInterval?
+                var rate: Float?
+                var currentTime: TimeInterval?
+                
                 if let player = self.player {
-                    let cmTime = CMTime(seconds: player.currentTime, preferredTimescale: 1000000)
+                    duration = player.duration
+                    rate = player.rate
+                    currentTime = player.currentTime
+                    
+                } else if let videoPlayer = self.videoPlayer {
+                    duration = videoPlayer.totalTime
+                    rate = videoPlayer.currentPlayerManager.rate
+                    currentTime = videoPlayer.currentTime
+                }
+                
+                if let currentTime = currentTime, let duration = duration, let rate = rate {
+                    let cmTime = CMTime(seconds: currentTime, preferredTimescale: 1000000)
                     nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(cmTime)
-                    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
-                    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+                    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
+                    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = rate
                 }
                 
                 // Set the metadata

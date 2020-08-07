@@ -82,16 +82,30 @@ class PlayBackControl {
     }()
     
     func setupPlaybackControls() {
-        if let duration = self.player.player?.duration {
+        var duration: TimeInterval?
+        
+        if let audioDuration = self.player.player?.duration {
+            duration = audioDuration
+        } else if let videoDuration = self.player.videoPlayer?.totalTime {
+            duration = videoDuration
+        }
+        
+        if let duration = duration {
             self.playBackTotalTime.text = self.uiElement.formatTime(Double(duration))
             playBackSlider.maximumValue = Float(duration)
             self.startTimer()
         }
         
-        if player.player != nil, player.player!.isPlaying  {
-            self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
-        } else {
-            self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+        var isPlaying: Bool?
+        isPlaying = self.player.player?.isPlaying
+        isPlaying = self.player.videoPlayer?.currentPlayerManager.isPlaying
+        
+        if let isPlaying = isPlaying {
+            if isPlaying {
+                self.playBackButton.setImage(UIImage(named: "pause"), for: .normal)
+            } else {
+                self.playBackButton.setImage(UIImage(named: "play"), for: .normal)
+            }
         }
         
         let like = Like.shared
@@ -278,7 +292,7 @@ class PlayBackControl {
         
         if let soundCurrentTime = player.player?.currentTime {
             currentTime = soundCurrentTime
-        } else if let videoCurrentTime = player.videoPlayer?.currentTime {
+        } else if let videoCurrentTime = player.videoPlayer?.currentPlayerManager.currentTime {
             currentTime = videoCurrentTime
         }
         

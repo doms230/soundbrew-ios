@@ -253,6 +253,7 @@ class MiniPlayerView: UIButton {
     
     @objc func didReceivePreparingSoundNotification() {
         self.activitySpinner.isHidden = false
+        self.activitySpinner.startAnimating()
         playBackButton.isHidden = true
         playBackSlider.value = 0
     }

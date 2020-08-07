@@ -36,6 +36,13 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             setupNotificationCenter()
         }
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        if self.player.videoPlayer != nil {
+            let miniPlayer = MiniPlayerView.sharedInstance
+            miniPlayer.setSound()
+        }
+    }
         
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -54,10 +61,11 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
                 loadComments()
                 self.tableView.reloadData()
             }
-        } 
-        if let player = self.player.player, let atTime = self.didPressAtTime {
+        }
+        
+        if let atTime = self.didPressAtTime {
             self.didPressAtTime = nil
-            jumpToTime(player, atTime: atTime)
+            jumpToTime(atTime)
         }
     }
     
@@ -266,6 +274,7 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             self.tableView.backgroundColor = self.color.black()
             self.tableView.keyboardDismissMode = .onDrag
             self.tableView.separatorStyle = .none
+            self.player.tableView = self.tableView
             self.view.addSubview(self.tableView)
             self.tableView.snp.makeConstraints { (make) -> Void in
                 make.top.equalTo(self.dividerLine.snp.bottom)
@@ -481,19 +490,27 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
         }
         
         if let comment = comment {
-            if let player = self.player.player, let playerSound = self.player.currentSound, let commentSound = self.player.currentSound, playerSound.objectId == commentSound.objectId {
-                jumpToTime(player, atTime: comment.atTime)
+            if let playerSound = self.player.currentSound, let commentSound = self.player.currentSound, playerSound.objectId == commentSound.objectId {
+                jumpToTime(comment.atTime)
             } else {
                 didPressAtTime = comment.atTime
             }
         }
     }
-    func jumpToTime(_ player: AVAudioPlayer, atTime: Float) {
-        player.currentTime = TimeInterval(atTime)
-        self.atTime = atTime
-        if !player.isPlaying {
-            self.player.play()
+    func jumpToTime(_ atTime: Float) {
+        if let audioPlayer = self.player.player {
+            audioPlayer.currentTime = TimeInterval(atTime)
+            if !audioPlayer.isPlaying {
+                self.player.play()
+            }
+            
+        } else if let videoPlayer = self.player.videoPlayer {
+            videoPlayer.seek(toTime: TimeInterval(atTime), completionHandler: nil)
+            if !(videoPlayer.currentPlayerManager.isPlaying ?? false) {
+                self.player.play()
+            }
         }
+        self.atTime = atTime
     }
     
     @objc func didPressProfileButton(_ sender: UIButton) {

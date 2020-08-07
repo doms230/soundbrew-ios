@@ -126,6 +126,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "setSound"), object: nil)
+        
         let customer = Customer.shared
         if let userObjectId = customer.artist?.objectId {
             customer.getCurrentUserInfo(userObjectId)

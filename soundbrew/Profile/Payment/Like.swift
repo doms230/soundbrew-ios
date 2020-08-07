@@ -102,8 +102,10 @@ class Like: NSObject {
         
         //make sure this code is run on the main thread
         DispatchQueue.main.async {
-            self.likeSoundButton.isEnabled = shouldEnableLikeSoundButton
-            self.likeSoundButton.setImage(UIImage(named: uiImageName), for: .normal)
+            if self.likeSoundButton != nil {
+                self.likeSoundButton.isEnabled = shouldEnableLikeSoundButton
+                self.likeSoundButton.setImage(UIImage(named: uiImageName), for: .normal)
+            }
         }
     }
 }
