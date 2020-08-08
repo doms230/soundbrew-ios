@@ -12,6 +12,7 @@ import SnapKit
 import Kingfisher
 import UICircularProgressRing
 import CropViewController
+import Firebase
 
 class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, TagDelegate, ArtistDelegate, CreditDelegate, UITextViewDelegate, CropViewControllerDelegate {
     
@@ -32,11 +33,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let miniPlayer = MiniPlayerView.sharedInstance
+        miniPlayer.isHidden = true
+        
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(appBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+        
         if let objectId = self.soundThatIsBeingEdited?.objectId {
             self.loadCredits(objectId)
         }
         getSelectedTags()
-        setUpViews()
+        setupDoneButtons()
         setUpTableView()
     }
     
@@ -44,22 +51,105 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView.reloadData()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        saveDraftButton.removeFromSuperview()
+        uploadAsSingleButton.removeFromSuperview()
+    }
+    
+    @objc func appBecomeActive() {
+        if let uploadTask = self.uploadTask {
+            uploadTask.resume()
+        }
+    }
+    
     //mark: views
-    var uploadButton: UIBarButtonItem!
-    var backButton: UIBarButtonItem!
-    func setUpViews() {
+    var saveDraftButton: UIButton!
+    var uploadAsSingleButton: UIButton!
+    lazy var spinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.color = .white
+        return spinner
+    }()
+    
+    func shouldAnimateActivitySpinner(_ buttonToAnimate: UIButton, shouldAnimate: Bool) {
+        if shouldAnimate {
+            buttonToAnimate.addSubview(spinner)
+            spinner.snp.makeConstraints { (make) -> Void in
+                make.height.width.equalTo(buttonToAnimate)
+                make.center.equalTo(buttonToAnimate)
+            }
+            saveDraftButton.isEnabled = false
+            uploadAsSingleButton.isEnabled = false
+            if buttonToAnimate.tag == 0 {
+                buttonToAnimate.setTitle("", for: .normal)
+            } else {
+                buttonToAnimate.setTitle("", for: .normal)
+            }
+            spinner.isHidden = false
+            spinner.startAnimating()
+            
+        } else {
+            spinner.isHidden = true
+            spinner.stopAnimating()
+            spinner.removeFromSuperview()
+            if buttonToAnimate.tag == 0 {
+                buttonToAnimate.setTitle("Drafts", for: .normal)
+            } else {
+                buttonToAnimate.setTitle("Post", for: .normal)
+            }
+            saveDraftButton.isEnabled = true
+            uploadAsSingleButton.isEnabled = true
+        }
+    }
+    
+    func setupDoneButtons() {
         var shouldUploadButtonBeEnabled = false
         if soundThatIsBeingEdited?.objectId != nil {
             shouldUploadButtonBeEnabled = true
         }
         
-        uploadButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.didPressDoneButton(_:)))
-        uploadButton.isEnabled = shouldUploadButtonBeEnabled
-        self.navigationItem.rightBarButtonItem = uploadButton
+        saveDraftButton = self.uiElement.soundbrewButton("Drafts", shouldShowBorder: false, backgroundColor: .darkGray, image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)", size: 17)!, titleColor: .white, cornerRadius: 5)
+        saveDraftButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
+        saveDraftButton.tag = 0
+        
+        uploadAsSingleButton = self.uiElement.soundbrewButton("Post", shouldShowBorder: false, backgroundColor: color.blue(), image: nil, titleFont: UIFont(name: "\(uiElement.mainFont)", size: 17)!, titleColor: .white, cornerRadius: 5)
+        uploadAsSingleButton.addTarget(self, action: #selector(self.didPressDoneButton(_:)), for: .touchUpInside)
+        uploadAsSingleButton.tag = 1
+        
+        shouldEnableDraftAndSingButton(shouldUploadButtonBeEnabled)
+        
+        if let tabBarController = self.tabBarController {
+            tabBarController.view.addSubview(saveDraftButton)
+            saveDraftButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(self.uiElement.buttonHeight)
+                make.width.equalTo(tabBarController.view.frame.width / 2 - 25)
+                make.left.equalTo(tabBarController.view).offset(uiElement.leftOffset)
+                make.bottom.equalTo(tabBarController.tabBar.snp.top).offset(uiElement.bottomOffset)
+            }
+            
+            tabBarController.view.addSubview(uploadAsSingleButton)
+            uploadAsSingleButton.snp.makeConstraints { (make) -> Void in
+                make.height.equalTo(self.uiElement.buttonHeight)
+                make.width.equalTo(tabBarController.view.frame.width / 2 - 25)
+                make.right.equalTo(tabBarController.view).offset(uiElement.rightOffset)
+                make.bottom.equalTo(tabBarController.tabBar.snp.top).offset(uiElement.bottomOffset)
+            }
+            
+        }
     }
     
-    @objc func didPressGoBackButton(_ sender: UIBarButtonItem) {
-        self.uiElement.goBackToPreviousViewController(self)
+    func shouldEnableDraftAndSingButton(_ shouldEnable: Bool) {
+        saveDraftButton.isEnabled = shouldEnable
+        uploadAsSingleButton.isEnabled = shouldEnable
+        if shouldEnable {
+            saveDraftButton.backgroundColor = .darkGray
+            saveDraftButton.setTitle("Drafts", for: .normal)
+            uploadAsSingleButton.backgroundColor = color.blue()
+            uploadAsSingleButton.setTitle("Post", for: .normal)
+        } else {
+            saveDraftButton.backgroundColor = color.purpleBlack()
+            uploadAsSingleButton.backgroundColor = color.purpleBlack()
+        }
     }
     
     //MARK: Tableview
@@ -74,6 +164,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let creditCellSection = 4
     let tagCellSection = 6
     func setUpTableView() {
+        var tabBarControllerHeight: CGFloat = 50
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBarControllerHeight = tabBar.frame.height
+        }
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)
@@ -82,11 +177,17 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: dividerReuse)
         tableView.backgroundColor = color.black()
         tableView.keyboardDismissMode = .onDrag
-        tableView.frame = view.bounds
+       // tableView.frame = view.bounds
         tableView.separatorStyle = .none
         self.view.addSubview(tableView)
+        tableView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view)
+            make.right.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.bottom.equalTo(self.view).offset(-(50 + tabBarControllerHeight))
+        }
         if soundThatIsBeingEdited?.objectId == nil {
-            processAudioForDatabase()
+            processFileForDatabase()
         } else {
             self.soundParseFileDidFinishProcessing = true 
         }
@@ -438,7 +539,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     var audioProgress: UICircularProgressRing!
     var progressSliderTitle: UILabel!
     
-    func processAudioForDatabase() {
+    func processFileForDatabase() {
         if let soundFileString = soundThatIsBeingEdited?.audioURL {
             if let soundFileURL = URL(string: soundFileString) {
                 if pathExtensionIsUncompressed(soundFileURL.pathExtension) {
@@ -451,11 +552,55 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
                 self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload)")
             }
-        } else if let videoFileString = soundThatIsBeingEdited?.videoURL {
-            if let videoFileURL = URL(string: videoFileString) {
-                convertURLToDataAndSavetoDatabase(videoFileURL, fileName: "video")
+            
+        } else if let videoFileString = soundThatIsBeingEdited?.videoURL,
+            let videoFileURL = URL(string: videoFileString) {
+            uploadFileToGoogleStorage(videoFileURL)
+        } else {
+            let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
+            self.errorAlert(localizedProcessingAudio, message: "Unable to access File")
+        }
+    }
+    
+    var uploadTask: StorageUploadTask?
+    func uploadFileToGoogleStorage(_ videoURL: URL) {
+            let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
+        
+            let storage = Storage.storage()
+
+            // Create a root reference
+            let storageRef = storage.reference()
+
+            // Create a reference to 'images/mountains.jpg'
+            let videoVidesRef = storageRef.child("videos/video.\(videoURL.pathExtension)")
+            
+            // Upload the file to the path "images/rivers.jpg"
+            uploadTask = videoVidesRef.putFile(from: videoURL, metadata: nil) { metadata, error in
+                if let error = error {
+                    self.errorAlert(localizedProcessingAudio, message: error.localizedDescription)
+                }
+              // You can also access to download URL after upload.
+              videoVidesRef.downloadURL { (url, error) in
+                if let uploadedFileURL = url {
+                    self.soundThatIsBeingEdited?.videoURL = "\(uploadedFileURL)"
+                    self.soundThatIsBeingEdited?.videoPathExtension = videoURL.pathExtension
+                    self.soundParseFileDidFinishProcessing = true
+                    self.shouldEnableDraftAndSingButton(true)
+                } else if let error = error {
+                    self.errorAlert(localizedProcessingAudio, message: error.localizedDescription)
+                }
             }
         }
+            
+        if let uploadTask = self.uploadTask {
+            uploadTask.observe(.progress) { snapshot in
+                let percentComplete = 100.0 * Double(snapshot.progress!.completedUnitCount)
+                    / Double(snapshot.progress!.totalUnitCount)
+                self.audioProgress.value = CGFloat(percentComplete)
+            }
+        }
+        
+        
     }
     
     func pathExtensionIsUncompressed(_ pathExtension: String) -> Bool {
@@ -487,9 +632,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if fileName == "audio" {
                 self.soundThatIsBeingEdited?.audioFile = PFFileObject(name: name, data: file)
                 self.saveParseFile(self.soundThatIsBeingEdited!.audioFile!)
-            } else {
-                self.soundThatIsBeingEdited?.videoFile = PFFileObject(name: name, data: file)
-                self.saveParseFile(self.soundThatIsBeingEdited!.videoFile!)
             }
             
         } catch let error {
@@ -503,7 +645,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundParseFileDidFinishProcessing = true
-                self.uploadButton.isEnabled = true
+                self.shouldEnableDraftAndSingButton(true)
             } else if let error = error {
                 let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
                 self.errorAlert(localizedProcessingAudio, message: error.localizedDescription)
@@ -596,24 +738,14 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //
-    @objc func didPressDoneButton(_ sender: UIBarButtonItem) {
-        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
-        
-        let yesAction = UIAlertAction(title: "Release as Single", style: .default) { (_) -> Void in
+    @objc func didPressDoneButton(_ sender: UIButton) {
+        if sender.tag == 0 {
+            shouldAnimateActivitySpinner(saveDraftButton, shouldAnimate: true)
+            self.doneAction(true)
+        } else {
+            shouldAnimateActivitySpinner(uploadAsSingleButton, shouldAnimate: true)
             self.doneAction(false)
         }
-        alertController.addAction(yesAction)
-        
-        let noAction = UIAlertAction(title: "Save to Drafts", style: .default) { (_) -> Void in
-            self.doneAction(true)
-        }
-        alertController.addAction(noAction)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) -> Void in
-        }
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion: nil)
     }
     
     func doneAction(_ isDraft: Bool) {
@@ -639,8 +771,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         newSound["user"] = PFUser.current()
         if let audioFile = sound.audioFile {
             newSound["audioFile"] = audioFile
-        } else if let videoFile = sound.videoFile {
-            newSound["videoFile"] = videoFile
+        } else if let videoURL = sound.videoURL, let videoPathExtension = sound.videoPathExtension {
+            newSound["videoURL"] = videoURL
+            newSound["videoPathExtension"] = videoPathExtension
         }
         
         if let title = sound.title {
@@ -684,6 +817,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 DispatchQueue.main.async {
                     let localizedCouldNotPost = NSLocalizedString("couldNotPost", comment: "")
                     self.uiElement.showAlert(localizedCouldNotPost, message: error.localizedDescription, target: self)
+                    if isDraft {
+                        self.shouldAnimateActivitySpinner(self.saveDraftButton, shouldAnimate: false)
+                    } else {
+                        self.shouldAnimateActivitySpinner(self.uploadAsSingleButton, shouldAnimate: false)
+                    }
                 }
             }
         }
@@ -739,6 +877,11 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                         DispatchQueue.main.async {
                             let localizedCouldNotUpdate = NSLocalizedString("couldNotUpdate", comment: "")
                             self.uiElement.showAlert(localizedCouldNotUpdate, message: error.localizedDescription, target: self)
+                            if isDraft {
+                                self.shouldAnimateActivitySpinner(self.saveDraftButton, shouldAnimate: false)
+                            } else {
+                                self.shouldAnimateActivitySpinner(self.uploadAsSingleButton, shouldAnimate: false)
+                            }
                         }
                     }
                 }

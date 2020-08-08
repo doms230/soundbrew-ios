@@ -42,8 +42,15 @@ class Player: NSObject, AVAudioPlayerDelegate {
             videoPlayer = FWPlayerController()
             
             let playerManager = FWAVPlayerManager()
-            playerManager.isEnableMediaCache = false
             playerManager.shouldAutoPlay = false
+            if let videoFilePathExtension = currentSound?.videoPathExtension {
+                if videoFilePathExtension.lowercased() == "mp4" {
+                    playerManager.isEnableMediaCache = false
+                } else {
+                    playerManager.isEnableMediaCache = true
+                }
+            }
+            
             videoPlayer?.replaceCurrentPlayerManager(playerManager)
             
             let videoPlayerView = FWPlayerControlView()

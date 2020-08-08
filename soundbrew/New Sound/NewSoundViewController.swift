@@ -30,6 +30,9 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     
     override func viewDidAppear(_ animated: Bool) {
         setMiniPlayer()
+        let miniPlayer = MiniPlayerView.sharedInstance
+        miniPlayer.isHidden = false
+        
         if PFUser.current() != nil {
             if tableView != nil {
                 showSounds()
@@ -339,7 +342,7 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         //TODO: relplace videoURL with video file instead of nil
         wasShownNewUpload = true 
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audioFile: nil, audioURL: nil, audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: artist?.account?.productId, videoFile: nil, videoURL: nil)
+        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audioFile: nil, audioURL: nil, audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: artist?.account?.productId, videoURL: nil, videoPathExtension: nil)
         if uploadType == "audio" {
             newSound.audioURL = "\(fileURL)"
         } else if uploadType == "video" {

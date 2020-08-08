@@ -33,10 +33,11 @@ class Sound {
     var isFeatured: Bool?
     var isExclusive: Bool?
     var productId: String?
-    var videoFile: PFFileObject?
     var videoURL: String?
+    //Need videoExtension because FWPlayer doesn't support playing while downloading with .MP4 files
+    var videoPathExtension: String?
     
-    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audioFile: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, productId: String?, videoFile: PFFileObject?, videoURL: String?) {
+    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audioFile: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, productId: String?, videoURL: String?, videoPathExtension: String?) {
         self.objectId = objectId
         self.title = title
         self.audioFile = audioFile
@@ -58,8 +59,8 @@ class Sound {
         self.isFeatured = isFeatured
         self.isExclusive = isExclusive
         self.productId = productId
-        self.videoFile = videoFile
         self.videoURL = videoURL
+        self.videoPathExtension = videoPathExtension
     }
     
     func fetchAudioData(_ shouldPlay: Bool) {

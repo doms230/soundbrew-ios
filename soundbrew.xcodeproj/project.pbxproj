@@ -503,6 +503,7 @@
 				B082AF0E245F1D3F45DAB765 /* [CP] Embed Pods Frameworks */,
 				F246998322A829240020497E /* Embed Frameworks */,
 				DB34FCC6BDDFD0F5A9742B21 /* [CP] Copy Pods Resources */,
+				E43789A624DF12C1004BFBAE /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -791,6 +792,23 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-soundbrew/Pods-soundbrew-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		E43789A624DF12C1004BFBAE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/FWPlayerCore.framework/strip-frameworks.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -345,7 +345,7 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audioFile: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: nil, videoFile: nil, videoURL: nil)
+        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audioFile: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: nil, videoURL: nil, videoPathExtension: nil)
         
         sound.createdAt = object.createdAt
         sound.objectId = object.objectId
@@ -353,8 +353,8 @@ class UIElement {
         sound.audioFile = object["audioFile"] as? PFFileObject
         sound.audioURL = sound.audioFile?.url
         
-        let videoFile = object["videoFile"] as? PFFileObject
-        sound.videoURL = videoFile?.url
+        sound.videoURL = object["videoURL"] as? String
+        sound.videoPathExtension = object["videoPathExtension"] as? String
         
         if let title = object["title"] as? String {
             if title == "" {
