@@ -13,7 +13,7 @@ import Alamofire
 class Sound {
     var objectId: String?
     var title: String?
-    var audio: PFFileObject?
+    var audioFile: PFFileObject?
     var audioURL: String?
     var audioData: Data?
     var isNextUpToPlay: Bool!
@@ -33,12 +33,13 @@ class Sound {
     var isFeatured: Bool?
     var isExclusive: Bool?
     var productId: String?
+    var videoFile: PFFileObject?
     var videoURL: String?
     
-    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audio: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, productId: String?, videoURL: String?) {
+    init(objectId: String?, title: String?, artImage: UIImage?, artFile: PFFileObject?, tags: Array<String>?, createdAt: Date?, playCount: Int?, audioFile: PFFileObject?, audioURL: String?, audioData: Data?, artist: Artist?, tmpFile: TemporaryFile?, tipCount: Int?, currentUserDidLikeSong: Bool?, isDraft: Bool?, isNextUpToPlay: Bool!, creditCount: Int?, commentCount: Int?, isFeatured: Bool?, isExclusive: Bool?, productId: String?, videoFile: PFFileObject?, videoURL: String?) {
         self.objectId = objectId
         self.title = title
-        self.audio = audio
+        self.audioFile = audioFile
         self.audioURL = audioURL
         self.artImage = artImage
         self.artFile = artFile
@@ -57,11 +58,12 @@ class Sound {
         self.isFeatured = isFeatured
         self.isExclusive = isExclusive
         self.productId = productId
+        self.videoFile = videoFile
         self.videoURL = videoURL
     }
     
     func fetchAudioData(_ shouldPlay: Bool) {
-        if self.audioData == nil, let audio = self.audio {
+        if self.audioData == nil, let audio = self.audioFile {
             var audioWasLoaded = false
             audio.getDataInBackground {
                 (audioData: Data?, error: Error?) -> Void in

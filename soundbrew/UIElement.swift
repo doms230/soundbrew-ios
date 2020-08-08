@@ -345,13 +345,13 @@ class UIElement {
     }
     
     func newSoundObject(_ object: PFObject) -> Sound {
-        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: nil, videoURL: nil)
+        let sound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audioFile: nil, audioURL: nil, audioData: nil, artist: nil, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: nil, isNextUpToPlay: nil, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: nil, videoFile: nil, videoURL: nil)
         
         sound.createdAt = object.createdAt
         sound.objectId = object.objectId
         
-        sound.audio = object["audioFile"] as? PFFileObject
-        sound.audioURL = sound.audio?.url
+        sound.audioFile = object["audioFile"] as? PFFileObject
+        sound.audioURL = sound.audioFile?.url
         
         let videoFile = object["videoFile"] as? PFFileObject
         sound.videoURL = videoFile?.url

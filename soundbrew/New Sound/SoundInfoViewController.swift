@@ -336,7 +336,6 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func saveTags(_ tags: Array<Tag>) {
-        
         for tag in tags {
             if let tagId = tag.objectId {
                 let query = PFQuery(className: "Tag")
@@ -445,34 +444,26 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
                 if pathExtensionIsUncompressed(soundFileURL.pathExtension) {
                     self.convertAudioToM4a(soundFileURL)
                 } else {
-                    convertURLToDataAndSavetoDatabase(soundFileURL)
+                    convertURLToDataAndSavetoDatabase(soundFileURL, fileName: "audio")
                 }
                 
             } else {
                 let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
                 self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload)")
             }
+        } else if let videoFileString = soundThatIsBeingEdited?.videoURL {
+            if let videoFileURL = URL(string: videoFileString) {
+                convertURLToDataAndSavetoDatabase(videoFileURL, fileName: "video")
+            }
         }
     }
     
     func pathExtensionIsUncompressed(_ pathExtension: String) -> Bool {
         switch pathExtension {
-        case "wav", "pcm", "aiff":
+        case "wav", "pcm", "aiff", "mov":
             return true
         default:
             return false
-        }
-    }
-    
-    func convertURLToDataAndSavetoDatabase(_ soundfileURL: URL) {
-        do {
-            let audioFile = try Data(contentsOf: soundfileURL, options: .uncached)
-            let name = "audio.\(soundfileURL.pathExtension)"
-            self.soundThatIsBeingEdited?.audio = PFFileObject(name: name, data: audioFile)
-            self.saveAudioFile(self.soundThatIsBeingEdited!.audio!)
-        } catch let error {
-            let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
-            self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload) \(error)")
         }
     }
     
@@ -484,18 +475,35 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             if let error = error {
                 print(error)
             } else {
-                self.convertURLToDataAndSavetoDatabase(outputURL)
+                self.convertURLToDataAndSavetoDatabase(outputURL, fileName: "audio")
             }
         })
     }
     
-    func saveAudioFile(_ soundParseFile: PFFileObject) {
+    func convertURLToDataAndSavetoDatabase(_ soundfileURL: URL, fileName: String) {
+        do {
+            let file = try Data(contentsOf: soundfileURL, options: .uncached)
+            let name = "\(fileName).\(soundfileURL.pathExtension)"
+            if fileName == "audio" {
+                self.soundThatIsBeingEdited?.audioFile = PFFileObject(name: name, data: file)
+                self.saveParseFile(self.soundThatIsBeingEdited!.audioFile!)
+            } else {
+                self.soundThatIsBeingEdited?.videoFile = PFFileObject(name: name, data: file)
+                self.saveParseFile(self.soundThatIsBeingEdited!.videoFile!)
+            }
+            
+        } catch let error {
+            let localizedIssueWithUpload = NSLocalizedString("issueWithUpload", comment: "")
+            self.errorAlert(self.uiElement.localizedOops, message: "\(localizedIssueWithUpload) \(error)")
+        }
+    }
+    
+    func saveParseFile(_ soundParseFile: PFFileObject) {
         soundParseFile.saveInBackground({
             (succeeded: Bool, error: Error?) -> Void in
             if succeeded {
                 self.soundParseFileDidFinishProcessing = true
                 self.uploadButton.isEnabled = true
-                                
             } else if let error = error {
                 let localizedProcessingAudio = NSLocalizedString("SoundProcessingFailed", comment: "")
                 self.errorAlert(localizedProcessingAudio, message: error.localizedDescription)
@@ -629,7 +637,12 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         let newSound = PFObject(className: "Post")
         newSound["userId"] = sound.artist!.objectId
         newSound["user"] = PFUser.current()
-        newSound["audioFile"] = sound.audio!
+        if let audioFile = sound.audioFile {
+            newSound["audioFile"] = audioFile
+        } else if let videoFile = sound.videoFile {
+            newSound["videoFile"] = videoFile
+        }
+        
         if let title = sound.title {
             newSound["title"] = title
         }

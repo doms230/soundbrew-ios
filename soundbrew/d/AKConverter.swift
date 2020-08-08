@@ -183,7 +183,7 @@ open class AKConverter: NSObject {
 
         var format: AVFileType
         var formatKey: AudioFormatID
-
+        
         switch outputFormat {
         case "m4a", "mp4":
             format = .m4a
@@ -197,6 +197,7 @@ open class AKConverter: NSObject {
         case "wav":
             format = .wav
             formatKey = kAudioFormatLinearPCM
+        
         default:
             print("Unsupported output format: \(outputFormat)")
             return

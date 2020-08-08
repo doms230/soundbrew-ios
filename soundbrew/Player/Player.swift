@@ -263,18 +263,20 @@ class Player: NSObject, AVAudioPlayerDelegate {
         if player != nil {
             player = nil
             if let playerViewController = target as? PlayerViewController {
+                //doing this to insure sound art looks correct and not in video view
                 playerViewController.setUpTableView()
             }
         } else if videoPlayer != nil {
             videoPlayer = nil
             if let playerViewController = target as? PlayerViewController {
+                //doing this to insure sound art looks correct and not in video view
                 playerViewController.setUpTableView()
             }
         } else if let sound = self.currentSound {
             if sound.audioData == nil {
                 //don't want audio to continue downloading while attempting to fetch next song...
                 //holds up everything.
-                sound.audio?.cancel()
+                sound.audioFile?.cancel()
             }
         }
         
@@ -562,6 +564,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 // Set the metadata
                 MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             }
+
         }
     }
     

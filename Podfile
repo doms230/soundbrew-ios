@@ -36,5 +36,6 @@ target 'soundbrew' do
   pod 'NotificationBannerSwift'
   pod 'GoogleSignIn'
   pod 'FWPlayer'
-  
+  pod 'Firebase/Storage'
+
 end

@@ -87,7 +87,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     func decideAction() {
         let alertController = UIAlertController (title: "", message: "Upload drafts from the web at soundbrew.app/upload", preferredStyle: .actionSheet)
         
-        let newUploadAction = UIAlertAction(title: "New Upload", style: .default) { (_) -> Void in
+        let newVideoUploadAction = UIAlertAction(title: "New Video Upload", style: .default) { (_) -> Void in
+            self.uploadType = "video"
+            self.showNewUpload()
+        }
+        alertController.addAction(newVideoUploadAction)
+        
+        let newUploadAction = UIAlertAction(title: "New Audio Upload", style: .default) { (_) -> Void in
+            self.uploadType = "audio"
             self.showNewUpload()
         }
         alertController.addAction(newUploadAction)
@@ -311,8 +318,14 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     }
     
     //mark: new sound upload
+    var uploadType: String!
     func showNewUpload() {
-        let types: NSArray = NSArray(object: kUTTypeAudio as NSString)
+        var types: NSArray!
+        if uploadType == "audio" {
+            types = NSArray(object: kUTTypeAudio as NSString)
+        } else if uploadType == "video" {
+            types = NSArray(object: kUTTypeMovie as NSString)
+        }
         let documentPicker = UIDocumentPickerViewController(documentTypes: types as! [String], in: .import)
         documentPicker.delegate = self
         documentPicker.modalPresentationStyle = .fullScreen
@@ -326,7 +339,12 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
         //TODO: relplace videoURL with video file instead of nil
         wasShownNewUpload = true 
         let artist = Customer.shared.artist
-        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audio: nil, audioURL: "\(fileURL)", audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: artist?.account?.productId, videoURL: nil)
+        newSound = Sound(objectId: nil, title: nil, artImage: nil, artFile: nil, tags: nil, createdAt: nil, playCount: nil, audioFile: nil, audioURL: nil, audioData: nil, artist: artist, tmpFile: nil, tipCount: nil, currentUserDidLikeSong: nil, isDraft: true, isNextUpToPlay: false, creditCount: nil, commentCount: nil, isFeatured: nil, isExclusive: nil, productId: artist?.account?.productId, videoFile: nil, videoURL: nil)
+        if uploadType == "audio" {
+            newSound.audioURL = "\(fileURL)"
+        } else if uploadType == "video" {
+            newSound.videoURL = "\(fileURL)"
+        }
         self.performSegue(withIdentifier: "showEditSoundInfo", sender: self)
     }
     
