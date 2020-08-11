@@ -38,10 +38,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if doesMatchSoundType() {
             self.setUpMiniPlayer()
             createTopView()
-            checkForDefaultValue()
-            let changeSoundTypeButton = UIBarButtonItem(image: UIImage(named: "dismiss_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSoundTypeButton(_:)))
             
-            self.navigationItem.rightBarButtonItem = changeSoundTypeButton
+            if PFUser.current() != nil {
+                let changeSoundTypeButton = UIBarButtonItem(image: UIImage(named: "dismiss_nav"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.didPressSoundTypeButton(_:)))
+                
+                self.navigationItem.rightBarButtonItem = changeSoundTypeButton
+            }
             
         } else {
             self.setUpTableView()
@@ -60,6 +62,12 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         setupNotificationCenter()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        URLCache.shared.removeAllCachedResponses()
+        URLCache.shared.diskCapacity = 0
+        URLCache.shared.memoryCapacity = 0
     }
     
    @objc func didPressSoundTypeButton(_ sender: UIButton) {
@@ -158,7 +166,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             UserDefaults.standard.removeObject(forKey: "newSoundId")
             loadDynamicLinkSound(soundId, shouldShowShareSoundView: true, shouldPlay: true)
         } else {
-            loadLastListen()
+            //loadLastListen()
         }
        /* if let soundId = self.uiElement.getUserDefault("receivedSoundId") as? String {
             UserDefaults.standard.removeObject(forKey: "receivedSoundId")
@@ -209,7 +217,6 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if soundType == "forYou" {
             soundTypeTitle = "For You"
         }
-        
         self.uiElement.addTitleView(soundTypeTitle, target: self)
     }
     
@@ -248,10 +255,13 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             make.bottom.equalTo(self.view).offset(-(miniPlayerHeight + tabBarControllerHeight))
         }
         
+        showSoundList()
+        if self.soundType == "forYou" {
+            soundList.shouldPlaySoundsForYouPage = true
+        }
+
         let player = Player.sharedInstance
         player.tableView = tableView
-        
-        showSoundList()
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
@@ -384,7 +394,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func loadLastListen() {
+    /*func loadLastListen() {
         if let currentUserId = PFUser.current()?.objectId {
             let query = PFQuery(className: "Listen")
             query.whereKey("userId", equalTo: currentUserId)
@@ -399,7 +409,7 @@ class SoundsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }
             }
         }
-    }
+    }*/
     
     func loadDynamicLinkSound(_ objectId: String?, shouldShowShareSoundView: Bool, shouldPlay: Bool) {
         let query = PFQuery(className: "Post")

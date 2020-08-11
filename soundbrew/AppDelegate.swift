@@ -59,13 +59,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         
         registerForRemoteNotification()
         
+        FileManager.default.clearTmpDirectory()
+        
         if let objectId = PFUser.current()?.objectId {
             Customer.shared.getCurrentUserInfo(objectId)
-            FileManager.default.clearTmpDirectory()
         } else {
             let newUserController = UIStoryboard(name: "NewUser", bundle: nil).instantiateViewController(withIdentifier: "welcome")
             window!.rootViewController = newUserController
-        }        
+        }
         
         return true
     }

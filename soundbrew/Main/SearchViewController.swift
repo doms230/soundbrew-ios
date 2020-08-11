@@ -37,6 +37,12 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    override func didReceiveMemoryWarning() {
+        URLCache.shared.removeAllCachedResponses()
+        URLCache.shared.diskCapacity = 0
+        URLCache.shared.memoryCapacity = 0
+    }
+    
     func setupTags() {
         for featureTagType in featureTagTypes {
             loadTags(featureTagType, searchText: nil)

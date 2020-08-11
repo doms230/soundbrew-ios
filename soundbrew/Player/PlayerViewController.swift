@@ -29,6 +29,8 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(appBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
         self.view.backgroundColor = color.black()
         if let currentSound =  player.currentSound {
             self.currentSound = currentSound
@@ -43,7 +45,13 @@ class PlayerViewController: UIViewController, UITableViewDataSource, UITableView
             miniPlayer.setSound()
         }
     }
-        
+    
+    @objc func appBecomeActive() {
+        if self.player.videoPlayer != nil && self.tableView != nil {
+            self.tableView.reloadData()
+        }
+    }
+                
     func setupNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveSoundUpdate), name: NSNotification.Name(rawValue: "setSound"), object: nil)

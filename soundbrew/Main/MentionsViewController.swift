@@ -21,38 +21,48 @@ class MentionsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationController?.navigationBar.tintColor = .white
         
         self.uiElement.addTitleView("Activity", target: self)
-        self.loadMentions()
+        if PFUser.current() != nil {
+            self.loadMentions()
+        }
       }
     
     override func viewDidAppear(_ animated: Bool) {
-      self.view.backgroundColor = color.black()
-      navigationController?.navigationBar.barTintColor = color.black()
-      navigationController?.navigationBar.tintColor = .white
-      if PFUser.current() != nil {
-          self.setMiniPlayer()
-      }
+        self.view.backgroundColor = color.black()
+        navigationController?.navigationBar.barTintColor = color.black()
+        navigationController?.navigationBar.tintColor = .white
+        if PFUser.current() != nil {
+            self.setMiniPlayer()
+        } else {
+            self.uiElement.welcomeAlert("Register to keep track of your Soundbrew mentions!", target: self)
+        }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        URLCache.shared.removeAllCachedResponses()
+        URLCache.shared.diskCapacity = 0
+        URLCache.shared.memoryCapacity = 0
     }
           
-      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-          switch segue.identifier {
-              case "showProfile":
-                  let viewController = segue.destination as! ProfileViewController
-                  viewController.profileArtist = selectedArtist
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+            case "showProfile":
+                let viewController = segue.destination as! ProfileViewController
+                viewController.profileArtist = selectedArtist
                   
-                  let backItem = UIBarButtonItem()
-                  backItem.title = ""
-                  navigationItem.backBarButtonItem = backItem
-                  break
+                let backItem = UIBarButtonItem()
+                backItem.title = ""
+                navigationItem.backBarButtonItem = backItem
+                break
               
-              case "showSounds":
-                  let viewController = segue.destination as! SoundsViewController
-                  viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
-                  viewController.soundType = "discover"
+            case "showSounds":
+                let viewController = segue.destination as! SoundsViewController
+                viewController.selectedTagForFiltering = self.selectedTagFromPlayerView
+                viewController.soundType = "discover"
                   
-                  let backItem = UIBarButtonItem()
-                  backItem.title = self.selectedTagFromPlayerView.name
-                  navigationItem.backBarButtonItem = backItem
-                  break
+                let backItem = UIBarButtonItem()
+                backItem.title = self.selectedTagFromPlayerView.name
+                navigationItem.backBarButtonItem = backItem
+                break
               
           default:
               break

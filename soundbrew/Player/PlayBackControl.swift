@@ -240,32 +240,35 @@ class PlayBackControl {
     }
     
     @objc func didPressLikeButton(_ sender: UIButton) {
-        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
-        let addPlaylistAction = UIAlertAction(title: "Add to Playlist", style: .default) { (_) -> Void in
-            if let sound = self.player.currentSound {
-                let modal = PlaylistViewController()
-                modal.sound = sound
-                self.viewController.present(modal, animated: true, completion: nil)
+        if PFUser.current() == nil {
+            self.uiElement.signupRequired("Welcome to Soundbrew", message: "Register to like songs and add them to your playlist!", target: viewController)
+        } else {
+            let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+            let addPlaylistAction = UIAlertAction(title: "Add to Playlist", style: .default) { (_) -> Void in
+                if let sound = self.player.currentSound {
+                    let modal = PlaylistViewController()
+                    modal.sound = sound
+                    self.viewController.present(modal, animated: true, completion: nil)
+                }
             }
+            alertController.addAction(addPlaylistAction)
+            
+            let likeSoundAction = UIAlertAction(title: "Add to Likes", style: .default) { (_) -> Void in
+                sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                sender.isEnabled = false
+                let like = Like.shared
+                like.target = self.viewController
+                like.likeSoundButton = sender
+                like.newLike()
+            }
+            alertController.addAction(likeSoundAction)
+            
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            viewController.present(alertController, animated: true, completion: nil)
         }
-        alertController.addAction(addPlaylistAction)
-        
-        let likeSoundAction = UIAlertAction(title: "Add to Likes", style: .default) { (_) -> Void in
-            sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
-            sender.isEnabled = false
-            let like = Like.shared
-            like.target = self.viewController
-            like.likeSoundButton = sender
-            like.newLike()
-        }
-        alertController.addAction(likeSoundAction)
-        
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        viewController.present(alertController, animated: true, completion: nil)
-        
     }
     
     @objc func didPressShareButton(_ sender: UIButton) {
@@ -312,9 +315,15 @@ class PlayBackControl {
     }
     
     func canComment() -> Bool {
-        if let sound = player.currentSound, let currentUserId = PFUser.current()?.objectId, let isExclusive = sound.isExclusive, let productId = sound.productId, let userDidLikeSong = sound.currentUserDidLikeSong, !userDidLikeSong && !Customer.shared.fanClubs.contains(productId) && isExclusive && currentUserId != sound.artist?.objectId {
+        if PFUser.current() == nil {
             if let textView = self.textView {
-                textView.placeholder = "Comments for fan club members"
+                textView.placeholder = "Register to comment"
+                textView.isEditable = false
+            }
+            return false
+        } else  if let sound = player.currentSound, let currentUserId = PFUser.current()?.objectId, let isExclusive = sound.isExclusive, let productId = sound.productId, let userDidLikeSong = sound.currentUserDidLikeSong, !userDidLikeSong && !Customer.shared.fanClubs.contains(productId) && isExclusive && currentUserId != sound.artist?.objectId {
+            if let textView = self.textView {
+                textView.placeholder = "Join fan club to comment"
                 textView.isEditable = false
             }
             return false

@@ -121,7 +121,11 @@ class UIElement {
         
         let localizedLater = NSLocalizedString("later", comment: "")
         let cancelAction = UIAlertAction(title: localizedLater, style: .cancel) { (_) -> Void in
-            self.newRootView("Main", withIdentifier: "tabBar")
+            if let tabBar = target.tabBarController {
+                tabBar.selectedIndex = 0
+            } else {
+                self.newRootView("Main", withIdentifier: "tabBar")
+            }
         }
         alertController.addAction(cancelAction)
         
@@ -269,12 +273,14 @@ class UIElement {
             }
             alertController.addAction(instagramAction)
             
-            let addToPlaylistAction = UIAlertAction(title: "Add To Playlist", style: .default) { (_) -> Void in
-                let modal = PlaylistViewController()
-                modal.sound = sound
-                target.present(modal, animated: true, completion: nil)
+            if PFUser.current() != nil {
+                let addToPlaylistAction = UIAlertAction(title: "Add To Playlist", style: .default) { (_) -> Void in
+                    let modal = PlaylistViewController()
+                    modal.sound = sound
+                    target.present(modal, animated: true, completion: nil)
+                }
+                alertController.addAction(addToPlaylistAction)
             }
-            alertController.addAction(addToPlaylistAction)
             
             let localizedMoreOptions = NSLocalizedString("moreOptions", comment: "")
             let moreAction = UIAlertAction(title: localizedMoreOptions, style: .default) { (_) -> Void in

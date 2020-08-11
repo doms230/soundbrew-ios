@@ -161,9 +161,9 @@ class SoundListTableViewCell: UITableViewCell {
             }
             
             exclusiveImage.snp.makeConstraints { (make) -> Void in
-                make.height.width.equalTo(25)
-                make.top.equalTo(soundArtImage).offset(-8)
-                make.left.equalTo(soundArtImage).offset(-8)
+                make.height.width.equalTo(40)
+                make.top.equalTo(soundArtImage).offset(-15)
+                make.left.equalTo(soundArtImage).offset(-18)
             }
             
             menuButton.snp.makeConstraints { (make) -> Void in

@@ -95,31 +95,35 @@ class MiniPlayerView: UIButton {
     }()
     
     @objc func didPressLikeButton(_ sender: UIButton) {
-        let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
-        let addPlaylistAction = UIAlertAction(title: "Add to Playlist", style: .default) { (_) -> Void in
-            if let sound = self.player.currentSound {
-                let modal = PlaylistViewController()
-                modal.sound = sound
-                self.superViewController.present(modal, animated: true, completion: nil)
+        if PFUser.current() == nil {
+            self.uiElement.signupRequired("Welcome to Soundbrew", message: "Register to like songs and add them to your playlist!", target: superViewController)
+        } else {
+            let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+            let addPlaylistAction = UIAlertAction(title: "Add to Playlist", style: .default) { (_) -> Void in
+                if let sound = self.player.currentSound {
+                    let modal = PlaylistViewController()
+                    modal.sound = sound
+                    self.superViewController.present(modal, animated: true, completion: nil)
+                }
             }
+            alertController.addAction(addPlaylistAction)
+            
+            let likeSoundAction = UIAlertAction(title: "Add to Likes", style: .default) { (_) -> Void in
+                sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
+                sender.isEnabled = false
+                let like = Like.shared
+                like.target = self.superViewController
+                like.likeSoundButton = sender
+                like.newLike()
+            }
+            alertController.addAction(likeSoundAction)
+            
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            self.superViewController.present(alertController, animated: true, completion: nil)
         }
-        alertController.addAction(addPlaylistAction)
-        
-        let likeSoundAction = UIAlertAction(title: "Add to Likes", style: .default) { (_) -> Void in
-            sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
-            sender.isEnabled = false
-            let like = Like.shared
-            like.target = self.superViewController
-            like.likeSoundButton = sender
-            like.newLike()
-        }
-        alertController.addAction(likeSoundAction)
-        
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        self.superViewController.present(alertController, animated: true, completion: nil)
     }
     
     lazy var playBackSlider: UISlider = {
@@ -135,7 +139,6 @@ class MiniPlayerView: UIButton {
     
     var timer = Timer()
     func startTimer() {
-        print("start timer")
         timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(UpdateTimer(_:)), userInfo: nil, repeats: true)
     }
     @objc func UpdateTimer(_ timer: Timer) {
@@ -252,9 +255,9 @@ class MiniPlayerView: UIButton {
     }
     
     @objc func didReceivePreparingSoundNotification() {
+        playBackButton.isHidden = true
         self.activitySpinner.isHidden = false
         self.activitySpinner.startAnimating()
-        playBackButton.isHidden = true
         playBackSlider.value = 0
     }
     

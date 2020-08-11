@@ -68,7 +68,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
     }()
     
     lazy var appDescription: UILabel = {
-        let label = self.uiElement.soundbrewLabel("Where Artists & Creators Get Paid", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+        let label = self.uiElement.soundbrewLabel("Discover & Stream New Music | Get Access to Exclusives | Connect with Artists", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
         label.textAlignment = .center
         return label
     }()
@@ -85,7 +85,7 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
         self.view.addSubview(button)
         let label = UILabel()
         label.text = title
-        label.font = UIFont(name: "system-bold", size: 20)
+        label.font = UIFont(name: "system-bold", size: 15)
         label.textColor = titleColor
         button.addSubview(label)
         label.snp.makeConstraints { (make) -> Void in
@@ -143,33 +143,32 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
-        
-        let googleButton = signInWithButton("Sign in with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
+        let googleButton = signInWithButton("Continue with Google", titleColor: .white, backgroundColor: self.color.uicolorFromHex(0x4285F4), imageName: "google", tag: 3, shouldShowBorderColor: false)
         googleButton.titleLabel?.textAlignment = .center
         self.view.addSubview(googleButton)
         googleButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
+            make.height.equalTo(self.uiElement.buttonHeight)
             make.top.equalTo(appDescription.snp.bottom).offset(uiElement.topOffset * 3)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
         }
                 
-        let emailButton = signInWithButton("Sign in with Soundbrew", titleColor: .white, backgroundColor: .black, imageName: "appIcon_white", tag: 0, shouldShowBorderColor: true)
+        let emailButton = signInWithButton("Continue with Soundbrew", titleColor: .white, backgroundColor: .black, imageName: "appIcon_white", tag: 0, shouldShowBorderColor: true)
         emailButton.titleLabel?.textAlignment = .center
         self.view.addSubview(emailButton)
         emailButton.snp.makeConstraints { (make) -> Void in
-            make.height.equalTo(50)
+            make.height.equalTo(self.uiElement.buttonHeight)
             make.top.equalTo(googleButton.snp.bottom).offset(uiElement.topOffset * 2)
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
         }
         
         if #available(iOS 13.0, *) {
-            let appleButton = ASAuthorizationAppleIDButton(authorizationButtonType: .default, authorizationButtonStyle: .white)
+            let appleButton = ASAuthorizationAppleIDButton(authorizationButtonType: .continue, authorizationButtonStyle: .white)
             appleButton.addTarget(self, action: #selector(diPressAppleButton(_:)), for: .touchUpInside)
             self.view.addSubview(appleButton)
             appleButton.snp.makeConstraints { (make) -> Void in
-                make.height.equalTo(50)
+                make.height.equalTo(self.uiElement.buttonHeight)
                 make.top.equalTo(emailButton.snp.bottom).offset(uiElement.topOffset * 2)
                 make.left.equalTo(self.view).offset(uiElement.leftOffset)
                 make.right.equalTo(self.view).offset(uiElement.rightOffset)
@@ -181,6 +180,17 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             make.left.equalTo(self.view).offset(uiElement.leftOffset)
             make.right.equalTo(self.view).offset(uiElement.rightOffset)
             make.bottom.equalTo(self.view).offset(uiElement.bottomOffset)
+        }
+        
+        let skipButton = signInWithButton("Skip", titleColor: .white, backgroundColor: .black, imageName: nil, tag: 0, shouldShowBorderColor: false)
+        skipButton.titleLabel?.textAlignment = .center
+        skipButton.tag = 4
+        self.view.addSubview(skipButton)
+        skipButton.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(self.uiElement.buttonHeight)
+            make.left.equalTo(self.view).offset(uiElement.leftOffset)
+            make.right.equalTo(self.view).offset(uiElement.rightOffset)
+            make.bottom.equalTo(termsButton.snp.top).offset(uiElement.bottomOffset)
         }
     }
     
@@ -201,6 +211,10 @@ class WelcomeViewController: UIViewController, GIDSignInDelegate, ASAuthorizatio
             GIDSignIn.sharedInstance()?.presentingViewController = self
             GIDSignIn.sharedInstance().delegate = self
             GIDSignIn.sharedInstance().signIn()
+            break
+            
+        case 4:
+            self.uiElement.newRootView("Main", withIdentifier: "tabBar")
             break
             
         default:

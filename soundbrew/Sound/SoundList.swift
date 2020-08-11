@@ -13,6 +13,7 @@
 import Foundation
 import UIKit
 import Parse
+import MediaPlayer
 
 class SoundList: NSObject, PlayerDelegate {
     var target: UIViewController!
@@ -223,7 +224,9 @@ class SoundList: NSObject, PlayerDelegate {
             }))
         }
         
-        self.addToPlaylistAlert(alert, sound: sound)
+        if PFUser.current() != nil {
+            self.addToPlaylistAlert(alert, sound: sound)
+        }
         
         if let playlist = playlist, let playlistUserId = playlist.artist?.objectId, let currentUserObjectId = PFUser.current()?.objectId, playlistUserId == currentUserObjectId {
             alert.addAction(UIAlertAction(title: "Remove from Playlist", style: .default, handler: { action in
@@ -395,6 +398,10 @@ class SoundList: NSObject, PlayerDelegate {
     func determineTypeOfSoundToLoad(_ soundType: String) {
         self.isUpdatingData = true
         switch soundType {
+        case "exclusives":
+            loadSounds(descendingOrder, postIds: nil, userId: userId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: true)
+            break
+            
         case "playlist":
             if let playlistId = self.playlist?.objectId {
                 self.loadPlaylistSounds(playlistId)
@@ -404,10 +411,13 @@ class SoundList: NSObject, PlayerDelegate {
         case "forYou":
             if let currentUserId = PFUser.current()?.objectId {
                 if currentUserId == self.domSmithUserId {
-                    loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                    loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
                 } else {
                     loadLastLike(currentUserId)
                 }
+                
+            } else {
+                loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             }
             break
             
@@ -416,11 +426,11 @@ class SoundList: NSObject, PlayerDelegate {
             if let selectedTag = self.selectedTagForFiltering {
                 tag = selectedTag.name
             }
-            loadSounds("tippers", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: tag, forYouTags: nil)
+            loadSounds("tippers", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: tag, forYouTags: nil, isExclusive: nil)
             break
             
         case "uploads":
-            loadSounds(descendingOrder, postIds: nil, userId: userId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+            loadSounds(descendingOrder, postIds: nil, userId: userId!, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             break
             
         case "collection":
@@ -436,25 +446,25 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "search":
-            loadSounds("plays", postIds: nil, userId: nil, searchText: searchText, followIds: nil, tag: nil, forYouTags: nil)
+            loadSounds("plays", postIds: nil, userId: nil, searchText: searchText, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             break
             
         case "follow":
             if let currentUserId = PFUser.current()?.objectId, currentUserId == self.domSmithUserId {
-                loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             } else if let followUserIds = self.uiElement.getUserDefault("friends") as? [String] {
-                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds, tag: nil, forYouTags: nil)
+                self.loadSounds(descendingOrder, postIds: nil, userId: nil, searchText: nil, followIds: followUserIds, tag: nil, forYouTags: nil, isExclusive: nil)
             }
             break
             
         case "drafts":
             if let userId = self.userId {
-                self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                self.loadSounds(descendingOrder, postIds: nil, userId: userId, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             }
             break
             
         case "new":
-            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+            loadSounds("createdAt", postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             break
             
         default:
@@ -493,7 +503,7 @@ class SoundList: NSObject, PlayerDelegate {
                     }
                 }
                 
-                self.loadSounds(self.descendingOrder, postIds: self.playlistIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                self.loadSounds(self.descendingOrder, postIds: self.playlistIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             }
         }
     }
@@ -506,7 +516,7 @@ class SoundList: NSObject, PlayerDelegate {
              if let object = object {
                 if isForYouPage {
                     let tags = object["tags"] as! [String]?
-                    self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: tags)
+                    self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: tags, isExclusive: nil)
                 } else if isForLastSoundUserListenedTo {
                     let sound = self.uiElement.newSoundObject(object)
                     let player = self.player
@@ -535,7 +545,7 @@ class SoundList: NSObject, PlayerDelegate {
                 let soundId = object["soundId"] as! String
                 self.loadSound(soundId, isForYouPage: true, isForLastSoundUserListenedTo: false)
              } else {
-                self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             }
         }
     }
@@ -543,7 +553,7 @@ class SoundList: NSObject, PlayerDelegate {
     //To insure that data isn't loaded again when user is at bottom of screen
     var isUpdatingData = false
     var thereIsMoreDataToLoad = true
-    
+    var shouldPlaySoundsForYouPage = false
     func updateTableView() {
         DispatchQueue.main.async {
             self.isUpdatingData = false
@@ -553,12 +563,24 @@ class SoundList: NSObject, PlayerDelegate {
                     refreshControl.endRefreshing()
                 }
             }
+            
+            if self.shouldPlaySoundsForYouPage {
+                MPVolumeView.setVolume(0.4)
+                self.shouldPlaySoundsForYouPage = false
+                self.player.sounds = self.sounds
+                self.player.didSelectSoundAt(0)
+            }
         }
     }
     
-    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?, forYouTags: [String]?) {
+    func loadSounds(_ descendingOrder: String?, postIds: Array<String>?, userId: String?, searchText: String?, followIds: Array<String>?, tag: String?, forYouTags: [String]?, isExclusive: Bool?) {
         isUpdatingData = true
         let query = PFQuery(className: "Post")
+        
+        if let isExclusive = isExclusive {
+            query.whereKey("isExclusive", equalTo: isExclusive)
+        }
+        
         if let postIds = postIds {
             query.whereKey("objectId", containedIn: postIds)
         }
@@ -644,7 +666,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
                 
                 if self.soundType == "collection" {
-                    self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                    self.loadSounds(descendingOrder, postIds: self.collectionSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
                 }
             }
         }
@@ -666,7 +688,7 @@ class SoundList: NSObject, PlayerDelegate {
                         self.creditSoundIds.append(object["postId"] as! String)
                     }
                 }
-                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil)
+                self.loadSounds(descendingOrder, postIds: self.creditSoundIds, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             }
         }
     }
@@ -700,4 +722,15 @@ class SoundList: NSObject, PlayerDelegate {
         
         target.present(menuAlert, animated: true, completion: nil)
     }
+}
+
+extension MPVolumeView {
+  static func setVolume(_ volume: Float) {
+    let volumeView = MPVolumeView()
+    let slider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.01) {
+      slider?.value = volume
+    }
+  }
 }

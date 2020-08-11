@@ -41,6 +41,12 @@ class ChooseTagsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
+    override func didReceiveMemoryWarning() {
+        URLCache.shared.removeAllCachedResponses()
+        URLCache.shared.diskCapacity = 0
+        URLCache.shared.memoryCapacity = 0
+    }
+    
     func addTopView(_ doneButtonTitle: String) -> (UISearchBar, UIButton, UIView) {
         let doneButton = UIButton()
         doneButton.setTitle(doneButtonTitle, for: .normal)

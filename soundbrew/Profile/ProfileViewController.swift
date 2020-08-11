@@ -47,7 +47,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        setMiniPlayer()
+        if PFUser.current() != nil {
+            setMiniPlayer()
+        } else {
+            let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
+            self.uiElement.welcomeAlert(localizedRegisterForUpdates, target: self)
+        }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        URLCache.shared.removeAllCachedResponses()
+        URLCache.shared.diskCapacity = 0
+        URLCache.shared.memoryCapacity = 0
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -81,9 +92,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                             backItem.title = "\(username)'s Uploads"
                             viewController.soundType = "uploads"
                             viewController.userId = userId
-                        } else {
+                        } else if indexPath.row == 1 {
                             backItem.title = "\(username)'s Likes"
                             viewController.soundType = "collection"
+                            viewController.userId = userId
+                        } else {
+                            backItem.title = "\(username)'s Exclusives"
+                            viewController.soundType = "exclusives"
                             viewController.userId = userId
                         }
                     }
@@ -201,6 +216,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         case 2:
             return artistPlaylists.count
         case 3:
+            if let profileArtist = self.profileArtist, let accountId = profileArtist.account?.id, !accountId.isEmpty {
+                return 3
+            }
             return 2
         default:
             return 1
@@ -333,9 +351,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if indexPath.row == 0 {
             let uploadsPlaylist = Playlist(objectId: "uploads", artist: self.profileArtist, title: "Uploads", image: nil, type: nil, count: nil)
             playlist = uploadsPlaylist
-        } else {
+        } else if indexPath.row == 1 {
             let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
             playlist = likesPlaylist
+        } else if indexPath.row == 2 {
+            let exclusivesPlaylist = Playlist(objectId: "exclusives", artist: self.profileArtist, title: "Exclusives", image: nil, type: nil, count: nil)
+            playlist = exclusivesPlaylist
         }
                 
         cell.artistImage.image = UIImage(named: "profile_icon")
@@ -353,13 +374,15 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
          cell.artistButton.tag = indexPath.row
          
         if let playlistImageURL = playlist.image?.url  {
-             cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "sound"))
+             cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "playlist"))
         } else if playlist.objectId == "uploads" {
             cell.soundArtImage.image = UIImage(named: "upload")
         } else if playlist.objectId == "likes" {
             cell.soundArtImage.image = UIImage(named: "like")
+        } else if playlist.objectId == "exclusives" {
+            cell.soundArtImage.image = UIImage(named: "diamond")
         } else {
-            cell.soundArtImage.image = UIImage(named: "sound")
+            cell.soundArtImage.image = UIImage(named: "playlist")
         }
         
         if let count = playlist.count {
@@ -395,13 +418,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
              cell.artistButton.tag = indexPath.row
              
             if let playlistImageURL = playlist.image?.url  {
-                 cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "sound"))
-            } else if playlist.objectId == "uploads" {
-                cell.soundArtImage.image = UIImage(named: "upload")
-            } else if playlist.objectId == "likes" {
-                cell.soundArtImage.image = UIImage(named: "like")
+                 cell.soundArtImage.kf.setImage(with: URL(string: playlistImageURL), placeholder: UIImage(named: "playlist"))
             } else {
-                cell.soundArtImage.image = UIImage(named: "sound")
+               cell.soundArtImage.image = UIImage(named: "playlist")
             }
             
             if let count = playlist.count {
@@ -522,9 +541,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.tableView.refreshControl?.endRefreshing()
             }
             self.setUpNavigationButtons()
-        } else {
-            let localizedRegisterForUpdates = NSLocalizedString("registerForUpdates", comment: "")
-            self.uiElement.welcomeAlert(localizedRegisterForUpdates, target: self)
         }
     }
     func profileInfoReuse() -> ProfileTableViewCell {
@@ -566,33 +582,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
             
-            cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
             cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressJoinFanClubNewPlaylistButton(_:)), for: .touchUpInside)
+            cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
+            cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
             
-            if let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId {
-                cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
-                if profileArtistId == currentArtistId && artist.account == nil {
-                    cell.sendGiftButton.tag = 0
-                } else if profileArtistId != currentArtistId && artist.account != nil {
-                    cell.sendGiftButton.tag = 1
-                } else {
-                    cell.sendGiftButton.isHidden = true
-                }
-            }
-            
-            /*if artist.account != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
-                cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
-                
-            } else {
-                cell.sendGiftButton.isHidden = true
-            }*/
-            
-            let localizedFollow = NSLocalizedString("follow", comment: "")
-            let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
-            let localizedFollowing = NSLocalizedString("following", comment: "")
-            
-            if let currentUserID = PFUser.current()?.objectId {
-                if currentUserID == self.profileArtist!.objectId {
+            if let profileArtistId = self.profileArtist?.objectId {
+                if let currentUserId = Customer.shared.artist?.objectId, currentUserId == profileArtistId {
+                    //Current user is profile artist
+                    let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
                     cell.followUserEditProfileButton.setTitle(localizedEditProfile, for: .normal)
                     cell.followUserEditProfileButton.backgroundColor = color.black()
                     cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
@@ -607,12 +604,43 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.joinFanClubButton.layer.borderColor = color.lightGray().cgColor
                     cell.joinFanClubButton.layer.borderWidth = 1
                     cell.joinFanClubButton.clipsToBounds = true
-                    
-                    cell.sendGiftButton.setTitle("Start Fan Club", for: .normal)
+
+                    if self.profileArtist?.account?.productId == nil {
+                        if let regionCode = Locale.current.regionCode, regionCode == "US" {
+                            cell.sendGiftButton.setTitle("Start Fan Club", for: .normal)
+                            cell.sendGiftButton.isHidden = false
+                            cell.sendGiftButton.tag = 0
+                        } else {
+                           cell.sendGiftButton.isHidden = true
+                        }
+                    } else {
+                        cell.sendGiftButton.isHidden = true
+                    }
                     
                 } else {
-                    cell.sendGiftButton.setTitle("Send Gift", for: .normal)
+                    //check for Fan Club Account
+                    if let productId = self.profileArtist?.account?.productId {
+                        cell.sendGiftButton.setTitle("Send Gift", for: .normal)
+                        cell.sendGiftButton.isHidden = false
+                        cell.sendGiftButton.tag = 1
+                        
+                        if Customer.shared.fanClubs.contains(productId) {
+                            cell.joinFanClubButton.setTitle("💎", for: .normal)
+                            cell.joinFanClubButton.backgroundColor = .darkGray
+                        } else {
+                            cell.joinFanClubButton.setTitle("Join Fan Club", for: .normal)
+                            cell.joinFanClubButton.backgroundColor = color.blue()
+                            cell.joinFanClubButton.setTitleColor(.white, for: .normal)
+                        }
+                        
+                    } else {
+                        cell.joinFanClubButton.isHidden = true
+                        cell.sendGiftButton.isHidden = true
+                    }
                     
+                    //See if current user is following profile artist
+                    let localizedFollow = NSLocalizedString("follow", comment: "")
+                    let localizedFollowing = NSLocalizedString("following", comment: "")
                     if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
                         if isFollowedByCurrentUser {
                             cell.followUserEditProfileButton.setTitle(localizedFollowing, for: .normal)
@@ -625,27 +653,96 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                             cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
                             cell.followUserEditProfileButton.tag = 2
                         }
-                    }
-                    
-                    if let productId = self.profileArtist?.account?.productId {
-                        if Customer.shared.fanClubs.contains(productId) {
-                            cell.joinFanClubButton.setTitle("💎", for: .normal)
-                            cell.joinFanClubButton.backgroundColor = .darkGray
-                        } else {
-                            cell.joinFanClubButton.setTitle("Join Fan Club", for: .normal)
-                            cell.joinFanClubButton.backgroundColor = color.blue()
-                            cell.joinFanClubButton.setTitleColor(.white, for: .normal)
-                        }
+                        
                     } else {
-                        cell.joinFanClubButton.isHidden = true 
+                        cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
+                        cell.followUserEditProfileButton.backgroundColor = color.blue()
+                        cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
                     }
                 }
-            } else {
-                cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
-                cell.followUserEditProfileButton.backgroundColor = color.blue()
-                cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
-                cell.followUserEditProfileButton.tag = 3
             }
+            
+            /*cell.followUserEditProfileButton.addTarget(self, action: #selector(self.didPressFollowUserEditProfileButton(_:)), for: .touchUpInside)
+            cell.joinFanClubButton.addTarget(self, action: #selector(self.didPressJoinFanClubNewPlaylistButton(_:)), for: .touchUpInside)*/
+            
+            
+            /*if let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId {
+                cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
+                if profileArtistId == currentArtistId && artist.account == nil {
+                    cell.sendGiftButton.tag = 0
+                    cell.sendGiftButton.setTitle("Start Fan Club", for: .normal)
+                    cell.sendGiftButton.isHidden = false
+                    
+                } else if profileArtistId != currentArtistId && artist.account != nil {
+                    cell.sendGiftButton.tag = 1
+                    cell.sendGiftButton.setTitle("Send Gift", for: .normal)
+                    cell.sendGiftButton.isHidden = false
+                }
+            }*/
+            
+            /*if artist.account != nil, let profileArtistId = self.profileArtist?.objectId, let currentArtistId = Customer.shared.artist?.objectId, profileArtistId != currentArtistId  {
+                cell.sendGiftButton.addTarget(self, action: #selector(didPressSendArtistMoneyButton(_:)), for: .touchUpInside)
+                
+            } else {
+                cell.sendGiftButton.isHidden = true
+            }*/
+            
+            //let localizedFollow = NSLocalizedString("follow", comment: "")
+            //let localizedEditProfile = NSLocalizedString("editProfile", comment: "")
+            //let localizedFollowing = NSLocalizedString("following", comment: "")
+            
+           /* if let currentUserID = PFUser.current()?.objectId,
+            currentUserID == self.profileArtist?.objectId {
+                cell.followUserEditProfileButton.setTitle(localizedEditProfile, for: .normal)
+                cell.followUserEditProfileButton.backgroundColor = color.black()
+                cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                cell.followUserEditProfileButton.layer.borderColor = color.lightGray().cgColor
+                cell.followUserEditProfileButton.layer.borderWidth = 1
+                cell.followUserEditProfileButton.clipsToBounds = true
+                cell.followUserEditProfileButton.tag = 0
+                
+                cell.joinFanClubButton.setTitle("New Playlist", for: .normal)
+                cell.joinFanClubButton.backgroundColor = color.black()
+                cell.joinFanClubButton.setTitleColor(.white, for: .normal)
+                cell.joinFanClubButton.layer.borderColor = color.lightGray().cgColor
+                cell.joinFanClubButton.layer.borderWidth = 1
+                cell.joinFanClubButton.clipsToBounds = true
+                
+            } else {
+                if let isFollowedByCurrentUser = self.profileArtist!.isFollowedByCurrentUser {
+                    if isFollowedByCurrentUser {
+                        cell.followUserEditProfileButton.setTitle(localizedFollowing, for: .normal)
+                        cell.followUserEditProfileButton.backgroundColor = .darkGray
+                        cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                        cell.followUserEditProfileButton.tag = 1
+                    } else {
+                        cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
+                        cell.followUserEditProfileButton.backgroundColor = color.blue()
+                        cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                        cell.followUserEditProfileButton.tag = 2
+                    }
+                    
+                } else {
+                    cell.followUserEditProfileButton.setTitle(localizedFollow, for: .normal)
+                    cell.followUserEditProfileButton.backgroundColor = color.blue()
+                    cell.followUserEditProfileButton.setTitleColor(.white, for: .normal)
+                }
+                
+               /* if let productId = self.profileArtist?.account?.productId {
+                    if Customer.shared.fanClubs.contains(productId) {
+                        cell.joinFanClubButton.setTitle("💎", for: .normal)
+                        cell.joinFanClubButton.backgroundColor = .darkGray
+                    } else {
+                        cell.joinFanClubButton.setTitle("Join Fan Club", for: .normal)
+                        cell.joinFanClubButton.backgroundColor = color.blue()
+                        cell.joinFanClubButton.setTitleColor(.white, for: .normal)
+                    }
+                } else {
+                    cell.sendGiftButton.isHidden = true
+                    cell.joinFanClubButton.isHidden = true
+                }*/
+                
+            }*/
         }
         
         return cell
@@ -653,13 +750,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     //mark: button actions
     @objc func didPressSendArtistMoneyButton(_ sender: UIButton) {
-        if sender.tag == 0 {
-            newFanClubAlert()
+        if PFUser.current() == nil {
+            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Register to gift this person money", target: self)
         } else {
-            let modal = SendMoneyViewController()
-            modal.artist = self.profileArtist
-            self.present(modal, animated: true, completion: nil)
+            if sender.tag == 0 {
+                newFanClubAlert()
+            } else {
+                let modal = SendMoneyViewController()
+                modal.artist = self.profileArtist
+                self.present(modal, animated: true, completion: nil)
+            }
         }
+
     }
     
     func newFanClubAlert() {
@@ -696,36 +798,41 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @objc func didPressFollowUserEditProfileButton(_ sender: UIButton) {
-        switch sender.tag {
-        case 0:
-            let modal = EditProfileViewController()
-            modal.artistDelegate = self
-            self.present(modal, animated: true, completion: nil)
-            break
-            
-        case 1:
-            if let currentUser = Customer.shared.artist {
-                let unFollow = Follow(fromArtist: currentUser, toArtist: self.profileArtist!)
-                unFollow.updateFollowStatus(false)
-                self.profileArtist!.isFollowedByCurrentUser = false
-                self.tableView.reloadData()
+        if PFUser.current() == nil {
+            self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Register to follow and keep up with their latest releases", target: self)
+
+        } else {
+            switch sender.tag {
+            case 0:
+                let modal = EditProfileViewController()
+                modal.artistDelegate = self
+                self.present(modal, animated: true, completion: nil)
+                break
+                
+            case 1:
+                if let currentUser = Customer.shared.artist {
+                    let unFollow = Follow(fromArtist: currentUser, toArtist: self.profileArtist!)
+                    unFollow.updateFollowStatus(false)
+                    self.profileArtist!.isFollowedByCurrentUser = false
+                    self.tableView.reloadData()
+                }
+                break
+                
+            case 2:
+                if let currentUser = Customer.shared.artist {
+                    let unFollow = Follow(fromArtist: currentUser, toArtist: self.profileArtist!)
+                    unFollow.updateFollowStatus(true)
+                    self.profileArtist!.isFollowedByCurrentUser = true
+                    self.tableView.reloadData()
+                }
+                break
+                
+            default:
+                let localizedSignupRequired = NSLocalizedString("signupRequired", comment: "")
+                let localizedSignupRequiredMessage = NSLocalizedString("signupRequiredMessage", comment: "")
+                self.uiElement.showAlert(localizedSignupRequired, message: localizedSignupRequiredMessage, target: self)
+                break
             }
-            break
-            
-        case 2:
-            if let currentUser = Customer.shared.artist {
-                let unFollow = Follow(fromArtist: currentUser, toArtist: self.profileArtist!)
-                unFollow.updateFollowStatus(true)
-                self.profileArtist!.isFollowedByCurrentUser = true
-                self.tableView.reloadData()
-            }
-            break
-            
-        default:
-            let localizedSignupRequired = NSLocalizedString("signupRequired", comment: "")
-            let localizedSignupRequiredMessage = NSLocalizedString("signupRequiredMessage", comment: "")
-            self.uiElement.showAlert(localizedSignupRequired, message: localizedSignupRequiredMessage, target: self)
-            break
         }
     }
     
@@ -784,7 +891,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             let sideView = container.sideViewController as! SettingsViewController
             sideView.artist = Customer.shared.artist
             sideView.loadFollowerFollowingStats()
-            sideView.tableView.reloadData()
+            if sideView.tableView != nil {
+                sideView.tableView.reloadData()
+            }
             container.isSideViewControllerPresented = true
         }
     }

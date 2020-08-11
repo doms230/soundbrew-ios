@@ -43,12 +43,15 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             self.loadCredits(objectId)
         }
         getSelectedTags()
-        setupDoneButtons()
-        setUpTableView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.tableView.reloadData()
+        setupDoneButtons()
+        if tableView == nil {
+            setUpTableView()
+        } else {
+            self.tableView.reloadData()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -153,7 +156,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //MARK: Tableview
-    var tableView = UITableView()
+    var tableView: UITableView!
     let soundInfoReuse = "soundInfoReuse"
     let soundTagReuse = "soundTagReuse"
     let soundProgressReuse = "soundProgressReuse"
@@ -168,7 +171,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         if let tabBar = self.tabBarController?.tabBar {
             tabBarControllerHeight = tabBar.frame.height
         }
-        
+        tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SoundInfoTableViewCell.self, forCellReuseIdentifier: soundInfoReuse)

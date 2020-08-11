@@ -42,8 +42,8 @@ class PlayerTableViewCell: UITableViewCell {
                 soundArt.snp.makeConstraints { (make) -> Void in
                     make.height.equalTo(200)
                     make.top.equalTo(self).offset(uiElement.topOffset)
-                    make.right.equalTo(self)
-                    make.left.equalTo(self)
+                    make.right.equalTo(self).offset(uiElement.rightOffset)
+                    make.left.equalTo(self).offset(uiElement.leftOffset)
                     make.bottom.equalTo(self).offset(uiElement.bottomOffset)
                 }
                 

@@ -40,7 +40,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
     func prepareVideo(_ shouldPlay: Bool) {
         if let videoURL = URL(string: currentSound?.videoURL ?? "") {
             videoPlayer = FWPlayerController()
-            
+
             let playerManager = FWAVPlayerManager()
             playerManager.shouldAutoPlay = false
             if let videoFilePathExtension = currentSound?.videoPathExtension {
@@ -52,7 +52,7 @@ class Player: NSObject, AVAudioPlayerDelegate {
             }
             
             videoPlayer?.replaceCurrentPlayerManager(playerManager)
-            
+    
             let videoPlayerView = FWPlayerControlView()
             videoPlayerView.fastViewAnimated = true
             videoPlayerView.autoHiddenTimeInterval = 5.0
@@ -62,22 +62,36 @@ class Player: NSObject, AVAudioPlayerDelegate {
             videoPlayerView.bottomPgrogress.isHidden = true
             videoPlayer?.controlView = videoPlayerView
             
+            videoPlayer?.exitFullScreenWhenStop = true
             videoPlayer?.pauseWhenAppResignActive = false
             videoPlayer?.assetURL = videoURL
+            
+            videoPlayer?.playerPlayStateChanged = { (playBack, playState) in
+                if let isPlaying = playBack.isPlaying {
+                    if isPlaying {
+                        self.play()
+                    } else {
+                        self.pause()
+                    }
+                }
+            }
+            
             videoPlayer?.playerDidToEnd = { (asset) in
-                self.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
+                //TODO: figure this shit out 
+               // self.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
             }
             
             videoPlayer?.playerReadyToPlay = { (playback, url) in
-                self.soundIsPlayableActions(self.sounds[self.currentSoundIndex])
+                self.soundIsPlayableActions(self.sounds[self.currentSoundIndex], shouldPlay: shouldPlay)
             }
             
             videoPlayer?.playerPlayFailed = { (playback, url) in
                 self.setUpNextSong(false, at: nil, shouldPlay: true, selectedSound: nil)
             }
+            
         }
     }
-        
+            
     func prepareAudio(_ audioData: Data, shouldPlay: Bool) {
         var soundPlayable = true
         
@@ -125,13 +139,13 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         if soundPlayable {
-            soundIsPlayableActions(sound)
+            soundIsPlayableActions(sound, shouldPlay: shouldPlay)
         } else {
             setUpNextSong(false, at: nil, shouldPlay: false, selectedSound: nil)
         }
     }
     
-    func soundIsPlayableActions(_ sound: Sound) {
+    func soundIsPlayableActions(_ sound: Sound, shouldPlay: Bool) {
         resetStream()
         if sound.artImage == nil {
             loadArtfileImageData(sound)
@@ -142,7 +156,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
         }
         
         //Loading here to so that Soundbrew can check if sound is exclusive to artist' fan club
-        Like.shared.checkIfUserLikedSong(true)
+        if PFUser.current() == nil {
+            self.play()
+        } else {
+            Like.shared.checkIfUserLikedSong(shouldPlay)
+        }
     }
     
     //This function is called when audio finishes playing. Not called anywhere in Soundbrew project files
@@ -192,7 +210,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
     }
     
     func currentUserDoesHaveAccessToSound() -> Bool {
-        if  let currentUserId = PFUser.current()?.objectId,
+        if let isExclusive = self.currentSound?.isExclusive, isExclusive && PFUser.current() == nil{
+            return false
+        } else if let currentUserId = PFUser.current()?.objectId,
             let artistUserId = self.currentSound?.artist?.objectId,
             let currentUserDidLikeSound = self.currentSound?.currentUserDidLikeSong,
             let isExclusive = self.currentSound?.isExclusive,
@@ -231,10 +251,11 @@ class Player: NSObject, AVAudioPlayerDelegate {
                 sendSoundUpdateToUI()
                 secondsPlayedTimer.invalidate()
             }
+            
         } else if let videoPlayerPlayerManager = self.videoPlayer?.currentPlayerManager {
             if videoPlayerPlayerManager.isPlaying! {
                 videoPlayerPlayerManager.pause?()
-               // sendSoundUpdateToUI()
+                sendSoundUpdateToUI()
                 secondsPlayedTimer.invalidate()
             }
         }
@@ -265,7 +286,9 @@ class Player: NSObject, AVAudioPlayerDelegate {
         self.setUpNextSong(false, at: i, shouldPlay: true, selectedSound: nil)
     }
     
-    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool, selectedSound: Sound?) {
+    func setUpNextSong(_ didPressGoBackButton: Bool, at: Int?, shouldPlay: Bool, selectedSound: Sound?) {        
+         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "preparingSound"), object: nil)
+        
         //stop soundplayer audio from playing over each other
         if player != nil {
             player = nil
