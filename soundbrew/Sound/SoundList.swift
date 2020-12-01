@@ -132,21 +132,8 @@ class SoundList: NSObject, PlayerDelegate {
             
             cell.soundTitle.text = sound.title
 
-            if let currentUser = PFUser.current()?.objectId, currentUser == self.domSmithUserId, let createdAt = sound.createdAt {
-                cell.soundDate.text = "\(self.uiElement.formatDateAndReturnString(createdAt)) | likes: \(sound.tipCount ?? 0) | plays: \(sound.playCount ?? 0)"
-            } else {
-                var hashtagString = ""
-                if let hashtags = sound.tags {
-                    for hashtag in hashtags {
-                        if hashtagString == "" {
-                            hashtagString = "#\(hashtag)"
-                        } else {
-                           hashtagString = "\(hashtagString), #\(hashtag)"
-                        }
-                    }
-                }
-
-                cell.soundDate.text = hashtagString
+            if let createdAt = sound.createdAt {
+                cell.soundDate.text = "\(self.uiElement.formatDateAndReturnString(createdAt)) | ♥︎ \(sound.tipCount ?? 0) | ▶︎ \(sound.playCount ?? 0)"
             }
         }
         
@@ -164,7 +151,7 @@ class SoundList: NSObject, PlayerDelegate {
             let sound = sounds[sender.tag]
                         
             if let currentUser = PFUser.current(), sound.artist!.objectId == currentUser.objectId {
-                let menuAlert = UIAlertController(title: "Likes: \(sound.tipCount ?? 0)", message: "Plays: \(sound.playCount ?? 0)", preferredStyle: .actionSheet)
+                let menuAlert = UIAlertController(title: /*"Likes: \(sound.tipCount ?? 0)"*/"", message: "" /*"Plays: \(sound.playCount ?? 0)"*/, preferredStyle: .actionSheet)
                 
                 let localizedEditSound = NSLocalizedString("editSound", comment: "")
                 menuAlert.addAction(UIAlertAction(title: localizedEditSound, style: .default, handler: { action in
@@ -409,16 +396,7 @@ class SoundList: NSObject, PlayerDelegate {
             break
             
         case "forYou":
-            if let currentUserId = PFUser.current()?.objectId {
-                if currentUserId == self.domSmithUserId {
-                    loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
-                } else {
-                    loadLastLike(currentUserId)
-                }
-                
-            } else {
-                loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
-            }
+            loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             break
             
         case "discover":
@@ -531,21 +509,6 @@ class SoundList: NSObject, PlayerDelegate {
                         self.tableView?.reloadData()
                     }
                 }
-            }
-        }
-    }
-    
-    func loadLastLike(_ userId: String) {
-        let query = PFQuery(className: "Tip")
-        query.whereKey("fromUserId", equalTo: userId)
-        query.cachePolicy = .networkElseCache
-        query.getFirstObjectInBackground {
-            (object: PFObject?, error: Error?) -> Void in
-             if let object = object {
-                let soundId = object["soundId"] as! String
-                self.loadSound(soundId, isForYouPage: true, isForLastSoundUserListenedTo: false)
-             } else {
-                self.loadSounds(nil, postIds: nil, userId: nil, searchText: nil, followIds: nil, tag: nil, forYouTags: nil, isExclusive: nil)
             }
         }
     }

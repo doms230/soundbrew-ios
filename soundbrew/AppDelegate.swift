@@ -31,7 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         UITabBar.appearance().tintColor = .white
         UITabBar.appearance().backgroundColor = .black
                         
-        MSAppCenter.start("b023d479-f013-42e4-b5ea-dcb1e97fe204", withServices:[MSCrashes.self, MSAnalytics.self])
+        AppCenter.start(withAppSecret: "b023d479-f013-42e4-b5ea-dcb1e97fe204", services:[
+          Analytics.self,
+          Crashes.self
+        ])
         
         GIDSignIn.sharedInstance().clientID = "510041293074-8agh8fcqoiqjh3f35glov6b16s5lvcl9.apps.googleusercontent.com"
                 
@@ -41,8 +44,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PFUserAuthenticationDeleg
         //password: asdf
         //change publishableable key for creating a file on Account.Swift
         
-        Stripe.setDefaultPublishableKey(self.uiElement.liveStripeKey)
-        let config = STPPaymentConfiguration.shared()
+       // Stripe.setDefaultPublishableKey(self.uiElement.liveStripeKey)
+        StripeAPI.defaultPublishableKey = self.uiElement.liveStripeKey
+        let config = STPPaymentConfiguration.shared
         config.appleMerchantIdentifier = "merchant.com.soundbrew.soundbrew-inc"
         config.companyName = "Soundbrew, Inc."
         

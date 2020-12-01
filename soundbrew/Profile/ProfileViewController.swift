@@ -605,7 +605,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                     cell.joinFanClubButton.layer.borderWidth = 1
                     cell.joinFanClubButton.clipsToBounds = true
 
-                    if self.profileArtist?.account?.productId == nil {
+                    cell.sendGiftButton.isHidden = true
+                    
+                    /*if self.profileArtist?.account?.productId == nil {
                         if let regionCode = Locale.current.regionCode, regionCode == "US" {
                             cell.sendGiftButton.setTitle("Start Fan Club", for: .normal)
                             cell.sendGiftButton.isHidden = false
@@ -615,7 +617,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                         }
                     } else {
                         cell.sendGiftButton.isHidden = true
-                    }
+                    }*/
                     
                 } else {
                     //check for Fan Club Account

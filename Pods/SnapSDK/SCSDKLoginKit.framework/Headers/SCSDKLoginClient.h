@@ -83,6 +83,8 @@ typedef void(^SCFetchCodeVerifierBlock)(NSString *state, SCFetchCodeVerifierComp
 
 @end
 
+@class SCSnapKitFeatureOptions;
+
 @interface SCSDKLoginClient : NSObject
 
 @property (class, assign, readonly) BOOL isUserLoggedIn;
@@ -94,6 +96,15 @@ typedef void(^SCFetchCodeVerifierBlock)(NSString *state, SCFetchCodeVerifierComp
  */
 + (void)loginFromViewController:(UIViewController *)viewController
                      completion:(nullable void (^)(BOOL success, NSError * _Nullable error))completion;
+
+/**
+* Start Auth with Snapchat with options.
+*
+*  @param viewController that shows the in-app auth page.
+*/
++ (void)loginFromViewController:(UIViewController *)viewController
+                        options:(SCSnapKitFeatureOptions *)options
+                     completion:(void (^)(BOOL success, NSError *error))completion;
 
 /**
  * Finish auth with Snapchat.

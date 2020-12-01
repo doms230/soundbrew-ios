@@ -12,6 +12,7 @@ import Parse
 import NotificationBannerSwift
 import Alamofire
 import SwiftyJSON
+import PassKit
 
 class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPickerViewDataSource, UIPickerViewDelegate, ArtistDelegate, UITextFieldDelegate {
     
@@ -448,7 +449,7 @@ class SendMoneyViewController: UIViewController, STPPaymentContextDelegate, UIPi
                         // Confirm the PaymentIntent
                             let paymentIntentParams = STPPaymentIntentParams(clientSecret: clientSecret)
                         paymentIntentParams.configure(with: paymentResult)
-                        STPPaymentHandler.shared().confirmPayment(withParams: paymentIntentParams, authenticationContext: paymentContext) { status, paymentIntent, error in
+                            STPPaymentHandler.shared().confirmPayment(paymentIntentParams, with: paymentContext) { status, paymentIntent, error in
                             switch status {
                             case .succeeded:
                                 // Our example backend asynchronously fulfills the customer's order via webhook

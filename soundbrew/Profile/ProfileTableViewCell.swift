@@ -74,6 +74,30 @@ class ProfileTableViewCell: UITableViewCell {
         return profileImage
     }()
     
+    lazy var followerCount: UILabel = {
+        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)!, numberOfLines: 0)
+    }()
+    
+    lazy var followerCountLabel: UILabel = {
+        return uiElement.soundbrewLabel("Followers", textColor: .darkGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var followerCountButton: UIButton = {
+        return uiElement.soundbrewButton("nil", shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
+    }()
+    
+    lazy var followingCount: UILabel = {
+        return uiElement.soundbrewLabel("0", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)!, numberOfLines: 0)
+    }()
+    
+    lazy var followingCountLabel: UILabel = {
+        return uiElement.soundbrewLabel("Following", textColor: .darkGray, font: UIFont(name: "\(uiElement.mainFont)", size: 17)!, numberOfLines: 0)
+    }()
+    
+    lazy var followingCountButton: UIButton = {
+        return uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
+    }()
+    
     lazy var displayNameLabel: UILabel = {
         return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)!, numberOfLines: 0)
     }()
@@ -179,10 +203,50 @@ class ProfileTableViewCell: UITableViewCell {
                     make.left.equalTo(self).offset(uiElement.leftOffset)
                 }
                 
+                self.addSubview(followerCount)
+                followerCount.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(profileImage).offset(uiElement.topOffset)
+                    make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset *  2)
+                }
+                
+                self.addSubview(followerCountLabel)
+                followerCountLabel.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followerCount.snp.bottom)
+                    make.left.equalTo(followerCount)
+                }
+                
+                self.addSubview(followerCountButton)
+                followerCountButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followerCount)
+                    make.left.equalTo(followerCount)
+                    make.right.equalTo(followerCount)
+                   // make.bottom.equalTo(followerCountLabel)
+                }
+                
+                self.addSubview(followingCount)
+                followingCount.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followerCount)
+                    make.left.equalTo(followerCount.snp.right).offset(uiElement.leftOffset)
+                }
+                
+                self.addSubview(followingCountLabel)
+                followingCountLabel.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followingCount.snp.bottom)
+                    make.left.equalTo(followingCount)
+                }
+                
+                self.addSubview(followingCountButton)
+                followingCountButton.snp.makeConstraints { (make) -> Void in
+                    make.top.equalTo(followingCount)
+                    make.left.equalTo(followingCount)
+                    make.right.equalTo(followingCount)
+                    //make.bottom.equalTo(followingCountLabel)
+                }
+                                
                 self.addSubview(displayNameLabel)
                 displayNameLabel.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(profileImage).offset(30)
-                    make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset)
+                    make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                    make.left.equalTo(profileImage)
                     make.right.equalTo(self).offset(uiElement.rightOffset)
                 }
                 
@@ -195,7 +259,7 @@ class ProfileTableViewCell: UITableViewCell {
                 
                 self.addSubview(bio)
                 bio.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(profileImage.snp.bottom).offset(uiElement.topOffset)
+                    make.top.equalTo(city.snp.bottom).offset(uiElement.topOffset)
                     make.left.equalTo(profileImage)
                     make.right.equalTo(displayNameLabel)
                 }

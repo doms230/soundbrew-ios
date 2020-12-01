@@ -12,3 +12,4 @@
 #import "SCSDKLoginButton.h"
 
 #import "SCSDKLoginKitErrorCode.h"
+#import "SCSnapKitFeatureOptions.h"
