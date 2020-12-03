@@ -164,8 +164,8 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     let dividerReuse = "dividerReuse"
     let audioImageCellSection = 0
     let fanClubExclusiveSection = 2
-    let creditCellSection = 4
-    let tagCellSection = 6
+    let creditCellSection = 2
+    let tagCellSection = 4
     func setUpTableView() {
         var tabBarControllerHeight: CGFloat = 50
         if let tabBar = self.tabBarController?.tabBar {
@@ -197,7 +197,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
+        return 5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -212,9 +212,9 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = audioImageTitleCell()
             break
             
-        case fanClubExclusiveSection:
+        /*case fanClubExclusiveSection:
             cell = fanClubExclusiveCell()
-            break
+            break*/
             
         case creditCellSection:
             cell = creditCell(indexPath)
@@ -260,7 +260,7 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
     }
 
     //mark: Fan Club Exclusive
-    func fanClubExclusiveCell() -> SoundInfoTableViewCell {
+    /*func fanClubExclusiveCell() -> SoundInfoTableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: fanClubExcluseReuse) as! SoundInfoTableViewCell
         if Customer.shared.artist?.account?.id != nil {
             if let isExclusive = self.soundThatIsBeingEdited?.isExclusive {
@@ -275,16 +275,16 @@ class SoundInfoViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.soundTagLabel.text = "Fan Club Exclusive 💎"
         cell.socialSwitch.addTarget(self, action: #selector(self.didPressFanClubExclusiveSwitch(_:)), for: .valueChanged)
         return cell
-    }
+    }*/
     
-    @objc func didPressFanClubExclusiveSwitch(_ sender: UISwitch) {
+   /* @objc func didPressFanClubExclusiveSwitch(_ sender: UISwitch) {
         if Customer.shared.artist?.account?.id == nil {
             sender.isOn = false
             self.uiElement.showAlert("Fan Club Account Required", message: "Earn money from your followers by starting a fan club! You can get started on your profile page.", target: self)
         } else {
             self.soundThatIsBeingEdited?.isExclusive = sender.isOn
         }
-    }
+    }*/
     
     //mark: credits
     var credits = [Credit]()

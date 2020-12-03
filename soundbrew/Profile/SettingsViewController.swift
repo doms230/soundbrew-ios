@@ -180,7 +180,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         if section == 1 {
             if self.artist?.account == nil {
-                return 0
+                return 1
             } else {
                 return 2 
             }
@@ -362,11 +362,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
           //  showFollowersOrFollowing("fans")
            // break
         case 0:
-            if let container = self.so_containerViewController {
-                container.isSideViewControllerPresented = false
-                if let topView = container.topViewController as? UINavigationController,
-                    let view = topView.topViewController as? ProfileViewController{
-                    view.performSegue(withIdentifier: "showEarnings", sender: self)
+            if self.artist?.account == nil {
+                showNewAccountAlert()
+            } else {
+                if let container = self.so_containerViewController {
+                    container.isSideViewControllerPresented = false
+                    if let topView = container.topViewController as? UINavigationController,
+                        let view = topView.topViewController as? ProfileViewController{
+                        view.performSegue(withIdentifier: "showEarnings", sender: self)
+                    }
                 }
             }
             break
@@ -377,6 +381,17 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         default:
             break
+        }
+    }
+    
+    func showNewAccountAlert() {
+        if let container = self.so_containerViewController {
+            container.isSideViewControllerPresented = false
+            if let topView = container.topViewController as? UINavigationController {
+                if let view = topView.topViewController as? ProfileViewController {
+                    view.newFanClubAlert()
+                }
+            }
         }
     }
     

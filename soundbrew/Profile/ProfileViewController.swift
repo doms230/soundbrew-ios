@@ -198,9 +198,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         case 2:
             return artistPlaylists.count
         case 3:
-            if let profileArtist = self.profileArtist, let accountId = profileArtist.account?.id, !accountId.isEmpty {
+          /*  if let profileArtist = self.profileArtist, let accountId = profileArtist.account?.id, !accountId.isEmpty {
                 return 3
-            }
+            }*/
             return 2
         default:
             return 1
@@ -336,10 +336,10 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         } else if indexPath.row == 1 {
             let likesPlaylist = Playlist(objectId: "likes", artist: self.profileArtist, title: "Likes", image: nil, type: nil, count: nil)
             playlist = likesPlaylist
-        } else if indexPath.row == 2 {
+        } /*else if indexPath.row == 2 {
             let exclusivesPlaylist = Playlist(objectId: "exclusives", artist: self.profileArtist, title: "Exclusives", image: nil, type: nil, count: nil)
             playlist = exclusivesPlaylist
-        }
+        }*/
                 
         cell.artistImage.image = UIImage(named: "profile_icon")
         cell.artistLabel.text = "loading..."
@@ -361,9 +361,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.soundArtImage.image = UIImage(named: "upload")
         } else if playlist.objectId == "likes" {
             cell.soundArtImage.image = UIImage(named: "like")
-        } else if playlist.objectId == "exclusives" {
+        } else { /*else if playlist.objectId == "exclusives" {
             cell.soundArtImage.image = UIImage(named: "diamond")
-        } else {
+        } else {*/
             cell.soundArtImage.image = UIImage(named: "playlist")
         }
         
