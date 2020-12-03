@@ -143,6 +143,7 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                 self.artist = artist
                 if let userId = artist.objectId {
                     self.getFriends(userId)
+                    self.loadFollowerFollowingStats(userId)
                 }
             }
         }
@@ -170,6 +171,32 @@ class Customer: NSObject, STPCustomerEphemeralKeyProvider {
                         print(error)
                     }
             }
+    }
+    
+    func loadFollowerFollowingStats(_ userId: String) {
+        let query = PFQuery(className: "Stats")
+        query.whereKey("userId", equalTo: userId)
+        query.cachePolicy = .networkElseCache
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let object = object {
+                if let followers = object["followers"] as? Int {
+                    self.artist?.followerCount = followers
+                } else {
+                    self.artist?.followerCount = 0
+                }
+                
+                if let following = object["following"] as? Int {
+                    self.artist?.followingCount = following
+                } else {
+                    self.artist?.followingCount = 0
+                }
+                
+                if let fans = object["fans"] as? Int {
+                    self.artist?.fanCount = fans
+                }
+            }
+        }
     }
     
     func getFriends(_ userId: String) {

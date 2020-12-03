@@ -90,11 +90,11 @@ class NewSoundViewController: UIViewController, UIDocumentPickerDelegate, UINavi
     func decideAction() {
         let alertController = UIAlertController (title: "", message: "Upload drafts from the web at soundbrew.app/upload", preferredStyle: .actionSheet)
         
-        let newVideoUploadAction = UIAlertAction(title: "New Video Upload", style: .default) { (_) -> Void in
+       /* let newVideoUploadAction = UIAlertAction(title: "New Video Upload", style: .default) { (_) -> Void in
             self.uploadType = "video"
             self.showNewUpload()
         }
-        alertController.addAction(newVideoUploadAction)
+        alertController.addAction(newVideoUploadAction)*/
         
         let newUploadAction = UIAlertAction(title: "New Audio Upload", style: .default) { (_) -> Void in
             self.uploadType = "audio"

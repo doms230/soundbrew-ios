@@ -26,7 +26,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationController?.navigationBar.tintColor = .white
         let customer = Customer.shared
         artist = customer.artist
-        loadFollowerFollowingStats()
+        self.setupBottomButtons()
+       // loadFollowerFollowingStats()
     }
     
     //Mark: sign out
@@ -161,7 +162,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @objc func refresh(_ sender: UIRefreshControl) {
-       loadFollowerFollowingStats()
+       //loadFollowerFollowingStats()
         if let account = artist?.account {
             account.loadEarnings(self.tableView)
             account.retreiveAccount(self.tableView)
@@ -169,15 +170,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 {
+        /*if section == 1 {
             return 2
-        }
+        }*/
         
-        if section == 2 {
+        if section == 1 {
             if self.artist?.account == nil {
                 return 0
             } else {
@@ -191,19 +192,24 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             return titleReuse()
-        } else if indexPath.section == 1 {
-            return followerFollowingReuse(indexPath)
-        } else  {
+        } else { //else if indexPath.section == 1 {
             return accountReuse(indexPath)
-        }
+            //return followerFollowingReuse(indexPath)
+        }/* else  {
+           // return accountReuse(indexPath)
+        }*/
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            self.didSelectFollowerFollowingSection(indexPath)
-        } else if indexPath.section == 2 {
             self.didSelectAccountSection(indexPath)
         }
+        
+        /*if indexPath.section == 1 {
+           // self.didSelectFollowerFollowingSection(indexPath)
+        } else if indexPath.section == 2 {
+            self.didSelectAccountSection(indexPath)
+        }*/
     }
     
     //MARK: Title
@@ -224,7 +230,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.backgroundColor = color.black()
         self.tableView.separatorStyle = .none
         cell.profileImage.layer.borderColor = color.black().cgColor
-        
         if indexPath.row == 0 {
             var followerCount = 0
             if let count = self.artist?.followerCount {
@@ -246,15 +251,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         return cell
     }
     
-    func didSelectFollowerFollowingSection(_ indexPath: IndexPath) {
+    /*func didSelectFollowerFollowingSection(_ indexPath: IndexPath) {
         if indexPath.row == 0 {
             showFollowersOrFollowing("followers")
         } else {
             showFollowersOrFollowing("following")
         }
-    }
+    }*/
     
-    func loadFollowerFollowingStats() {
+   /* func loadFollowerFollowingStats() {
         if let currentUserID = PFUser.current()?.objectId {
             let query = PFQuery(className: "Stats")
             query.whereKey("userId", equalTo: currentUserID)
@@ -284,9 +289,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             }
         }
-    }
+    }*/
     
-    func showFollowersOrFollowing(_ followerOrFollowingType: String) {
+    /*func showFollowersOrFollowing(_ followerOrFollowingType: String) {
         if let container = self.so_containerViewController {
             container.isSideViewControllerPresented = false
             if let topView = container.topViewController as? UINavigationController {
@@ -296,7 +301,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             }
         }
-    }
+    }*/
     
     @objc func didPressShareProfileButton(_ sender: UIButton) {
         if let artist = Customer.shared.artist {

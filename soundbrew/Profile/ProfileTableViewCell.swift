@@ -75,7 +75,7 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var followerCount: UILabel = {
-        return uiElement.soundbrewLabel(nil, textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)!, numberOfLines: 0)
+        return uiElement.soundbrewLabel("0", textColor: .white, font: UIFont(name: "\(uiElement.mainFont)-Bold", size: 20)!, numberOfLines: 0)
     }()
     
     lazy var followerCountLabel: UILabel = {
@@ -83,7 +83,7 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var followerCountButton: UIButton = {
-        return uiElement.soundbrewButton("nil", shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
+        return uiElement.soundbrewButton(nil, shouldShowBorder: false, backgroundColor: .clear, image: nil, titleFont: nil, titleColor: .white, cornerRadius: nil)
     }()
     
     lazy var followingCount: UILabel = {
@@ -123,15 +123,15 @@ class ProfileTableViewCell: UITableViewCell {
     }()
     
     lazy var sendGiftButton: UIButton = {
-        return uiElement.soundbrewButton("Send Gift", shouldShowBorder: false, backgroundColor: color.green(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+        return uiElement.soundbrewButton("Send Gift", shouldShowBorder: false, backgroundColor: color.green(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 10)
     }()
     
     lazy var followUserEditProfileButton: UIButton = {
-        return uiElement.soundbrewButton("loading..", shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+        return uiElement.soundbrewButton("loading..", shouldShowBorder: false, backgroundColor: .lightGray, image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 10)
     }()
     
     lazy var joinFanClubButton: UIButton = {
-        return uiElement.soundbrewButton("Join Fan Club", shouldShowBorder: false, backgroundColor: color.red(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 3)
+        return uiElement.soundbrewButton("Join Fan Club", shouldShowBorder: false, backgroundColor: color.red(), image: nil, titleFont: UIFont(name: uiElement.mainFont, size: 17), titleColor: .white, cornerRadius: 10)
     }()
     
     lazy var editProfileLabel: UILabel = {
@@ -205,8 +205,9 @@ class ProfileTableViewCell: UITableViewCell {
                 
                 self.addSubview(followerCount)
                 followerCount.snp.makeConstraints { (make) -> Void in
-                    make.top.equalTo(profileImage).offset(uiElement.topOffset)
-                    make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset *  2)
+                    make.width.equalTo(50)
+                    make.top.equalTo(profileImage.snp.centerY).offset(-25)
+                    make.left.equalTo(profileImage.snp.right).offset(uiElement.leftOffset * 2)
                 }
                 
                 self.addSubview(followerCountLabel)
@@ -220,13 +221,14 @@ class ProfileTableViewCell: UITableViewCell {
                     make.top.equalTo(followerCount)
                     make.left.equalTo(followerCount)
                     make.right.equalTo(followerCount)
-                   // make.bottom.equalTo(followerCountLabel)
+                    make.bottom.equalTo(followerCountLabel)
                 }
                 
                 self.addSubview(followingCount)
                 followingCount.snp.makeConstraints { (make) -> Void in
+                    make.width.equalTo(50)
                     make.top.equalTo(followerCount)
-                    make.left.equalTo(followerCount.snp.right).offset(uiElement.leftOffset)
+                    make.left.equalTo(followerCountLabel.snp.right).offset(uiElement.leftOffset)
                 }
                 
                 self.addSubview(followingCountLabel)
@@ -240,7 +242,7 @@ class ProfileTableViewCell: UITableViewCell {
                     make.top.equalTo(followingCount)
                     make.left.equalTo(followingCount)
                     make.right.equalTo(followingCount)
-                    //make.bottom.equalTo(followingCountLabel)
+                    make.bottom.equalTo(followingCountLabel)
                 }
                                 
                 self.addSubview(displayNameLabel)

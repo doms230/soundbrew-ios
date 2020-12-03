@@ -148,24 +148,6 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func loadProfileData() {
-        if let profileArtist = self.profileArtist {
-            if let currentUser = PFUser.current(), currentUser.objectId != profileArtist.objectId {
-                if let username = profileArtist.username {
-                    if !username.contains("@") {
-                        self.navigationItem.title = username
-                    }
-                }
-                checkFollowStatus()
-            }
-
-            self.loadPlaylists(profileUserId: profileArtist.objectId)
-            if self.tableView != nil {
-                self.tableView.refreshControl?.endRefreshing()
-            }
-        }
-    }
-    
     //MARK: Tableview
     var tableView: UITableView!
     let profileReuse = "profileReuse"
@@ -552,6 +534,14 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 cell.profileImage.kf.setImage(with: URL(string: artistImage))
             }
             
+            cell.followerCount.text = "\(artist.followerCount ?? 0)"
+            cell.followerCountButton.addTarget(self, action: #selector(self.didPressFollowerFollowingButton(_:)), for: .touchUpInside)
+            cell.followingCountButton.tag = 0
+            
+            cell.followingCount.text = "\(artist.followingCount ?? 0)"
+            cell.followingCountButton.addTarget(self, action: #selector(self.didPressFollowerFollowingButton(_:)), for: .touchUpInside)
+            cell.followingCountButton.tag = 1
+            
             if let name = artist.name {
                 cell.displayNameLabel.text = name
             }
@@ -750,7 +740,74 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
+    func loadProfileData() {
+        if let profileArtist = self.profileArtist {
+            loadFollowerFollowingStats(profileArtist)
+            if let currentUser = PFUser.current(), currentUser.objectId != profileArtist.objectId {
+                if let username = profileArtist.username {
+                    if !username.contains("@") {
+                        self.navigationItem.title = username
+                    }
+                }
+                checkFollowStatus()
+            }
+
+            self.loadPlaylists(profileUserId: profileArtist.objectId)
+            if self.tableView != nil {
+                self.tableView.refreshControl?.endRefreshing()
+            }
+        }
+    }
+    
+    func loadFollowerFollowingStats(_ artist: Artist) {
+        let query = PFQuery(className: "Stats")
+        query.whereKey("userId", equalTo: artist.objectId!)
+        query.cachePolicy = .networkElseCache
+        query.getFirstObjectInBackground {
+            (object: PFObject?, error: Error?) -> Void in
+            if let object = object {
+                if let followers = object["followers"] as? Int {
+                    self.profileArtist?.followerCount = followers
+                } else {
+                    self.profileArtist?.followerCount = 0
+                }
+                
+                if let following = object["following"] as? Int {
+                    self.profileArtist?.followingCount = following
+                } else {
+                    self.profileArtist?.followingCount = 0
+                }
+                
+                if let fans = object["fans"] as? Int {
+                    self.profileArtist?.fanCount = fans
+                }
+            }
+            
+            if self.tableView != nil {
+                self.tableView.reloadData()
+            }
+            
+            /*if self.tableView != nil {
+                DispatchQueue.main.async {
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.tableView.reloadData()
+                }
+            } else {
+                self.setupBottomButtons()
+            }*/
+        }
+    }
+    
     //mark: button actions
+    @objc func didPressFollowerFollowingButton(_ sender: UIButton) {
+        self.followerOrFollowing = "followers"
+        if sender.tag == 1 {
+            self.followerOrFollowing = "following"
+        }
+        
+        self.performSegue(withIdentifier: "showFollowerFollowing", sender: self)
+    }
+    
     @objc func didPressSendArtistMoneyButton(_ sender: UIButton) {
         if PFUser.current() == nil {
             self.uiElement.signupRequired("Welcome to Soundbrew!", message: "Register to gift this person money", target: self)
@@ -763,12 +820,11 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.present(modal, animated: true, completion: nil)
             }
         }
-
     }
     
     func newFanClubAlert() {
         let alertController = UIAlertController (title: "Earn From Your Followers (US Only)", message:
-            "Earn money from your followers by starting a fan club. Fans pay $12.99 per month, and you'll earn $11.04 per fan per month after Soundbrew's 15% fee. Fans can gift you money within the app, and you can choose which sounds are exclusive!", preferredStyle: .actionSheet)
+            "Get further support from your followers by starting a fan club. Fans pay $3.99 per month, and you'll earn $3.19 per fan per month after Soundbrew's 20% fee. Fans can gift you money within the app as well.", preferredStyle: .actionSheet)
             
         let getStartedAction = UIAlertAction(title: "Get Started", style: .default) { (_) -> Void in
             self.showNewAccount("US")
@@ -794,7 +850,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             if let productId = self.profileArtist?.account?.productId, Customer.shared.fanClubs.contains(productId) {
                 self.uiElement.showAlert("You're a Fan Club Member!", message: "You can manage your membership at soundbrew.app/fans", target: self)
             } else {
-                self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Get access to exclusive sounds from \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
+                self.uiElement.showAlert("Join \(self.profileArtist?.username ?? "this artist")'s Fan Club!", message: "Further support by joining their \(self.profileArtist?.username ?? "this artist").\n You can join their fan club from their Soundbrew website profile.", target: self)
             }
         }
     }
@@ -892,7 +948,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         if let container = self.so_containerViewController {
             let sideView = container.sideViewController as! SettingsViewController
             sideView.artist = Customer.shared.artist
-            sideView.loadFollowerFollowingStats()
+           // sideView.loadFollowerFollowingStats()
             if sideView.tableView != nil {
                 sideView.tableView.reloadData()
             }
