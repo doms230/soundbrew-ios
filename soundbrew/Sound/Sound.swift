@@ -85,12 +85,12 @@ class Sound {
                 }
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+           /* DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
                 if !audioWasLoaded {
                     audio.cancel()
                     Player.sharedInstance.setUpNextSong(false, at: nil, shouldPlay: shouldPlay, selectedSound: nil)
                 }
-            }
+            }*/
         }
     }
 }

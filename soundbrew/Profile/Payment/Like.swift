@@ -30,8 +30,22 @@ class Like: NSObject {
                         self.player.currentSound?.currentUserDidLikeSong = true
                         self.updateLikeButton()
                         self.newMention(sound, fromUserId: fromUserId, toUserId: toUserId)
+                        if let objectId = sound.objectId {
+                            self.incrementLikes(objectId)
+                        }
                       }
                   }
+            }
+        }
+    }
+    
+    func incrementLikes(_ soundId: String) {
+        let query = PFQuery(className: "Post")
+        query.getObjectInBackground(withId: soundId) {
+            (object: PFObject?, error: Error?) -> Void in
+             if let object = object {
+                object.incrementKey("tippers")
+                object.saveEventually()
             }
         }
     }

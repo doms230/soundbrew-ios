@@ -122,19 +122,19 @@ class SoundListTableViewCell: UITableViewCell {
             
         case "soundReuse", "selectPlaylistSoundsReuse":
             self.addSubview(menuButton)
-             self.menuButton.addSubview(menuImage)
+            self.menuButton.addSubview(menuImage)
              
-             self.addSubview(artistButton)
-             self.artistButton.addSubview(artistImage)
-             self.artistButton.addSubview(artistLabel)
+            self.addSubview(artistButton)
+            self.artistButton.addSubview(artistImage)
+            self.artistButton.addSubview(artistLabel)
              
-             self.addSubview(soundArtImage)
+            self.addSubview(soundArtImage)
             self.addSubview(exclusiveImage)
 
-             self.addSubview(soundTitle)
-             self.addSubview(artistLabel)
-             self.addSubview(soundDate)
-             self.addSubview(dividerLine)
+            self.addSubview(soundTitle)
+            self.addSubview(artistLabel)
+            self.addSubview(soundDate)
+            self.addSubview(dividerLine)
             
             if reuseIdentifier == "selectPlaylistSoundsReuse" {
                 self.addSubview(circleImage)

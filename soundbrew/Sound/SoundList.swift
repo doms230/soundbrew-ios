@@ -120,7 +120,7 @@ class SoundList: NSObject, PlayerDelegate {
                 cell.soundArtImage.image = UIImage(named: "sound")
             }
             
-            if let isExclusive = sound.isExclusive {
+            /*if let isExclusive = sound.isExclusive {
                 if isExclusive {
                     cell.exclusiveImage.isHidden = false
                 } else {
@@ -128,7 +128,7 @@ class SoundList: NSObject, PlayerDelegate {
                 }
             } else {
                 cell.exclusiveImage.isHidden = true
-            }
+            }*/
             
             cell.soundTitle.text = sound.title
 
@@ -146,6 +146,7 @@ class SoundList: NSObject, PlayerDelegate {
     }
     
     @objc func didPressMenuButton(_ sender: UIButton) {
+        print("pressed menu button")
         let row = sender.tag
         if sounds.indices.contains(sender.tag) {
             let sound = sounds[sender.tag]

@@ -243,7 +243,14 @@ class PlayBackControl {
         if PFUser.current() == nil {
             self.uiElement.signupRequired("Welcome to Soundbrew", message: "Register to like songs and add them to your playlist!", target: viewController)
         } else {
-            let alertController = UIAlertController (title: "", message: "", preferredStyle: .actionSheet)
+            sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
+            sender.isEnabled = false
+            let like = Like.shared
+            like.target = self.viewController
+            like.likeSoundButton = sender
+            like.newLike()
+            
+            let alertController = UIAlertController (title: "Sound add to Likes", message: "", preferredStyle: .actionSheet)
             let addPlaylistAction = UIAlertAction(title: "Add to Playlist", style: .default) { (_) -> Void in
                 if let sound = self.player.currentSound {
                     let modal = PlaylistViewController()
@@ -253,18 +260,8 @@ class PlayBackControl {
             }
             alertController.addAction(addPlaylistAction)
             
-            let likeSoundAction = UIAlertAction(title: "Add to Likes", style: .default) { (_) -> Void in
-                sender.setImage(UIImage(named: "sendTipColored"), for: .normal)
-                sender.isEnabled = false
-                let like = Like.shared
-                like.target = self.viewController
-                like.likeSoundButton = sender
-                like.newLike()
-            }
-            alertController.addAction(likeSoundAction)
             
-            
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: "Done", style: .cancel, handler: nil)
             alertController.addAction(cancelAction)
             
             viewController.present(alertController, animated: true, completion: nil)
